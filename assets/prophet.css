@@ -1,0 +1,38 @@
+
+#prophet table td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#prophet table tr td {
+  padding-bottom: 0px;
+  border: none;
+}
+#prophet .progress {
+  border-radius: 0px;
+  background-color: inherit;
+}
+#prophet .hp-progress .progress {
+  height: 22px;
+}
+#prophet .hp-progress .progress .progress-bar {
+  font-size: 13px;
+  line-height: 22px;
+}
+#prophet .hp-progress .progress {
+  position: relative;
+  margin-bottom: 1px;
+}
+#prophet .hp-progress .progress-bar span span {
+  position: absolute;
+  width: 100%;
+  display: block;
+}
+#prophet .table {
+  margin-bottom: 1px;
+}
+#prophet .alert {
+  background-color: #375a7f;
+  border-color: #375a7f;
+  color: #ffffff;
+}

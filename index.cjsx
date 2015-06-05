@@ -17,9 +17,9 @@ window.addEventListener 'layout.change', (e) ->
   {layout} = e.detail
 
 module.exports =
-  name: 'TacticalSituation'
+  name: 'prophet'
   priority: 0.1
-  displayName: '战况'
+  displayName: [<FontAwesome key={0} name='compass' />, ' 未卜先知']
   description: '战况预知'
   reactClass: React.createClass
     getInitialState: ->
@@ -182,6 +182,7 @@ module.exports =
     render: ->
       if layout == 'horizonal'
         <div>
+          <link rel="stylesheet" href={join(relative(ROOT, __dirname), 'assets', 'prophet.css')} />
           <Alert>
             <Grid>
               <Col xs={4}>舰名</Col>
@@ -241,6 +242,7 @@ module.exports =
         </div>
       else
         <div>
+          <link rel="stylesheet" href={join(relative(ROOT, __dirname), 'assets', 'prophet.css')} />
           <Alert>
             <Grid>
               <Col xs={2}>舰名</Col>
