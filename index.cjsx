@@ -162,8 +162,7 @@ module.exports =
 
         when '/kcsapi/api_req_sortie/battleresult'
           if body.api_get_ship?
-            setTimeout log("掉落 #{body.api_get_ship.api_ship_type} #{body.api_get_ship_api_ship_name}"), 500
-
+            setTimeout log.bind(@, "掉落 #{body.api_get_ship.api_ship_type} #{body.api_get_ship.api_ship_name}"), 500
 
       return unless flag
       @setState
@@ -179,20 +178,20 @@ module.exports =
         friendShipLv: friendShipLv
     componentDidMount: ->
       window.addEventListener 'game.response', @handleResponse
+
     render: ->
       <div>
         <Alert>
           <Grid>
-            <Col xs={3}>舰名</Col>
-            <Col xs={3}>等级</Col>
-            <Col xs={3}>战前</Col>
-            <Col xs={3}>战后</Col>
+            <Col xs={4}>舰名</Col>
+            <Col xs={4}>战前</Col>
+            <Col xs={4}>战后</Col>
           </Grid>
         </Alert>
         <Table>
           <tbody>
           {
-            for shipName, i in @state.friendShipName            
+            for shipName, i in @state.friendShipName
               continue unless @state.friendShipLv[i] != -1
               [
                 <tr key={i + 1}>
@@ -214,10 +213,9 @@ module.exports =
         </Table>
         <Alert>
           <Grid>
-            <Col xs={3}>舰名</Col>
-            <Col xs={3}>等级</Col>
-            <Col xs={3}>战前</Col>
-            <Col xs={3}>战后</Col>
+            <Col xs={4}>舰名</Col>
+            <Col xs={4}>战前</Col>
+            <Col xs={4}>战后</Col>
           </Grid>
         </Alert>
         <Table>
