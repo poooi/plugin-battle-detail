@@ -35,9 +35,11 @@ module.exports =
       enemyShipLv: [-1, -1, -1, -1, -1, -1]
       friendShipName: ["空", "空", "空", "空", "空", "空"]
       friendShipLv: [-1, -1, -1, -1, -1, -1]
+      enemyInfo: null
+      getShip: null
     handleResponse: (e) ->
       {method, path, body, postBody} = e.detail
-      {afterFriendHp, nowFriendHp, maxFriendHp, afterEnemyHp, nowEnemyHp, maxEnemyHp, damageFriend, damageEnemy, enemyShipName, enemyShipLv, friendShipName, friendShipLv} = @state
+      {afterFriendHp, nowFriendHp, maxFriendHp, afterEnemyHp, nowEnemyHp, maxEnemyHp, damageFriend, damageEnemy, enemyShipName, enemyShipLv, friendShipName, friendShipLv, enemyInfo, getShip} = @state
       flag = false
       switch path
         when '/kcsapi/api_req_sortie/battle'
@@ -172,8 +174,13 @@ module.exports =
             afterEnemyHp[i] = Math.max(tmp, 0)
 
         when '/kcsapi/api_req_sortie/battleresult'
+          flag = true
           if body.api_get_ship?
-            setTimeout log.bind(@, "提督くん、#{body.api_enemy_info.api_deck_name}で撃破しました、#{body.api_get_ship.api_ship_type} #{body.api_get_ship.api_ship_name}ゲット　o(*≧▽≦)ツ"), 500
+            enemyInfo = body.api_enemy_info
+            getShip = body.api_get_ship
+          else
+            enemyInfo = null
+            getShip = null
 
       return unless flag
       @setState
@@ -189,6 +196,8 @@ module.exports =
         enemyShipLv: enemyShipLv
         friendShipName: friendShipName
         friendShipLv: friendShipLv
+        enemyInfo: enemyInfo
+        getShip: getShip
     componentDidMount: ->
       window.addEventListener 'game.response', @handleResponse
 
@@ -252,6 +261,12 @@ module.exports =
             }
             </tbody>
           </Table>
+          <Alert>
+          {
+            if @state.getShip? && @state.enemyInfo?
+              "提督さん、#{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」が戦列に加わりました"
+          }
+          </Alert>
         </div>
       else
         <div>
@@ -333,4 +348,10 @@ module.exports =
             }
             </tbody>
           </Table>
+          <Alert>
+          {
+            if @state.getShip? && @state.enemyInfo?
+              "提督さん、#{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」が戦列に加わりました"
+          }
+          </Alert>
         </div>
