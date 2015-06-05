@@ -29,13 +29,15 @@ module.exports =
       afterEnemyHp: [0, 0, 0, 0, 0, 0]
       nowEnemyHp: [0, 0, 0, 0, 0, 0]
       maxEnemyHp: [0, 0, 0, 0, 0, 0]
+      damageFriend: [0, 0, 0, 0, 0, 0]
+      damageEnemy: [0, 0, 0, 0, 0, 0]
       enemyShipName: ["空", "空", "空", "空", "空", "空"]
       enemyShipLv: [-1, -1, -1, -1, -1, -1]
       friendShipName: ["空", "空", "空", "空", "空", "空"]
       friendShipLv: [-1, -1, -1, -1, -1, -1]
     handleResponse: (e) ->
       {method, path, body, postBody} = e.detail
-      {afterFriendHp, nowFriendHp, maxFriendHp, afterEnemyHp, nowEnemyHp, maxEnemyHp, enemyShipName, enemyShipLv, friendShipName, friendShipLv} = @state
+      {afterFriendHp, nowFriendHp, maxFriendHp, afterEnemyHp, nowEnemyHp, maxEnemyHp, damageFriend, damageEnemy, enemyShipName, enemyShipLv, friendShipName, friendShipLv} = @state
       flag = false
       switch path
         when '/kcsapi/api_req_sortie/battle'
@@ -140,7 +142,11 @@ module.exports =
                 damage = Math.floor(damage)
                 continue if damage <= 0
                 afterFriendHp[target - 1] -= damage
+          for tmp, i in afterFriendHp
+            damageFriend[i] = nowFriendHp[i] - afterFriendHp[i]
+            afterFriendHp[i] = Math.max(tmp, 0)
           for tmp, i in afterEnemyHp
+            damageEnemy[i] = nowEnemyHp[i] - afterEnemyHp[i]
             afterEnemyHp[i] = Math.max(tmp, 0)
 
         when '/kcsapi/api_req_battle_midnight/battle'
@@ -158,7 +164,11 @@ module.exports =
                   afterFriendHp[damageTo - 1] -= damage
                 else
                   afterEnemyHp[damageTo - 7] -= damage
+          for tmp, i in afterFriendHp
+            damageFriend[i] = nowFriendHp[i] - afterFriendHp[i]
+            afterFriendHp[i] = Math.max(tmp, 0)
           for tmp, i in afterEnemyHp
+            damageEnemy[i] = nowEnemyHp[i] - afterEnemyHp[i]
             afterEnemyHp[i] = Math.max(tmp, 0)
 
         when '/kcsapi/api_req_sortie/battleresult'
@@ -173,6 +183,8 @@ module.exports =
         afterEnemyHp: afterEnemyHp
         nowEnemyHp: nowEnemyHp
         maxEnemyHp: maxEnemyHp
+        damageFriend: damageFriend
+        damageEnemy: damageEnemy
         enemyShipName: enemyShipName
         enemyShipLv: enemyShipLv
         friendShipName: friendShipName
@@ -206,7 +218,7 @@ module.exports =
                   <td className="hp-progress">
                     <ProgressBar bsStyle={getHpStyle @state.afterFriendHp[i] / @state.maxFriendHp[i] * 100}
                       now={@state.afterFriendHp[i] / @state.maxFriendHp[i] * 100}
-                      label={"#{@state.afterFriendHp[i]} / #{@state.maxFriendHp[i]}"} />
+                      label={if @state.damageFriend[i] > 0 then "#{@state.afterFriendHp[i]} / #{@state.maxFriendHp[i]} (-#{@state.damageFriend[i]})" else "#{@state.afterFriendHp[i]} / #{@state.maxFriendHp[i]}"} />
                   </td>
                 </tr>
             }
@@ -234,7 +246,7 @@ module.exports =
                   <td className="hp-progress">
                     <ProgressBar bsStyle={getHpStyle @state.afterEnemyHp[i] / @state.maxEnemyHp[i] * 100}
                       now={@state.afterEnemyHp[i] / @state.maxEnemyHp[i] * 100}
-                      label={"#{@state.afterEnemyHp[i]} / #{@state.maxEnemyHp[i]}"} />
+                      label={if @state.damageEnemy[i] > 0 then "#{@state.afterEnemyHp[i]} / #{@state.maxEnemyHp[i]} (-#{@state.damageEnemy[i]})" else "#{@state.afterEnemyHp[i]} / #{@state.maxEnemyHp[i]}"} />
                   </td>
                 </tr>
             }
@@ -270,7 +282,7 @@ module.exports =
                     <td className="hp-progress">
                       <ProgressBar bsStyle={getHpStyle @state.afterFriendHp[i] / @state.maxFriendHp[i] * 100}
                         now={@state.afterFriendHp[i] / @state.maxFriendHp[i] * 100}
-                        label={"#{@state.afterFriendHp[i]} / #{@state.maxFriendHp[i]}"} />
+                        label={if @state.damageFriend[i] > 0 then "#{@state.afterFriendHp[i]} / #{@state.maxFriendHp[i]} (-#{@state.damageFriend[i]})" else "#{@state.afterFriendHp[i]} / #{@state.maxFriendHp[i]}"} />
                     </td>
                   else
                     <td>　</td>
@@ -286,7 +298,7 @@ module.exports =
                     <td className="hp-progress">
                       <ProgressBar bsStyle={getHpStyle @state.afterEnemyHp[i] / @state.maxEnemyHp[i] * 100}
                         now={@state.afterEnemyHp[i] / @state.maxEnemyHp[i] * 100}
-                        label={"#{@state.afterEnemyHp[i]} / #{@state.maxEnemyHp[i]}"} />
+                        label={if @state.damageEnemy[i] > 0 then "#{@state.afterEnemyHp[i]} / #{@state.maxEnemyHp[i]} (-#{@state.damageEnemy[i]})" else "#{@state.afterEnemyHp[i]} / #{@state.maxEnemyHp[i]}"} />
                     </td>
                   else
                     <td>　</td>
