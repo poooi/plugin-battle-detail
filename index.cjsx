@@ -162,8 +162,7 @@ module.exports =
 
         when '/kcsapi/api_req_sortie/battleresult'
           if body.api_get_ship?
-            setTimeout log("掉落 #{body.api_get_ship.api_ship_type} #{body.api_get_ship_api_ship_name}"), 500
-
+            setTimeout log.bind(@, "掉落 #{body.api_get_ship.api_ship_type} #{body.api_get_ship.api_ship_name}"), 500
 
       return unless flag
       @setState
@@ -179,22 +178,22 @@ module.exports =
         friendShipLv: friendShipLv
     componentDidMount: ->
       window.addEventListener 'game.response', @handleResponse
+
     render: ->
-      <div>
-        <Alert>
-          <Grid>
-            <Col xs={3}>舰名</Col>
-            <Col xs={3}>等级</Col>
-            <Col xs={3}>战前</Col>
-            <Col xs={3}>战后</Col>
-          </Grid>
-        </Alert>
-        <Table>
-          <tbody>
-          {
-            for shipName, i in @state.friendShipName            
-              continue unless @state.friendShipLv[i] != -1
-              [
+      if layout == 'horizonal'
+        <div>
+          <Alert>
+            <Grid>
+              <Col xs={4}>舰名</Col>
+              <Col xs={4}>战前</Col>
+              <Col xs={4}>战后</Col>
+            </Grid>
+          </Alert>
+          <Table>
+            <tbody>
+            {
+              for shipName, i in @state.friendShipName
+                continue unless @state.friendShipLv[i] != -1
                 <tr key={i + 1}>
                   <td>Lv. {@state.friendShipLv[i]} - {shipName}</td>
                   <td className="hp-progress">
@@ -208,24 +207,21 @@ module.exports =
                       label={"#{@state.afterFriendHp[i]} / #{@state.maxFriendHp[i]}"} />
                   </td>
                 </tr>
-              ]
-          }
-          </tbody>
-        </Table>
-        <Alert>
-          <Grid>
-            <Col xs={3}>舰名</Col>
-            <Col xs={3}>等级</Col>
-            <Col xs={3}>战前</Col>
-            <Col xs={3}>战后</Col>
-          </Grid>
-        </Alert>
-        <Table>
-          <tbody>
-          {
-            for shipName, i in @state.enemyShipName
-              continue unless @state.enemyShipLv[i] != -1
-              [
+            }
+            </tbody>
+          </Table>
+          <Alert>
+            <Grid>
+              <Col xs={4}>舰名</Col>
+              <Col xs={4}>战前</Col>
+              <Col xs={4}>战后</Col>
+            </Grid>
+          </Alert>
+          <Table>
+            <tbody>
+            {
+              for shipName, i in @state.enemyShipName
+                continue unless @state.enemyShipLv[i] != -1
                 <tr key={i + 8}>
                   <td>Lv. {@state.enemyShipLv[i]} - {shipName}</td>
                   <td className="hp-progress">
@@ -239,8 +235,62 @@ module.exports =
                       label={"#{@state.afterEnemyHp[i]} / #{@state.maxEnemyHp[i]}"} />
                   </td>
                 </tr>
-              ]
-          }
-          </tbody>
-        </Table>
-      </div>
+            }
+            </tbody>
+          </Table>
+        </div>
+      else
+        <div>
+          <Alert>
+            <Grid>
+              <Col xs={2}>舰名</Col>
+              <Col xs={2}>战前</Col>
+              <Col xs={2}>战后</Col>
+              <Col xs={2}>舰名</Col>
+              <Col xs={2}>战前</Col>
+              <Col xs={2}>战后</Col>
+            </Grid>
+          </Alert>
+          <Table>
+            <tbody>
+            {
+              for shipName, i in @state.friendShipName
+                continue if (@state.friendShipLv[i] == -1 && @state.enemyShipLv[i] == -1)
+                <tr key={i + 1}>
+                  if @state.friendShipLv[i] != -1
+                    <td>Lv. {@state.friendShipLv[i]} - {shipName}</td>
+                    <td className="hp-progress">
+                      <ProgressBar bsStyle={getHpStyle @state.nowFriendHp[i] / @state.maxFriendHp[i] * 100}
+                        now={@state.nowFriendHp[i] / @state.maxFriendHp[i] * 100}
+                        label={"#{@state.nowFriendHp[i]} / #{@state.maxFriendHp[i]}"} />
+                    </td>
+                    <td className="hp-progress">
+                      <ProgressBar bsStyle={getHpStyle @state.afterFriendHp[i] / @state.maxFriendHp[i] * 100}
+                        now={@state.afterFriendHp[i] / @state.maxFriendHp[i] * 100}
+                        label={"#{@state.afterFriendHp[i]} / #{@state.maxFriendHp[i]}"} />
+                    </td>
+                  else
+                    <td>　</td>
+                    <td>　</td>
+                    <td>　</td>
+                  if @state.enemyShipLv[i] != -1
+                    <td>Lv. {@state.enemyShipLv[i]} - {@state.enemyShipName[i]}</td>
+                    <td className="hp-progress">
+                      <ProgressBar bsStyle={getHpStyle @state.nowEnemyHp[i] / @state.maxEnemyHp[i] * 100}
+                        now={@state.nowEnemyHp[i] / @state.maxEnemyHp[i] * 100}
+                        label={"#{@state.nowEnemyHp[i]} / #{@state.maxEnemyHp[i]}"} />
+                    </td>
+                    <td className="hp-progress">
+                      <ProgressBar bsStyle={getHpStyle @state.afterEnemyHp[i] / @state.maxEnemyHp[i] * 100}
+                        now={@state.afterEnemyHp[i] / @state.maxEnemyHp[i] * 100}
+                        label={"#{@state.afterEnemyHp[i]} / #{@state.maxEnemyHp[i]}"} />
+                    </td>
+                  else
+                    <td>　</td>
+                    <td>　</td>
+                    <td>　</td>
+                </tr>
+            }
+            </tbody>
+          </Table>
+        </div>
