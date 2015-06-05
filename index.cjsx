@@ -145,8 +145,8 @@ module.exports =
 
         when '/kcsapi/api_req_battle_midnight/battle'
           flag = true
-          nowFriendHp = Object.clone afterFriendHp
-          nowEnemyHp = Object.clone afterEnemyHp
+          nowFriendHp = afterFriendHp
+          nowEnemyHp = afterEnemyHp
           if body.api_hougeki?
             hougeki = body.api_hougeki
             for damageFrom, i in hougeki.api_at_list
@@ -259,24 +259,11 @@ module.exports =
             {
               for shipName, i in @state.friendShipName
                 continue if (@state.friendShipLv[i] == -1 && @state.enemyShipLv[i] == -1)
-                <tr key={i + 1}>
-                  if @state.friendShipLv[i] != -1
-                    <td>Lv. {@state.friendShipLv[i]} - {shipName}</td>
-                    <td className="hp-progress">
-                      <ProgressBar bsStyle={getHpStyle @state.nowFriendHp[i] / @state.maxFriendHp[i] * 100}
-                        now={@state.nowFriendHp[i] / @state.maxFriendHp[i] * 100}
-                        label={"#{@state.nowFriendHp[i]} / #{@state.maxFriendHp[i]}"} />
-                    </td>
-                    <td className="hp-progress">
-                      <ProgressBar bsStyle={getHpStyle @state.afterFriendHp[i] / @state.maxFriendHp[i] * 100}
-                        now={@state.afterFriendHp[i] / @state.maxFriendHp[i] * 100}
-                        label={"#{@state.afterFriendHp[i]} / #{@state.maxFriendHp[i]}"} />
-                    </td>
-                  else
+                if @state.friendShipLv[i] == -1
+                  <tr key={i + 1}>
                     <td>　</td>
                     <td>　</td>
                     <td>　</td>
-                  if @state.enemyShipLv[i] != -1
                     <td>Lv. {@state.enemyShipLv[i]} - {@state.enemyShipName[i]}</td>
                     <td className="hp-progress">
                       <ProgressBar bsStyle={getHpStyle @state.nowEnemyHp[i] / @state.maxEnemyHp[i] * 100}
@@ -288,11 +275,49 @@ module.exports =
                         now={@state.afterEnemyHp[i] / @state.maxEnemyHp[i] * 100}
                         label={"#{@state.afterEnemyHp[i]} / #{@state.maxEnemyHp[i]}"} />
                     </td>
-                  else
+                  </tr>
+                else if @state.enemyShipLv[i] == -1
+                  <tr key={i + 1}>
+                    <td>Lv. {@state.friendShipLv[i]} - {shipName}</td>
+                    <td className="hp-progress">
+                      <ProgressBar bsStyle={getHpStyle @state.nowFriendHp[i] / @state.maxFriendHp[i] * 100}
+                        now={@state.nowFriendHp[i] / @state.maxFriendHp[i] * 100}
+                        label={"#{@state.nowFriendHp[i]} / #{@state.maxFriendHp[i]}"} />
+                    </td>
+                    <td className="hp-progress">
+                      <ProgressBar bsStyle={getHpStyle @state.afterFriendHp[i] / @state.maxFriendHp[i] * 100}
+                        now={@state.afterFriendHp[i] / @state.maxFriendHp[i] * 100}
+                        label={"#{@state.afterFriendHp[i]} / #{@state.maxFriendHp[i]}"} />
+                    </td>
                     <td>　</td>
                     <td>　</td>
                     <td>　</td>
-                </tr>
+                  </tr>
+                else
+                  <tr key={i + 1}>
+                    <td>Lv. {@state.friendShipLv[i]} - {shipName}</td>
+                    <td className="hp-progress">
+                      <ProgressBar bsStyle={getHpStyle @state.nowFriendHp[i] / @state.maxFriendHp[i] * 100}
+                        now={@state.nowFriendHp[i] / @state.maxFriendHp[i] * 100}
+                        label={"#{@state.nowFriendHp[i]} / #{@state.maxFriendHp[i]}"} />
+                    </td>
+                    <td className="hp-progress">
+                      <ProgressBar bsStyle={getHpStyle @state.afterFriendHp[i] / @state.maxFriendHp[i] * 100}
+                        now={@state.afterFriendHp[i] / @state.maxFriendHp[i] * 100}
+                        label={"#{@state.afterFriendHp[i]} / #{@state.maxFriendHp[i]}"} />
+                    </td>
+                    <td>Lv. {@state.enemyShipLv[i]} - {@state.enemyShipName[i]}</td>
+                    <td className="hp-progress">
+                      <ProgressBar bsStyle={getHpStyle @state.nowEnemyHp[i] / @state.maxEnemyHp[i] * 100}
+                        now={@state.nowEnemyHp[i] / @state.maxEnemyHp[i] * 100}
+                        label={"#{@state.nowEnemyHp[i]} / #{@state.maxEnemyHp[i]}"} />
+                    </td>
+                    <td className="hp-progress">
+                      <ProgressBar bsStyle={getHpStyle @state.afterEnemyHp[i] / @state.maxEnemyHp[i] * 100}
+                        now={@state.afterEnemyHp[i] / @state.maxEnemyHp[i] * 100}
+                        label={"#{@state.afterEnemyHp[i]} / #{@state.maxEnemyHp[i]}"} />
+                    </td>
+                  </tr>
             }
             </tbody>
           </Table>
