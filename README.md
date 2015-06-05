@@ -1,1 +1,1 @@
-# plugin-prophetic
+# plugin-prophet
