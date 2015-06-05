@@ -21,7 +21,8 @@ module.exports =
   priority: 0.1
   displayName: [<FontAwesome key={0} name='compass' />, ' 未卜先知']
   description: '战况预知'
-  author: [<a key={0} href="https://github.com/Chibaheit">Chiba</a>]
+  author: 'Chiba'
+  link: 'https://github.com/Chibaheit'
   reactClass: React.createClass
     getInitialState: ->
       afterFriendHp: [0, 0, 0, 0, 0, 0]
