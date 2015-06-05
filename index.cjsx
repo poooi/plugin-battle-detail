@@ -144,6 +144,7 @@ module.exports =
             afterEnemyHp[i] = Math.max(tmp, 0)
 
         when '/kcsapi/api_req_battle_midnight/battle'
+          flag = true
           nowFriendHp = afterFriendHp
           nowEnemyHp = afterEnemyHp
           if body.api_hougeki?
@@ -162,7 +163,7 @@ module.exports =
 
         when '/kcsapi/api_req_sortie/battleresult'
           if body.api_get_ship?
-            setTimeout log.bind(@, "掉落 #{body.api_get_ship.api_ship_type} #{body.api_get_ship.api_ship_name}"), 500
+            setTimeout log.bind(@, "提督くん、#{body.api_enemy_info.api_deck_name}で撃破しました、#{body.api_get_ship.api_ship_type} #{body.api_get_ship.api_ship_name}ゲット　o(*≧▽≦)ツ"), 500
 
       return unless flag
       @setState
