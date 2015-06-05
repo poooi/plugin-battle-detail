@@ -151,8 +151,8 @@ module.exports =
 
         when '/kcsapi/api_req_battle_midnight/battle'
           flag = true
-          nowFriendHp = afterFriendHp
-          nowEnemyHp = afterEnemyHp
+          nowFriendHp = Object.clone afterFriendHp
+          nowEnemyHp = Object.clone afterEnemyHp
           if body.api_hougeki?
             hougeki = body.api_hougeki
             for damageFrom, i in hougeki.api_at_list
