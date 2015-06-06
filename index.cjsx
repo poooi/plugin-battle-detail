@@ -47,7 +47,7 @@ module.exports =
         when '/kcsapi/api_req_sortie/battle'
           for tmp, i in enemyShipLv
             enemyShipLv[i] = -1
-          for tmp in friendShipLv
+          for tmp, i in friendShipLv
             friendShipLv[i] = -1
           {$ships, _ships, _decks} = window
           flag = true
@@ -174,6 +174,133 @@ module.exports =
           for tmp, i in afterEnemyHp
             damageEnemy[i] = nowEnemyHp[i] - afterEnemyHp[i]
             afterEnemyHp[i] = Math.max(tmp, 0)
+        when '/kcsapi/api_req_practice/battle'
+          for tmp, i in enemyShipLv
+            enemyShipLv[i] = -1
+          for tmp in friendShipLv
+            friendShipLv[i] = -1
+          {$ships, _ships, _decks} = window
+          flag = true
+          for shipId, i in _decks[body.api_dock_id - 1].api_ship
+            continue if shipId == -1
+            idx = _.sortedIndex _ships, {api_id: shipId}, 'api_id'
+            friendShipName[i] = $ships[_ships[idx].api_ship_id].api_name
+            friendShipLv[i] = _ships[idx].api_lv
+          for enemyShipIdx, i in body.api_ship_ke
+            continue if enemyShipIdx == -1
+            enemyShipName[i - 1] = $ships[enemyShipIdx].api_name
+            enemyShipLv[i - 1] = body.api_ship_lv[i]
+          for maxHp, i in body.api_maxhps
+            continue if i == 0
+            if i <= 6
+              maxFriendHp[i - 1] = maxHp
+            else
+              maxEnemyHp[i - 7] = maxHp
+          for nowHp, i in body.api_nowhps
+            continue if i == 0
+            if i <= 6
+              nowFriendHp[i - 1] = nowHp
+              afterFriendHp[i - 1] = nowHp
+            else
+              nowEnemyHp[i - 7] = nowHp
+              afterEnemyHp[i - 7] = nowHp
+          if body.api_kouku.api_stage3?
+            kouku = body.api_kouku.api_stage3
+            if kouku.api_edam?
+              for damage, target in kouku.api_edam
+                damage = Math.floor(damage)
+                continue if damage <= 0
+                afterEnemyHp[target - 1] -= damage
+            if kouku.api_fdam?
+              for damage, target in kouku.api_fdam
+                damage = Math.floor(damage)
+                continue if damage <= 0
+                afterFriendHp[target - 1] -= damage
+          if body.api_opening_atack?
+            openingAttack = body.api_opening_atack
+            if openingAttack.api_edam?
+              for damage, target in openingAttack.api_edam
+                damage = Math.floor(damage)
+                continue if damage <= 0
+                afterEnemyHp[target - 1] -= damage
+            if openingAttack.api_fdam?
+              for damage, target in openingAttack.api_fdam
+                damage = Math.floor(damage)
+                continue if damage <= 0
+                afterFriendHp[target - 1] -= damage
+          if body.api_hougeki1?
+            hougeki = body.api_hougeki1
+            for damageFrom, i in hougeki.api_at_list
+              continue if damageFrom == -1
+              for damage, j in hougeki.api_damage[i]
+                damage = Math.floor(damage)
+                damageTo = hougeki.api_df_list[i][j]
+                if damageTo <= 6
+                  afterFriendHp[damageTo - 1] -= damage
+                else
+                  afterEnemyHp[damageTo - 7] -= damage
+          if body.api_hougeki2?
+            hougeki = body.api_hougeki2
+            for damageFrom, i in hougeki.api_at_list
+              continue if damageFrom == -1
+              for damage, j in hougeki.api_damage[i]
+                damage = Math.floor(damage)
+                damageTo = hougeki.api_df_list[i][j]
+                if damageTo <= 6
+                  afterFriendHp[damageTo - 1] -= damage
+                else
+                  afterEnemyHp[damageTo - 7] -= damage
+          if body.api_hougeki3?
+            hougeki = body.api_hougeki3
+            for damageFrom, i in hougeki.api_at_list
+              continue if damageFrom == -1
+              for damage, j in hougeki.api_damage[i]
+                damage = Math.floor(damage)
+                damageTo = hougeki.api_df_list[i][j]
+                if damageTo <= 6
+                  afterFriendHp[damageTo - 1] -= damage
+                else
+                  afterEnemyHp[damageTo - 7] -= damage
+          if body.api_raigeki?
+            raigeki = body.api_raigeki
+            if raigeki.api_edam?
+              for damage, target in raigeki.api_edam
+                damage = Math.floor(damage)
+                continue if damage <= 0
+                afterEnemyHp[target - 1] -= damage
+            if raigeki.api_fdam?
+              for damage, target in raigeki.api_fdam
+                damage = Math.floor(damage)
+                continue if damage <= 0
+                afterFriendHp[target - 1] -= damage
+          for tmp, i in afterFriendHp
+            damageFriend[i] = nowFriendHp[i] - afterFriendHp[i]
+            afterFriendHp[i] = Math.max(tmp, 1)
+          for tmp, i in afterEnemyHp
+            damageEnemy[i] = nowEnemyHp[i] - afterEnemyHp[i]
+            afterEnemyHp[i] = Math.max(tmp, 1)
+
+        when '/kcsapi/api_req_practice/midnight_battle'
+          flag = true
+          nowFriendHp = Object.clone afterFriendHp
+          nowEnemyHp = Object.clone afterEnemyHp
+          if body.api_hougeki?
+            hougeki = body.api_hougeki
+            for damageFrom, i in hougeki.api_at_list
+              continue if damageFrom == -1
+              for damage, j in hougeki.api_damage[i]
+                damage = Math.floor(damage)
+                damageTo = hougeki.api_df_list[i][j]
+                if damageTo <= 6
+                  afterFriendHp[damageTo - 1] -= damage
+                else
+                  afterEnemyHp[damageTo - 7] -= damage
+          for tmp, i in afterFriendHp
+            afterFriendHp[i] = Math.max(tmp, 1)
+            damageFriend[i] = nowFriendHp[i] - afterFriendHp[i]
+          for tmp, i in afterEnemyHp
+            afterEnemyHp[i] = Math.max(tmp, 1)
+            damageEnemy[i] = nowEnemyHp[i] - afterEnemyHp[i]
 
         when '/kcsapi/api_req_sortie/battleresult'
           flag = true
