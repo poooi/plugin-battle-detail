@@ -162,10 +162,8 @@ module.exports =
             shipLv[i] = -1
           {_decks} = window
           flag = true
-          shipName = getName shipName, _decks[body.api_dock_id - 1].api_ship, body.api_ship_ke
-          shipLv = getLv shipLv, _decks[body.api_dock_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv
-          maxHp = getHp maxHp, body.api_maxhps
-          nowHp = getHp nowHp, body.api_nowhps
+          [shipName, shipLv] = getInfo shipName, shipLv, _decks[body.api_dock_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv
+          [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
           afterHp = Object.clone nowHp
           if body.api_kouku.api_stage3?
             afterHp = koukuAttack afterHp, body.api_kouku.api_stage3
@@ -193,10 +191,8 @@ module.exports =
             shipLv[i] = -1
           {_decks} = window
           flag = true
-          shipName = getName shipName, _decks[body.api_deck_id - 1].api_ship, body.api_ship_ke
-          shipLv = getLv shipLv, _decks[body.api_dock_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv
-          maxHp = getHp maxHp, body.api_maxhps
-          nowHp = getHp nowHp, body.api_nowhps
+          [shipName, shipLv] = getInfo shipName, shipLv, _decks[body.api_deck_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv
+          [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
           afterHp = Object.clone nowHp
           if body.api_hougeki?
             afterHp = hougekiAttack afterHp, body.api_hougeki
@@ -207,17 +203,15 @@ module.exports =
             shipLv[i] = -1
           {_decks} = window
           flag = true
-          shipName = getName shipName, _decks[body.api_deck_id - 1].api_ship, body.api_ship_ke
-          shipLv = getLv shipLv, _decks[body.api_dock_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv
-          maxHp = getHp maxHp, body.api_maxhps
-          nowHp = getHp nowHp, body.api_nowhps
+          [shipName, shipLv] = getInfo shipName, shipLv, _decks[body.api_deck_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv
+          [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
           afterHp = Object.clone nowHp
           if body.api_kouku?
             afterHp = koukuAttack afterHp, body.api_kouku.api_stage3
           if body.api_kouku2?
             afterHp = koukuAttack afterHp, body.api_kouku2.api_stage3
           damageHp = getDamage damageHp, nowHp, afterHp, 0
-          
+
         when '/kcsapi/api_req_sortie/battleresult'
           flag = true
           if body.api_get_ship?
