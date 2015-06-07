@@ -274,11 +274,11 @@ module.exports =
                 continue if damage <= 0
                 afterFriendHp[target - 1] -= damage
           for tmp, i in afterFriendHp
-            damageFriend[i] = nowFriendHp[i] - afterFriendHp[i]
             afterFriendHp[i] = Math.max(tmp, 1)
+            damageFriend[i] = nowFriendHp[i] - afterFriendHp[i]
           for tmp, i in afterEnemyHp
-            damageEnemy[i] = nowEnemyHp[i] - afterEnemyHp[i]
             afterEnemyHp[i] = Math.max(tmp, 1)
+            damageEnemy[i] = nowEnemyHp[i] - afterEnemyHp[i]
 
         when '/kcsapi/api_req_practice/midnight_battle'
           flag = true
@@ -429,7 +429,7 @@ module.exports =
                     <td className="hp-progress">
                       <ProgressBar bsStyle={getHpStyle @state.afterEnemyHp[i] / @state.maxEnemyHp[i] * 100}
                         now={@state.afterEnemyHp[i] / @state.maxEnemyHp[i] * 100}
-                        label={"#{@state.afterEnemyHp[i]} / #{@state.maxEnemyHp[i]}"} />
+                        label={if @state.damageEnemy[i] > 0 then "#{@state.afterEnemyHp[i]} / #{@state.maxEnemyHp[i]} (-#{@state.damageEnemy[i]})" else "#{@state.afterEnemyHp[i]} / #{@state.maxEnemyHp[i]}"} />
                     </td>
                   </tr>
                 else if @state.enemyShipLv[i] == -1
@@ -460,7 +460,7 @@ module.exports =
                     <td className="hp-progress">
                       <ProgressBar bsStyle={getHpStyle @state.afterFriendHp[i] / @state.maxFriendHp[i] * 100}
                         now={@state.afterFriendHp[i] / @state.maxFriendHp[i] * 100}
-                        label={"#{@state.afterFriendHp[i]} / #{@state.maxFriendHp[i]}"} />
+                        label={if @state.damageFriend[i] > 0 then "#{@state.afterFriendHp[i]} / #{@state.maxFriendHp[i]} (-#{@state.damageFriend[i]})" else "#{@state.afterFriendHp[i]} / #{@state.maxFriendHp[i]}"} />
                     </td>
                     <td>Lv. {@state.enemyShipLv[i]} - {@state.enemyShipName[i]}</td>
                     <td className="hp-progress">
