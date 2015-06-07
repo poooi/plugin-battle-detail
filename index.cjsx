@@ -3,6 +3,10 @@ path = require 'path-extra'
 {_, $, $$, React, ReactBootstrap, ROOT, resolveTime, layout, toggleModal} = window
 
 {Table, ProgressBar, Grid, Input, Col, Alert} = ReactBootstrap
+
+window.addEventListener 'layout.change', (e) ->
+  {layout} = e.detail
+
 getHpStyle = (percent) ->
   if percent <= 25
     'danger'
@@ -13,8 +17,85 @@ getHpStyle = (percent) ->
   else
     'success'
 
-window.addEventListener 'layout.change', (e) ->
-  {layout} = e.detail
+getInfo = (shipName, shipLv, friend, enemy, enemyLv) ->
+  {$ships, _ships} = window
+  for shipId, i in friend
+    continue if shipId == -1
+    idx = _.sortedIndex _ships, {api_id: shipId}, 'api_id'
+    shipName[i] = $ships[_ships[idx].api_ship_id].api_name
+    shipLv[i] = _ships[idx].api_lv
+  for shipId, i in enemy
+    continue if shipId == -1
+    shipLv[i + 5] = enemyLv[i]
+    if $ships[shipId].api_yomi == "-"
+      shipName[i + 5] = $ships[shipId].api_name
+    else
+      shipName[i + 5] = $ships[shipId].api_name + $ships[shipId].api_yomi
+  [shipName, shipLv]
+
+getHp = (maxHp, nowHp, maxHps, nowHps) ->
+  for tmp, i in maxHps
+    continue if i == 0
+    maxHp[i] = tmp
+    nowHp[i] = nowHps[i]
+  [maxHp, nowHp]
+
+koukuAttack = (afterHp, kouku) ->
+  if kouku.api_edam?
+    for damage, i in kouku.api_edam
+      damage = Math.floor(damage)
+      continue if damage <= 0
+      afterHp[i + 5] -= damage
+  if kouku.api_fdam?
+    for damage, i in kouku.api_fdam
+      damage = Math.floor(damage)
+      continue if damage <= 0
+      afterHp[i - 1] -= damage
+  afterHp
+
+openAttack = (afterHp, openingAttack) ->
+  if openingAttack.api_edam?
+    for damage, i in openingAttack.api_edam
+      damage = Math.floor(damage)
+      continue if damage <= 0
+      afterHp[i + 5] -= damage
+  if openingAttack.api_fdam?
+    for damage, i in openingAttack.api_fdam
+      damage = Math.floor(damage)
+      continue if damage <= 0
+      afterHp[i - 1] -= damage
+  afterHp
+
+hougekiAttack = (afterHp, hougeki) ->
+  for damageFrom, i in hougeki.api_at_list
+    continue if damageFrom == -1
+    for damage, j in hougeki.api_damage[i]
+      damage = Math.floor(damage)
+      damageTo = hougeki.api_df_list[i][j]
+      continue if damage <= 0
+      afterHp[damageTo - 1] -= damage
+  afterHp
+
+raigekiAttack = (afterHp, raigeki) ->
+  if raigeki.api_edam?
+    for damage, i in raigeki.api_edam
+      damage = Math.floor(damage)
+      continue if damage <= 0
+      afterHp[i + 1] -= damage
+  if raigeki.api_fdam?
+    for damage, i in raigeki.api_fdam
+      damage = Math.floor(damage)
+      continue if damage <= 0
+      afterHp[i - 1] -= damage
+  afterHp
+
+getDamage = (damageHp, nowHp, afterHp, minHp) ->
+  for tmp, i in afterHp
+    if minHp == 1
+      afterHp[i] = Math.max(tmp, minHp)
+    damageHp[i] = nowHp[i] - afterHp[i]
+    afterHp[i] = Math.max(tmp, minHp)
+  damageHp
 
 module.exports =
   name: 'prophet'
@@ -25,334 +106,93 @@ module.exports =
   link: 'https://github.com/Chibaheit'
   reactClass: React.createClass
     getInitialState: ->
-      afterFriendHp: [0, 0, 0, 0, 0, 0]
-      nowFriendHp: [0, 0, 0, 0, 0, 0]
-      maxFriendHp: [0, 0, 0, 0, 0, 0]
-      afterEnemyHp: [0, 0, 0, 0, 0, 0]
-      nowEnemyHp: [0, 0, 0, 0, 0, 0]
-      maxEnemyHp: [0, 0, 0, 0, 0, 0]
-      damageFriend: [0, 0, 0, 0, 0, 0]
-      damageEnemy: [0, 0, 0, 0, 0, 0]
-      enemyShipName: ["空", "空", "空", "空", "空", "空"]
-      enemyShipLv: [-1, -1, -1, -1, -1, -1]
-      friendShipName: ["空", "空", "空", "空", "空", "空"]
-      friendShipLv: [-1, -1, -1, -1, -1, -1]
+      afterHp: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      nowHp: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      maxHp: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      damageHp: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      shipName: ["空", "空", "空", "空", "空", "空", "空", "空", "空", "空", "空", "空"]
+      shipLv: [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
       enemyInfo: null
       getShip: null
     handleResponse: (e) ->
       {method, path, body, postBody} = e.detail
-      {afterFriendHp, nowFriendHp, maxFriendHp, afterEnemyHp, nowEnemyHp, maxEnemyHp, damageFriend, damageEnemy, enemyShipName, enemyShipLv, friendShipName, friendShipLv, enemyInfo, getShip} = @state
+      {afterHp, nowHp, maxHp, damageHp, shipName, shipLv, enemyInfo, getShip} = @state
       flag = false
       switch path
         when '/kcsapi/api_req_sortie/battle'
-          for tmp, i in enemyShipLv
-            enemyShipLv[i] = -1
-          for tmp, i in friendShipLv
-            friendShipLv[i] = -1
-          {$ships, _ships, _decks} = window
+          for tmp, i in shipLv
+            shipLv[i] = -1
+          {_decks} = window
           flag = true
-          for shipId, i in _decks[body.api_dock_id - 1].api_ship
-            continue if shipId == -1
-            idx = _.sortedIndex _ships, {api_id: shipId}, 'api_id'
-            friendShipName[i] = $ships[_ships[idx].api_ship_id].api_name
-            friendShipLv[i] = _ships[idx].api_lv
-          for enemyShipIdx, i in body.api_ship_ke
-            continue if enemyShipIdx == -1
-            if $ships[enemyShipIdx].api_yomi == "-"
-              enemyShipName[i - 1] = $ships[enemyShipIdx].api_name
-            else
-              enemyShipName[i - 1] = $ships[enemyShipIdx].api_name + $ships[enemyShipIdx].api_yomi
-            enemyShipLv[i - 1] = body.api_ship_lv[i]
-          for maxHp, i in body.api_maxhps
-            continue if i == 0
-            if i <= 6
-              maxFriendHp[i - 1] = maxHp
-            else
-              maxEnemyHp[i - 7] = maxHp
-          for nowHp, i in body.api_nowhps
-            continue if i == 0
-            if i <= 6
-              nowFriendHp[i - 1] = nowHp
-              afterFriendHp[i - 1] = nowHp
-            else
-              nowEnemyHp[i - 7] = nowHp
-              afterEnemyHp[i - 7] = nowHp
+          [shipName, shipLv] = getInfo shipName, shipLv, _decks[body.api_dock_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv
+          [maxHp, nowHp] = getHp maxHp, nowHp body.api_maxhps, body.api_nowhps
+          afterHp = Object.clone nowHp
           if body.api_kouku.api_stage3?
-            kouku = body.api_kouku.api_stage3
-            if kouku.api_edam?
-              for damage, target in kouku.api_edam
-                damage = Math.floor(damage)
-                continue if damage <= 0
-                afterEnemyHp[target - 1] -= damage
-            if kouku.api_fdam?
-              for damage, target in kouku.api_fdam
-                damage = Math.floor(damage)
-                continue if damage <= 0
-                afterFriendHp[target - 1] -= damage
+            afterHp = koukuAttack afterHp, body.api_kouku.api_stage3
           if body.api_opening_atack?
-            openingAttack = body.api_opening_atack
-            if openingAttack.api_edam?
-              for damage, target in openingAttack.api_edam
-                damage = Math.floor(damage)
-                continue if damage <= 0
-                afterEnemyHp[target - 1] -= damage
-            if openingAttack.api_fdam?
-              for damage, target in openingAttack.api_fdam
-                damage = Math.floor(damage)
-                continue if damage <= 0
-                afterFriendHp[target - 1] -= damage
+            afterHp = openAttack afterHp, body.api_opening_atack
           if body.api_hougeki1?
-            hougeki = body.api_hougeki1
-            for damageFrom, i in hougeki.api_at_list
-              continue if damageFrom == -1
-              for damage, j in hougeki.api_damage[i]
-                damage = Math.floor(damage)
-                damageTo = hougeki.api_df_list[i][j]
-                if damageTo <= 6
-                  afterFriendHp[damageTo - 1] -= damage
-                else
-                  afterEnemyHp[damageTo - 7] -= damage
+            afterHp = hougekiAttack afterHp, body.api_hougeki1
           if body.api_hougeki2?
-            hougeki = body.api_hougeki2
-            for damageFrom, i in hougeki.api_at_list
-              continue if damageFrom == -1
-              for damage, j in hougeki.api_damage[i]
-                damage = Math.floor(damage)
-                damageTo = hougeki.api_df_list[i][j]
-                if damageTo <= 6
-                  afterFriendHp[damageTo - 1] -= damage
-                else
-                  afterEnemyHp[damageTo - 7] -= damage
+            afterHp = hougekiAttack afterHp, body.api_hougeki2
           if body.api_hougeki3?
-            hougeki = body.api_hougeki3
-            for damageFrom, i in hougeki.api_at_list
-              continue if damageFrom == -1
-              for damage, j in hougeki.api_damage[i]
-                damage = Math.floor(damage)
-                damageTo = hougeki.api_df_list[i][j]
-                if damageTo <= 6
-                  afterFriendHp[damageTo - 1] -= damage
-                else
-                  afterEnemyHp[damageTo - 7] -= damage
+            afterHp = hougekiAttack afterHp, body.api_hougeki3
           if body.api_raigeki?
-            raigeki = body.api_raigeki
-            if raigeki.api_edam?
-              for damage, target in raigeki.api_edam
-                damage = Math.floor(damage)
-                continue if damage <= 0
-                afterEnemyHp[target - 1] -= damage
-            if raigeki.api_fdam?
-              for damage, target in raigeki.api_fdam
-                damage = Math.floor(damage)
-                continue if damage <= 0
-                afterFriendHp[target - 1] -= damage
-          for tmp, i in afterFriendHp
-            damageFriend[i] = nowFriendHp[i] - afterFriendHp[i]
-            afterFriendHp[i] = Math.max(tmp, 0)
-          for tmp, i in afterEnemyHp
-            damageEnemy[i] = nowEnemyHp[i] - afterEnemyHp[i]
-            afterEnemyHp[i] = Math.max(tmp, 0)
+            afterHp = raigekiAttack afterHp, body.api_raigeki
+          damageHp = getDamage damageHp, nowHp, afterHp, 0
 
         when '/kcsapi/api_req_battle_midnight/battle'
           flag = true
-          nowFriendHp = Object.clone afterFriendHp
-          nowEnemyHp = Object.clone afterEnemyHp
+          nowHp = Object.clone afterHp
           if body.api_hougeki?
-            hougeki = body.api_hougeki
-            for damageFrom, i in hougeki.api_at_list
-              continue if damageFrom == -1
-              for damage, j in hougeki.api_damage[i]
-                damage = Math.floor(damage)
-                damageTo = hougeki.api_df_list[i][j]
-                if damageTo <= 6
-                  afterFriendHp[damageTo - 1] -= damage
-                else
-                  afterEnemyHp[damageTo - 7] -= damage
-          for tmp, i in afterFriendHp
-            damageFriend[i] = nowFriendHp[i] - afterFriendHp[i]
-            afterFriendHp[i] = Math.max(tmp, 0)
-          for tmp, i in afterEnemyHp
-            damageEnemy[i] = nowEnemyHp[i] - afterEnemyHp[i]
-            afterEnemyHp[i] = Math.max(tmp, 0)
+            afterHp = hougekiAttack afterHp, body.api_hougeki
+          damageHp = getDamage damageHp, nowHp, afterHp, 0
+
         when '/kcsapi/api_req_practice/battle'
-          for tmp, i in enemyShipLv
-            enemyShipLv[i] = -1
-          for tmp in friendShipLv
-            friendShipLv[i] = -1
-          {$ships, _ships, _decks} = window
+          for tmp, i in shipLv
+            shipLv[i] = -1
+          {_decks} = window
           flag = true
-          for shipId, i in _decks[body.api_dock_id - 1].api_ship
-            continue if shipId == -1
-            idx = _.sortedIndex _ships, {api_id: shipId}, 'api_id'
-            friendShipName[i] = $ships[_ships[idx].api_ship_id].api_name
-            friendShipLv[i] = _ships[idx].api_lv
-          for enemyShipIdx, i in body.api_ship_ke
-            continue if enemyShipIdx == -1
-            enemyShipName[i - 1] = $ships[enemyShipIdx].api_name
-            enemyShipLv[i - 1] = body.api_ship_lv[i]
-          for maxHp, i in body.api_maxhps
-            continue if i == 0
-            if i <= 6
-              maxFriendHp[i - 1] = maxHp
-            else
-              maxEnemyHp[i - 7] = maxHp
-          for nowHp, i in body.api_nowhps
-            continue if i == 0
-            if i <= 6
-              nowFriendHp[i - 1] = nowHp
-              afterFriendHp[i - 1] = nowHp
-            else
-              nowEnemyHp[i - 7] = nowHp
-              afterEnemyHp[i - 7] = nowHp
+          shipName = getName shipName, _decks[body.api_dock_id - 1].api_ship, body.api_ship_ke
+          shipLv = getLv shipLv, _decks[body.api_dock_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv
+          maxHp = getHp maxHp, body.api_maxhps
+          nowHp = getHp nowHp, body.api_nowhps
+          afterHp = Object.clone nowHp
           if body.api_kouku.api_stage3?
-            kouku = body.api_kouku.api_stage3
-            if kouku.api_edam?
-              for damage, target in kouku.api_edam
-                damage = Math.floor(damage)
-                continue if damage <= 0
-                afterEnemyHp[target - 1] -= damage
-            if kouku.api_fdam?
-              for damage, target in kouku.api_fdam
-                damage = Math.floor(damage)
-                continue if damage <= 0
-                afterFriendHp[target - 1] -= damage
+            afterHp = koukuAttack afterHp, body.api_kouku.api_stage3
           if body.api_opening_atack?
-            openingAttack = body.api_opening_atack
-            if openingAttack.api_edam?
-              for damage, target in openingAttack.api_edam
-                damage = Math.floor(damage)
-                continue if damage <= 0
-                afterEnemyHp[target - 1] -= damage
-            if openingAttack.api_fdam?
-              for damage, target in openingAttack.api_fdam
-                damage = Math.floor(damage)
-                continue if damage <= 0
-                afterFriendHp[target - 1] -= damage
+            afterHp = openAttack afterHp, body.api_opening_atack
           if body.api_hougeki1?
-            hougeki = body.api_hougeki1
-            for damageFrom, i in hougeki.api_at_list
-              continue if damageFrom == -1
-              for damage, j in hougeki.api_damage[i]
-                damage = Math.floor(damage)
-                damageTo = hougeki.api_df_list[i][j]
-                if damageTo <= 6
-                  afterFriendHp[damageTo - 1] -= damage
-                else
-                  afterEnemyHp[damageTo - 7] -= damage
+            afterHp = hougekiAttack afterHp, body.api_hougeki1
           if body.api_hougeki2?
-            hougeki = body.api_hougeki2
-            for damageFrom, i in hougeki.api_at_list
-              continue if damageFrom == -1
-              for damage, j in hougeki.api_damage[i]
-                damage = Math.floor(damage)
-                damageTo = hougeki.api_df_list[i][j]
-                if damageTo <= 6
-                  afterFriendHp[damageTo - 1] -= damage
-                else
-                  afterEnemyHp[damageTo - 7] -= damage
+            afterHp = hougekiAttack afterHp, body.api_hougeki2
           if body.api_hougeki3?
-            hougeki = body.api_hougeki3
-            for damageFrom, i in hougeki.api_at_list
-              continue if damageFrom == -1
-              for damage, j in hougeki.api_damage[i]
-                damage = Math.floor(damage)
-                damageTo = hougeki.api_df_list[i][j]
-                if damageTo <= 6
-                  afterFriendHp[damageTo - 1] -= damage
-                else
-                  afterEnemyHp[damageTo - 7] -= damage
+            afterHp = hougekiAttack afterHp, body.api_hougeki3
           if body.api_raigeki?
-            raigeki = body.api_raigeki
-            if raigeki.api_edam?
-              for damage, target in raigeki.api_edam
-                damage = Math.floor(damage)
-                continue if damage <= 0
-                afterEnemyHp[target - 1] -= damage
-            if raigeki.api_fdam?
-              for damage, target in raigeki.api_fdam
-                damage = Math.floor(damage)
-                continue if damage <= 0
-                afterFriendHp[target - 1] -= damage
-          for tmp, i in afterFriendHp
-            afterFriendHp[i] = Math.max(tmp, 1)
-            damageFriend[i] = nowFriendHp[i] - afterFriendHp[i]
-          for tmp, i in afterEnemyHp
-            afterEnemyHp[i] = Math.max(tmp, 1)
-            damageEnemy[i] = nowEnemyHp[i] - afterEnemyHp[i]
+            afterHp = raigekiAttack afterHp, body.api_raigeki
+          damageHp = getDamage damageHp, nowHp, afterHp, 1
 
         when '/kcsapi/api_req_practice/midnight_battle'
           flag = true
-          nowFriendHp = Object.clone afterFriendHp
-          nowEnemyHp = Object.clone afterEnemyHp
+          nowHp = Object.clone afterHp
           if body.api_hougeki?
-            hougeki = body.api_hougeki
-            for damageFrom, i in hougeki.api_at_list
-              continue if damageFrom == -1
-              for damage, j in hougeki.api_damage[i]
-                damage = Math.floor(damage)
-                damageTo = hougeki.api_df_list[i][j]
-                if damageTo <= 6
-                  afterFriendHp[damageTo - 1] -= damage
-                else
-                  afterEnemyHp[damageTo - 7] -= damage
-          for tmp, i in afterFriendHp
-            afterFriendHp[i] = Math.max(tmp, 1)
-            damageFriend[i] = nowFriendHp[i] - afterFriendHp[i]
-          for tmp, i in afterEnemyHp
-            afterEnemyHp[i] = Math.max(tmp, 1)
-            damageEnemy[i] = nowEnemyHp[i] - afterEnemyHp[i]
+            afterHp = hougekiAttack afterHp, body.api_hougeki
+          damageHp = getDamage damageHp, nowHp, afterHp, 1
 
         when '/kcsapi/api_req_battle_midnight/sp_midnight'
+          for tmp, i in shipLv
+            shipLv[i] = -1
+          {_decks} = window
           flag = true
-          for tmp, i in enemyShipLv
-            enemyShipLv[i] = -1
-          for tmp, i in friendShipLv
-            friendShipLv[i] = -1
-          {$ships, _ships, _decks} = window
-          flag = true
-          for shipId, i in _decks[body.api_deck_id - 1].api_ship
-            continue if shipId == -1
-            idx = _.sortedIndex _ships, {api_id: shipId}, 'api_id'
-            friendShipName[i] = $ships[_ships[idx].api_ship_id].api_name
-            friendShipLv[i] = _ships[idx].api_lv
-          for enemyShipIdx, i in body.api_ship_ke
-            continue if enemyShipIdx == -1
-            if $ships[enemyShipIdx].api_yomi == "-"
-              enemyShipName[i - 1] = $ships[enemyShipIdx].api_name
-            else
-              enemyShipName[i - 1] = $ships[enemyShipIdx].api_name + $ships[enemyShipIdx].api_yomi
-            enemyShipLv[i - 1] = body.api_ship_lv[i]
-          for maxHp, i in body.api_maxhps
-            continue if i == 0
-            if i <= 6
-              maxFriendHp[i - 1] = maxHp
-            else
-              maxEnemyHp[i - 7] = maxHp
-          for nowHp, i in body.api_nowhps
-            continue if i == 0
-            if i <= 6
-              nowFriendHp[i - 1] = nowHp
-              afterFriendHp[i - 1] = nowHp
-            else
-              nowEnemyHp[i - 7] = nowHp
-              afterEnemyHp[i - 7] = nowHp
+          shipName = getName shipName, _decks[body.api_deck_id - 1].api_ship, body.api_ship_ke
+          shipLv = getLv shipLv, _decks[body.api_dock_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv
+          maxHp = getHp maxHp, body.api_maxhps
+          nowHp = getHp nowHp, body.api_nowhps
+          afterHp = Object.clone nowHp
           if body.api_hougeki?
-            hougeki = body.api_hougeki
-            for damageFrom, i in hougeki.api_at_list
-              continue if damageFrom == -1
-              for damage, j in hougeki.api_damage[i]
-                damage = Math.floor(damage)
-                damageTo = hougeki.api_df_list[i][j]
-                if damageTo <= 6
-                  afterFriendHp[damageTo - 1] -= damage
-                else
-                  afterEnemyHp[damageTo - 7] -= damage          
-          for tmp, i in afterFriendHp
-            damageFriend[i] = nowFriendHp[i] - afterFriendHp[i]
-            afterFriendHp[i] = Math.max(tmp, 0)
-          for tmp, i in afterEnemyHp
-            damageEnemy[i] = nowEnemyHp[i] - afterEnemyHp[i]
-            afterEnemyHp[i] = Math.max(tmp, 0)
+            afterHp = hougekiAttack afterHp, body.api_hougeki
+          damageHp = getDamage damageHp, nowHp, afterHp, 0
+
         when '/kcsapi/api_req_sortie/battleresult'
           flag = true
           if body.api_get_ship?
@@ -364,20 +204,14 @@ module.exports =
 
       return unless flag
       @setState
-        afterFriendHp: afterFriendHp
-        nowFriendHp: nowFriendHp
-        maxFriendHp: maxFriendHp
-        afterEnemyHp: afterEnemyHp
-        nowEnemyHp: nowEnemyHp
-        maxEnemyHp: maxEnemyHp
-        damageFriend: damageFriend
-        damageEnemy: damageEnemy
-        enemyShipName: enemyShipName
-        enemyShipLv: enemyShipLv
-        friendShipName: friendShipName
-        friendShipLv: friendShipLv
+        afterHp: afterHp
+        nowHp: nowHp
+        maxHp: maxHp
+        shipName: shipName
+        shipLv: shipLv
         enemyInfo: enemyInfo
         getShip: getShip
+
     componentDidMount: ->
       window.addEventListener 'game.response', @handleResponse
 
@@ -395,19 +229,19 @@ module.exports =
           <Table>
             <tbody>
             {
-              for shipName, i in @state.friendShipName
-                continue unless @state.friendShipLv[i] != -1
+              for tmpName, i in @state.shipName
+                continue unless (@state.shipLv[i] != -1 && i < 6)
                 <tr key={i + 1}>
-                  <td>Lv. {@state.friendShipLv[i]} - {shipName}</td>
+                  <td>Lv. {@state.shipLv[i]} - {tmpName}</td>
                   <td className="hp-progress">
-                    <ProgressBar bsStyle={getHpStyle @state.nowFriendHp[i] / @state.maxFriendHp[i] * 100}
-                      now={@state.nowFriendHp[i] / @state.maxFriendHp[i] * 100}
-                      label={"#{@state.nowFriendHp[i]} / #{@state.maxFriendHp[i]}"} />
+                    <ProgressBar bsStyle={getHpStyle @state.nowHp[i] / @state.maxHp[i] * 100}
+                      now={@state.nowHp[i] / @state.maxHp[i] * 100}
+                      label={"#{@state.nowHp[i]} / #{@state.maxHp[i]}"} />
                   </td>
                   <td className="hp-progress">
-                    <ProgressBar bsStyle={getHpStyle @state.afterFriendHp[i] / @state.maxFriendHp[i] * 100}
-                      now={@state.afterFriendHp[i] / @state.maxFriendHp[i] * 100}
-                      label={if @state.damageFriend[i] > 0 then "#{@state.afterFriendHp[i]} / #{@state.maxFriendHp[i]} (-#{@state.damageFriend[i]})" else "#{@state.afterFriendHp[i]} / #{@state.maxFriendHp[i]}"} />
+                    <ProgressBar bsStyle={getHpStyle @state.afterHp[i] / @state.maxHp[i] * 100}
+                      now={@state.afterHp[i] / @state.maxHp[i] * 100}
+                      label={if @state.damageHp[i] > 0 then "#{@state.afterHp[i]} / #{@state.maxHp[i]} (-#{@state.damageHp[i]})" else "#{@state.afterHp[i]} / #{@state.maxHp[i]}"} />
                   </td>
                 </tr>
             }
@@ -423,19 +257,19 @@ module.exports =
           <Table>
             <tbody>
             {
-              for shipName, i in @state.enemyShipName
-                continue unless @state.enemyShipLv[i] != -1
-                <tr key={i + 8}>
-                  <td>Lv. {@state.enemyShipLv[i]} - {shipName}</td>
+              for tmpName, i in @state.shipName
+                continue unless (@state.shipLv[i] != -1 && i >= 6)
+                <tr key={i}>
+                  <td>Lv. {@state.shipLv[i]} - {tmpName}</td>
                   <td className="hp-progress">
-                    <ProgressBar bsStyle={getHpStyle @state.nowEnemyHp[i] / @state.maxEnemyHp[i] * 100}
-                      now={@state.nowEnemyHp[i] / @state.maxEnemyHp[i] * 100}
-                      label={"#{@state.nowEnemyHp[i]} / #{@state.maxEnemyHp[i]}"} />
+                    <ProgressBar bsStyle={getHpStyle @state.nowHp[i] / @state.maxHp[i] * 100}
+                      now={@state.nowHp[i] / @state.maxHp[i] * 100}
+                      label={"#{@state.nowHp[i]} / #{@state.maxHp[i]}"} />
                   </td>
                   <td className="hp-progress">
-                    <ProgressBar bsStyle={getHpStyle @state.afterEnemyHp[i] / @state.maxEnemyHp[i] * 100}
-                      now={@state.afterEnemyHp[i] / @state.maxEnemyHp[i] * 100}
-                      label={if @state.damageEnemy[i] > 0 then "#{@state.afterEnemyHp[i]} / #{@state.maxEnemyHp[i]} (-#{@state.damageEnemy[i]})" else "#{@state.afterEnemyHp[i]} / #{@state.maxEnemyHp[i]}"} />
+                    <ProgressBar bsStyle={getHpStyle @state.afterHp[i] / @state.maxHp[i] * 100}
+                      now={@state.afterHp[i] / @state.maxHp[i] * 100}
+                      label={if @state.damageHp[i] > 0 then "#{@state.afterHp[i]} / #{@state.maxHp[i]} (-#{@state.damageHp[i]})" else "#{@state.afterHp[i]} / #{@state.maxHp[i]}"} />
                   </td>
                 </tr>
             }
@@ -464,67 +298,28 @@ module.exports =
           <Table>
             <tbody>
             {
-              for shipName, i in @state.friendShipName
-                continue if (@state.friendShipLv[i] == -1 && @state.enemyShipLv[i] == -1)
-                if @state.friendShipLv[i] == -1
-                  <tr key={i + 1}>
-                    <td>　</td>
-                    <td>　</td>
-                    <td>　</td>
-                    <td>Lv. {@state.enemyShipLv[i]} - {@state.enemyShipName[i]}</td>
-                    <td className="hp-progress">
-                      <ProgressBar bsStyle={getHpStyle @state.nowEnemyHp[i] / @state.maxEnemyHp[i] * 100}
-                        now={@state.nowEnemyHp[i] / @state.maxEnemyHp[i] * 100}
-                        label={"#{@state.nowEnemyHp[i]} / #{@state.maxEnemyHp[i]}"} />
-                    </td>
-                    <td className="hp-progress">
-                      <ProgressBar bsStyle={getHpStyle @state.afterEnemyHp[i] / @state.maxEnemyHp[i] * 100}
-                        now={@state.afterEnemyHp[i] / @state.maxEnemyHp[i] * 100}
-                        label={if @state.damageEnemy[i] > 0 then "#{@state.afterEnemyHp[i]} / #{@state.maxEnemyHp[i]} (-#{@state.damageEnemy[i]})" else "#{@state.afterEnemyHp[i]} / #{@state.maxEnemyHp[i]}"} />
-                    </td>
-                  </tr>
-                else if @state.enemyShipLv[i] == -1
-                  <tr key={i + 1}>
-                    <td>Lv. {@state.friendShipLv[i]} - {shipName}</td>
-                    <td className="hp-progress">
-                      <ProgressBar bsStyle={getHpStyle @state.nowFriendHp[i] / @state.maxFriendHp[i] * 100}
-                        now={@state.nowFriendHp[i] / @state.maxFriendHp[i] * 100}
-                        label={"#{@state.nowFriendHp[i]} / #{@state.maxFriendHp[i]}"} />
-                    </td>
-                    <td className="hp-progress">
-                      <ProgressBar bsStyle={getHpStyle @state.afterFriendHp[i] / @state.maxFriendHp[i] * 100}
-                        now={@state.afterFriendHp[i] / @state.maxFriendHp[i] * 100}
-                        label={if @state.damageFriend[i] > 0 then "#{@state.afterFriendHp[i]} / #{@state.maxFriendHp[i]} (-#{@state.damageFriend[i]})" else "#{@state.afterFriendHp[i]} / #{@state.maxFriendHp[i]}"} />
-                    </td>
-                    <td>　</td>
-                    <td>　</td>
-                    <td>　</td>
-                  </tr>
+              for tmpName, i in @state.shipName
+                continue if (@state.shipLv[i] == -1 && @state.shipLv[i + 6] == -1)
+                continue if i >= 6
+                list = []
+                if @state.shipLv[i] == -1
+                  for j in [0..2]
+                    list.push <td>　</td>
                 else
-                  <tr key={i + 1}>
-                    <td>Lv. {@state.friendShipLv[i]} - {shipName}</td>
-                    <td className="hp-progress">
-                      <ProgressBar bsStyle={getHpStyle @state.nowFriendHp[i] / @state.maxFriendHp[i] * 100}
-                        now={@state.nowFriendHp[i] / @state.maxFriendHp[i] * 100}
-                        label={"#{@state.nowFriendHp[i]} / #{@state.maxFriendHp[i]}"} />
-                    </td>
-                    <td className="hp-progress">
-                      <ProgressBar bsStyle={getHpStyle @state.afterFriendHp[i] / @state.maxFriendHp[i] * 100}
-                        now={@state.afterFriendHp[i] / @state.maxFriendHp[i] * 100}
-                        label={if @state.damageFriend[i] > 0 then "#{@state.afterFriendHp[i]} / #{@state.maxFriendHp[i]} (-#{@state.damageFriend[i]})" else "#{@state.afterFriendHp[i]} / #{@state.maxFriendHp[i]}"} />
-                    </td>
-                    <td>Lv. {@state.enemyShipLv[i]} - {@state.enemyShipName[i]}</td>
-                    <td className="hp-progress">
-                      <ProgressBar bsStyle={getHpStyle @state.nowEnemyHp[i] / @state.maxEnemyHp[i] * 100}
-                        now={@state.nowEnemyHp[i] / @state.maxEnemyHp[i] * 100}
-                        label={"#{@state.nowEnemyHp[i]} / #{@state.maxEnemyHp[i]}"} />
-                    </td>
-                    <td className="hp-progress">
-                      <ProgressBar bsStyle={getHpStyle @state.afterEnemyHp[i] / @state.maxEnemyHp[i] * 100}
-                        now={@state.afterEnemyHp[i] / @state.maxEnemyHp[i] * 100}
-                        label={if @state.damageEnemy[i] > 0 then "#{@state.afterEnemyHp[i]} / #{@state.maxEnemyHp[i]} (-#{@state.damageEnemy[i]})" else "#{@state.afterEnemyHp[i]} / #{@state.maxEnemyHp[i]}"} />
-                    </td>
-                  </tr>
+                  list.push <td>Lv. {@state.shipLv[i]} - {tmpName}</td>
+                  list.push <td className="hp-progress"><ProgressBar bsStyle={getHpStyle @state.nowHp[i] / @state.maxHp[i] * 100} now={@state.nowHp[i] / @state.maxHp[i] * 100} label={"#{@state.nowHp[i]} / #{@state.maxHp[i]}"} /></td>
+                  list.push <td className="hp-progress"><ProgressBar bsStyle={getHpStyle @state.afterHp[i] / @state.maxHp[i] * 100} now={@state.afterHp[i] / @state.maxHp[i] * 100} label={if @state.damageHp[i] > 0 then "#{@state.afterHp[i]} / #{@state.maxHp[i]} (-#{@state.damageHp[i]})" else "#{@state.afterHp[i]} / #{@state.maxHp[i]}"} /></td>
+                if @state.shipLv[i + 6] == -1
+                  for j in [0..2]
+                    list.push <td>　</td>
+                else
+                  list.push <td>Lv. {@state.shipLv[i + 6]} - {@state.shipName[i + 6]}</td>
+                  list.push <td className="hp-progress"><ProgressBar bsStyle={getHpStyle @state.nowHp[i + 6] / @state.maxHp[i + 6] * 100} now={@state.nowHp[i + 6] / @state.maxHp[i + 6] * 100} label={"#{@state.nowHp[i + 6]} / #{@state.maxHp[i + 6]}"} /></td>
+                  list.push <td className="hp-progress"><ProgressBar bsStyle={getHpStyle @state.afterHp[i + 6] / @state.maxHp[i + 6] * 100} now={@state.afterHp[i + 6] / @state.maxHp[i + 6] * 100} label={if @state.damageHp[i + 6] > 0 then "#{@state.afterHp[i + 6]} / #{@state.maxHp[i + 6]} (-#{@state.damageHp[i + 6]})" else "#{@state.afterHp[i + 6]} / #{@state.maxHp[i + 6]}"} /></td>
+                continue if (@state.shipLv[i] == -1 && @state.shipLv[i + 6] == -1)
+                <tr key={i}>
+                  {list}
+                </tr>
             }
             </tbody>
           </Table>
