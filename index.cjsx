@@ -81,7 +81,7 @@ raigekiAttack = (afterHp, raigeki) ->
     for damage, i in raigeki.api_edam
       damage = Math.floor(damage)
       continue if damage <= 0
-      afterHp[i + 1] -= damage
+      afterHp[i + 5] -= damage
   if raigeki.api_fdam?
     for damage, i in raigeki.api_fdam
       damage = Math.floor(damage)
@@ -96,6 +96,13 @@ getDamage = (damageHp, nowHp, afterHp, minHp) ->
     damageHp[i] = nowHp[i] - afterHp[i]
     afterHp[i] = Math.max(tmp, minHp)
   damageHp
+
+supportAttack = (afterHp, damages) ->
+  for damage, i in damages
+    damage = Math.floor(damage)
+    continue if damage <= 0
+      afterHp[i + 5] -= damage
+  afterHp
 
 module.exports =
   name: 'prophet'
@@ -139,6 +146,8 @@ module.exports =
             afterHp = hougekiAttack afterHp, body.api_hougeki3
           if body.api_raigeki?
             afterHp = raigekiAttack afterHp, body.api_raigeki
+          if body.api_support_info?
+            afterHp = supportAttack afterHp, body.api_support_info.api_damage
           damageHp = getDamage damageHp, nowHp, afterHp, 0
 
         when '/kcsapi/api_req_battle_midnight/battle'
