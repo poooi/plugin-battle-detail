@@ -1,7 +1,7 @@
 path = require 'path-extra'
 {relative, join} = require 'path-extra'
 {_, $, $$, React, ReactBootstrap, ROOT, resolveTime, layout, toggleModal} = window
-
+fs = require 'fs'
 {Table, ProgressBar, Grid, Input, Col, Alert} = ReactBootstrap
 
 window.addEventListener 'layout.change', (e) ->
@@ -16,6 +16,25 @@ getHpStyle = (percent) ->
     'info'
   else
     'success'
+
+enemyPath = path.join(__dirname, 'assets', 'enemyinfo.json')
+contents = fs.readFileSync(enemyPath, "utf8")
+db = eval ("(" + contents + ")")
+enemyInformation = {}
+for enemyId in db
+  enemyInformation[enemyId.api_enemy_id] = enemyId.api_enemy_info
+
+getMapEnemy = (shipName, shipLv, enemyInfo) ->
+  {$ships, _ships} = window
+  for shipId, i in enemyInfo
+    continue if shipId == -1
+    console.log i, enemyInfo
+    shipLv[i + 6] = 1
+    if $ships[shipId].api_yomi == "-"
+      shipName[i + 6] = $ships[shipId].api_name
+    else
+      shipName[i + 6] = $ships[shipId].api_name + $ships[shipId].api_yomi
+  [shipName, shipLv]
 
 getInfo = (shipName, shipLv, friend, enemy, enemyLv) ->
   {$ships, _ships} = window
@@ -126,6 +145,29 @@ module.exports =
       {afterHp, nowHp, maxHp, damageHp, shipName, shipLv, enemyInfo, getShip} = @state
       flag = false
       switch path
+        when '/kcsapi/api_req_map/start'
+          for tmp, i in shipLv
+            shipLv[i] = -1
+            maxHp[i] = 0
+            nowHp[i] = 0
+            afterHp[i] = 0
+            damageHp[i] = 0
+          getShip = null
+          if enemyInformation[body.api_enemy.api_enemy_id]?
+            [shipName, shipLv] = getMapEnemy shipName, shipLv, enemyInformation[body.api_enemy.api_enemy_id]
+          flag = true
+
+        when '/kcsapi/api_req_map/next'
+          for tmp, i in shipLv
+            shipLv[i] = -1
+            maxHp[i] = 0
+            nowHp[i] = 0
+            afterHp[i] = 0
+            damageHp[i] = 0
+          getShip = null
+          if enemyInformation[body.api_enemy.api_enemy_id]?
+            [shipName, shipLv] = getMapEnemy shipName, shipLv, enemyInformation[body.api_enemy.api_enemy_id]
+          flag = true
         when '/kcsapi/api_req_sortie/battle'
           for tmp, i in shipLv
             shipLv[i] = -1
@@ -134,6 +176,7 @@ module.exports =
           [shipName, shipLv] = getInfo shipName, shipLv, _decks[body.api_dock_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv
           [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
           afterHp = Object.clone nowHp
+          getShip = null
           if body.api_kouku.api_stage3?
             afterHp = koukuAttack afterHp, body.api_kouku.api_stage3
           if body.api_opening_atack?
@@ -162,6 +205,7 @@ module.exports =
             shipLv[i] = -1
           {_decks} = window
           flag = true
+          getShip = null
           [shipName, shipLv] = getInfo shipName, shipLv, _decks[body.api_dock_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv
           [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
           afterHp = Object.clone nowHp
@@ -191,6 +235,7 @@ module.exports =
             shipLv[i] = -1
           {_decks} = window
           flag = true
+          getShip = null
           [shipName, shipLv] = getInfo shipName, shipLv, _decks[body.api_deck_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv
           [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
           afterHp = Object.clone nowHp
@@ -203,6 +248,7 @@ module.exports =
             shipLv[i] = -1
           {_decks} = window
           flag = true
+          getShip = null
           [shipName, shipLv] = getInfo shipName, shipLv, _decks[body.api_deck_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv
           [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
           afterHp = Object.clone nowHp
