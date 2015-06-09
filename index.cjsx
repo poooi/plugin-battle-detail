@@ -59,19 +59,19 @@ updateJson = (jsonId, jsonContent) ->
   null
 
 currentState = [0, 0]
-getMapEnemy = (shipName, shipLv, maxHp, nowHps, enemyState, enemyInfo) ->
+getMapEnemy = (shipName, shipLv, maxHp, nowHp, enemyState, enemyInfo) ->
   {$ships, _ships} = window
   for tmp, i in enemyInfo.ship
     continue if tmp == -1
     maxHp[i + 6] = enemyInfo.hp[i]
     shipLv[i + 6] = enemyInfo.lv[i]
-    nowHps[i + 6] = maxHp[i + 6]
+    nowHp[i + 6] = maxHp[i + 6]
     if $ships[tmp].api_yomi != "-"
       shipName[i + 6] = $ships[tmp].api_name + $ships[tmp].api_yomi
     else
       shipName[i + 6] = $ships[tmp].api_name
   currentState = [enemyInfo.formation, enemyInfo.totalTyku]
-  [shipName, shipLv, maxHp, currentState]
+  [shipName, shipLv, maxHp, nowHp, currentState]
 
 getInfo = (shipName, shipLv, friend, enemy, enemyLv) ->
   {$ships, _ships} = window
@@ -197,6 +197,7 @@ module.exports =
               afterHp = Object.clone maxHp
             else
               jsonId = body.api_enemy.api_enemy_id
+              shipLv[i] = -1 for i in [6..11]
 
         when '/kcsapi/api_req_map/next'
           jsonId = null
@@ -212,6 +213,7 @@ module.exports =
               afterHp = Object.clone maxHp
             else
               jsonId = body.api_enemy.api_enemy_id
+              shipLv[i] = -1 for i in [6..11]
 
         when '/kcsapi/api_req_sortie/battle'
           beforeAttack = null
