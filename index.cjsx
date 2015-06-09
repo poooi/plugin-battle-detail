@@ -58,6 +58,7 @@ updateJson = (jsonId, jsonContent) ->
     fs.writeJsonSync enemyPath, enemyInformation, 'utf8'
   null
 
+currentState = [0, 0]
 getMapEnemy = (shipName, shipLv, maxHp, nowHps, enemyState, enemyInfo) ->
   {$ships, _ships} = window
   for tmp, i in enemyInfo.ship
@@ -69,8 +70,8 @@ getMapEnemy = (shipName, shipLv, maxHp, nowHps, enemyState, enemyInfo) ->
       shipName[i + 6] = $ships[tmp].api_name + $ships[tmp].api_yomi
     else
       shipName[i + 6] = $ships[tmp].api_name
-  enemyState = [enemyInfo.formation, enemyInfo.totalTyku]
-  [shipName, shipLv, maxHp, enemyState]
+  currentState = [enemyInfo.formation, enemyInfo.totalTyku]
+  [shipName, shipLv, maxHp, currentState]
 
 getInfo = (shipName, shipLv, friend, enemy, enemyLv) ->
   {$ships, _ships} = window
