@@ -55,7 +55,7 @@ getTyku = (ship, slot) ->
 updateJson = (jsonId, jsonContent) ->
   if jsonContent?
     enemyInformation[jsonId] = jsonContent
-    fs.writeFileSync enemyPath, JSON.stringify(enemyInfo), 'utf8'
+    fs.writeFileSync enemyPath, JSON.stringify(enemyInformation), 'utf8'
   null
 
 currentState = [0, 0]
@@ -182,6 +182,7 @@ module.exports =
     handleResponse: (e) ->
       {method, path, body, postBody} = e.detail
       {afterHp, nowHp, maxHp, damageHp, shipName, shipLv, enemyInfo, getShip, beforeAttack, enemyState} = @state
+      enemyState = [0, 0]
       flag = false
       switch path
         when '/kcsapi/api_req_map/start'
@@ -234,6 +235,7 @@ module.exports =
             jsonContent.totalTyku = getTyku jsonContent.ship, body.api_eSlot
             jsonContent.hp = Object.clone maxHp
             jsonContent.hp.splice 0, 6
+            enemyState = [jsonContent.formation, jsonContent.totalTyku]
           if body.api_kouku.api_stage3?
             afterHp = koukuAttack afterHp, body.api_kouku.api_stage3
           if body.api_opening_atack?
