@@ -58,12 +58,13 @@ updateJson = (jsonId, jsonContent) ->
     fs.writeJsonSync enemyPath, enemyInformation, 'utf8'
   null
 
-getMapEnemy = (shipName, shipLv, maxHp, enemyState, enemyInfo) ->
+getMapEnemy = (shipName, shipLv, maxHp, nowHps, enemyState, enemyInfo) ->
   {$ships, _ships} = window
   for tmp, i in enemyInfo.ship
     continue if tmp == -1
     maxHp[i + 6] = enemyInfo.hp[i]
     shipLv[i + 6] = enemyInfo.lv[i]
+    nowHps[i + 6] = maxHp[i + 6]
     if $ships[tmp].api_yomi != "-"
       shipName[i + 6] = $ships[tmp].api_name + $ships[tmp].api_yomi
     else
@@ -179,7 +180,7 @@ module.exports =
       enemyState: [0, 0]
     handleResponse: (e) ->
       {method, path, body, postBody} = e.detail
-      {afterHp, nowHp, maxHp, damageHp, shipName, shipLv, enemyInfo, getShip, beforeAttack} = @state
+      {afterHp, nowHp, maxHp, damageHp, shipName, shipLv, enemyInfo, getShip, beforeAttack, enemyState} = @state
       flag = false
       switch path
         when '/kcsapi/api_req_map/start'
@@ -187,17 +188,12 @@ module.exports =
           beforeAttack = 1
           flag = true
           for tmp, i in shipLv
-            shipLv[i] = -1
-            maxHp[i] = 0
-            nowHp[i] = 0
-            afterHp[i] = 0
             damageHp[i] = 0
           getShip = null
           if body.api_enemy?
             if enemyInformation[body.api_enemy.api_enemy_id]?
-              [shipName, shipLv, maxHp, enemyState] = getMapEnemy shipName, shipLv, maxHp, enemyState, enemyInformation[body.api_enemy.api_enemy_id]
-              nowHp = maxHp
-              afterHp = maxHp
+              [shipName, shipLv, maxHp, nowHp, enemyState] = getMapEnemy shipName, shipLv, maxHp, nowHp, enemyState, enemyInformation[body.api_enemy.api_enemy_id]
+              afterHp = Object.clone maxHp
             else
               jsonId = body.api_enemy.api_enemy_id
 
@@ -211,9 +207,8 @@ module.exports =
           getShip = null
           if body.api_enemy?
             if enemyInformation[body.api_enemy.api_enemy_id]?
-              [shipName, shipLv, maxHp, enemyState] = getMapEnemy shipName, shipLv, maxHp, enemyState, enemyInformation[body.api_enemy.api_enemy_id]
-              nowHp = maxHp
-              afterHp = maxHp
+              [shipName, shipLv, maxHp, nowHp, enemyState] = getMapEnemy shipName, shipLv, maxHp, nowHp, enemyState, enemyInformation[body.api_enemy.api_enemy_id]
+              afterHp = Object.clone maxHp
             else
               jsonId = body.api_enemy.api_enemy_id
 
@@ -433,7 +428,7 @@ module.exports =
           {
             if @state.getShip? && @state.enemyInfo?
               "提督さん、#{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」が戦列に加わりました"
-            else if @state.beforeAttack?
+            if @state.beforeAttack?
               "提督さん、 敵陣形「#{formation[@state.enemyState[0]]}」敵制空値「#{@state.enemyState[1]}」"
           }
           </Alert>
@@ -483,7 +478,7 @@ module.exports =
           {
             if @state.getShip? && @state.enemyInfo?
               "提督さん、#{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」が戦列に加わりました"
-            else if @state.beforeAttack?
+            if @state.beforeAttack?
               "提督さん、 敵陣形「#{formation[@state.enemyState[0]]}」敵制空値「#{@state.enemyState[1]}」"
           }
           </Alert>
