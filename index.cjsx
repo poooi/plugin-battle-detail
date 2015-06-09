@@ -179,7 +179,7 @@ module.exports =
       enemyState: [0, 0]
     handleResponse: (e) ->
       {method, path, body, postBody} = e.detail
-      {afterHp, nowHp, maxHp, damageHp, shipName, shipLv, enemyInfo, getShip, beforeAttack} = @state
+      {afterHp, nowHp, maxHp, damageHp, shipName, shipLv, enemyInfo, getShip, beforeAttack, enemyState} = @state
       flag = false
       switch path
         when '/kcsapi/api_req_map/start'
