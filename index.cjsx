@@ -29,15 +29,28 @@ formation = [
   "第三警戒航行序列",
   "第四警戒航行序列"
 ]
+
 enemyPath = path.join(__dirname, 'assets', 'enemyinfo.json')
 db = fs.readJsonSync(enemyPath, 'utf8')
-enemyInformation = []
+enemyInformation = {}
 if db?
-  for enemyId in db
-    enemyInformation[enemyId.api_enemy_id] = enemyId.api_enemy_info
-
+  enemyInformation = db
 jsonId = null
-jsonContent = null
+jsonContent = {}
+
+getTyku = (ship, slot) ->
+  totalTyku = 0
+  {$slotitems, $ships} = window
+  for tmp, i in ship
+    continue if tmp == -1
+    for t, j in $ships[tmp].api_maxeq
+      continue if t == 0
+      item = $slotitems[slot[i][j]]
+      if item.api_type[3] in [6, 7, 8]
+        totalTyku += Math.floor(Math.sqrt(item.api_tyku * t))
+      else if item.api_type[3] == 10 && item.api_type[2] == 11
+        totalTyku += Math.floor(Math.sqrt(item.api_tyku * t))
+  totalTyku
 
 updateJson = (jsonId, jsonContent) ->
   if jsonContent?
@@ -45,16 +58,18 @@ updateJson = (jsonId, jsonContent) ->
     fs.writeJsonSync enemyPath, enemyInformation, 'utf8'
   null
 
-getMapEnemy = (shipName, shipLv, enemyInfo) ->
+getMapEnemy = (shipName, shipLv, maxHp, enemyState, enemyInfo) ->
   {$ships, _ships} = window
-  for shipId, i in enemyInfo
-    continue if shipId == -1
-    shipLv[i + 6] = 1
-    if $ships[shipId].api_yomi == "-"
-      shipName[i + 6] = $ships[shipId].api_name
+  for tmp, i in enemyInfo.ship
+    continue if tmp == -1
+    maxHp[i + 6] = enemyInfo.hp[i]
+    shipLv[i + 6] = enemyInfo.lv[i]
+    if $ships[tmp].api_yomi != "-"
+      shipName[i + 6] = $ships[tmp].api_name + $ships[tmp].api_yomi
     else
-      shipName[i + 6] = $ships[shipId].api_name + $ships[shipId].api_yomi
-  [shipName, shipLv]
+      shipName[i + 6] = $ships[tmp].api_name
+  enemyState = [enemyInfo.formation, enemyInfo.totalTyku]
+  [shipName, shipLv, maxHp, enemyState]
 
 getInfo = (shipName, shipLv, friend, enemy, enemyLv) ->
   {$ships, _ships} = window
@@ -160,13 +175,17 @@ module.exports =
       shipLv: [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
       enemyInfo: null
       getShip: null
+      beforeAttack: null
+      enemyState: [0, 0]
     handleResponse: (e) ->
       {method, path, body, postBody} = e.detail
-      {afterHp, nowHp, maxHp, damageHp, shipName, shipLv, enemyInfo, getShip} = @state
+      {afterHp, nowHp, maxHp, damageHp, shipName, shipLv, enemyInfo, getShip, beforeAttack} = @state
       flag = false
       switch path
         when '/kcsapi/api_req_map/start'
           jsonId = null
+          beforeAttack = 1
+          flag = true
           for tmp, i in shipLv
             shipLv[i] = -1
             maxHp[i] = 0
@@ -174,27 +193,32 @@ module.exports =
             afterHp[i] = 0
             damageHp[i] = 0
           getShip = null
-          if body.api_enemy? && Information[body.api_enemy.api_enemy_id]?
-            [shipName, shipLv] = getMapEnemy shipName, shipLv, enemyInformation[body.api_enemy.api_enemy_id]
-          else
-            jsonId = body.api_enemy.api_enemy_id
-          flag = true
+          if body.api_enemy?
+            if enemyInformation[body.api_enemy.api_enemy_id]?
+              [shipName, shipLv, maxHp, enemyState] = getMapEnemy shipName, shipLv, maxHp, enemyState, enemyInformation[body.api_enemy.api_enemy_id]
+              nowHp = maxHp
+              afterHp = maxHp
+            else
+              jsonId = body.api_enemy.api_enemy_id
 
         when '/kcsapi/api_req_map/next'
           jsonId = null
+          beforeAttack = 1
+          flag = true
+          nowHp = Object.clone afterHp
           for tmp, i in shipLv
-            shipLv[i] = -1
-            maxHp[i] = 0
-            nowHp[i] = 0
-            afterHp[i] = 0
             damageHp[i] = 0
           getShip = null
-          if body.api_enemy? && enemyInformation[body.api_enemy.api_enemy_id]?
-            [shipName, shipLv] = getMapEnemy shipName, shipLv, enemyInformation[body.api_enemy.api_enemy_id]
-          else
-            jsonId = body.api_enemy.api_enemy_id
-          flag = true
+          if body.api_enemy?
+            if enemyInformation[body.api_enemy.api_enemy_id]?
+              [shipName, shipLv, maxHp, enemyState] = getMapEnemy shipName, shipLv, maxHp, enemyState, enemyInformation[body.api_enemy.api_enemy_id]
+              nowHp = maxHp
+              afterHp = maxHp
+            else
+              jsonId = body.api_enemy.api_enemy_id
+
         when '/kcsapi/api_req_sortie/battle'
+          beforeAttack = null
           for tmp, i in shipLv
             shipLv[i] = -1
           {_decks} = window
@@ -204,8 +228,14 @@ module.exports =
           afterHp = Object.clone nowHp
           getShip = null
           if jsonId?
-            jsonContent = Object.clone body.api_ship_ke
-            jsonContent.splice 0, 1
+            jsonContent.ship = Object.clone body.api_ship_ke
+            jsonContent.ship.splice 0, 1
+            jsonContent.lv = Object.clone body.api_ship_lv
+            jsonContent.lv.splice 0, 1
+            jsonContent.formation = body.api_formation[1]
+            jsonContent.totalTyku = getTyku jsonContent.ship, body.api_eSlot
+            jsonContent.hp = Object.clone maxHp
+            jsonContent.hp.splice 0, 6
           if body.api_kouku.api_stage3?
             afterHp = koukuAttack afterHp, body.api_kouku.api_stage3
           if body.api_opening_atack?
@@ -223,6 +253,7 @@ module.exports =
           damageHp = getDamage damageHp, nowHp, afterHp, 0
 
         when '/kcsapi/api_req_battle_midnight/battle'
+          beforeAttack = null
           flag = true
           nowHp = Object.clone afterHp
           if body.api_hougeki?
@@ -230,6 +261,7 @@ module.exports =
           damageHp = getDamage damageHp, nowHp, afterHp, 0
 
         when '/kcsapi/api_req_practice/battle'
+          beforeAttack = null
           for tmp, i in shipLv
             shipLv[i] = -1
           {_decks} = window
@@ -253,6 +285,7 @@ module.exports =
           damageHp = getDamage damageHp, nowHp, afterHp, 1
 
         when '/kcsapi/api_req_practice/midnight_battle'
+          beforeAttack = null
           flag = true
           nowHp = Object.clone afterHp
           if body.api_hougeki?
@@ -260,6 +293,7 @@ module.exports =
           damageHp = getDamage damageHp, nowHp, afterHp, 1
 
         when '/kcsapi/api_req_battle_midnight/sp_midnight'
+          beforeAttack = null
           for tmp, i in shipLv
             shipLv[i] = -1
           {_decks} = window
@@ -269,13 +303,20 @@ module.exports =
           [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
           afterHp = Object.clone nowHp
           if jsonId?
-            jsonContent = Object.clone body.api_ship_ke
-            jsonContent.splice 0, 1
+            jsonContent.ship = Object.clone body.api_ship_ke
+            jsonContent.ship.splice 0, 1
+            jsonContent.lv = Object.clone body.api_ship_lv
+            jsonContent.lv.splice 0, 1
+            jsonContent.formation = body.api_formation[1]
+            jsonContent.totalTyku = getTyku jsonContent.ship, body.api_eSlot
+            jsonContent.hp = Object.clone maxHp
+            jsonContent.hp.splice 0, 6
           if body.api_hougeki?
             afterHp = hougekiAttack afterHp, body.api_hougeki
           damageHp = getDamage damageHp, nowHp, afterHp, 0
 
         when '/kcsapi/api_req_sortie/airbattle'
+          beforeAttack = null
           for tmp, i in shipLv
             shipLv[i] = -1
           {_decks} = window
@@ -285,8 +326,14 @@ module.exports =
           [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
           afterHp = Object.clone nowHp
           if jsonId?
-            jsonContent = Object.clone body.api_ship_ke
-            jsonContent.splice 0, 1
+            jsonContent.ship = Object.clone body.api_ship_ke
+            jsonContent.ship.splice 0, 1
+            jsonContent.lv = Object.clone body.api_ship_lv
+            jsonContent.lv.splice 0, 1
+            jsonContent.formation = body.api_formation[1]
+            jsonContent.totalTyku = getTyku jsonContent.ship, body.api_eSlot
+            jsonContent.hp = Object.clone maxHp
+            jsonContent.hp.splice 0, 6
           if body.api_kouku?
             afterHp = koukuAttack afterHp, body.api_kouku.api_stage3
           if body.api_kouku2?
@@ -294,6 +341,7 @@ module.exports =
           damageHp = getDamage damageHp, nowHp, afterHp, 0
 
         when '/kcsapi/api_req_sortie/battleresult'
+          beforeAttack = null
           flag = true
           if jsonId?
             jsonId = updateJson jsonId, jsonContent
@@ -313,6 +361,8 @@ module.exports =
         shipLv: shipLv
         enemyInfo: enemyInfo
         getShip: getShip
+        beforeAttack: beforeAttack
+        enemyState: enemyState
 
     componentDidMount: ->
       window.addEventListener 'game.response', @handleResponse
@@ -383,6 +433,8 @@ module.exports =
           {
             if @state.getShip? && @state.enemyInfo?
               "提督さん、#{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」が戦列に加わりました"
+            else if @state.beforeAttack?
+              "提督さん、 敵陣形「#{formation[@state.enemyState[0]]}」敵制空値「#{@state.enemyState[1]}」"
           }
           </Alert>
         </div>
@@ -431,6 +483,8 @@ module.exports =
           {
             if @state.getShip? && @state.enemyInfo?
               "提督さん、#{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」が戦列に加わりました"
+            else if @state.beforeAttack?
+              "提督さん、 敵陣形「#{formation[@state.enemyState[0]]}」敵制空値「#{@state.enemyState[1]}」"
           }
           </Alert>
         </div>
