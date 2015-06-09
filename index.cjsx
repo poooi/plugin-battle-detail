@@ -55,7 +55,7 @@ getTyku = (ship, slot) ->
 updateJson = (jsonId, jsonContent) ->
   if jsonContent?
     enemyInformation[jsonId] = jsonContent
-    fs.writeJsonSync enemyPath, enemyInformation, 'utf8'
+    fs.writeFileSync enemyPath, JSON.stringify(enemyInfo), 'utf8'
   null
 
 currentState = [0, 0]
@@ -192,11 +192,11 @@ module.exports =
             damageHp[i] = 0
           getShip = null
           if body.api_enemy?
+            jsonId = body.api_enemy.api_enemy_id
             if enemyInformation[body.api_enemy.api_enemy_id]?
               [shipName, shipLv, maxHp, nowHp, enemyState] = getMapEnemy shipName, shipLv, maxHp, nowHp, enemyState, enemyInformation[body.api_enemy.api_enemy_id]
               afterHp = Object.clone maxHp
             else
-              jsonId = body.api_enemy.api_enemy_id
               shipLv[i] = -1 for i in [6..11]
 
         when '/kcsapi/api_req_map/next'
@@ -208,11 +208,11 @@ module.exports =
             damageHp[i] = 0
           getShip = null
           if body.api_enemy?
+            jsonId = body.api_enemy.api_enemy_id
             if enemyInformation[body.api_enemy.api_enemy_id]?
               [shipName, shipLv, maxHp, nowHp, enemyState] = getMapEnemy shipName, shipLv, maxHp, nowHp, enemyState, enemyInformation[body.api_enemy.api_enemy_id]
               afterHp = Object.clone maxHp
             else
-              jsonId = body.api_enemy.api_enemy_id
               shipLv[i] = -1 for i in [6..11]
 
         when '/kcsapi/api_req_sortie/battle'
@@ -431,7 +431,7 @@ module.exports =
           {
             if @state.getShip? && @state.enemyInfo?
               "提督さん、#{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」が戦列に加わりました"
-            if @state.beforeAttack?
+            else
               "提督さん、 敵陣形「#{formation[@state.enemyState[0]]}」敵制空値「#{@state.enemyState[1]}」"
           }
           </Alert>
@@ -481,7 +481,7 @@ module.exports =
           {
             if @state.getShip? && @state.enemyInfo?
               "提督さん、#{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」が戦列に加わりました"
-            if @state.beforeAttack?
+            else
               "提督さん、 敵陣形「#{formation[@state.enemyState[0]]}」敵制空値「#{@state.enemyState[1]}」"
           }
           </Alert>
