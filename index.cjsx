@@ -48,9 +48,9 @@ getTyku = (ship, slot) ->
       continue if t == 0
       item = $slotitems[slot[i][j]]
       if item.api_type[3] in [6, 7, 8]
-        totalTyku += Math.floor(Math.sqrt(item.api_tyku * t))
+        totalTyku += Math.floor(Math.sqrt(t) * item.api_tyku)
       else if item.api_type[3] == 10 && item.api_type[2] == 11
-        totalTyku += Math.floor(Math.sqrt(item.api_tyku * t))
+        totalTyku += Math.floor(Math.sqrt(t) * item.api_tyku)
   totalTyku
 
 updateJson = (jsonId, jsonContent) ->
