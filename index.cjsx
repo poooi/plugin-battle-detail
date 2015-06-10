@@ -163,6 +163,8 @@ supportAttack = (afterHp, damages) ->
     afterHp[i + 5] -= damage
   afterHp
 
+formationFlag = false
+
 module.exports =
   name: 'prophet'
   priority: 0.1
@@ -185,14 +187,26 @@ module.exports =
     handleResponse: (e) ->
       {method, path, body, postBody} = e.detail
       {afterHp, nowHp, maxHp, damageHp, shipName, shipLv, enemyInfo, getShip, enemyFormation, enemyTyku} = @state
-      if path != '/kcsapi/api_req_sortie/battleresult'
-        enemyState = [0, 0]
+      if path == '/kcsapi/api_req_map/start' || formationFlag
+        @setState
+          enemyInformation: 0
+          enemyTyku: 0
+        formationFlag = false
       flag = false
       switch path
         when '/kcsapi/api_req_map/start'
           jsonId = null
           flag = true
-          shipLv[i] = -1 for i in [6..11]
+          shipLv[i] = -1 for i in [0..11]
+          _deck = window._decks[postBody.api_deck_id - 1]
+          {_ships} = window
+          for shipId, i in _deck.api_ship
+            continue if shipId == -1
+            shipName[i] = _ships[shipId].api_name
+            shipLv[i] = _ships[shipId].api_lv
+            maxHp[i] = _ships[shipId].api_maxhp
+            nowHp[i] = _ships[shipId].api_nowhp
+            afterHp[i] = _ships[shipId].api_nowhp
           for tmp, i in shipLv
             damageHp[i] = 0
           getShip = null
@@ -292,6 +306,7 @@ module.exports =
             afterHp = hougekiAttack afterHp, body.api_hougeki
           damageHp = getDamage damageHp, nowHp, afterHp, 1
 
+
         when '/kcsapi/api_req_battle_midnight/sp_midnight'
           for tmp, i in shipLv
             shipLv[i] = -1
@@ -352,6 +367,7 @@ module.exports =
           else
             enemyInfo = null
             getShip = null
+          formationFlag = true
 
       return unless flag
       @setState
