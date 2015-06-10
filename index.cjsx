@@ -82,7 +82,7 @@ getInfo = (shipName, shipLv, friend, enemy, enemyLv) ->
   for shipId, i in friend
     continue if shipId == -1
     shipName[i] = $ships[_ships[shipId].api_ship_id].api_name
-    shipLv[i] = _ships[idx].api_lv
+    shipLv[i] = _ships[shipId].api_lv
   for shipId, i in enemy
     continue if shipId == -1
     shipLv[i + 5] = enemyLv[i]
