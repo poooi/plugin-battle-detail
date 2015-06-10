@@ -81,8 +81,7 @@ getInfo = (shipName, shipLv, friend, enemy, enemyLv) ->
   {$ships, _ships} = window
   for shipId, i in friend
     continue if shipId == -1
-    idx = _.sortedIndex _ships, {api_id: shipId}, 'api_id'
-    shipName[i] = $ships[_ships[idx].api_ship_id].api_name
+    shipName[i] = $ships[_ships[shipId].api_ship_id].api_name
     shipLv[i] = _ships[idx].api_lv
   for shipId, i in enemy
     continue if shipId == -1
