@@ -46,6 +46,7 @@ getTyku = (ship, slot) ->
     continue if tmp == -1
     for t, j in $ships[tmp].api_maxeq
       continue if t == 0
+      continue if slot[i][j] == -1
       item = $slotitems[slot[i][j]]
       if item.api_type[3] in [6, 7, 8]
         totalTyku += Math.floor(Math.sqrt(t) * item.api_tyku)
