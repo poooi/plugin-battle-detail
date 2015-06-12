@@ -1,9 +1,11 @@
-path = require 'path-extra'
+Promise = require 'bluebird'
+async = Promise.coroutine
+request = Promise.promisifyAll require('request')
 {relative, join} = require 'path-extra'
-{_, $, $$, React, ReactBootstrap, ROOT, resolveTime, layout, toggleModal} = window
 fs = require 'fs-extra'
+{_, $, $$, React, ReactBootstrap, ROOT, resolveTime, layout, toggleModal} = window
 {Table, ProgressBar, Grid, Input, Col, Alert} = ReactBootstrap
-{APPDATA_PATH} = window
+{APPDATA_PATH, SERVER_HOSTNAME} = window
 
 window.addEventListener 'layout.change', (e) ->
   {layout} = e.detail
@@ -31,11 +33,23 @@ formation = [
   "第四警戒航行序列"
 ]
 
-enemyPath = path.join(APPDATA_PATH, 'enemyinfo.json')
-db = fs.readJsonSync(enemyPath, 'utf8')
+enemyPath = join(APPDATA_PATH, 'enemyinfo.json')
+db = null
+try
+  db = fs.readJsonSync(enemyPath, 'utf8')
+catch e
+  false
 enemyInformation = {}
 if db?
   enemyInformation = db
+# Sync from SERVER
+sync = async ->
+  [response, body] = yield request.getAsync "http://#{SERVER_HOSTNAME}/api/prophet/sync",
+    json: true
+  if response.statusCode == 200
+    enemyInformation = _.extend enemyInformation, body.data
+sync()
+
 jsonId = null
 jsonContent = {}
 
@@ -54,12 +68,16 @@ getTyku = (ship, slot) ->
         totalTyku += Math.floor(Math.sqrt(t) * item.api_tyku)
   totalTyku
 
-updateJson = (jsonId, jsonContent) ->
-  console.log jsonId
-  console.log jsonContent
+updateJson = async (jsonId, jsonContent) ->
   if jsonContent?
     enemyInformation[jsonId] = Object.clone jsonContent
     fs.writeFileSync enemyPath, JSON.stringify(enemyInformation), 'utf8'
+    try
+      yield request.postAsync "http://#{SERVER_HOSTNAME}/api/prophet/#{jsonId}/update",
+        form:
+          data: JSON.stringify(jsonContent)
+    catch e
+      console.error e
   null
 
 getMapEnemy = (shipName, shipLv, maxHp, nowHp, enemyFormation, enemyTyku, enemyInfo) ->
@@ -211,7 +229,6 @@ module.exports =
             damageHp[i] = 0
           getShip = null
           if body.api_enemy?
-            console.log body.api_enemy.api_enemy_id
             if enemyInformation[body.api_enemy.api_enemy_id]?
               [shipName, shipLv, maxHp, nowHp, enemyFormation, enemyTyku] = getMapEnemy shipName, shipLv, maxHp, nowHp, enemyFormation, enemyTyku, enemyInformation[body.api_enemy.api_enemy_id]
               afterHp = Object.clone nowHp
@@ -226,7 +243,6 @@ module.exports =
           getShip = null
           shipLv[i] = -1 for i in [6..11]
           if body.api_enemy?
-            console.log body.api_enemy.api_enemy_id
             if enemyInformation[body.api_enemy.api_enemy_id]?
               [shipName, shipLv, maxHp, nowHp, enemyFormation, enemyTyku] = getMapEnemy shipName, shipLv, maxHp, nowHp, enemyFormation, enemyTyku, enemyInformation[body.api_enemy.api_enemy_id]
               afterHp = Object.clone nowHp
