@@ -185,9 +185,10 @@ formationFlag = false
 
 module.exports =
   name: 'prophet'
-  priority: 0.1
+  priority: 1
   displayName: [<FontAwesome key={0} name='compass' />, ' 未卜先知']
   description: '战况预知'
+  version: '1.1.0'
   author: 'Chiba'
   link: 'https://github.com/Chibaheit'
   reactClass: React.createClass
