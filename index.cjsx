@@ -243,9 +243,10 @@ module.exports =
             damageHp[i] = 0
           getShip = null
           shipLv[i] = -1 for i in [6..11]
+          nowHp = Object.clone afterHp
           if body.api_enemy?
             if enemyInformation[body.api_enemy.api_enemy_id]?
-              [shipName, shipLv, maxHp, nowHp, enemyFormation, enemyTyku] = getMapEnemy shipName, shipLv, maxHp, afterHp, enemyFormation, enemyTyku, enemyInformation[body.api_enemy.api_enemy_id]
+              [shipName, shipLv, maxHp, nowHp, enemyFormation, enemyTyku] = getMapEnemy shipName, shipLv, maxHp, nowHp, enemyFormation, enemyTyku, enemyInformation[body.api_enemy.api_enemy_id]
               afterHp = Object.clone afterHp
             else
               jsonId = body.api_enemy.api_enemy_id
