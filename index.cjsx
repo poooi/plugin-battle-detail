@@ -33,6 +33,15 @@ formation = [
   "第四警戒航行序列"
 ]
 
+intercept = [
+  "航戦不明",
+  "同航戦",
+  "反航戦",
+  "Ｔ字戦(有利)",
+  "Ｔ字戦(不利)",
+  "同航戦"
+]
+
 enemyPath = join(APPDATA_PATH, 'enemyinfo.json')
 db = null
 try
@@ -203,13 +212,15 @@ module.exports =
       getShip: null
       enemyFormation: 0
       enemyTyku: 0
+      enemyIntercept: 0
     handleResponse: (e) ->
       {method, path, body, postBody} = e.detail
-      {afterHp, nowHp, maxHp, damageHp, shipName, shipLv, enemyInfo, getShip, enemyFormation, enemyTyku} = @state
+      {afterHp, nowHp, maxHp, damageHp, shipName, shipLv, enemyInfo, getShip, enemyFormation, enemyTyku, enemyIntercept} = @state
       if path == '/kcsapi/api_req_map/start' || formationFlag
         @setState
           enemyInformation: 0
           enemyTyku: 0
+          enemyIntercept: 0
         formationFlag = false
       flag = false
       switch path
@@ -260,6 +271,8 @@ module.exports =
           [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
           afterHp = Object.clone nowHp
           getShip = null
+          if body.api_formation?
+            enemyIntercept = body.api_formation[2]
           if jsonId?
             jsonContent.ship = Object.clone body.api_ship_ke
             jsonContent.ship.splice 0, 1
@@ -302,6 +315,8 @@ module.exports =
           getShip = null
           [shipName, shipLv] = getInfo shipName, shipLv, _decks[body.api_dock_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv
           [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
+          if body.api_formation?
+            enemyIntercept = body.api_formation[2]
           afterHp = Object.clone nowHp
           if body.api_kouku.api_stage3?
             afterHp = koukuAttack afterHp, body.api_kouku.api_stage3
@@ -334,6 +349,8 @@ module.exports =
           [shipName, shipLv] = getInfo shipName, shipLv, _decks[body.api_deck_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv
           [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
           afterHp = Object.clone nowHp
+          if body.api_formation?
+            enemyIntercept = body.api_formation[2]
           if jsonId?
             jsonContent.ship = Object.clone body.api_ship_ke
             jsonContent.ship.splice 0, 1
@@ -358,6 +375,8 @@ module.exports =
           [shipName, shipLv] = getInfo shipName, shipLv, _decks[body.api_deck_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv
           [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
           afterHp = Object.clone nowHp
+          if body.api_formation?
+            enemyIntercept = body.api_formation[2]
           if jsonId?
             jsonContent.ship = Object.clone body.api_ship_ke
             jsonContent.ship.splice 0, 1
@@ -398,6 +417,7 @@ module.exports =
         getShip: getShip
         enemyFormation: enemyFormation
         enemyTyku: enemyTyku
+        enemyIntercept: enemyIntercept
 
     componentDidMount: ->
       window.addEventListener 'game.response', @handleResponse
@@ -469,7 +489,7 @@ module.exports =
             if @state.getShip? && @state.enemyInfo?
               "提督さん、#{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」が戦列に加わりました"
             else
-              "提督さん、 敵陣形「#{formation[@state.enemyFormation]}」敵制空値「#{@state.enemyTyku}」"
+              "提督さん、 敵陣形「#{formation[@state.enemyFormation]}」敵制空値「#{@state.enemyTyku}」「#{intercept[@state.enemyIntercept]}」"
           }
           </Alert>
         </div>
@@ -519,7 +539,7 @@ module.exports =
             if @state.getShip? && @state.enemyInfo?
               "提督さん、#{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」が戦列に加わりました"
             else
-              "提督さん、 敵陣形「#{formation[@state.enemyFormation]}」敵制空値「#{@state.enemyTyku}」"
+              "提督さん、 敵陣形「#{formation[@state.enemyFormation]}」敵制空値「#{@state.enemyTyku}」「#{intercept[@state.enemyIntercept]}」"
           }
           </Alert>
         </div>
