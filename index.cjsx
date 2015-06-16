@@ -213,14 +213,16 @@ module.exports =
       enemyFormation: 0
       enemyTyku: 0
       enemyIntercept: 0
+      enemyName: "深海棲艦"
     handleResponse: (e) ->
       {method, path, body, postBody} = e.detail
-      {afterHp, nowHp, maxHp, damageHp, shipName, shipLv, enemyInfo, getShip, enemyFormation, enemyTyku, enemyIntercept} = @state
+      {afterHp, nowHp, maxHp, damageHp, shipName, shipLv, enemyInfo, getShip, enemyFormation, enemyTyku, enemyIntercept, enemyName} = @state
       if path == '/kcsapi/api_req_map/start' || formationFlag
         @setState
           enemyInformation: 0
           enemyTyku: 0
           enemyIntercept: 0
+          enemyName: "深海棲艦"
         formationFlag = false
       flag = false
       switch path
@@ -236,14 +238,12 @@ module.exports =
             shipLv[i] = _ships[shipId].api_lv
             maxHp[i] = _ships[shipId].api_maxhp
             nowHp[i] = _ships[shipId].api_nowhp
-            afterHp[i] = _ships[shipId].api_nowhp
           for tmp, i in shipLv
             damageHp[i] = 0
           getShip = null
           if body.api_enemy?
             if enemyInformation[body.api_enemy.api_enemy_id]?
               [shipName, shipLv, maxHp, nowHp, enemyFormation, enemyTyku] = getMapEnemy shipName, shipLv, maxHp, nowHp, enemyFormation, enemyTyku, enemyInformation[body.api_enemy.api_enemy_id]
-              afterHp = Object.clone nowHp
             else
               jsonId = body.api_enemy.api_enemy_id
 
@@ -258,7 +258,6 @@ module.exports =
           if body.api_enemy?
             if enemyInformation[body.api_enemy.api_enemy_id]?
               [shipName, shipLv, maxHp, nowHp, enemyFormation, enemyTyku] = getMapEnemy shipName, shipLv, maxHp, nowHp, enemyFormation, enemyTyku, enemyInformation[body.api_enemy.api_enemy_id]
-              afterHp = Object.clone afterHp
             else
               jsonId = body.api_enemy.api_enemy_id
 
@@ -299,6 +298,7 @@ module.exports =
           if body.api_support_info?
             afterHp = supportAttack afterHp, body.api_support_info.api_damage
           damageHp = getDamage damageHp, nowHp, afterHp, 0
+          nowHp = Object.clone afterHp
 
         when '/kcsapi/api_req_battle_midnight/battle'
           flag = true
@@ -306,6 +306,7 @@ module.exports =
           if body.api_hougeki?
             afterHp = hougekiAttack afterHp, body.api_hougeki
           damageHp = getDamage damageHp, nowHp, afterHp, 0
+          nowHp = Object.clone afterHp
 
         when '/kcsapi/api_req_practice/battle'
           for tmp, i in shipLv
@@ -313,6 +314,7 @@ module.exports =
           {_decks} = window
           flag = true
           getShip = null
+          enemyName = "演習相手"
           [shipName, shipLv] = getInfo shipName, shipLv, _decks[body.api_dock_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv
           [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
           if body.api_formation?
@@ -331,6 +333,7 @@ module.exports =
           if body.api_raigeki?
             afterHp = raigekiAttack afterHp, body.api_raigeki
           damageHp = getDamage damageHp, nowHp, afterHp, 1
+          nowHp = Object.clone afterHp
 
         when '/kcsapi/api_req_practice/midnight_battle'
           flag = true
@@ -338,6 +341,7 @@ module.exports =
           if body.api_hougeki?
             afterHp = hougekiAttack afterHp, body.api_hougeki
           damageHp = getDamage damageHp, nowHp, afterHp, 1
+          nowHp = Object.clone afterHp
 
 
         when '/kcsapi/api_req_battle_midnight/sp_midnight'
@@ -365,6 +369,7 @@ module.exports =
           if body.api_hougeki?
             afterHp = hougekiAttack afterHp, body.api_hougeki
           damageHp = getDamage damageHp, nowHp, afterHp, 0
+          nowHp = Object.clone afterHp
 
         when '/kcsapi/api_req_sortie/airbattle'
           for tmp, i in shipLv
@@ -393,6 +398,7 @@ module.exports =
           if body.api_kouku2?
             afterHp = koukuAttack afterHp, body.api_kouku2.api_stage3
           damageHp = getDamage damageHp, nowHp, afterHp, 0
+          nowHp = Object.clone afterHp
 
         when '/kcsapi/api_req_sortie/battleresult'
           flag = true
@@ -418,6 +424,7 @@ module.exports =
         enemyFormation: enemyFormation
         enemyTyku: enemyTyku
         enemyIntercept: enemyIntercept
+        enemyName: enemyName
 
     componentDidMount: ->
       window.addEventListener 'game.response', @handleResponse
@@ -428,9 +435,8 @@ module.exports =
           <link rel="stylesheet" href={join(relative(ROOT, __dirname), 'assets', 'prophet.css')} />
           <Alert>
             <Grid>
-              <Col xs={4}>舰名</Col>
-              <Col xs={4}>战前</Col>
-              <Col xs={4}>战后</Col>
+              <Col xs={6}>出撃艦隊</Col>
+              <Col xs={6}>耐久</Col>
             </Grid>
           </Alert>
           <Table>
@@ -444,12 +450,7 @@ module.exports =
                   <td className="hp-progress">
                     <ProgressBar bsStyle={getHpStyle @state.nowHp[i] / @state.maxHp[i] * 100}
                       now={@state.nowHp[i] / @state.maxHp[i] * 100}
-                      label={"#{@state.nowHp[i]} / #{@state.maxHp[i]}"} />
-                  </td>
-                  <td className="hp-progress">
-                    <ProgressBar bsStyle={getHpStyle @state.afterHp[i] / @state.maxHp[i] * 100}
-                      now={@state.afterHp[i] / @state.maxHp[i] * 100}
-                      label={if @state.damageHp[i] > 0 then "#{@state.afterHp[i]} / #{@state.maxHp[i]} (-#{@state.damageHp[i]})" else "#{@state.afterHp[i]} / #{@state.maxHp[i]}"} />
+                      label={if @state.damageHp[i] > 0 then "#{@state.nowHp[i]} / #{@state.maxHp[i]} (-#{@state.damageHp[i]})" else "#{@state.nowHp[i]} / #{@state.maxHp[i]}"} />
                   </td>
                 </tr>
             }
@@ -457,9 +458,8 @@ module.exports =
           </Table>
           <Alert>
             <Grid>
-              <Col xs={4}>舰名</Col>
-              <Col xs={4}>战前</Col>
-              <Col xs={4}>战后</Col>
+              <Col xs={6}>{@state.enemyName}</Col>
+              <Col xs={6}>耐久</Col>
             </Grid>
           </Alert>
           <Table>
@@ -473,12 +473,7 @@ module.exports =
                   <td className="hp-progress">
                     <ProgressBar bsStyle={getHpStyle @state.nowHp[i] / @state.maxHp[i] * 100}
                       now={@state.nowHp[i] / @state.maxHp[i] * 100}
-                      label={"#{@state.nowHp[i]} / #{@state.maxHp[i]}"} />
-                  </td>
-                  <td className="hp-progress">
-                    <ProgressBar bsStyle={getHpStyle @state.afterHp[i] / @state.maxHp[i] * 100}
-                      now={@state.afterHp[i] / @state.maxHp[i] * 100}
-                      label={if @state.damageHp[i] > 0 then "#{@state.afterHp[i]} / #{@state.maxHp[i]} (-#{@state.damageHp[i]})" else "#{@state.afterHp[i]} / #{@state.maxHp[i]}"} />
+                      label={if @state.damageHp[i] > 0 then "#{@state.nowHp[i]} / #{@state.maxHp[i]} (-#{@state.damageHp[i]})" else "#{@state.nowHp[i]} / #{@state.maxHp[i]}"} />
                   </td>
                 </tr>
             }
@@ -498,12 +493,10 @@ module.exports =
           <link rel="stylesheet" href={join(relative(ROOT, __dirname), 'assets', 'prophet.css')} />
           <Alert>
             <Grid>
-              <Col xs={2}>舰名</Col>
-              <Col xs={2}>战前</Col>
-              <Col xs={2}>战后</Col>
-              <Col xs={2}>舰名</Col>
-              <Col xs={2}>战前</Col>
-              <Col xs={2}>战后</Col>
+              <Col xs={3}>出撃艦隊</Col>
+              <Col xs={3}>耐久</Col>
+              <Col xs={3}>{@state.enemyName}</Col>
+              <Col xs={3}>耐久</Col>
             </Grid>
           </Alert>
           <Table>
@@ -518,15 +511,13 @@ module.exports =
                     list.push <td>　</td>
                 else
                   list.push <td>Lv. {@state.shipLv[i]} - {tmpName}</td>
-                  list.push <td className="hp-progress"><ProgressBar bsStyle={getHpStyle @state.nowHp[i] / @state.maxHp[i] * 100} now={@state.nowHp[i] / @state.maxHp[i] * 100} label={"#{@state.nowHp[i]} / #{@state.maxHp[i]}"} /></td>
-                  list.push <td className="hp-progress"><ProgressBar bsStyle={getHpStyle @state.afterHp[i] / @state.maxHp[i] * 100} now={@state.afterHp[i] / @state.maxHp[i] * 100} label={if @state.damageHp[i] > 0 then "#{@state.afterHp[i]} / #{@state.maxHp[i]} (-#{@state.damageHp[i]})" else "#{@state.afterHp[i]} / #{@state.maxHp[i]}"} /></td>
+                  list.push <td className="hp-progress"><ProgressBar bsStyle={getHpStyle @state.nowHp[i] / @state.maxHp[i] * 100} now={@state.nowHp[i] / @state.maxHp[i] * 100} label={if @state.damageHp[i] > 0 then "#{@state.nowHp[i]} / #{@state.maxHp[i]} (-#{@state.damageHp[i]})" else "#{@state.nowHp[i]} / #{@state.maxHp[i]}"} /></td>
                 if @state.shipLv[i + 6] == -1
                   for j in [0..2]
                     list.push <td>　</td>
                 else
                   list.push <td>Lv. {@state.shipLv[i + 6]} - {@state.shipName[i + 6]}</td>
-                  list.push <td className="hp-progress"><ProgressBar bsStyle={getHpStyle @state.nowHp[i + 6] / @state.maxHp[i + 6] * 100} now={@state.nowHp[i + 6] / @state.maxHp[i + 6] * 100} label={"#{@state.nowHp[i + 6]} / #{@state.maxHp[i + 6]}"} /></td>
-                  list.push <td className="hp-progress"><ProgressBar bsStyle={getHpStyle @state.afterHp[i + 6] / @state.maxHp[i + 6] * 100} now={@state.afterHp[i + 6] / @state.maxHp[i + 6] * 100} label={if @state.damageHp[i + 6] > 0 then "#{@state.afterHp[i + 6]} / #{@state.maxHp[i + 6]} (-#{@state.damageHp[i + 6]})" else "#{@state.afterHp[i + 6]} / #{@state.maxHp[i + 6]}"} /></td>
+                  list.push <td className="hp-progress"><ProgressBar bsStyle={getHpStyle @state.nowHp[i + 6] / @state.maxHp[i + 6] * 100} now={@state.nowHp[i + 6] / @state.maxHp[i + 6] * 100} label={if @state.damageHp[i + 6] > 0 then "#{@state.nowHp[i + 6]} / #{@state.maxHp[i + 6]} (-#{@state.damageHp[i + 6]})" else "#{@state.nowHp[i + 6]} / #{@state.maxHp[i + 6]}"} /></td>
                 continue if (@state.shipLv[i] == -1 && @state.shipLv[i + 6] == -1)
                 <tr key={i}>
                   {list}
