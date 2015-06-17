@@ -232,6 +232,7 @@ module.exports =
           shipLv[i] = -1 for i in [0..11]
           _deck = window._decks[postBody.api_deck_id - 1]
           {_ships} = window
+          afterHp = Object.clone nowHp
           for shipId, i in _deck.api_ship
             continue if shipId == -1
             shipName[i] = _ships[shipId].api_name
