@@ -232,7 +232,6 @@ module.exports =
           shipLv[i] = -1 for i in [0..11]
           _deck = window._decks[postBody.api_deck_id - 1]
           {_ships} = window
-          afterHp = Object.clone nowHp
           for shipId, i in _deck.api_ship
             continue if shipId == -1
             shipName[i] = _ships[shipId].api_name
@@ -247,6 +246,7 @@ module.exports =
               [shipName, shipLv, maxHp, nowHp, enemyFormation, enemyTyku] = getMapEnemy shipName, shipLv, maxHp, nowHp, enemyFormation, enemyTyku, enemyInformation[body.api_enemy.api_enemy_id]
             else
               jsonId = body.api_enemy.api_enemy_id
+          afterHp = Object.clone nowHp
 
         when '/kcsapi/api_req_map/next'
           jsonId = null
@@ -301,6 +301,62 @@ module.exports =
           damageHp = getDamage damageHp, nowHp, afterHp, 0
           nowHp = Object.clone afterHp
 
+        when '/kcsapi/api_req_battle_midnight/sp_midnight'
+          for tmp, i in shipLv
+            shipLv[i] = -1
+          {_decks} = window
+          flag = true
+          getShip = null
+          [shipName, shipLv] = getInfo shipName, shipLv, _decks[body.api_deck_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv
+          [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
+          afterHp = Object.clone nowHp
+          if body.api_formation?
+            enemyIntercept = body.api_formation[2]
+          if jsonId?
+            jsonContent.ship = Object.clone body.api_ship_ke
+            jsonContent.ship.splice 0, 1
+            jsonContent.lv = Object.clone body.api_ship_lv
+            jsonContent.lv.splice 0, 1
+            jsonContent.formation = body.api_formation[1]
+            jsonContent.totalTyku = getTyku jsonContent.ship, body.api_eSlot
+            jsonContent.hp = Object.clone maxHp
+            jsonContent.hp.splice 0, 6
+            enemyFormation = jsonContent.formation
+            enemyTyku = jsonContent.totalTyku
+          if body.api_hougeki?
+            afterHp = hougekiAttack afterHp, body.api_hougeki
+          damageHp = getDamage damageHp, nowHp, afterHp, 0
+          nowHp = Object.clone afterHp
+
+        when '/kcsapi/api_req_sortie/airbattle'
+          for tmp, i in shipLv
+            shipLv[i] = -1
+          {_decks} = window
+          flag = true
+          getShip = null
+          [shipName, shipLv] = getInfo shipName, shipLv, _decks[body.api_dock_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv
+          [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
+          afterHp = Object.clone nowHp
+          if body.api_formation?
+            enemyIntercept = body.api_formation[2]
+          if jsonId?
+            jsonContent.ship = Object.clone body.api_ship_ke
+            jsonContent.ship.splice 0, 1
+            jsonContent.lv = Object.clone body.api_ship_lv
+            jsonContent.lv.splice 0, 1
+            jsonContent.formation = body.api_formation[1]
+            jsonContent.totalTyku = getTyku jsonContent.ship, body.api_eSlot
+            jsonContent.hp = Object.clone maxHp
+            jsonContent.hp.splice 0, 6
+            enemyFormation = jsonContent.formation
+            enemyTyku = jsonContent.totalTyku
+          if body.api_kouku?
+            afterHp = koukuAttack afterHp, body.api_kouku.api_stage3
+          if body.api_kouku2?
+            afterHp = koukuAttack afterHp, body.api_kouku2.api_stage3
+          damageHp = getDamage damageHp, nowHp, afterHp, 0
+          nowHp = Object.clone afterHp
+
         when '/kcsapi/api_req_battle_midnight/battle'
           flag = true
           nowHp = Object.clone afterHp
@@ -342,63 +398,6 @@ module.exports =
           if body.api_hougeki?
             afterHp = hougekiAttack afterHp, body.api_hougeki
           damageHp = getDamage damageHp, nowHp, afterHp, 1
-          nowHp = Object.clone afterHp
-
-
-        when '/kcsapi/api_req_battle_midnight/sp_midnight'
-          for tmp, i in shipLv
-            shipLv[i] = -1
-          {_decks} = window
-          flag = true
-          getShip = null
-          [shipName, shipLv] = getInfo shipName, shipLv, _decks[body.api_deck_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv
-          [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
-          afterHp = Object.clone nowHp
-          if body.api_formation?
-            enemyIntercept = body.api_formation[2]
-          if jsonId?
-            jsonContent.ship = Object.clone body.api_ship_ke
-            jsonContent.ship.splice 0, 1
-            jsonContent.lv = Object.clone body.api_ship_lv
-            jsonContent.lv.splice 0, 1
-            jsonContent.formation = body.api_formation[1]
-            jsonContent.totalTyku = getTyku jsonContent.ship, body.api_eSlot
-            jsonContent.hp = Object.clone maxHp
-            jsonContent.hp.splice 0, 6
-            enemyFormation = jsonContent.formation
-            enemyTyku = jsonContent.totalTyku
-          if body.api_hougeki?
-            afterHp = hougekiAttack afterHp, body.api_hougeki
-          damageHp = getDamage damageHp, nowHp, afterHp, 0
-          nowHp = Object.clone afterHp
-
-        when '/kcsapi/api_req_sortie/airbattle'
-          for tmp, i in shipLv
-            shipLv[i] = -1
-          {_decks} = window
-          flag = true
-          getShip = null
-          [shipName, shipLv] = getInfo shipName, shipLv, _decks[body.api_deck_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv
-          [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
-          afterHp = Object.clone nowHp
-          if body.api_formation?
-            enemyIntercept = body.api_formation[2]
-          if jsonId?
-            jsonContent.ship = Object.clone body.api_ship_ke
-            jsonContent.ship.splice 0, 1
-            jsonContent.lv = Object.clone body.api_ship_lv
-            jsonContent.lv.splice 0, 1
-            jsonContent.formation = body.api_formation[1]
-            jsonContent.totalTyku = getTyku jsonContent.ship, body.api_eSlot
-            jsonContent.hp = Object.clone maxHp
-            jsonContent.hp.splice 0, 6
-            enemyFormation = jsonContent.formation
-            enemyTyku = jsonContent.totalTyku
-          if body.api_kouku?
-            afterHp = koukuAttack afterHp, body.api_kouku.api_stage3
-          if body.api_kouku2?
-            afterHp = koukuAttack afterHp, body.api_kouku2.api_stage3
-          damageHp = getDamage damageHp, nowHp, afterHp, 0
           nowHp = Object.clone afterHp
 
         when '/kcsapi/api_req_sortie/battleresult'
