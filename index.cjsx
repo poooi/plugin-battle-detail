@@ -45,7 +45,7 @@ intercept = [
 enemyPath = join(APPDATA_PATH, 'enemyinfo.json')
 db = null
 try
-  db = fs.readJsonSync(enemyPath, 'utf8')
+  db = fs.readJsonSync enemyPath
 catch e
   false
 enemyInformation = {}
