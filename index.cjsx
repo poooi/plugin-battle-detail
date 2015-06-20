@@ -126,6 +126,34 @@ getHp = (maxHp, nowHp, maxHps, nowHps) ->
     nowHp[i - 1] = nowHps[i]
   [maxHp, nowHp]
 
+getResult = (damageHp, nowHp) ->
+  friendDamage = 0.0
+  enemyDamage = 0.0
+  friendDrop = 0
+  enemyDrop = 0
+  enemyCount = 0
+  for tmp, i in nowHp
+    continue if i == 0
+    if i < 6
+      enemyDamage += damageHp[i]
+    else
+      enemyCount += 1
+      friendDamage += damageHp[i]
+      if nowHp[i] - damageHp[i] <= 0
+        enemyDrop += 1
+  tmpResult = "不明"
+  if enemyDrop == enemyCount
+    tmpResult = "S"
+  else if enemyDrop >= Math.ceil(enemyCount * 1.0 / 2.0)
+    tmpResult = "A"
+  else if nowHp[6] - damageHp[6] <= 0 || friendDamage >= 2.5 * enemyDamage
+    tmpResult = "B"
+  else if friendDamage >= 1 * enemyDamage && friendDamage <= 2.5 * enemyDamage
+    tmpResult = "C"
+  else
+    tmpResult = "D"
+  tmpResult
+
 koukuAttack = (afterHp, kouku) ->
   if kouku.api_edam?
     for damage, i in kouku.api_edam
@@ -184,9 +212,11 @@ getDamage = (damageHp, nowHp, afterHp, minHp) ->
   damageHp
 
 supportAttack = (afterHp, damages) ->
+  console.log damages
   for damage, i in damages
     damage = Math.floor(damage)
     continue if damage <= 0
+    continue if i > 6
     afterHp[i + 5] -= damage
   afterHp
 
@@ -214,15 +244,17 @@ module.exports =
       enemyTyku: 0
       enemyIntercept: 0
       enemyName: "深海棲艦"
+      result: "不明"
     handleResponse: (e) ->
       {method, path, body, postBody} = e.detail
-      {afterHp, nowHp, maxHp, damageHp, shipName, shipLv, enemyInfo, getShip, enemyFormation, enemyTyku, enemyIntercept, enemyName} = @state
+      {afterHp, nowHp, maxHp, damageHp, shipName, shipLv, enemyInfo, getShip, enemyFormation, enemyTyku, enemyIntercept, enemyName, result} = @state
       if path == '/kcsapi/api_req_map/start' || formationFlag
         @setState
           enemyInformation: 0
           enemyTyku: 0
           enemyIntercept: 0
           enemyName: "深海棲艦"
+          result: "不明"
         formationFlag = false
       flag = false
       switch path
@@ -297,8 +329,14 @@ module.exports =
           if body.api_raigeki?
             afterHp = raigekiAttack afterHp, body.api_raigeki
           if body.api_support_info?
-            afterHp = supportAttack afterHp, body.api_support_info.api_damage
+            if body.api_support_info.api_support_airatack?
+              afterHp = supportAttack afterHp, body.api_support_info.api_support_airatack.api_stage3.api_edam
+            else if body.api_support_info.api_support_hourai?
+              afterHp = supportAttack afterHp, body.api_support_info.api_support_hourai.api_damage
+            else
+              afterHp = supportAttack afterHp, body.api_support_info.api_damage
           damageHp = getDamage damageHp, nowHp, afterHp, 0
+          result = getResult damageHp, nowHp
           nowHp = Object.clone afterHp
 
         when '/kcsapi/api_req_battle_midnight/sp_midnight'
@@ -326,6 +364,7 @@ module.exports =
           if body.api_hougeki?
             afterHp = hougekiAttack afterHp, body.api_hougeki
           damageHp = getDamage damageHp, nowHp, afterHp, 0
+          result = getResult damageHp, nowHp
           nowHp = Object.clone afterHp
 
         when '/kcsapi/api_req_sortie/airbattle'
@@ -355,6 +394,7 @@ module.exports =
           if body.api_kouku2?
             afterHp = koukuAttack afterHp, body.api_kouku2.api_stage3
           damageHp = getDamage damageHp, nowHp, afterHp, 0
+          result = getResult damageHp, nowHp
           nowHp = Object.clone afterHp
 
         when '/kcsapi/api_req_battle_midnight/battle'
@@ -390,6 +430,7 @@ module.exports =
           if body.api_raigeki?
             afterHp = raigekiAttack afterHp, body.api_raigeki
           damageHp = getDamage damageHp, nowHp, afterHp, 1
+          result = getResult damageHp, nowHp
           nowHp = Object.clone afterHp
 
         when '/kcsapi/api_req_practice/midnight_battle'
@@ -411,6 +452,7 @@ module.exports =
             enemyInfo = null
             getShip = null
           formationFlag = true
+          result = body.api_win_rank
 
       return unless flag
       @setState
@@ -425,6 +467,7 @@ module.exports =
         enemyTyku: enemyTyku
         enemyIntercept: enemyIntercept
         enemyName: enemyName
+        result: result
 
     componentDidMount: ->
       window.addEventListener 'game.response', @handleResponse
@@ -484,7 +527,7 @@ module.exports =
             if @state.getShip? && @state.enemyInfo?
               "提督さん、#{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」が戦列に加わりました"
             else
-              "提督さん、 敵陣形「#{formation[@state.enemyFormation]}」敵制空値「#{@state.enemyTyku}」「#{intercept[@state.enemyIntercept]}」"
+              "提督さん、 敵陣形「#{formation[@state.enemyFormation]}」敵制空値「#{@state.enemyTyku}」「#{intercept[@state.enemyIntercept]} | #{@state.result}」"
           }
           </Alert>
         </div>
@@ -530,7 +573,7 @@ module.exports =
             if @state.getShip? && @state.enemyInfo?
               "提督さん、#{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」が戦列に加わりました"
             else
-              "提督さん、 敵陣形「#{formation[@state.enemyFormation]}」敵制空値「#{@state.enemyTyku}」「#{intercept[@state.enemyIntercept]}」"
+              "提督さん、 敵陣形「#{formation[@state.enemyFormation]}」敵制空値「#{@state.enemyTyku}」「#{intercept[@state.enemyIntercept]} | #{@state.result}」"
           }
           </Alert>
         </div>
