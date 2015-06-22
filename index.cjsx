@@ -10,6 +10,16 @@ fs = require 'fs-extra'
 window.addEventListener 'layout.change', (e) ->
   {layout} = e.detail
 
+getCondStyle = (cond) ->
+  if cond > 49
+    color: '#FFFF00'
+  else if cond < 20
+    color: '#DD514C'
+  else if cond < 30
+    color: '#F37B1D'
+  else
+    null
+
 getHpStyle = (percent) ->
   if percent <= 25
     'danger'
@@ -245,9 +255,11 @@ module.exports =
       enemyIntercept: 0
       enemyName: "深海棲艦"
       result: "不明"
+      shipCond: [0, 0, 0, 0, 0, 0]
+      deckId: 0
     handleResponse: (e) ->
       {method, path, body, postBody} = e.detail
-      {afterHp, nowHp, maxHp, damageHp, shipName, shipLv, enemyInfo, getShip, enemyFormation, enemyTyku, enemyIntercept, enemyName, result} = @state
+      {afterHp, nowHp, maxHp, damageHp, shipName, shipLv, enemyInfo, getShip, enemyFormation, enemyTyku, enemyIntercept, enemyName, result, shipCond, deckId} = @state
       if path == '/kcsapi/api_req_map/start' || formationFlag
         @setState
           enemyInformation: 0
@@ -270,6 +282,7 @@ module.exports =
             shipLv[i] = _ships[shipId].api_lv
             maxHp[i] = _ships[shipId].api_maxhp
             nowHp[i] = _ships[shipId].api_nowhp
+            deckId = postBody.api_deck_id - 1
           for tmp, i in shipLv
             damageHp[i] = 0
           getShip = null
@@ -453,7 +466,14 @@ module.exports =
             getShip = null
           formationFlag = true
           result = body.api_win_rank
-
+        when '/kcsapi/api_port/port'
+          flag = true
+          _deck = window._decks[deckId]
+          {_ships} = window
+          for shipId, i in _deck.api_ship
+            continue if shipId == -1
+            shipCond[i] = _ships[shipId].api_cond
+          shipLv[i] = -1 for i in [6..11]
       return unless flag
       @setState
         afterHp: afterHp
@@ -468,6 +488,8 @@ module.exports =
         enemyIntercept: enemyIntercept
         enemyName: enemyName
         result: result
+        shipCond: shipCond
+        deckId: deckId
 
     componentDidMount: ->
       window.addEventListener 'game.response', @handleResponse
@@ -489,7 +511,7 @@ module.exports =
                 continue unless @state.shipLv[i] != -1
                 continue unless i < 6
                 <tr key={i + 1}>
-                  <td>Lv. {@state.shipLv[i]} - {tmpName}</td>
+                  <td style={getCondStyle @state.shipCond[i]}>Lv. {@state.shipLv[i]} - {tmpName} Cond: {@state.shipCond[i]}</td>
                   <td className="hp-progress">
                     <ProgressBar bsStyle={getHpStyle @state.nowHp[i] / @state.maxHp[i] * 100}
                       now={@state.nowHp[i] / @state.maxHp[i] * 100}
@@ -553,7 +575,7 @@ module.exports =
                   for j in [0..1]
                     list.push <td>　</td>
                 else
-                  list.push <td>Lv. {@state.shipLv[i]} - {tmpName}</td>
+                  list.push <td style={getCondStyle @state.shipCond[i]}>Lv. {@state.shipLv[i]} - {tmpName} Cond: {@state.shipCond[i]}</td>
                   list.push <td className="hp-progress"><ProgressBar bsStyle={getHpStyle @state.nowHp[i] / @state.maxHp[i] * 100} now={@state.nowHp[i] / @state.maxHp[i] * 100} label={if @state.damageHp[i] > 0 then "#{@state.nowHp[i]} / #{@state.maxHp[i]} (-#{@state.damageHp[i]})" else "#{@state.nowHp[i]} / #{@state.maxHp[i]}"} /></td>
                 if @state.shipLv[i + 6] == -1
                   for j in [0..1]
