@@ -133,7 +133,7 @@ getResult = (damageHp, nowHp) ->
   enemyDrop = 0
   enemyCount = 0
   for tmp, i in nowHp
-    continue if i == 0
+    continue if tmp == -1
     if i < 6
       enemyDamage += damageHp[i]
     else
@@ -142,6 +142,11 @@ getResult = (damageHp, nowHp) ->
       if nowHp[i] - damageHp[i] <= 0
         enemyDrop += 1
   tmpResult = "不明"
+  console.log friendDamage
+  console.log enemyDamage
+  console.log friendDrop
+  console.log enemyDrop
+  console.log enemyCount
   if enemyDrop == enemyCount
     tmpResult = "S"
   else if enemyDrop >= Math.ceil(enemyCount * 1.0 / 2.0)
@@ -550,13 +555,13 @@ module.exports =
                 continue if i >= 6
                 list = []
                 if @state.shipLv[i] == -1
-                  for j in [0..2]
+                  for j in [0..1]
                     list.push <td>　</td>
                 else
                   list.push <td>Lv. {@state.shipLv[i]} - {tmpName}</td>
                   list.push <td className="hp-progress"><ProgressBar bsStyle={getHpStyle @state.nowHp[i] / @state.maxHp[i] * 100} now={@state.nowHp[i] / @state.maxHp[i] * 100} label={if @state.damageHp[i] > 0 then "#{@state.nowHp[i]} / #{@state.maxHp[i]} (-#{@state.damageHp[i]})" else "#{@state.nowHp[i]} / #{@state.maxHp[i]}"} /></td>
                 if @state.shipLv[i + 6] == -1
-                  for j in [0..2]
+                  for j in [0..1]
                     list.push <td>　</td>
                 else
                   list.push <td>Lv. {@state.shipLv[i + 6]} - {@state.shipName[i + 6]}</td>
