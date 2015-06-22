@@ -142,11 +142,6 @@ getResult = (damageHp, nowHp) ->
       if nowHp[i] - damageHp[i] <= 0
         enemyDrop += 1
   tmpResult = "不明"
-  console.log friendDamage
-  console.log enemyDamage
-  console.log friendDrop
-  console.log enemyDrop
-  console.log enemyCount
   if enemyDrop == enemyCount
     tmpResult = "S"
   else if enemyDrop >= Math.ceil(enemyCount * 1.0 / 2.0)
