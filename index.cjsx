@@ -52,6 +52,10 @@ intercept = [
   "同航戦"
 ]
 
+dropCount = [
+  0, 1, 1, 2, 2, 3, 4
+]
+
 enemyPath = join(APPDATA_PATH, 'enemyinfo.json')
 db = null
 try
@@ -142,23 +146,29 @@ getResult = (damageHp, nowHp) ->
   friendDrop = 0
   enemyDrop = 0
   enemyCount = 0
+  friendHp = 0.0
+  enemyHp = 0.0
   for tmp, i in nowHp
     continue if tmp == -1
     if i < 6
       enemyDamage += damageHp[i]
+      friendHp += tmp
     else
       enemyCount += 1
+      enemyHp += tmp
       friendDamage += damageHp[i]
       if nowHp[i] - damageHp[i] <= 0
         enemyDrop += 1
+      friendDamage = Math.min(nowHp[i], damageHp[i])
   tmpResult = "不明"
+  tmp = (friendDamage / enemyHp) / (enemyDamage / friendHp)
   if enemyDrop == enemyCount
     tmpResult = "S"
-  else if enemyDrop >= Math.ceil(enemyCount * 1.0 / 2.0)
+  else if enemyDrop >= dropCount[enemyCount]
     tmpResult = "A"
-  else if nowHp[6] - damageHp[6] <= 0 || friendDamage >= 2.5 * enemyDamage
+  else if nowHp[6] - damageHp[6] <= 0 || tmp >= 2.5
     tmpResult = "B"
-  else if friendDamage >= 1 * enemyDamage && friendDamage <= 2.5 * enemyDamage
+  else if tmp >= 1 && tmp <= 2.5
     tmpResult = "C"
   else
     tmpResult = "D"
@@ -215,8 +225,6 @@ raigekiAttack = (afterHp, raigeki) ->
 
 getDamage = (damageHp, nowHp, afterHp, minHp) ->
   for tmp, i in afterHp
-    if minHp == 1
-      afterHp[i] = Math.max(tmp, minHp)
     damageHp[i] = nowHp[i] - afterHp[i]
     afterHp[i] = Math.max(tmp, minHp)
   damageHp
@@ -454,6 +462,10 @@ module.exports =
           damageHp = getDamage damageHp, nowHp, afterHp, 1
           nowHp = Object.clone afterHp
 
+        when '/kcspai/api_req_practice/battle_result'
+          flag = true
+          result = body.api_win_rank
+
         when '/kcsapi/api_req_sortie/battleresult'
           flag = true
           if jsonId?
@@ -472,6 +484,11 @@ module.exports =
           {_ships} = window
           for shipId, i in _deck.api_ship
             continue if shipId == -1
+            shipName[i] = _ships[shipId].api_name
+            shipLv[i] = _ships[shipId].api_lv
+            maxHp[i] = _ships[shipId].api_maxhp
+            nowHp[i] = _ships[shipId].api_nowhp
+            damageHp[i] = 0
             shipCond[i] = _ships[shipId].api_cond
           shipLv[i] = -1 for i in [6..11]
       return unless flag
