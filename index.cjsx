@@ -156,19 +156,18 @@ getResult = (damageHp, nowHp) ->
     else
       enemyCount += 1
       enemyHp += tmp
-      friendDamage += damageHp[i]
       if nowHp[i] - damageHp[i] <= 0
         enemyDrop += 1
-      friendDamage = Math.min(nowHp[i], damageHp[i])
+      friendDamage += Math.min(nowHp[i], damageHp[i])
   tmpResult = "不明"
   tmp = (friendDamage / enemyHp) / (enemyDamage / friendHp)
   if enemyDrop == enemyCount
     tmpResult = "S"
   else if enemyDrop >= dropCount[enemyCount]
     tmpResult = "A"
-  else if nowHp[6] - damageHp[6] <= 0 || tmp >= 2.5
+  else if nowHp[6] - damageHp[6] <= 0 || friendDamage / enemyHp >= 2.5 * enemyDamage / friendHp
     tmpResult = "B"
-  else if tmp >= 1 && tmp <= 2.5
+  else if friendDamage / enemyHp >= 1 * enemyDamage / friendHp && friendDamage / enemyHp <= 2.5 * enemyDamage / friendHp
     tmpResult = "C"
   else
     tmpResult = "D"
