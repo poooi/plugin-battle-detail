@@ -245,7 +245,7 @@ module.exports =
   priority: 1
   displayName: [<FontAwesome key={0} name='compass' />, ' 未卜先知']
   description: '战况预知'
-  version: '1.1.0'
+  version: '2.0.0'
   author: 'Chiba'
   link: 'https://github.com/Chibaheit'
   reactClass: React.createClass
