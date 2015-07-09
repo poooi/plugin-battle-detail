@@ -165,9 +165,9 @@ getResult = (damageHp, nowHp) ->
     tmpResult = "S"
   else if enemyDrop >= dropCount[enemyCount]
     tmpResult = "A"
-  else if nowHp[6] - damageHp[6] <= 0 || friendDamage / enemyHp >= 2.5 * enemyDamage / friendHp
+  else if (nowHp[6] - damageHp[6] <= 0 || friendDamage / enemyHp >= 2.5 * enemyDamage / friendHp) && friendDamage != 0
     tmpResult = "B"
-  else if friendDamage / enemyHp >= 1 * enemyDamage / friendHp && friendDamage / enemyHp <= 2.5 * enemyDamage / friendHp
+  else if (friendDamage / enemyHp >= 1 * enemyDamage / friendHp && friendDamage / enemyHp <= 2.5 * enemyDamage / friendHp) &&friendDamage != 0
     tmpResult = "C"
   else
     tmpResult = "D"
