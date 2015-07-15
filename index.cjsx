@@ -523,7 +523,7 @@ module.exports =
       window.addEventListener 'game.response', @handleResponse
 
     render: ->
-      if layout == 'horizonal'
+      if layout == 'horizonal' || window.doubleTabbed
         <div>
           <link rel="stylesheet" href={join(relative(ROOT, __dirname), 'assets', 'prophet.css')} />
           <Alert>
