@@ -256,7 +256,7 @@ formationFlag = false
 module.exports =
   name: 'prophet'
   priority: 1
-  displayName: [<FontAwesome key={0} name='compass' />, ' 未卜先知']
+  displayName: <span><FontAwesome key={0} name='compass' /> 未卜先知</span>
   description: '战况预知'
   version: '2.0.0'
   author: 'Chiba'
