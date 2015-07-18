@@ -337,6 +337,7 @@ module.exports =
           afterHp = Object.clone nowHp
           getShip = null
           if body.api_formation?
+            enemyFormation = body.api_formation[1]
             enemyIntercept = body.api_formation[2]
           if jsonId?
             jsonContent.ship = Object.clone body.api_ship_ke
@@ -382,6 +383,7 @@ module.exports =
           [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
           afterHp = Object.clone nowHp
           if body.api_formation?
+            enemyFormation = body.api_formation[1]
             enemyIntercept = body.api_formation[2]
           if jsonId?
             jsonContent.ship = Object.clone body.api_ship_ke
@@ -410,6 +412,7 @@ module.exports =
           [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
           afterHp = Object.clone nowHp
           if body.api_formation?
+            enemyFormation = body.api_formation[1]
             enemyIntercept = body.api_formation[2]
           if jsonId?
             jsonContent.ship = Object.clone body.api_ship_ke
@@ -422,9 +425,9 @@ module.exports =
             jsonContent.hp.splice 0, 6
             enemyFormation = jsonContent.formation
             enemyTyku = jsonContent.totalTyku
-          if body.api_kouku?
+          if body.api_kouku? && body.api_kouku.api_stage3?
             afterHp = koukuAttack afterHp, body.api_kouku.api_stage3
-          if body.api_kouku2?
+          if body.api_kouku2? && body.api_kouku2.api_stage3?
             afterHp = koukuAttack afterHp, body.api_kouku2.api_stage3
           damageHp = getDamage damageHp, nowHp, afterHp, 0
           result = getResult damageHp, nowHp
@@ -577,7 +580,7 @@ module.exports =
             if @state.getShip? && @state.enemyInfo?
               "提督さん、#{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」が戦列に加わりました"
             else
-              "提督さん、 敵陣形「#{formation[@state.enemyFormation]}」敵制空値「#{@state.enemyTyku}」「#{intercept[@state.enemyIntercept]} | #{@state.result}」"
+              "提督さん、 敵陣形「#{formation[@state.enemyFormation]}」「#{intercept[@state.enemyIntercept]} | #{@state.result}」"
           }
           </Alert>
         </div>
@@ -623,7 +626,7 @@ module.exports =
             if @state.getShip? && @state.enemyInfo?
               "提督さん、#{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」が戦列に加わりました"
             else
-              "提督さん、 敵陣形「#{formation[@state.enemyFormation]}」敵制空値「#{@state.enemyTyku}」「#{intercept[@state.enemyIntercept]} | #{@state.result}」"
+              "提督さん、 敵陣形「#{formation[@state.enemyFormation]}」「#{intercept[@state.enemyIntercept]} | #{@state.result}」"
           }
           </Alert>
         </div>
