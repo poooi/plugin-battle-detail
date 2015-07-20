@@ -493,6 +493,15 @@ module.exports =
             getShip = null
           formationFlag = true
           result = body.api_win_rank
+          event = new CustomEvent 'battle.result',
+            bubbles: true
+            cancelable: true
+            detail:
+              isCombined: false
+              nowHp: @state.nowHp
+              enemyId: body.api_ship_id
+              rank: body.api_win_rank
+          window.dispatchEvent event
         when '/kcsapi/api_port/port'
           flag = true
           _deck = window._decks[deckId]
