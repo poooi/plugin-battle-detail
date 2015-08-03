@@ -452,6 +452,7 @@ module.exports =
           [shipName, shipLv] = getInfo shipName, shipLv, _decks[body.api_dock_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv
           [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
           if body.api_formation?
+            enemyFormation = body.api_formation[1]
             enemyIntercept = body.api_formation[2]
           afterHp = Object.clone nowHp
           if body.api_kouku.api_stage3?
