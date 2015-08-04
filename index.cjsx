@@ -132,7 +132,7 @@ getMapEnemy = (shipName, shipLv, maxHp, nowHp, enemyFormation, enemyTyku, enemyI
   enemyTyku = enemyInfo.totalTyku
   [shipName, shipLv, maxHp, nowHp, enemyFormation, enemyTyku]
 
-getInfo = (shipName, shipLv, friend, enemy, enemyLv) ->
+getInfo = (shipName, shipLv, friend, enemy, enemyLv, exerciseFlag) ->
   {$ships, _ships} = window
   for shipId, i in friend
     continue if shipId == -1
@@ -144,7 +144,10 @@ getInfo = (shipName, shipLv, friend, enemy, enemyLv) ->
     if $ships[shipId].api_yomi == "-"
       shipName[i + 5] = $ships[shipId].api_name
     else
-      shipName[i + 5] = $ships[shipId].api_name + $ships[shipId].api_yomi
+      if exerciseFlag == 0
+        shipName[i + 5] = $ships[shipId].api_name + $ships[shipId].api_yomiapi_yomi
+      else
+        shipName[i + 5] = $ships[shipId].api_name
   [shipName, shipLv]
 
 getHp = (maxHp, nowHp, maxHps, nowHps) ->
@@ -276,10 +279,11 @@ module.exports =
       enemyIntercept: 0
       enemyName: "深海棲艦"
       result: "不明"
+      shipCond: [0, 0, 0, 0, 0, 0]
       deckId: 0
     handleResponse: (e) ->
       {method, path, body, postBody} = e.detail
-      {afterHp, nowHp, maxHp, damageHp, shipName, shipLv, enemyInfo, getShip, enemyFormation, enemyTyku, enemyIntercept, enemyName, result, deckId} = @state
+      {afterHp, nowHp, maxHp, damageHp, shipName, shipLv, enemyInfo, getShip, enemyFormation, enemyTyku, enemyIntercept, enemyName, result, shipCond, deckId} = @state
       if path == '/kcsapi/api_req_map/start' || formationFlag
         @setState
           enemyFormation: 0
@@ -333,7 +337,7 @@ module.exports =
             shipLv[i] = -1
           {_decks} = window
           flag = true
-          [shipName, shipLv] = getInfo shipName, shipLv, _decks[body.api_dock_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv
+          [shipName, shipLv] = getInfo shipName, shipLv, _decks[body.api_dock_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv, 0
           [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
           afterHp = Object.clone nowHp
           getShip = null
@@ -380,7 +384,7 @@ module.exports =
           {_decks} = window
           flag = true
           getShip = null
-          [shipName, shipLv] = getInfo shipName, shipLv, _decks[body.api_deck_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv
+          [shipName, shipLv] = getInfo shipName, shipLv, _decks[body.api_deck_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv, 0
           [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
           afterHp = Object.clone nowHp
           if body.api_formation?
@@ -409,7 +413,7 @@ module.exports =
           {_decks} = window
           flag = true
           getShip = null
-          [shipName, shipLv] = getInfo shipName, shipLv, _decks[body.api_dock_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv
+          [shipName, shipLv] = getInfo shipName, shipLv, _decks[body.api_dock_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv, 0
           [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
           afterHp = Object.clone nowHp
           if body.api_formation?
@@ -449,7 +453,7 @@ module.exports =
           flag = true
           getShip = null
           enemyName = "演習相手"
-          [shipName, shipLv] = getInfo shipName, shipLv, _decks[body.api_dock_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv
+          [shipName, shipLv] = getInfo shipName, shipLv, _decks[body.api_dock_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv, 1
           [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
           if body.api_formation?
             enemyFormation = body.api_formation[1]
@@ -507,6 +511,7 @@ module.exports =
             maxHp[i] = _ships[shipId].api_maxhp
             nowHp[i] = _ships[shipId].api_nowhp
             damageHp[i] = 0
+            shipCond[i] = _ships[shipId].api_cond
           shipLv[i] = -1 for i in [6..11]
       return unless flag
       @setState
@@ -522,6 +527,7 @@ module.exports =
         enemyIntercept: enemyIntercept
         enemyName: enemyName
         result: result
+        shipCond: shipCond
         deckId: deckId
 
     componentDidMount: ->
@@ -544,7 +550,12 @@ module.exports =
                 continue unless @state.shipLv[i] != -1
                 continue unless i < 6
                 <tr key={i + 1}>
-                  <td>Lv. {@state.shipLv[i]} - {tmpName}</td>
+                  <td>
+                    Lv. {@state.shipLv[i]} - {tmpName}
+                    <span  style={getCondStyle @state.shipCond[i]}>
+                      <FontAwesome key={1} name='star-o' />{@state.shipCond[i]}
+                    </span>
+                  </td>
                   <td className="hp-progress">
                     <ProgressBar bsStyle={getHpStyle @state.nowHp[i] / @state.maxHp[i] * 100}
                       now={@state.nowHp[i] / @state.maxHp[i] * 100}
@@ -608,7 +619,7 @@ module.exports =
                   for j in [0..1]
                     list.push <td>　</td>
                 else
-                  list.push <td>Lv. {@state.shipLv[i]} - {tmpName}</td>
+                  list.push <td>Lv. {@state.shipLv[i]} - {tmpName} <span  style={getCondStyle @state.shipCond[i]}><FontAwesome key={1} name='star-o' />{@state.shipCond[i]}</span></td>
                   list.push <td className="hp-progress"><ProgressBar bsStyle={getHpStyle @state.nowHp[i] / @state.maxHp[i] * 100} now={@state.nowHp[i] / @state.maxHp[i] * 100} label={if @state.damageHp[i] > 0 then "#{@state.nowHp[i]} / #{@state.maxHp[i]} (-#{@state.damageHp[i]})" else "#{@state.nowHp[i]} / #{@state.maxHp[i]}"} /></td>
                 if @state.shipLv[i + 6] == -1
                   for j in [0..1]
