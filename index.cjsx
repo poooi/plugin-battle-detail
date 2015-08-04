@@ -145,7 +145,7 @@ getInfo = (shipName, shipLv, friend, enemy, enemyLv, exerciseFlag) ->
       shipName[i + 5] = $ships[shipId].api_name
     else
       if exerciseFlag == 0
-        shipName[i + 5] = $ships[shipId].api_name + $ships[shipId].api_yomiapi_yomi
+        shipName[i + 5] = $ships[shipId].api_name + $ships[shipId].api_yomi
       else
         shipName[i + 5] = $ships[shipId].api_name
   [shipName, shipLv]
