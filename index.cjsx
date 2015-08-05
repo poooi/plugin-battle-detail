@@ -489,6 +489,11 @@ module.exports =
 
         when '/kcsapi/api_req_sortie/battleresult'
           flag = true
+          for tmpHp, i in nowHp
+            if i < 6 && tmpHp <= (maxHp[i] * 0.25)
+              notify "#{shipName[i]} 大破",
+                type: 'expedition'
+                icon: join(ROOT, 'assets', 'img', 'material', '6_big.png')
           if jsonId?
             updateJson jsonId, jsonContent
           if body.api_get_ship?
