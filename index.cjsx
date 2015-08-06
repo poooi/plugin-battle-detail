@@ -4,7 +4,7 @@ request = Promise.promisifyAll require('request')
 {relative, join} = require 'path-extra'
 fs = require 'fs-extra'
 {_, $, $$, React, ReactBootstrap, ROOT, resolveTime, layout, toggleModal} = window
-{Table, ProgressBar, Grid, Input, Col, Alert} = ReactBootstrap
+{Table, ProgressBar, Grid, Input, Col, Alert, Button} = ReactBootstrap
 {APPDATA_PATH, SERVER_HOSTNAME} = window
 
 window.addEventListener 'layout.change', (e) ->
@@ -489,11 +489,14 @@ module.exports =
 
         when '/kcsapi/api_req_sortie/battleresult'
           flag = true
+          tmpShip = " "
           for tmpHp, i in nowHp
             if i < 6 && tmpHp < (maxHp[i] * 0.2500001)
-              notify "#{shipName[i]} 大破",
-                type: 'damaged'
-                icon: join(ROOT, 'views', 'components', 'ship', 'assets', 'img', 'state', '4.png')
+              tmpShip = tmpShip + " " + shipName[i]
+          if tmpShip != " "
+            notify "#{tmpShip} 大破",
+              type: 'damaged'
+              icon: join(ROOT, 'views', 'components', 'ship', 'assets', 'img', 'state', '4.png')
           if jsonId?
             updateJson jsonId, jsonContent
           if body.api_get_ship?
@@ -534,6 +537,8 @@ module.exports =
         result: result
         shipCond: shipCond
         deckId: deckId
+        enableProphetDamaged: enableProphetDamaged
+        prophetCondShow: prophetCondShow
 
     componentDidMount: ->
       window.addEventListener 'game.response', @handleResponse
@@ -557,9 +562,9 @@ module.exports =
                 <tr key={i + 1}>
                   <td>
                     Lv. {@state.shipLv[i]} - {tmpName}
-                    <span  style={getCondStyle @state.shipCond[i]}>
-                      <FontAwesome key={1} name='star-o' />{@state.shipCond[i]}
-                    </span>
+                        <span  style={getCondStyle @state.shipCond[i]}>
+                          <FontAwesome key={1} name='star-o' />{@state.shipCond[i]}
+                        </span>
                   </td>
                   <td className="hp-progress">
                     <ProgressBar bsStyle={getHpStyle @state.nowHp[i] / @state.maxHp[i] * 100}
@@ -597,7 +602,7 @@ module.exports =
           {
             if @state.getShip? && @state.enemyInfo?
               "提督さん、#{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」が戦列に加わりました"
-            else
+            else if @state.enemyFormation != 0
               "提督さん、 敵陣形「#{formation[@state.enemyFormation]}」「#{intercept[@state.enemyIntercept]} | #{@state.result}」"
           }
           </Alert>
@@ -624,7 +629,13 @@ module.exports =
                   for j in [0..1]
                     list.push <td>　</td>
                 else
-                  list.push <td>Lv. {@state.shipLv[i]} - {tmpName} <span  style={getCondStyle @state.shipCond[i]}><FontAwesome key={1} name='star-o' />{@state.shipCond[i]}</span></td>
+                  list.push <td>
+                    Lv. {@state.shipLv[i]} - {tmpName}
+                    <span  style={getCondStyle @state.shipCond[i]}>
+                      <FontAwesome key={1} name='star-o' />{@state.shipCond[i]}
+                    </span>
+                    <span  style={getCondStyle @state.shipCond[i]}><FontAwesome key={1} name='star-o' />{@state.shipCond[i]}</span>
+                  </td>
                   list.push <td className="hp-progress"><ProgressBar bsStyle={getHpStyle @state.nowHp[i] / @state.maxHp[i] * 100} now={@state.nowHp[i] / @state.maxHp[i] * 100} label={if @state.damageHp[i] > 0 then "#{@state.nowHp[i]} / #{@state.maxHp[i]} (-#{@state.damageHp[i]})" else "#{@state.nowHp[i]} / #{@state.maxHp[i]}"} /></td>
                 if @state.shipLv[i + 6] == -1
                   for j in [0..1]
@@ -643,7 +654,7 @@ module.exports =
           {
             if @state.getShip? && @state.enemyInfo?
               "提督さん、#{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」が戦列に加わりました"
-            else
+            else if @state.enemyFormation != 0
               "提督さん、 敵陣形「#{formation[@state.enemyFormation]}」「#{intercept[@state.enemyIntercept]} | #{@state.result}」"
           }
           </Alert>
