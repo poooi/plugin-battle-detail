@@ -281,9 +281,13 @@ module.exports =
       result: "不明"
       shipCond: [0, 0, 0, 0, 0, 0]
       deckId: 0
+      enableProphetDamaged: config.get 'plugin.prophet.notify.damaged', true
+      prophetCondShow: config.get 'plugin.prophet.show.cond', true
     handleResponse: (e) ->
       {method, path, body, postBody} = e.detail
-      {afterHp, nowHp, maxHp, damageHp, shipName, shipLv, enemyInfo, getShip, enemyFormation, enemyTyku, enemyIntercept, enemyName, result, shipCond, deckId} = @state
+      {afterHp, nowHp, maxHp, damageHp, shipName, shipLv, enemyInfo, getShip, enemyFormation, enemyTyku, enemyIntercept, enemyName, result, shipCond, deckId, enableProphetDamaged, prophetCondShow} = @state
+      enableProphetDamaged = config.get 'plugin.prophet.notify.damaged', true
+      prophetCondShow = config.get 'plugin.prophet.show.cond', true
       if path == '/kcsapi/api_req_map/start' || formationFlag
         @setState
           enemyFormation: 0
@@ -562,9 +566,12 @@ module.exports =
                 <tr key={i + 1}>
                   <td>
                     Lv. {@state.shipLv[i]} - {tmpName}
+                    {
+                      if @state.prophetCondShow
                         <span  style={getCondStyle @state.shipCond[i]}>
                           <FontAwesome key={1} name='star-o' />{@state.shipCond[i]}
                         </span>
+                    }
                   </td>
                   <td className="hp-progress">
                     <ProgressBar bsStyle={getHpStyle @state.nowHp[i] / @state.maxHp[i] * 100}
@@ -631,9 +638,12 @@ module.exports =
                 else
                   list.push <td>
                     Lv. {@state.shipLv[i]} - {tmpName}
-                    <span  style={getCondStyle @state.shipCond[i]}>
-                      <FontAwesome key={1} name='star-o' />{@state.shipCond[i]}
-                    </span>
+                    {
+                      if @state.prophetCondShow
+                        <span  style={getCondStyle @state.shipCond[i]}>
+                          <FontAwesome key={1} name='star-o' />{@state.shipCond[i]}
+                        </span>
+                    }
                     <span  style={getCondStyle @state.shipCond[i]}><FontAwesome key={1} name='star-o' />{@state.shipCond[i]}</span>
                   </td>
                   list.push <td className="hp-progress"><ProgressBar bsStyle={getHpStyle @state.nowHp[i] / @state.maxHp[i] * 100} now={@state.nowHp[i] / @state.maxHp[i] * 100} label={if @state.damageHp[i] > 0 then "#{@state.nowHp[i]} / #{@state.maxHp[i]} (-#{@state.damageHp[i]})" else "#{@state.nowHp[i]} / #{@state.maxHp[i]}"} /></td>
@@ -659,3 +669,33 @@ module.exports =
           }
           </Alert>
         </div>
+  settingsClass: React.createClass
+    getInitialState: ->
+      enableProphetDamaged: config.get 'plugin.prophet.notify.damaged'
+      prophetCondShow: config.get 'plugin.prophet.show.cond'
+    handleSetProphetDamaged: ->
+      enabled = @state.enableProphetDamaged
+      config.set 'plugin.prophet.notify.damaged', !enabled
+      @setState
+        enableProphetDamaged: !enabled
+    handleSetProphetCond: ->
+      enabled = @state.prophetCondShow
+      config.set 'plugin.prophet.show.cond', !enabled
+      @setState
+        prophetCondShow: !enabled
+    render: ->
+      <div className="form-group">
+        <Divider text="未卜先知" />
+        <Grid>
+          <Col xs={6}>
+            <Button bsStyle={if @state.enableProphetDamaged then 'success' else 'danger'} onClick={@handleSetProphetDamaged} style={width: '100%'}>
+              {if @state.enableProphetDamaged then '√ ' else ''}开启大破通知
+            </Button>
+          </Col>
+          <Col xs={6}>
+            <Button bsStyle={if @state.prophetCondShow then 'success' else 'danger'} onClick={@handleSetProphetCond} style={width: '100%'}>
+              {if @state.prophetCondShow then '√ ' else ''}开启Cond显示
+            </Button>
+          </Col>
+        </Grid>
+      </div>
