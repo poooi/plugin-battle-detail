@@ -617,14 +617,16 @@ module.exports =
             }
             </tbody>
           </Table>
-          <Alert>
           {
             if @state.getShip? && @state.enemyInfo?
-              __("Admiral") + " #{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」" + __("Join fleet")
+              <Alert>
+                __("Admiral") + " #{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」" + __("Join fleet")
+              </Alert>
             else if @state.enemyFormation != 0
-              __("Admiral") + " 「#{formation[@state.enemyFormation]}」「#{intercept[@state.enemyIntercept]} | #{@state.result}」"
+              <Alert>
+                __("Admiral") + " 「#{formation[@state.enemyFormation]}」「#{intercept[@state.enemyIntercept]} | #{@state.result}」"
+              </Alert>
           }
-          </Alert>
         </div>
       else
         <div>
@@ -672,14 +674,16 @@ module.exports =
             }
             </tbody>
           </Table>
-          <Alert>
           {
             if @state.getShip? && @state.enemyInfo?
-              __("Admiral") + " #{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」" + __("Join fleet")
+              <Alert>
+                __("Admiral") + " #{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」" + __("Join fleet")
+              </Alert>
             else if @state.enemyFormation != 0
-              __("Admiral") + " 「#{formation[@state.enemyFormation]}」「#{intercept[@state.enemyIntercept]} | #{@state.result}」"
+              <Alert>
+                __("Admiral") + " 「#{formation[@state.enemyFormation]}」「#{intercept[@state.enemyIntercept]} | #{@state.result}」"
+              </Alert>
           }
-          </Alert>
         </div>
   settingsClass: React.createClass
     getInitialState: ->
