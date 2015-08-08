@@ -2,10 +2,22 @@ Promise = require 'bluebird'
 async = Promise.coroutine
 request = Promise.promisifyAll require('request')
 {relative, join} = require 'path-extra'
+path = require 'path-extra'
 fs = require 'fs-extra'
 {_, $, $$, React, ReactBootstrap, ROOT, resolveTime, layout, toggleModal} = window
 {Table, ProgressBar, Grid, Input, Col, Alert, Button} = ReactBootstrap
 {APPDATA_PATH, SERVER_HOSTNAME} = window
+i18n = require './node_modules/i18n'
+{__} = i18n
+
+i18n.configure
+  locales: ['en_US', 'ja_JP', 'zh_CN']
+  defaultLocale: 'en_US'
+  directory: path.join(__dirname, 'assets', 'i18n')
+  updateFiles: false
+  indent: '\t'
+  extension: '.json'
+i18n.setLocale(window.language)
 
 window.addEventListener 'layout.change', (e) ->
   {layout} = e.detail
@@ -45,25 +57,24 @@ getHpStyle = (percent) ->
     'success'
 
 formation = [
-  "陣形不明",
-  "単縦陣",
-  "複縦陣",
-  "輪形陣",
-  "梯形陣",
-  "単横陣",
-  "第一警戒航行序列",
-  "第二警戒航行序列",
-  "第三警戒航行序列",
-  "第四警戒航行序列"
+  __("Unknown Formation"),
+  __("Line Ahead"),
+  __("Double Line"),
+  __("Diamond"),
+  __("Echelon"),
+  __("Line Abreast"),
+  __("Cruising Formation 1"),
+  __("Cruising Formation 2"),
+  __("Cruising Formation 3"),
+  __("Cruising Formation 4")
 ]
 
 intercept = [
-  "航戦不明",
-  "同航戦",
-  "反航戦",
-  "Ｔ字戦(有利)",
-  "Ｔ字戦(不利)",
-  "同航戦"
+  __("Unknown Engagement"),
+  __("Parallel Engagement"),
+  __("Head-on Engagement"),
+  __("Crossing the T (Advantage)"),
+  __("Crossing the T (Disadvantage)")
 ]
 
 dropCount = [
@@ -259,8 +270,8 @@ formationFlag = false
 module.exports =
   name: 'prophet'
   priority: 1
-  displayName: <span><FontAwesome key={0} name='compass' /> 未卜先知</span>
-  description: '战况预知'
+  displayName: <span><FontAwesome key={0} name='compass' />{' ' + __("Prophet")}</span>
+  description: __ "Sortie Prophet"
   version: '2.0.0'
   author: 'Chiba'
   link: 'https://github.com/Chibaheit'
@@ -277,8 +288,8 @@ module.exports =
       enemyFormation: 0
       enemyTyku: 0
       enemyIntercept: 0
-      enemyName: "深海棲艦"
-      result: "不明"
+      enemyName: __("Enemy Vessel")
+      result: __("Unknown")
       shipCond: [0, 0, 0, 0, 0, 0]
       deckId: 0
       enableProphetDamaged: config.get 'plugin.prophet.notify.damaged', true
@@ -294,8 +305,8 @@ module.exports =
           enemyInformation: 0
           enemyTyku: 0
           enemyIntercept: 0
-          enemyName: "深海棲艦"
-          result: "不明"
+          enemyName: __("Enemy Vessel")
+          result: __("Unknown")
         formationFlag = false
       flag = false
       switch path
@@ -456,7 +467,7 @@ module.exports =
           {_decks} = window
           flag = true
           getShip = null
-          enemyName = "演習相手"
+          enemyName = __("PvP")
           [shipName, shipLv] = getInfo shipName, shipLv, _decks[body.api_dock_id - 1].api_ship, body.api_ship_ke, body.api_ship_lv, 1
           [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
           if body.api_formation?
@@ -498,7 +509,7 @@ module.exports =
             if i < 6 && tmpHp < (maxHp[i] * 0.2500001)
               tmpShip = tmpShip + " " + shipName[i]
           if tmpShip != " "
-            notify "#{tmpShip} 大破",
+            notify "#{tmpShip} " + __("Heavily damaged"),
               type: 'damaged'
               icon: join(ROOT, 'views', 'components', 'ship', 'assets', 'img', 'state', '4.png')
           if jsonId?
@@ -553,8 +564,8 @@ module.exports =
           <link rel="stylesheet" href={join(relative(ROOT, __dirname), 'assets', 'prophet.css')} />
           <Alert>
             <Grid>
-              <Col xs={6}>出撃艦隊</Col>
-              <Col xs={6}>耐久</Col>
+              <Col xs={6}>{__("Sortie Fleet")}</Col>
+              <Col xs={6}>{__("HP")}</Col>
             </Grid>
           </Alert>
           <Table>
@@ -585,7 +596,7 @@ module.exports =
           <Alert>
             <Grid>
               <Col xs={6}>{@state.enemyName}</Col>
-              <Col xs={6}>耐久</Col>
+              <Col xs={6}>{__("HP")}</Col>
             </Grid>
           </Alert>
           <Table>
@@ -608,9 +619,9 @@ module.exports =
           <Alert>
           {
             if @state.getShip? && @state.enemyInfo?
-              "提督さん、#{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」が戦列に加わりました"
+              __("Admiral") + " #{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」" + __("Join fleet")
             else if @state.enemyFormation != 0
-              "提督さん、 敵陣形「#{formation[@state.enemyFormation]}」「#{intercept[@state.enemyIntercept]} | #{@state.result}」"
+              __("Admiral") + " 「#{formation[@state.enemyFormation]}」「#{intercept[@state.enemyIntercept]} | #{@state.result}」"
           }
           </Alert>
         </div>
@@ -619,10 +630,10 @@ module.exports =
           <link rel="stylesheet" href={join(relative(ROOT, __dirname), 'assets', 'prophet.css')} />
           <Alert>
             <Grid>
-              <Col xs={3}>出撃艦隊</Col>
-              <Col xs={3}>耐久</Col>
+              <Col xs={3}>{__("Sortie Fleet")}</Col>
+              <Col xs={3}>{__("HP")}</Col>
               <Col xs={3}>{@state.enemyName}</Col>
-              <Col xs={3}>耐久</Col>
+              <Col xs={3}>{__("HP")}</Col>
             </Grid>
           </Alert>
           <Table>
@@ -663,9 +674,9 @@ module.exports =
           <Alert>
           {
             if @state.getShip? && @state.enemyInfo?
-              "提督さん、#{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」が戦列に加わりました"
+              __("Admiral") + " #{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」" + __("Join fleet")
             else if @state.enemyFormation != 0
-              "提督さん、 敵陣形「#{formation[@state.enemyFormation]}」「#{intercept[@state.enemyIntercept]} | #{@state.result}」"
+              __("Admiral") + " 「#{formation[@state.enemyFormation]}」「#{intercept[@state.enemyIntercept]} | #{@state.result}」"
           }
           </Alert>
         </div>
