@@ -581,7 +581,7 @@ module.exports =
                     {
                       if @state.prophetCondShow
                         <span  style={getCondStyle @state.shipCond[i]}>
-                          <FontAwesome key={1} name='star-o' />{@state.shipCond[i]}
+                          <FontAwesome key={1} name='star' />{@state.shipCond[i]}
                         </span>
                     }
                   </td>
@@ -620,11 +620,11 @@ module.exports =
           {
             if @state.getShip? && @state.enemyInfo?
               <Alert>
-                __("Admiral") + " #{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」" + __("Join fleet")
+                {__("Admiral") + " #{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」" + __("Join fleet")}
               </Alert>
             else if @state.enemyFormation != 0
               <Alert>
-                __("Admiral") + " 「#{formation[@state.enemyFormation]}」「#{intercept[@state.enemyIntercept]} | #{@state.result}」"
+                {__("Admiral") + " 「#{formation[@state.enemyFormation]}」「#{intercept[@state.enemyIntercept]} | #{@state.result}」"}
               </Alert>
           }
         </div>
@@ -654,11 +654,11 @@ module.exports =
                     Lv. {@state.shipLv[i]} - {tmpName}
                     {
                       if @state.prophetCondShow
-                        <span  style={getCondStyle @state.shipCond[i]}>
-                          <FontAwesome key={1} name='star-o' />{@state.shipCond[i]}
+                        console.log @state.prophetCondShow
+                        <span style={getCondStyle @state.shipCond[i]}>
+                          <FontAwesome key={1} name='star' />{@state.shipCond[i]}
                         </span>
                     }
-                    <span  style={getCondStyle @state.shipCond[i]}><FontAwesome key={1} name='star-o' />{@state.shipCond[i]}</span>
                   </td>
                   list.push <td className="hp-progress"><ProgressBar bsStyle={getHpStyle @state.nowHp[i] / @state.maxHp[i] * 100} now={@state.nowHp[i] / @state.maxHp[i] * 100} label={if @state.damageHp[i] > 0 then "#{@state.nowHp[i]} / #{@state.maxHp[i]} (-#{@state.damageHp[i]})" else "#{@state.nowHp[i]} / #{@state.maxHp[i]}"} /></td>
                 if @state.shipLv[i + 6] == -1
@@ -677,11 +677,11 @@ module.exports =
           {
             if @state.getShip? && @state.enemyInfo?
               <Alert>
-                __("Admiral") + " #{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」" + __("Join fleet")
+                {__("Admiral") + " #{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」" + __("Join fleet")}
               </Alert>
             else if @state.enemyFormation != 0
               <Alert>
-                __("Admiral") + " 「#{formation[@state.enemyFormation]}」「#{intercept[@state.enemyIntercept]} | #{@state.result}」"
+                {__("Admiral") + " 「#{formation[@state.enemyFormation]}」「#{intercept[@state.enemyIntercept]} | #{@state.result}」"}
               </Alert>
           }
         </div>
