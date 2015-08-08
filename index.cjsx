@@ -526,6 +526,7 @@ module.exports =
           flag = true
           _deck = window._decks[deckId]
           {_ships} = window
+          enemyFormation = 0
           shipLv[i] = -1 for i in [0..11]
           for shipId, i in _deck.api_ship
             continue if shipId == -1
