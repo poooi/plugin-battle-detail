@@ -161,6 +161,14 @@ getInfo = (shipName, shipLv, friend, enemy, enemyLv, exerciseFlag) ->
         shipName[i + 5] = $ships[shipId].api_name
   [shipName, shipLv]
 
+getCombinedInfo = (shipName, shipLv, friend) ->
+  {$ships, _ships} = window
+  for shipId, i in friend
+    continue if shipId == -1
+    shipName[i] = $ships[_ships[shipId].api_ship_id].api_name
+    shipLv[i] = _ships[shipId].api_lv
+  [shipName, shipLv]
+
 getHp = (maxHp, nowHp, maxHps, nowHps) ->
   for tmp, i in maxHps
     continue if i == 0
@@ -226,6 +234,18 @@ openAttack = (afterHp, openingAttack) ->
       continue if damage <= 0
       afterHp[i - 1] -= damage
   afterHp
+combinedOpenAttack = (combinedAfterHp, afterHp, openingAttack) ->
+  if openingAttack.api_edam?
+    for damage, i in openingAttack.api_edam
+      damage = Math.floor(damage)
+      continue if damage <= 0
+      afterHp[i + 5] -= damage
+  if openingAttack.api_fdam?
+    for damage, i in openingAttack.api_fdam
+      damage = Math.floor(damage)
+      continue if damage <= 0
+      combinedAfterHp[i - 1] -= damage
+  [combinedAfterHp, afterHp]
 
 hougekiAttack = (afterHp, hougeki) ->
   for damageFrom, i in hougeki.api_at_list
@@ -236,6 +256,18 @@ hougekiAttack = (afterHp, hougeki) ->
       continue if damage <= 0
       afterHp[damageTo - 1] -= damage
   afterHp
+combinedHougekiAttack = (combinedAfterHp, afterHp, hougeki) ->
+  for damageFrom, i in hougeki.api_at_list
+    continue if damageFrom == -1
+    for damage, j in hougeki.api_damage[i]
+      damage = Math.floor(damage)
+      damageTo = hougeki.api_df_list[i][j]
+      continue if damage <= 0
+      if damageTo - 1 < 6
+        combinedAfterHp[damageTo - 1] -= damage
+      else
+        afterHp[damageTo - 1] -= damage
+  [combinedAfterHp, afterHp]
 
 raigekiAttack = (afterHp, raigeki) ->
   if raigeki.api_edam?
@@ -249,6 +281,19 @@ raigekiAttack = (afterHp, raigeki) ->
       continue if damage <= 0
       afterHp[i - 1] -= damage
   afterHp
+
+combinedRaigekiAttack = (combinedAfterHp, afterHp, raigeki) ->
+  if raigeki.api_edam?
+    for damage, i in raigeki.api_edam
+      damage = Math.floor(damage)
+      continue if damage <= 0
+      afterHp[i + 5] -= damage
+  if raigeki.api_fdam?
+    for damage, i in raigeki.api_fdam
+      damage = Math.floor(damage)
+      continue if damage <= 0
+      combinedAfterHp[i - 1] -= damage
+  [combinedAfterHp, afterHp]
 
 getDamage = (damageHp, nowHp, afterHp, minHp) ->
   for tmp, i in afterHp
@@ -294,9 +339,16 @@ module.exports =
       deckId: 0
       enableProphetDamaged: config.get 'plugin.prophet.notify.damaged', true
       prophetCondShow: config.get 'plugin.prophet.show.cond', true
+      combinedFlag: 0
+      combinedName: ["空", "空", "空", "空", "空", "空"]
+      combinedLv: [-1, -1, -1, -1, -1, -1]
+      combinedNowHp: [0, 0, 0, 0, 0, 0]
+      combinedMaxHp: [0, 0, 0, 0, 0, 0]
+      combinedAfterHp: [0, 0, 0, 0, 0, 0]
+      combinedDamageHp: [0, 0, 0, 0, 0, 0]
     handleResponse: (e) ->
       {method, path, body, postBody} = e.detail
-      {afterHp, nowHp, maxHp, damageHp, shipName, shipLv, enemyInfo, getShip, enemyFormation, enemyTyku, enemyIntercept, enemyName, result, shipCond, deckId, enableProphetDamaged, prophetCondShow} = @state
+      {afterHp, nowHp, maxHp, damageHp, shipName, shipLv, enemyInfo, getShip, enemyFormation, enemyTyku, enemyIntercept, enemyName, result, shipCond, deckId, enableProphetDamaged, prophetCondShow, combinedFlag, combinedName, combinedLv, combinedNowHp, combinedMaxHp, combinedAfterHp, combinedDamageHp} = @state
       enableProphetDamaged = config.get 'plugin.prophet.notify.damaged', true
       prophetCondShow = config.get 'plugin.prophet.show.cond', true
       if path == '/kcsapi/api_req_map/start' || formationFlag
@@ -347,6 +399,184 @@ module.exports =
             else
               jsonId = body.api_enemy.api_enemy_id
 
+        when "/kcsapi/api_req_combined_battle/airbattle"
+          for tmp, i in shipLv
+            shipLv[i] = -1
+          for tmp, i in combinedLv
+            combinedLv[i] = -1
+          {_decks} = window
+          flag = true
+          getShip = null
+          [shipName, shipLv] = getInfo shipName, shipLv, _decks[0].api_ship, body.api_ship_ke, body.api_ship_lv, 0
+          [combinedName, combinedLv] = getCombinedInfo combinedName, combinedLv, _decks[1].api_ship
+          [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
+          [combinedMaxHp, combinedNowHp] = getHp combinedMaxHp, combinedNowHp, body.api_maxhps_combined body.api_nowhps_combined
+          afterHp = Object.clone nowHp
+          combinedAfterHp = Object.clone combinedNowHp
+          if body.api_formation?
+            enemyFormation = body.api_formation[1]
+            enemyIntercept = body.api_formation[2]
+          if body.api_kouku? && body.api_kouku.api_stage3?
+            afterHp = koukuAttack afterHp, body.api_kouku.api_stage3
+          if body.api_kouku? && body.api_kouku.api_stage3_combined?
+            combinedAfterHp = koukuAttack combinedAfterHp, body.api_kouku.api_stage3_combined
+          if body.api_kouku2? && body.api_kouku2.api_stage3?
+            afterHp = koukuAttack afterHp, body.api_kouku2.api_stage3
+          if body.api_kouku2? && body.api_kouku2.api_stage3_combined?
+            combinedAfterHp = koukuAttack combinedAfterHp, body.api_kouku2.api_stage3_combined
+          damageHp = getDamage damageHp, nowHp, afterHp, 0
+          combinedDamageHp = getDamage combinedDamageHp, combinedNowHp, combinedAfterHp, 0
+          nowHp = Object.clone afterHp
+          combinedNowHp = Object.clone combinedNowHp
+        when "/kcsapi/api_req_combined_battle/battle"
+          for tmp, i in shipLv
+            shipLv[i] = -1
+          for tmp, i in combinedLv
+            combinedLv[i] = -1
+          {_decks} = window
+          flag = true
+          getShip = null
+          [shipName, shipLv] = getInfo shipName, shipLv, _decks[0].api_ship, body.api_ship_ke, body.api_ship_lv, 0
+          [combinedName, combinedLv] = getCombinedInfo combinedName, combinedLv, _decks[1].api_ship
+          [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
+          [combinedMaxHp, combinedNowHp] = getHp combinedMaxHp, combinedNowHp, body.api_maxhps_combined body.api_nowhps_combined
+          afterHp = Object.clone nowHp
+          combinedAfterHp = Object.clone combinedNowHp
+          if body.api_formation?
+            enemyFormation = body.api_formation[1]
+            enemyIntercept = body.api_formation[2]
+          if body.api_kouku.api_stage3?
+            afterHp = koukuAttack afterHp, body.api_kouku.api_stage3
+          if body.api_kouku? && body.api_kouku.api_stage3_combined?
+            combinedAfterHp = koukuAttack combinedAfterHp, body.api_kouku.api_stage3_combined
+          if body.api_opening_atack?
+            [combinedAfterHp, afterHp] = combinedOpenAttack combinedAfterHp, afterHp, body.api_opening_atack
+          if body.api_hougeki1?
+            [combinedAfterHp, afterHp] = combinedHougekiAttack combinedAfterHp, afterHp, body.api_hougeki1
+          if body.api_hougeki2?
+            afterHp = hougekiAttack afterHp, body.api_hougeki2
+          if body.api_hougeki3?
+            afterHp = hougekiAttack afterHp, body.api_hougeki3
+          if body.api_raigeki?
+            [combinedAfterHp, afterHp] = combinedRaigekiAttack combinedAfterHp, afterHp, body.api_raigeki
+          if body.api_support_info?
+            if body.api_support_info.api_support_airatack?
+              afterHp = supportAttack afterHp, body.api_support_info.api_support_airatack.api_stage3.api_edam
+            else if body.api_support_info.api_support_hourai?
+              afterHp = supportAttack afterHp, body.api_support_info.api_support_hourai.api_damage
+            else
+              afterHp = supportAttack afterHp, body.api_support_info.api_damage
+          damageHp = getDamage damageHp, nowHp, afterHp, 0
+          combinedDamageHp = getDamage combinedDamageHp, combinedNowHp, combinedAfterHp, 0
+          nowHp = Object.clone afterHp
+          combinedNowHp = Object.clone combinedNowHp
+        when "/kcsapi/api_req_combined_battle/midnight_battle"
+          for tmp, i in shipLv
+            shipLv[i] = -1
+          for tmp, i in combinedLv
+            combinedLv[i] = -1
+          {_decks} = window
+          flag = true
+          getShip = null
+          [shipName, shipLv] = getInfo shipName, shipLv, _decks[0].api_ship, body.api_ship_ke, body.api_ship_lv, 0
+          [combinedName, combinedLv] = getCombinedInfo combinedName, combinedLv, _decks[1].api_ship
+          [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
+          [combinedMaxHp, combinedNowHp] = getHp combinedMaxHp, combinedNowHp, body.api_maxhps_combined body.api_nowhps_combined
+          afterHp = Object.clone nowHp
+          combinedAfterHp = Object.clone combinedNowHp
+          if body.api_formation?
+            enemyFormation = body.api_formation[1]
+            enemyIntercept = body.api_formation[2]
+          if body.api_hougeki?
+            [combinedAfterHp, afterHp] = combinedHougekiAttack combinedAfterHp, afterHp, body.api_hougeki
+          damageHp = getDamage damageHp, nowHp, afterHp, 0
+          combinedDamageHp = getDamage combinedDamageHp, combinedNowHp, combinedAfterHp, 0
+          nowHp = Object.clone afterHp
+          combinedNowHp = Object.clone combinedNowHp
+        when "/kcsapi/api_req_combined_battle/sp_midnight"
+          for tmp, i in shipLv
+            shipLv[i] = -1
+          for tmp, i in combinedLv
+            combinedLv[i] = -1
+          {_decks} = window
+          flag = true
+          getShip = null
+          [shipName, shipLv] = getInfo shipName, shipLv, _decks[0].api_ship, body.api_ship_ke, body.api_ship_lv, 0
+          [combinedName, combinedLv] = getCombinedInfo combinedName, combinedLv, _decks[1].api_ship
+          [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
+          [combinedMaxHp, combinedNowHp] = getHp combinedMaxHp, combinedNowHp, body.api_maxhps_combined body.api_nowhps_combined
+          afterHp = Object.clone nowHp
+          combinedAfterHp = Object.clone combinedNowHp
+          if body.api_formation?
+            enemyFormation = body.api_formation[1]
+            enemyIntercept = body.api_formation[2]
+          if body.api_hougeki?
+            [combinedAfterHp, afterHp] = combinedHougekiAttack combinedAfterHp, afterHp, body.api_hougeki
+          damageHp = getDamage damageHp, nowHp, afterHp, 0
+          combinedDamageHp = getDamage combinedDamageHp, combinedNowHp, combinedAfterHp, 0
+          nowHp = Object.clone afterHp
+          combinedNowHp = Object.clone combinedNowHp
+        when "/kcsapi/api_req_combined_battle/battle_water"
+          for tmp, i in shipLv
+            shipLv[i] = -1
+          for tmp, i in combinedLv
+            combinedLv[i] = -1
+          {_decks} = window
+          flag = true
+          getShip = null
+          [shipName, shipLv] = getInfo shipName, shipLv, _decks[0].api_ship, body.api_ship_ke, body.api_ship_lv, 0
+          [combinedName, combinedLv] = getCombinedInfo combinedName, combinedLv, _decks[1].api_ship
+          [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
+          [combinedMaxHp, combinedNowHp] = getHp combinedMaxHp, combinedNowHp, body.api_maxhps_combined body.api_nowhps_combined
+          afterHp = Object.clone nowHp
+          combinedAfterHp = Object.clone combinedNowHp
+          if body.api_formation?
+            enemyFormation = body.api_formation[1]
+            enemyIntercept = body.api_formation[2]
+          if body.api_kouku.api_stage3?
+            afterHp = koukuAttack afterHp, body.api_kouku.api_stage3
+          if body.api_opening_atack?
+            [combinedAfterHp, afterHp] = combinedOpenAttack combinedAfterHp, afterHp, body.api_opening_atack
+          if body.api_hougeki1?
+            afterHp = hougekiAttack afterHp, body.api_hougeki3
+          if body.api_hougeki2?
+            afterHp = hougekiAttack afterHp, body.api_hougeki2
+          if body.api_hougeki3?
+            [combinedAfterHp, afterHp] = combinedHougekiAttack combinedAfterHp, afterHp, body.api_hougeki3
+          if body.api_raigeki?
+            [combinedAfterHp, afterHp] = combinedRaigekiAttack combinedAfterHp, afterHp, body.api_raigeki
+          if body.api_support_info?
+            if body.api_support_info.api_support_airatack?
+              afterHp = supportAttack afterHp, body.api_support_info.api_support_airatack.api_stage3.api_edam
+            else if body.api_support_info.api_support_hourai?
+              afterHp = supportAttack afterHp, body.api_support_info.api_support_hourai.api_damage
+            else
+              afterHp = supportAttack afterHp, body.api_support_info.api_damage
+          damageHp = getDamage damageHp, nowHp, afterHp, 0
+          combinedDamageHp = getDamage combinedDamageHp, combinedNowHp, combinedAfterHp, 0
+          nowHp = Object.clone afterHp
+          combinedNowHp = Object.clone combinedNowHp
+        when "/kcsapi/api_req_combined_battle/battleresult"
+          flag = true
+          tmpShip = " "
+          for tmpHp, i in nowHp
+            if i < 6 && tmpHp < (maxHp[i] * 0.2500001)
+              tmpShip = tmpShip + " " + shipName[i]
+          for tmpHp, i in combinedNowHp
+            if tmpHp < (combinedMaxHp[i] * 0.2500001)
+              tmpShip = tmpShip + " " + combinedName[i]
+          if tmpShip != " "
+            notify "#{tmpShip} " + __("Heavily damaged"),
+              type: 'damaged'
+              icon: join(ROOT, 'views', 'components', 'ship', 'assets', 'img', 'state', '4.png')
+          if body.api_get_ship?
+            enemyInfo = body.api_enemy_info
+            getShip = body.api_get_ship
+          else
+            enemyInfo = null
+            getShip = null
+          formationFlag = true
+          result = body.api_win_rank
         when '/kcsapi/api_req_sortie/battle'
           for tmp, i in shipLv
             shipLv[i] = -1
@@ -372,6 +602,8 @@ module.exports =
             enemyTyku = jsonContent.totalTyku
           if body.api_kouku.api_stage3?
             afterHp = koukuAttack afterHp, body.api_kouku.api_stage3
+          if body.api_kouku? && body.api_kouku.api_stage3_combined?
+            combinedAfterHp = koukuAttack combinedAfterHp, body.api_kouku.api_stage3_combined
           if body.api_opening_atack?
             afterHp = openAttack afterHp, body.api_opening_atack
           if body.api_hougeki1?
@@ -524,18 +756,36 @@ module.exports =
           result = body.api_win_rank
         when '/kcsapi/api_port/port'
           flag = true
-          _deck = window._decks[deckId]
+          combinedFlag = body.api_combined_flag
           {_ships} = window
           enemyFormation = 0
           shipLv[i] = -1 for i in [0..11]
-          for shipId, i in _deck.api_ship
-            continue if shipId == -1
-            shipName[i] = _ships[shipId].api_name
-            shipLv[i] = _ships[shipId].api_lv
-            maxHp[i] = _ships[shipId].api_maxhp
-            nowHp[i] = _ships[shipId].api_nowhp
-            damageHp[i] = 0
-            shipCond[i] = _ships[shipId].api_cond
+          if combinedFlag != 0
+            for shipId, i in window._decks[0].api_ship
+              continue if shipId == -1
+              shipName[i] = _ships[shipId].api_name
+              shipLv[i] = _ships[shipId].api_lv
+              maxHp[i] = _ships[shipId].api_maxhp
+              nowHp[i] = _ships[shipId].api_nowhp
+              damageHp[i] = 0
+            for shipId, i in window._decks[1].api_ship
+              continue if shipId == -1
+              combinedName[i] = _ships[shipId].api_name
+              combinedLv[i] = _ships[shipId].api_lv
+              combinedMaxHp[i] = _ships[shipId].api_maxhp
+              combinedNowHp[i] = _ships[shipId].api_nowhp
+          else
+            _deck = window._decks[deckId]
+
+            shipLv[i] = -1 for i in [0..11]
+            for shipId, i in _deck.api_ship
+              continue if shipId == -1
+              shipName[i] = _ships[shipId].api_name
+              shipLv[i] = _ships[shipId].api_lv
+              maxHp[i] = _ships[shipId].api_maxhp
+              nowHp[i] = _ships[shipId].api_nowhp
+              damageHp[i] = 0
+              shipCond[i] = _ships[shipId].api_cond
           shipLv[i] = -1 for i in [6..11]
       return unless flag
       @setState
@@ -555,6 +805,13 @@ module.exports =
         deckId: deckId
         enableProphetDamaged: enableProphetDamaged
         prophetCondShow: prophetCondShow
+        combinedFlag: combinedFlag
+        combinedName: combinedName
+        combinedLv: combinedLv
+        combinedNowHp: combinedNowHp
+        combinedMaxHp: combinedMaxHp
+        combinedAfterHp: combinedAfterHp
+        combinedDamageHp: combinedDamageHp
 
     componentDidMount: ->
       window.addEventListener 'game.response', @handleResponse
@@ -564,10 +821,20 @@ module.exports =
         <div>
           <link rel="stylesheet" href={join(relative(ROOT, __dirname), 'assets', 'prophet.css')} />
           <Alert>
-            <Grid>
-              <Col xs={6}>{__("Sortie Fleet")}</Col>
-              <Col xs={6}>{__("HP")}</Col>
-            </Grid>
+            {
+              if @state.combinedFlag == 0
+                <Grid>
+                  <Col xs={6}>{__("Sortie Fleet")}</Col>
+                  <Col xs={6}>{__("HP")}</Col>
+                </Grid>
+              else
+                <Grid>
+                  <Col xs={3}>{__("Sortie Fleet")}</Col>
+                  <Col xs={3}>{__("HP")}</Col>
+                  <Col xs={3}>{__("Sortie Fleet")}</Col>
+                  <Col xs={3}>{__("HP")}</Col>
+                </Grid>
+            }
           </Alert>
           <Table>
             <tbody>
@@ -575,22 +842,48 @@ module.exports =
               for tmpName, i in @state.shipName
                 continue unless @state.shipLv[i] != -1
                 continue unless i < 6
-                <tr key={i + 1}>
-                  <td>
-                    Lv. {@state.shipLv[i]} - {tmpName}
-                    {
-                      if @state.prophetCondShow
-                        <span  style={getCondStyle @state.shipCond[i]}>
-                          <FontAwesome key={1} name='star' />{@state.shipCond[i]}
-                        </span>
-                    }
-                  </td>
-                  <td className="hp-progress">
-                    <ProgressBar bsStyle={getHpStyle @state.nowHp[i] / @state.maxHp[i] * 100}
-                      now={@state.nowHp[i] / @state.maxHp[i] * 100}
-                      label={if @state.damageHp[i] > 0 then "#{@state.nowHp[i]} / #{@state.maxHp[i]} (-#{@state.damageHp[i]})" else "#{@state.nowHp[i]} / #{@state.maxHp[i]}"} />
-                  </td>
-                </tr>
+                if @state.combinedFlag == 0
+                  <tr key={i + 1}>
+                    <td>
+                      Lv. {@state.shipLv[i]} - {tmpName}
+                      {
+                        if @state.prophetCondShow && @state.combinedFlag == 0
+                          <span  style={getCondStyle @state.shipCond[i]}>
+                            <FontAwesome key={1} name='star' />{@state.shipCond[i]}
+                          </span>
+                      }
+                    </td>
+                    <td className="hp-progress">
+                      <ProgressBar bsStyle={getHpStyle @state.nowHp[i] / @state.maxHp[i] * 100}
+                        now={@state.nowHp[i] / @state.maxHp[i] * 100}
+                        label={if @state.damageHp[i] > 0 then "#{@state.nowHp[i]} / #{@state.maxHp[i]} (-#{@state.damageHp[i]})" else "#{@state.nowHp[i]} / #{@state.maxHp[i]}"} />
+                    </td>
+                  </tr>
+                else
+                  <tr key={i + 1}>
+                    <td>
+                      Lv. {@state.shipLv[i]} - {tmpName}
+                      {
+                        if @state.prophetCondShow && @state.combinedFlag == 0
+                          <span  style={getCondStyle @state.shipCond[i]}>
+                            <FontAwesome key={1} name='star' />{@state.shipCond[i]}
+                          </span>
+                      }
+                    </td>
+                    <td className="hp-progress">
+                      <ProgressBar bsStyle={getHpStyle @state.nowHp[i] / @state.maxHp[i] * 100}
+                        now={@state.nowHp[i] / @state.maxHp[i] * 100}
+                        label={if @state.damageHp[i] > 0 then "#{@state.nowHp[i]} / #{@state.maxHp[i]} (-#{@state.damageHp[i]})" else "#{@state.nowHp[i]} / #{@state.maxHp[i]}"} />
+                    </td>
+                    <td>
+                      Lv. {@state.combinedLv[i]} - {@state.combinedName[i]}
+                    </td>
+                    <td className="hp-progress">
+                      <ProgressBar bsStyle={getHpStyle @state.combinedNowHp[i] / @state.combinedMaxHp[i] * 100}
+                        now={@state.combinedNowHp[i] / @state.combinedMaxHp[i] * 100}
+                        label={if @state.combinedDamageHp[i] > 0 then "#{@state.combinedNowHp[i]} / #{@state.combinedMaxHp[i]} (-#{@state.combinedDamageHp[i]})" else "#{@state.combinedNowHp[i]} / #{@state.combinedMaxHp[i]}"} />
+                    </td>
+                  </tr>
             }
             </tbody>
           </Table>
@@ -632,12 +925,24 @@ module.exports =
         <div>
           <link rel="stylesheet" href={join(relative(ROOT, __dirname), 'assets', 'prophet.css')} />
           <Alert>
-            <Grid>
-              <Col xs={3}>{__("Sortie Fleet")}</Col>
-              <Col xs={3}>{__("HP")}</Col>
-              <Col xs={3}>{@state.enemyName}</Col>
-              <Col xs={3}>{__("HP")}</Col>
-            </Grid>
+            {
+              if @state.combinedFlag == 0
+                <Grid>
+                  <Col xs={3}>{__("Sortie Fleet")}</Col>
+                  <Col xs={3}>{__("HP")}</Col>
+                  <Col xs={3}>{@state.enemyName}</Col>
+                  <Col xs={3}>{__("HP")}</Col>
+                </Grid>
+              else
+                <Grid>
+                  <Col xs={2}>{__("Sortie Fleet")}</Col>
+                  <Col xs={2}>{__("HP")}</Col>
+                  <Col xs={2}>{__("Sortie Fleet")}</Col>
+                  <Col xs={2}>{__("HP")}</Col>
+                  <Col xs={2}>{@state.enemyName}</Col>
+                  <Col xs={2}>{__("HP")}</Col>
+                </Grid>
+            }
           </Alert>
           <Table>
             <tbody>
@@ -653,14 +958,22 @@ module.exports =
                   list.push <td>
                     Lv. {@state.shipLv[i]} - {tmpName}
                     {
-                      if @state.prophetCondShow
-                        console.log @state.prophetCondShow
+                      if @state.prophetCondShow && @state.combinedFlag == 0
                         <span style={getCondStyle @state.shipCond[i]}>
                           <FontAwesome key={1} name='star' />{@state.shipCond[i]}
                         </span>
                     }
                   </td>
                   list.push <td className="hp-progress"><ProgressBar bsStyle={getHpStyle @state.nowHp[i] / @state.maxHp[i] * 100} now={@state.nowHp[i] / @state.maxHp[i] * 100} label={if @state.damageHp[i] > 0 then "#{@state.nowHp[i]} / #{@state.maxHp[i]} (-#{@state.damageHp[i]})" else "#{@state.nowHp[i]} / #{@state.maxHp[i]}"} /></td>
+                  if @state.combinedFlag != 0
+                    list.push <td>
+                      Lv. {@state.combinedLv[i]} - {@state.combinedName[i]}
+                    </td>
+                    list.push <td className="hp-progress">
+                      <ProgressBar bsStyle={getHpStyle @state.combinedNowHp[i] / @state.combinedMaxHp[i] * 100}
+                        now={@state.combinedNowHp[i] / @state.combinedMaxHp[i] * 100}
+                        label={if @state.combinedDamageHp[i] > 0 then "#{@state.combinedNowHp[i]} / #{@state.combinedMaxHp[i]} (-#{@state.combinedDamageHp[i]})" else "#{@state.combinedNowHp[i]} / #{@state.combinedMaxHp[i]}"} />
+                    </td>
                 if @state.shipLv[i + 6] == -1
                   for j in [0..1]
                     list.push <td>　</td>
