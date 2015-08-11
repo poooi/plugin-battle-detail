@@ -394,8 +394,6 @@ module.exports =
             damageHp[i] = 0
           getShip = null
           shipLv[i] = -1 for i in [6..11]
-          if combinedFlag != 0
-            combinedLv[i] = -1 for i in [0..5]
           nowHp = Object.clone afterHp
           if body.api_enemy?
             if enemyInformation[body.api_enemy.api_enemy_id]?
