@@ -366,6 +366,8 @@ module.exports =
           jsonId = null
           flag = true
           shipLv[i] = -1 for i in [0..11]
+          if combinedFlag != 0
+            combinedLv[i] = -1 for i in [0..5]
           _deck = window._decks[postBody.api_deck_id - 1]
           {_ships} = window
           for shipId, i in _deck.api_ship
@@ -392,6 +394,8 @@ module.exports =
             damageHp[i] = 0
           getShip = null
           shipLv[i] = -1 for i in [6..11]
+          if combinedFlag != 0
+            combinedLv[i] = -1 for i in [0..5]
           nowHp = Object.clone afterHp
           if body.api_enemy?
             if enemyInformation[body.api_enemy.api_enemy_id]?
@@ -410,7 +414,7 @@ module.exports =
           [shipName, shipLv] = getInfo shipName, shipLv, _decks[0].api_ship, body.api_ship_ke, body.api_ship_lv, 0
           [combinedName, combinedLv] = getCombinedInfo combinedName, combinedLv, _decks[1].api_ship
           [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
-          [combinedMaxHp, combinedNowHp] = getHp combinedMaxHp, combinedNowHp, body.api_maxhps_combined body.api_nowhps_combined
+          [combinedMaxHp, combinedNowHp] = getHp combinedMaxHp, combinedNowHp, body.api_maxhps_combined, body.api_nowhps_combined
           afterHp = Object.clone nowHp
           combinedAfterHp = Object.clone combinedNowHp
           if body.api_formation?
@@ -427,7 +431,7 @@ module.exports =
           damageHp = getDamage damageHp, nowHp, afterHp, 0
           combinedDamageHp = getDamage combinedDamageHp, combinedNowHp, combinedAfterHp, 0
           nowHp = Object.clone afterHp
-          combinedNowHp = Object.clone combinedNowHp
+          combinedNowHp = Object.clone combinedAfterHp
         when "/kcsapi/api_req_combined_battle/battle"
           for tmp, i in shipLv
             shipLv[i] = -1
@@ -439,7 +443,7 @@ module.exports =
           [shipName, shipLv] = getInfo shipName, shipLv, _decks[0].api_ship, body.api_ship_ke, body.api_ship_lv, 0
           [combinedName, combinedLv] = getCombinedInfo combinedName, combinedLv, _decks[1].api_ship
           [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
-          [combinedMaxHp, combinedNowHp] = getHp combinedMaxHp, combinedNowHp, body.api_maxhps_combined body.api_nowhps_combined
+          [combinedMaxHp, combinedNowHp] = getHp combinedMaxHp, combinedNowHp, body.api_maxhps_combined, body.api_nowhps_combined
           afterHp = Object.clone nowHp
           combinedAfterHp = Object.clone combinedNowHp
           if body.api_formation?
@@ -469,7 +473,7 @@ module.exports =
           damageHp = getDamage damageHp, nowHp, afterHp, 0
           combinedDamageHp = getDamage combinedDamageHp, combinedNowHp, combinedAfterHp, 0
           nowHp = Object.clone afterHp
-          combinedNowHp = Object.clone combinedNowHp
+          combinedNowHp = Object.clone combinedAfterHp
         when "/kcsapi/api_req_combined_battle/midnight_battle"
           for tmp, i in shipLv
             shipLv[i] = -1
@@ -481,7 +485,7 @@ module.exports =
           [shipName, shipLv] = getInfo shipName, shipLv, _decks[0].api_ship, body.api_ship_ke, body.api_ship_lv, 0
           [combinedName, combinedLv] = getCombinedInfo combinedName, combinedLv, _decks[1].api_ship
           [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
-          [combinedMaxHp, combinedNowHp] = getHp combinedMaxHp, combinedNowHp, body.api_maxhps_combined body.api_nowhps_combined
+          [combinedMaxHp, combinedNowHp] = getHp combinedMaxHp, combinedNowHp, body.api_maxhps_combined, body.api_nowhps_combined
           afterHp = Object.clone nowHp
           combinedAfterHp = Object.clone combinedNowHp
           if body.api_formation?
@@ -492,7 +496,7 @@ module.exports =
           damageHp = getDamage damageHp, nowHp, afterHp, 0
           combinedDamageHp = getDamage combinedDamageHp, combinedNowHp, combinedAfterHp, 0
           nowHp = Object.clone afterHp
-          combinedNowHp = Object.clone combinedNowHp
+          combinedNowHp = Object.clone combinedAfterHp
         when "/kcsapi/api_req_combined_battle/sp_midnight"
           for tmp, i in shipLv
             shipLv[i] = -1
@@ -504,7 +508,7 @@ module.exports =
           [shipName, shipLv] = getInfo shipName, shipLv, _decks[0].api_ship, body.api_ship_ke, body.api_ship_lv, 0
           [combinedName, combinedLv] = getCombinedInfo combinedName, combinedLv, _decks[1].api_ship
           [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
-          [combinedMaxHp, combinedNowHp] = getHp combinedMaxHp, combinedNowHp, body.api_maxhps_combined body.api_nowhps_combined
+          [combinedMaxHp, combinedNowHp] = getHp combinedMaxHp, combinedNowHp, body.api_maxhps_combined, body.api_nowhps_combined
           afterHp = Object.clone nowHp
           combinedAfterHp = Object.clone combinedNowHp
           if body.api_formation?
@@ -515,7 +519,7 @@ module.exports =
           damageHp = getDamage damageHp, nowHp, afterHp, 0
           combinedDamageHp = getDamage combinedDamageHp, combinedNowHp, combinedAfterHp, 0
           nowHp = Object.clone afterHp
-          combinedNowHp = Object.clone combinedNowHp
+          combinedNowHp = Object.clone combinedAfterHp
         when "/kcsapi/api_req_combined_battle/battle_water"
           for tmp, i in shipLv
             shipLv[i] = -1
@@ -527,7 +531,7 @@ module.exports =
           [shipName, shipLv] = getInfo shipName, shipLv, _decks[0].api_ship, body.api_ship_ke, body.api_ship_lv, 0
           [combinedName, combinedLv] = getCombinedInfo combinedName, combinedLv, _decks[1].api_ship
           [maxHp, nowHp] = getHp maxHp, nowHp, body.api_maxhps, body.api_nowhps
-          [combinedMaxHp, combinedNowHp] = getHp combinedMaxHp, combinedNowHp, body.api_maxhps_combined body.api_nowhps_combined
+          [combinedMaxHp, combinedNowHp] = getHp combinedMaxHp, combinedNowHp, body.api_maxhps_combined, body.api_nowhps_combined
           afterHp = Object.clone nowHp
           combinedAfterHp = Object.clone combinedNowHp
           if body.api_formation?
@@ -535,10 +539,12 @@ module.exports =
             enemyIntercept = body.api_formation[2]
           if body.api_kouku.api_stage3?
             afterHp = koukuAttack afterHp, body.api_kouku.api_stage3
+          if body.api_kouku? && body.api_kouku.api_stage3_combined?
+            combinedAfterHp = koukuAttack combinedAfterHp, body.api_kouku.api_stage3_combined
           if body.api_opening_atack?
             [combinedAfterHp, afterHp] = combinedOpenAttack combinedAfterHp, afterHp, body.api_opening_atack
           if body.api_hougeki1?
-            afterHp = hougekiAttack afterHp, body.api_hougeki3
+            afterHp = hougekiAttack afterHp, body.api_hougeki1
           if body.api_hougeki2?
             afterHp = hougekiAttack afterHp, body.api_hougeki2
           if body.api_hougeki3?
@@ -555,7 +561,7 @@ module.exports =
           damageHp = getDamage damageHp, nowHp, afterHp, 0
           combinedDamageHp = getDamage combinedDamageHp, combinedNowHp, combinedAfterHp, 0
           nowHp = Object.clone afterHp
-          combinedNowHp = Object.clone combinedNowHp
+          combinedNowHp = Object.clone combinedAfterHp
         when "/kcsapi/api_req_combined_battle/battleresult"
           flag = true
           tmpShip = " "
