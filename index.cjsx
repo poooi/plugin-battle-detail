@@ -75,12 +75,15 @@ getResult = (sortieHp, enemyHp, combinedHp, result, leastHp) ->
       sortieTot += (sortieHp[i] + sortieHp[i + 12])
       enemyDmg += sortieHp[i + 12]
       if sortieHp[i] <= 0
+        enemyDmg += (sortieHp[i] - 0)
         sortieDrop += 1
+        sortieHp[i] = 0
     if combinedHp[i] + combinedHp[i + 12] > 0
       sortieCnt += 1
       sortieTot += (combinedHp[i] + combinedHp[i + 12])
-      enemyDmg += ombinedHp[i + 12]
+      enemyDmg += combinedHp[i + 12]
       if combinedHp[i] <= 0
+        enemyDmg += (combinedHp[i] - 0)
         sortieDrop += 1
         combinedHp[i] = 0
     if enemyHp[i] + enemyHp[i + 12] > 0
@@ -88,6 +91,7 @@ getResult = (sortieHp, enemyHp, combinedHp, result, leastHp) ->
       enemyTot += (enemyHp[i] + enemyHp[i + 12])
       sortieDmg += enemyHp[i + 12]
       if enemyHp[i] <= leastHp
+        sortieDmg += (enemyHp[i] - leastHp)
         enemyDrop += 1
         enemyHp[i] = leastHp
     if enemyDrop == enemyCnt
