@@ -9,7 +9,8 @@ fs = require 'fs-extra'
 {APPDATA_PATH, SERVER_HOSTNAME} = window
 i18n = require './node_modules/i18n'
 {__} = i18n
-
+BottomAlert = require './parts/bottom-alert'
+ProphetPanel = require './parts/prophet-panel'
 i18n.configure
   locales: ['en_US', 'ja_JP', 'zh_CN']
   defaultLocale: 'en_US'
@@ -21,40 +22,6 @@ i18n.setLocale(window.language)
 
 window.addEventListener 'layout.change', (e) ->
   {layout} = e.detail
-
-getCondStyle = (cond) ->
-  if window.theme.indexOf('dark') != -1 or window.theme == 'slate' or window.theme == 'superhero'
-    if cond > 49
-      color: '#FFFF00'
-    else if cond < 20
-      color: '#DD514C'
-    else if cond < 30
-      color: '#F37B1D'
-    else if cond < 40
-      color: '#FFC880'
-    else
-      null
-  else
-    if cond > 49
-      'text-shadow': '0 0 3px #FFFF00'
-    else if cond < 20
-      'text-shadow': '0 0 3px #DD514C'
-    else if cond < 30
-      'text-shadow': '0 0 3px #F37B1D'
-    else if cond < 40
-      'text-shadow': '0 0 3px #FFC880'
-    else
-      null
-
-getHpStyle = (percent) ->
-  if percent <= 25
-    'danger'
-  else if percent <= 50
-    'warning'
-  else if percent <= 75
-    'info'
-  else
-    'success'
 
 formation = [
   __("Unknown Formation"),
@@ -280,7 +247,6 @@ module.exports =
       sortieInfo: Object.clone initData1
       enemyInfo: Object.clone initData1
       combinedInfo: Object.clone initData1
-      enemyContent: null
       getShip: null
       enemyFormation: 0
       enemyIntercept: 0
@@ -291,7 +257,7 @@ module.exports =
       combinedFlag: 0
     handleResponse: (e) ->
       {method, path, body, postBody} = e.detail
-      {sortieHp, enemyHp, combinedHp, sortieInfo, enemyInfo, combinedInfo, enemyContent, getShip, enemyFormation, enemyIntercept, enemyName, result, enableProphetDamaged, prophetCondShow, combinedFlag} = @state
+      {sortieHp, enemyHp, combinedHp, sortieInfo, enemyInfo, combinedInfo, getShip, enemyFormation, enemyIntercept, enemyName, result, enableProphetDamaged, prophetCondShow, combinedFlag} = @state
       enableProphetDamaged = config.get 'plugin.prophet.notify.damaged', true
       prophetCondShow = config.get 'plugin.prophet.show.cond', true
       if path == '/kcsapi/api_req_map/start' || path == '/kcsapi/api_req_map/next'
@@ -331,7 +297,6 @@ module.exports =
               type: 'damaged'
               icon: join(ROOT, 'views', 'components', 'ship', 'assets', 'img', 'state', '4.png')
           if body.api_get_ship?
-            enemyContent = body.api_enemy_info
             getShip = body.api_get_ship
         result = body.api_win_rank
       else if isBattle?
@@ -376,7 +341,6 @@ module.exports =
         sortieInfo: sortieInfo
         enemyInfo: enemyInfo
         combinedInfo: combinedInfo
-        enemyContent: enemyContent
         getShip: getShip
         enemyFormation: enemyFormation
         enemyIntercept: enemyIntercept
@@ -392,112 +356,27 @@ module.exports =
     render: ->
       <div>
         <link rel="stylesheet" href={join(relative(ROOT, __dirname), 'assets', 'prophet.css')} />
-        <Alert>
-          <Grid>
-            {
-              tmp = @state.combinedFlag + 1
-              for i in [1..tmp]
-                <Col xs={12 / tmp}>
-                  <Col xs={6 / tmp}>{__ "Sortie Fleet"}</Col>
-                  <Col xs={6 / tmp}>{__ "HP"}</Col>
-                </Col>
-            }
-          </Grid>
-        </Alert>
-        <Table>
-          <tbody>
-          {
-            for i in [0..5]
-              continue if @state.combinedFlag == 0 && @state.sortieInfo[i] == -1
-              continue if @state.combinedFlag == 0 && @state.sortieInfo[i] == -1 && @state.combinedInfo[i] == -1
-              if @state.combinedFlag == 0
-                <tr key={i + 1}>
-                  <td>
-                    Lv. {@state.sortieInfo[i]} - {@state.sortieInfo[i + 6]}
-                    {
-                      if @state.prophetCondShow && @state.combinedFlag == 0
-                        <span style={getCondStyle @state.sortieInfo[i + 12]}>
-                          <FontAwesome key={1} name='star' />{@state.sortieInfo[i + 12]}
-                        </span>
-                    }
-                  </td>
-                  <td className="hp-progress">
-                    <ProgressBar bsStyle={getHpStyle @state.sortieHp[i] / @state.sortieHp[i + 6] * 100}
-                      now={@state.sortieHp[i] / @state.sortieHp[i + 6] * 100}
-                      label={if @state.sortieHp[i + 12] > 0 then "#{@state.sortieHp[i]} / #{@state.sortieHp[i + 6]} (-#{@state.sortieHp[i + 12]})" else "#{@state.sortieHp[i]} / #{@state.sortieHp[i + 6]}"} />
-                  </td>
-                </tr>
-              else
-                <tr key={i + 1}>
-                  <td>
-                    Lv. {@state.sortieInfo[i]} - {@state.sortieInfo[i + 6]}
-                    {
-                      if @state.prophetCondShow && @state.combinedFlag == 0
-                        <span style={getCondStyle @state.sortieInfo[i + 12]}>
-                          <FontAwesome key={1} name='star' />{@state.sortieInfo[i + 12]}
-                        </span>
-                    }
-                  </td>
-                  <td className="hp-progress">
-                    <ProgressBar bsStyle={getHpStyle @state.sortieHp[i] / @state.sortieHp[i + 6] * 100}
-                      now={@state.sortieHp[i] / @state.sortieHp[i + 6] * 100}
-                      label={if @state.sortieHp[i + 12] > 0 then "#{@state.sortieHp[i]} / #{@state.sortieHp[i + 6]} (-#{@state.sortieHp[i + 12]})" else "#{@state.sortieHp[i]} / #{@state.sortieHp[i + 6]}"} />
-                  </td>
-                  <td>
-                    Lv. {@state.sortieInfo[i]} - {@state.sortieInfo[i + 6]}
-                    {
-                      if @state.prophetCondShow && @state.combinedFlag == 0
-                        <span style={getCondStyle @state.sortieInfo[i + 12]}>
-                          <FontAwesome key={1} name='star' />{@state.sortieInfo[i + 12]}
-                        </span>
-                    }
-                  </td>
-                  <td className="hp-progress">
-                    <ProgressBar bsStyle={getHpStyle @state.sortieHp[i] / @state.sortieHp[i + 6] * 100}
-                      now={@state.sortieHp[i] / @state.sortieHp[i + 6] * 100}
-                      label={if @state.sortieHp[i + 12] > 0 then "#{@state.sortieHp[i]} / #{@state.sortieHp[i + 6]} (-#{@state.sortieHp[i + 12]})" else "#{@state.sortieHp[i]} / #{@state.sortieHp[i + 6]}"} />
-                  </td>
-                </tr>
-          }
-          </tbody>
-        </Table>
-        <Alert>
-          <Grid>
-            {
-              for i in [1..1]
-                <Col xs={12}>
-                  <Col xs={6}>{@state.enemyName}</Col>
-                  <Col xs={6}>{__ "HP"}</Col>
-                </Col>
-            }
-          </Grid>
-        </Alert>
-        <Table>
-          <tbody>
-          {
-            for i in [0..5]
-              continue if @state.enemyInfo[i] == -1
-              <tr key={i}>
-                <td>Lv. {@state.enemyInfo[i]} - {@state.enemyInfo[i + 6]}</td>
-                <td className="hp-progress">
-                  <ProgressBar bsStyle={getHpStyle @state.enemyHp[i] / @state.enemyHp[i + 6] * 100}
-                    now={@state.enemyHp[i] / @state.enemyHp[i + 6] * 100}
-                    label={if @state.enemyHp[i + 12] > 0 then "#{@state.enemyHp[i]} / #{@state.enemyHp[i + 6]} (-#{@state.enemyHp[i + 12]})" else "#{@state.enemyHp[i]} / #{@state.enemyHp[i + 6]}"} />
-                </td>
-              </tr>
-          }
-          </tbody>
-        </Table>
-        {
-          if @state.getShip? && @state.enemyContent?
-            <Alert>
-              {__("Admiral") + " #{@state.getShip.api_ship_type}「#{@state.getShip.api_ship_name}」" + __("Join fleet")}
-            </Alert>
-          else if @state.enemyFormation != 0
-            <Alert>
-              {__("Admiral") + " 「#{formation[@state.enemyFormation]}」「#{intercept[@state.enemyIntercept]} | #{@state.result}」"}
-            </Alert>
-        }
+        <ProphetPanel
+          sortieHp={@state.sortieHp}
+          enemyHp={@state.enemyHp}
+          combinedHp={@state.combinedHp}
+          sortieInfo={@state.sortieInfo}
+          enemyInfo={@state.enemyInfo}
+          combinedInfo={@state.combinedInfo}
+          prophetCondShow={@state.prophetCondShow}
+          HP={__ "HP"}
+          sortieFleet={__ "Sortie Fleet"}
+          enemyName={@state.enemyName}
+          cols={if @state.combinedFlag == 0 then 0 else 1}
+          lay={if layout == 'horizonal' || window.doubleTabbed then 0 else 1} />
+        <BottomAlert
+          admiral={__ "Admiral"}
+          getShip={@state.getShip}
+          joinFleet={__ "Join fleet"}
+          formationNum={@state.enemyFormation}
+          formation={formation[@state.enemyFormation]}
+          intercept={intercept[@state.enemyIntercept]}
+          result={@state.result} />
       </div>
   settingsClass: React.createClass
     getInitialState: ->
