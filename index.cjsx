@@ -288,7 +288,7 @@ module.exports =
       isPractice = path.match /practice/
       isCombined = path.match /combined/
       isWater = path.match /water/
-      if isResult?
+      if isResult? && (isBattle? || isPractice)
         if isPractice == null
           tmpShip = " "
           for i in [0..5]
