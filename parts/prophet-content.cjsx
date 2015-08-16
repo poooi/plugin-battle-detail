@@ -21,13 +21,14 @@ module.exports = React.createClass
                     continue
                 list = []
                 for i in [0..(@props.cols)]
-                  if i == 2
+                  if (i == @props.cols) && (@props.lay == 1)
                     list.push <ProphetInfo
                       lv={@props.enemyInfo[j]}
                       name={@props.enemyInfo[j + 6]}
                       cond={@props.enemyInfo[j + 12]}
                       condShow={0} />
                     list.push <ProphetHp
+                      lv={@props.enemyInfo[j]}
                       now={@props.enemyHp[j]}
                       max={@props.enemyHp[j + 6]}
                       dmg={@props.enemyHp[j + 12]} />
@@ -38,6 +39,7 @@ module.exports = React.createClass
                       cond={@props.combinedInfo[j + 12]}
                       condShow={0} />
                     list.push <ProphetHp
+                      lv={@props.combinedInfo[j]}
                       now={@props.combinedHp[j]}
                       max={@props.combinedHp[j + 6]}
                       dmg={@props.combinedHp[j + 12]} />
@@ -48,6 +50,7 @@ module.exports = React.createClass
                       cond={@props.sortieInfo[j + 12]}
                       condShow={@props.prophetCondShow && (@props.cols - @props.lay) == 0} />
                     list.push <ProphetHp
+                      lv={@props.sortieInfo[j]}
                       now={@props.sortieHp[j]}
                       max={@props.sortieHp[j + 6]}
                       dmg={@props.sortieHp[j + 12]} />
@@ -72,6 +75,7 @@ module.exports = React.createClass
                     cond={@props.enemyInfo[j + 12]}
                     condShow={0} />
                   list.push <ProphetHp
+                    lv={@props.enemyInfo[j]}
                     now={@props.enemyHp[j]}
                     max={@props.enemyHp[j + 6]}
                     dmg={@props.enemyHp[j + 12]} />
