@@ -14,9 +14,9 @@ module.exports = React.createClass
               else
                 list.push <Col xs={tmp}>{@props.sortieFleet}</Col>
                 list.push <Col xs={tmp}>{@props.HP}</Col>
-              <Grid>
-                {list}
-              </Grid>
+            <Grid>
+              {list}
+            </Grid>
           }
         </Alert>
       else
