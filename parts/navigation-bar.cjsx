@@ -4,21 +4,20 @@ module.exports = React.createClass
     if @props.isFirst == 1 || (@props.isFirst == 0 && @props.lay == 0)
       if @props.isFirst == 1
         <Alert>
-          <Grid>
-            {
-              for i in [0..(@props.cols)]
-                if i == 2
-                  <Col xs={12}>
-                    <Col xs={6}>{@props.enemyName}</Col>
-                    <Col xs={6}>{@props.HP}</Col>
-                  </Col>
-                else
-                  <Col xs={12}>
-                    <Col xs={6}>{@props.sortieFleet}</Col>
-                    <Col xs={6}>{@props.HP}</Col>
-                  </Col>
-            }
-          </Grid>
+          {
+            list = []
+            tmp = 6 / (@props.cols + 1)
+            for i in [0..(@props.cols)]
+              if i == 2
+                list.push <Col xs={tmp}>{@props.enemyName}</Col>
+                list.push <Col xs={tmp}>{@props.HP}</Col>
+              else
+                list.push <Col xs={tmp}>{@props.sortieFleet}</Col>
+                list.push <Col xs={tmp}>{@props.HP}</Col>
+              <Grid>
+                {list}
+              </Grid>
+          }
         </Alert>
       else
         <Alert>
