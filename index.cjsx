@@ -278,6 +278,8 @@ module.exports =
         for i in [0..5]
           sortieInfo[i] = -1
           combinedInfo[i] = -1
+        if postBody.api_deck_id != 1
+          combinedFlag = 0
         if combinedFlag == 0
           [sortieHp, sortieInfo] = getDeckInfo sortieHp, sortieInfo, postBody.api_deck_id - 1
         else
