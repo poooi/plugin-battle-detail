@@ -49,11 +49,11 @@ dropCount = [
 ]
 
 dispSeiku = [
-  __ "Unknown FC",
-  __ "AS+",
-  __ "AS",
-  __ "Air Parity",
-  __ "Air Denial"
+  __("Unknown FC"),
+  __("AS+"),
+  __("AS"),
+  __("Air Parity"),
+  __("Air Denial")
 ]
 
 getEnemyInfo = (enemyHp, enemyInfo, enemyId, enemyLv, enemyMaxHp, leastHp) ->
@@ -395,7 +395,7 @@ module.exports =
       sortiePlane = enemyPlane = ""
       seiku = dispSeiku[0]
 
-      if planeCount
+      if planeCount?
         if planeCount[2] != 0
           sortiePlane = " #{__ 'Plane'} #{planeCount[1]} / #{planeCount[2]}"
         if planeCount[4] != 0
