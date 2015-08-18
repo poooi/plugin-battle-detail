@@ -49,11 +49,11 @@ dropCount = [
 ]
 
 dispSeiku = [
-  __("Seiku 0"),
-  __("Seiku 1"),
-  __("Seiku 2"),
-  __("Seiku 3"),
-  __("Seiku 4")
+  __ "Unknown FC",
+  __ "AS+",
+  __ "AS",
+  __ "Air Parity",
+  __ "Air Denial"
 ]
 
 getEnemyInfo = (enemyHp, enemyInfo, enemyId, enemyLv, enemyMaxHp, leastHp) ->

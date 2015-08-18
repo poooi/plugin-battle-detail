@@ -23,5 +23,10 @@
   "HP": "HP",
   "PvP": "PvP",
   "Admiral": "Admiral",
-  "Join fleet": "Join fleet"
+  "Join fleet": "Join fleet",
+  "Unknown FC": "Unknown FC",
+  "AS+": "AS+",
+  "AS": "AS",
+  "Air Parity": "Air Parity",
+  "Air Denial": "Air Denial"
 }

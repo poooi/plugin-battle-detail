@@ -25,9 +25,9 @@
   "Admiral": "提督桑",
   "Join fleet": "加入了舰队",
   "Plane": "舰载机",
-  "Seiku 0": "無",
-  "Seiku 1": "制空権確保",
-  "Seiku 2": "航空優勢",
-  "Seiku 3": "航空均勢/劣勢",
-  "Seiku 4": "制空権喪失"
+  "Unknown FC": "不明",
+  "AS+": "制空権確保",
+  "AS": "航空優勢",
+  "Air Parity": "航空均勢/劣勢",
+  "Air Denial": "制空権喪失"
 }
