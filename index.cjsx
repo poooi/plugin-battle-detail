@@ -259,9 +259,10 @@ module.exports =
       enableProphetDamaged: config.get 'plugin.prophet.notify.damaged', true
       prophetCondShow: config.get 'plugin.prophet.show.cond', true
       combinedFlag: 0
+      deckId: 0
     handleResponse: (e) ->
       {method, path, body, postBody} = e.detail
-      {sortieHp, enemyHp, combinedHp, sortieInfo, enemyInfo, combinedInfo, getShip, enemyFormation, enemyIntercept, enemyName, result, enableProphetDamaged, prophetCondShow, combinedFlag} = @state
+      {sortieHp, enemyHp, combinedHp, sortieInfo, enemyInfo, combinedInfo, getShip, enemyFormation, enemyIntercept, enemyName, result, enableProphetDamaged, prophetCondShow, combinedFlag, deckId} = @state
       enableProphetDamaged = config.get 'plugin.prophet.notify.damaged', true
       prophetCondShow = config.get 'plugin.prophet.show.cond', true
       if path == '/kcsapi/api_req_map/start' || path == '/kcsapi/api_req_map/next'
@@ -281,10 +282,14 @@ module.exports =
         if parseInt(postBody.api_deck_id) != 1
           combinedFlag = 0
         if combinedFlag == 0
-          [sortieHp, sortieInfo] = getDeckInfo sortieHp, sortieInfo, postBody.api_deck_id - 1
+          deckId = postBody.api_deck_id - 1
+          [sortieHp, sortieInfo] = getDeckInfo sortieHp, sortieInfo, deckId
         else
+          deckId = 0
           [sortieHp, sortieInfo] = getDeckInfo sortieHp, sortieInfo, 0
           [combinedHp, combinedInfo] = getDeckInfo combinedHp, combinedInfo, 1
+      if path == '/kcsapi/api_req_map/next' && combinedFlag == 0
+        [sortieHp, sortieInfo] = getDeckInfo sortieHp, sortieInfo, deckId
       isResult = path.match /result/
       isBattle = path.match /battle/
       isPractice = path.match /practice/
@@ -355,6 +360,7 @@ module.exports =
         enableProphetDamaged: enableProphetDamaged
         prophetCondShow: prophetCondShow
         combinedFlag: combinedFlag
+        deckId: deckId
 
     componentDidMount: ->
       window.addEventListener 'game.response', @handleResponse
