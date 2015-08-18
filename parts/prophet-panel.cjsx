@@ -21,7 +21,8 @@ module.exports = React.createClass
         prophetCondShow={@props.prophetCondShow}
         cols={@props.cols + @props.lay}
         lay={@props.lay}
-        isFirst={1} />
+        isFirst={1}
+        goBack={@props.goBack}/>
       <NavigationBar
         HP={@props.HP}
         sortieFleet={@props.sortieFleet}
@@ -39,5 +40,6 @@ module.exports = React.createClass
         prophetCondShow={@props.prophetCondShow}
         cols={@props.cols + @props.lay}
         lay={@props.lay}
-        isFirst={0} />
+        isFirst={0}
+        goBack={@props.goBack}/>
     </div>

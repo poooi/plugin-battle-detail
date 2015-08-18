@@ -159,7 +159,7 @@ hougekiAttack = (sortieHp, enemyHp, hougeki) ->
         enemyHp[damageTo - 1 + 6] += damage
         enemyHp[damageTo - 1 - 6] -= damage
   [sortieHp, enemyHp]
-
+initData0 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 initData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 initData1 = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
 
@@ -260,12 +260,15 @@ module.exports =
       prophetCondShow: config.get 'plugin.prophet.show.cond', true
       combinedFlag: 0
       deckId: 0
+      goBack: Object.clone initData0
     handleResponse: (e) ->
       {method, path, body, postBody} = e.detail
-      {sortieHp, enemyHp, combinedHp, sortieInfo, enemyInfo, combinedInfo, getShip, enemyFormation, enemyIntercept, enemyName, result, enableProphetDamaged, prophetCondShow, combinedFlag, deckId} = @state
+      {sortieHp, enemyHp, combinedHp, sortieInfo, enemyInfo, combinedInfo, getShip, enemyFormation, enemyIntercept, enemyName, result, enableProphetDamaged, prophetCondShow, combinedFlag, deckId, goBack} = @state
       enableProphetDamaged = config.get 'plugin.prophet.notify.damaged', true
       prophetCondShow = config.get 'plugin.prophet.show.cond', true
+      flag = false
       if path == '/kcsapi/api_req_map/start' || path == '/kcsapi/api_req_map/next'
+        flag = true
         enemyInfo[i] = -1 for i in [0..5]
         enemyHp = Object.clone initData
         for i in [12..17]
@@ -276,6 +279,8 @@ module.exports =
         result = __ 'Unknown'
         getShip = null
       if path == '/kcsapi/api_req_map/start'
+        flag = true
+        goBack = Object.clone initData0
         for i in [0..5]
           sortieInfo[i] = -1
           combinedInfo[i] = -1
@@ -289,13 +294,29 @@ module.exports =
           [sortieHp, sortieInfo] = getDeckInfo sortieHp, sortieInfo, 0
           [combinedHp, combinedInfo] = getDeckInfo combinedHp, combinedInfo, 1
       if path == '/kcsapi/api_req_map/next' && combinedFlag == 0
+        flag = true
         [sortieHp, sortieInfo] = getDeckInfo sortieHp, sortieInfo, deckId
+      if path == '/kcsapi/api_req_combined_battle/goback_port'
+        flag = true
+        damagedId = -1
+        for i in [0..5]
+          if sortieInfo[i] != -1 && damagedId == -1 && sortieHp[i] < 0.250001 * sortieHp[i + 6]
+            damagedId = i
+            break
+          if combinedInfo[i] != -1 && damagedId == -1 && combinedHp[i] < 0.250001 * combinedHp[i + 6]
+            damagedId = i + 6
+            break
+        for i in [0..5]
+          if combinedInfo[i] != -1 && damagedId != -1 && combinedHp[i] > 0.750001 * combinedHp[i + 6]
+            goBack[i + 6] = goBack[damagedId] = 1
+            break
       isResult = path.match /result/
       isBattle = path.match /battle/
       isPractice = path.match /practice/
       isCombined = path.match /combined/
       isWater = path.match /water/
       if isResult? && (isBattle? || isPractice)
+        flag = true
         if isPractice == null
           tmpShip = " "
           for i in [0..5]
@@ -311,6 +332,7 @@ module.exports =
             getShip = body.api_get_ship
         result = body.api_win_rank
       else if isBattle?
+        flag = true
         sortiePre = Object.clone sortieHp
         enemyPre = Object.clone enemyHp
         combinedPre = Object.clone combinedHp
@@ -327,6 +349,7 @@ module.exports =
           enemyHp[i] = enemyHp[i] - enemyPre[i]
           combinedHp[i] = combinedHp[i] - combinedPre[i]
       else if path == '/kcsapi/api_port/port'
+        flag = true
         combinedFlag = body.api_combined_flag
         for i in [0..5]
           sortieInfo[i] = -1
@@ -345,22 +368,24 @@ module.exports =
         enemyName = __ 'Enemy Vessel'
         result = __ 'Unknown'
         getShip = null
-      @setState
-        sortieHp: sortieHp
-        enemyHp: enemyHp
-        combinedHp: combinedHp
-        sortieInfo: sortieInfo
-        enemyInfo: enemyInfo
-        combinedInfo: combinedInfo
-        getShip: getShip
-        enemyFormation: enemyFormation
-        enemyIntercept: enemyIntercept
-        enemyName: enemyName
-        result: result
-        enableProphetDamaged: enableProphetDamaged
-        prophetCondShow: prophetCondShow
-        combinedFlag: combinedFlag
-        deckId: deckId
+      if flag
+        @setState
+          sortieHp: sortieHp
+          enemyHp: enemyHp
+          combinedHp: combinedHp
+          sortieInfo: sortieInfo
+          enemyInfo: enemyInfo
+          combinedInfo: combinedInfo
+          getShip: getShip
+          enemyFormation: enemyFormation
+          enemyIntercept: enemyIntercept
+          enemyName: enemyName
+          result: result
+          enableProphetDamaged: enableProphetDamaged
+          prophetCondShow: prophetCondShow
+          combinedFlag: combinedFlag
+          deckId: deckId
+          goBack: goBack
 
     componentDidMount: ->
       window.addEventListener 'game.response', @handleResponse
@@ -380,7 +405,8 @@ module.exports =
           sortieFleet={__ "Sortie Fleet"}
           enemyName={@state.enemyName}
           cols={if @state.combinedFlag == 0 then 0 else 1}
-          lay={if layout == 'horizonal' || window.doubleTabbed then 0 else 1} />
+          lay={if layout == 'horizonal' || window.doubleTabbed then 0 else 1}
+          goBack={@state.goBack}/>
         <BottomAlert
           admiral={__ "Admiral"}
           getShip={@state.getShip}

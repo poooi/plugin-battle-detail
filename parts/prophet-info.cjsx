@@ -29,7 +29,7 @@ module.exports = React.createClass
     if @props.lv == -1
       <td>　</td>
     else
-      <td>
+      <td style={opacity: 1 - 0.6 * @props.isBack}>
         Lv. {@props.lv} - {@props.name}
         {
           if @props.cond && @props.condShow != 0

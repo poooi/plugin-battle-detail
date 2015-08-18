@@ -26,34 +26,40 @@ module.exports = React.createClass
                       lv={@props.enemyInfo[j]}
                       name={@props.enemyInfo[j + 6]}
                       cond={@props.enemyInfo[j + 12]}
-                      condShow={0} />
+                      condShow={0}
+                      isBack={0}/>
                     list.push <ProphetHp
                       lv={@props.enemyInfo[j]}
                       now={@props.enemyHp[j]}
                       max={@props.enemyHp[j + 6]}
-                      dmg={@props.enemyHp[j + 12]} />
+                      dmg={@props.enemyHp[j + 12]}
+                      isBack={0}/>
                   else if i == 1
                     list.push <ProphetInfo
                       lv={@props.combinedInfo[j]}
                       name={@props.combinedInfo[j + 6]}
                       cond={@props.combinedInfo[j + 12]}
-                      condShow={0} />
+                      condShow={0}
+                      isBack={@props.goBack[j + 6]}/>
                     list.push <ProphetHp
                       lv={@props.combinedInfo[j]}
                       now={@props.combinedHp[j]}
                       max={@props.combinedHp[j + 6]}
-                      dmg={@props.combinedHp[j + 12]} />
+                      dmg={@props.combinedHp[j + 12]}
+                      isBack={@props.goBack[j + 6]}/>
                   else if i == 0
                     list.push <ProphetInfo
                       lv={@props.sortieInfo[j]}
                       name={@props.sortieInfo[j + 6]}
                       cond={@props.sortieInfo[j + 12]}
-                      condShow={@props.prophetCondShow && (@props.cols - @props.lay) == 0} />
+                      condShow={@props.prophetCondShow && (@props.cols - @props.lay) == 0}
+                      isBack={@props.goBack[j]}/>
                     list.push <ProphetHp
                       lv={@props.sortieInfo[j]}
                       now={@props.sortieHp[j]}
                       max={@props.sortieHp[j + 6]}
-                      dmg={@props.sortieHp[j + 12]} />
+                      dmg={@props.sortieHp[j + 12]}
+                      isBack={@props.goBack[j]}/>
                 <tr key={j + 1}>
                   {list}
                 </tr>
@@ -73,12 +79,14 @@ module.exports = React.createClass
                     lv={@props.enemyInfo[j]}
                     name={@props.enemyInfo[j + 6]}
                     cond={@props.enemyInfo[j + 12]}
-                    condShow={0} />
+                    condShow={0}
+                    isBack={0}/>
                   list.push <ProphetHp
                     lv={@props.enemyInfo[j]}
                     now={@props.enemyHp[j]}
                     max={@props.enemyHp[j + 6]}
-                    dmg={@props.enemyHp[j + 12]} />
+                    dmg={@props.enemyHp[j + 12]}
+                    isBack={0}/>
                 <tr key={j + 6}>
                   {list}
                 </tr>
