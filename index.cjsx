@@ -48,6 +48,14 @@ dropCount = [
   0, 1, 1, 2, 2, 3, 4
 ]
 
+dispSeiku = [
+  __("Seiku 0"),
+  __("Seiku 1"),
+  __("Seiku 2"),
+  __("Seiku 3"),
+  __("Seiku 4")
+]
+
 getEnemyInfo = (enemyHp, enemyInfo, enemyId, enemyLv, enemyMaxHp, leastHp) ->
   {$ships, _ships} = window
   for shipId, i in enemyId
@@ -176,9 +184,21 @@ getDeckInfo = (sortieHp, sortieInfo, deckId) ->
     sortieInfo[12 + i] = _ships[shipId].api_cond
   [sortieHp, sortieInfo]
 
+analogKouku = (api_kouku) ->
+  # [seiku, f_left, f_all, e_left, e_all]
+  planeCount = null
+  if api_kouku.api_stage1?
+    tmp = api_kouku.api_stage1
+    planeCount = [tmp.api_disp_seiku, tmp.api_f_count - tmp.api_f_lostcount, tmp.api_f_count, tmp.api_e_count - tmp.api_e_lostcount, tmp.api_e_count]
+    if api_kouku.api_stage2?
+      planeCount[1] -= api_kouku.api_stage2.api_f_lostcount
+      planeCount[3] -= api_kouku.api_stage2.api_e_lostcount
+  planeCount
+
 analogBattle = (sortieHp, enemyHp, combinedHp, result, isCombined, isWater, body, leastHp) ->
   # First air battle
   if body.api_kouku?
+    planeCount = analogKouku body.api_kouku
     if body.api_kouku.api_stage3?
       [sortieHp, enemyHp] = koukuAttack sortieHp, enemyHp, body.api_kouku.api_stage3
     if body.api_kouku.api_stage3_combined?
@@ -231,7 +251,7 @@ analogBattle = (sortieHp, enemyHp, combinedHp, result, isCombined, isWater, body
     else
       [sortieHp, enemyHp] = raigekiAttack sortieHp, enemyHp, body.api_raigeki
   [sortieHp, enemyHp, combinedHp, result] = getResult sortieHp, enemyHp, combinedHp, result, leastHp
-  [sortieHp, enemyHp, combinedHp, result]
+  [sortieHp, enemyHp, combinedHp, result, planeCount]
 
 module.exports =
   name: 'prophet'
@@ -252,6 +272,10 @@ module.exports =
       enemyInfo: Object.clone initData1
       combinedInfo: Object.clone initData1
       getShip: null
+      planeCount: null
+      sortiePlane: null
+      enemyPlane: null
+      seiku: null
       enemyFormation: 0
       enemyIntercept: 0
       enemyName: __("Enemy Vessel")
@@ -259,11 +283,10 @@ module.exports =
       enableProphetDamaged: config.get 'plugin.prophet.notify.damaged', true
       prophetCondShow: config.get 'plugin.prophet.show.cond', true
       combinedFlag: 0
-      deckId: 0
       goBack: Object.clone initData0
     handleResponse: (e) ->
       {method, path, body, postBody} = e.detail
-      {sortieHp, enemyHp, combinedHp, sortieInfo, enemyInfo, combinedInfo, getShip, enemyFormation, enemyIntercept, enemyName, result, enableProphetDamaged, prophetCondShow, combinedFlag, deckId, goBack} = @state
+      {sortieHp, enemyHp, combinedHp, sortieInfo, enemyInfo, combinedInfo, getShip, planeCount, enemyFormation, enemyIntercept, enemyName, result, enableProphetDamaged, prophetCondShow, combinedFlag, goBack} = @state
       enableProphetDamaged = config.get 'plugin.prophet.notify.damaged', true
       prophetCondShow = config.get 'plugin.prophet.show.cond', true
       flag = false
@@ -278,6 +301,7 @@ module.exports =
         enemyName = __ 'Enemy Vessel'
         result = __ 'Unknown'
         getShip = null
+        planeCount = null
       if path == '/kcsapi/api_req_map/start'
         flag = true
         goBack = Object.clone initData0
@@ -287,15 +311,10 @@ module.exports =
         if parseInt(postBody.api_deck_id) != 1
           combinedFlag = 0
         if combinedFlag == 0
-          deckId = postBody.api_deck_id - 1
-          [sortieHp, sortieInfo] = getDeckInfo sortieHp, sortieInfo, deckId
+          [sortieHp, sortieInfo] = getDeckInfo sortieHp, sortieInfo, postBody.api_deck_id - 1
         else
-          deckId = 0
           [sortieHp, sortieInfo] = getDeckInfo sortieHp, sortieInfo, 0
           [combinedHp, combinedInfo] = getDeckInfo combinedHp, combinedInfo, 1
-      if path == '/kcsapi/api_req_map/next' && combinedFlag == 0
-        flag = true
-        [sortieHp, sortieInfo] = getDeckInfo sortieHp, sortieInfo, deckId
       if path == '/kcsapi/api_req_combined_battle/goback_port'
         flag = true
         damagedId = -1
@@ -310,6 +329,9 @@ module.exports =
           if combinedInfo[i] != -1 && damagedId != -1 && combinedHp[i] > 0.750001 * combinedHp[i + 6]
             goBack[i + 6] = goBack[damagedId] = 1
             break
+      if path == '/kcsapi/api_get_member/ship_deck' && combinedFlag == 0
+        flag = true
+        [sortieHp, sortieInfo] = getDeckInfo sortieHp, sortieInfo, body.api_deck_data[0].api_id - 1
       isResult = path.match /result/
       isBattle = path.match /battle/
       isPractice = path.match /practice/
@@ -343,7 +365,7 @@ module.exports =
         if body.api_formation?
           enemyFormation = body.api_formation[1]
           enemyIntercept = body.api_formation[2]
-        [sortieHp, enemyHp, combinedHp, result] = analogBattle sortieHp, enemyHp, combinedHp, result, isCombined, isWater, body, leastHp
+        [sortieHp, enemyHp, combinedHp, result, planeCount] = analogBattle sortieHp, enemyHp, combinedHp, result, isCombined, isWater, body, leastHp
         for i in [12..17]
           sortieHp[i] = sortieHp[i] - sortiePre[i]
           enemyHp[i] = enemyHp[i] - enemyPre[i]
@@ -368,6 +390,17 @@ module.exports =
         enemyName = __ 'Enemy Vessel'
         result = __ 'Unknown'
         getShip = null
+        planeCount = null
+
+      sortiePlane = enemyPlane = ""
+      seiku = dispSeiku[0]
+
+      if planeCount
+        if planeCount[2] != 0
+          sortiePlane = " #{__ 'Plane'} #{planeCount[1]} / #{planeCount[2]}"
+        if planeCount[4] != 0
+          enemyPlane = " #{__ 'Plane'} #{planeCount[3]} / #{planeCount[4]}"
+        seiku = dispSeiku[planeCount[0]]
       if flag
         @setState
           sortieHp: sortieHp
@@ -377,6 +410,10 @@ module.exports =
           enemyInfo: enemyInfo
           combinedInfo: combinedInfo
           getShip: getShip
+          planeCount: planeCount
+          sortiePlane: sortiePlane
+          enemyPlane: enemyPlane
+          seiku: seiku
           enemyFormation: enemyFormation
           enemyIntercept: enemyIntercept
           enemyName: enemyName
@@ -384,7 +421,6 @@ module.exports =
           enableProphetDamaged: enableProphetDamaged
           prophetCondShow: prophetCondShow
           combinedFlag: combinedFlag
-          deckId: deckId
           goBack: goBack
 
     componentDidMount: ->
@@ -404,6 +440,8 @@ module.exports =
           HP={__ "HP"}
           sortieFleet={__ "Sortie Fleet"}
           enemyName={@state.enemyName}
+          sortiePlane={@state.sortiePlane}
+          enemyPlane={@state.enemyPlane}
           cols={if @state.combinedFlag == 0 then 0 else 1}
           lay={if layout == 'horizonal' || window.doubleTabbed then 0 else 1}
           goBack={@state.goBack}/>
@@ -414,6 +452,7 @@ module.exports =
           formationNum={@state.enemyFormation}
           formation={formation[@state.enemyFormation]}
           intercept={intercept[@state.enemyIntercept]}
+          seiku={@state.seiku}
           result={@state.result} />
       </div>
   settingsClass: React.createClass
