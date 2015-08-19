@@ -361,6 +361,7 @@ module.exports =
         leastHp = 0
         if isPractice?
           leastHp = 1
+          [sortieHp, sortieInfo] = getDeckInfo sortieHp, sortieInfo, parseInt(postBody.api_deck_id) - 1
         [enemyHp, enemyInfo] = getEnemyInfo enemyHp, enemyInfo, body.api_ship_ke, body.api_ship_lv, body.api_maxhps, leastHp
         if body.api_formation?
           enemyFormation = body.api_formation[1]
