@@ -55,7 +55,42 @@ dispSeiku = [
   __("Air Parity"),
   __("Air Denial")
 ]
-
+listShipDeck = ['/kcsapi/api_get_member/ship_deck']
+listPort = ['/kcsapi/api_port/port']
+listBattle = [
+  '/kcsapi/api_req_practice/battle',
+  '/kcsapi/api_req_practice/midnight_battle',
+  '/kcsapi/api_req_sortie/airbattle',
+  '/kcsapi/api_req_battle_midnight/sp_midnight',
+  '/kcsapi/api_req_sortie/battle',
+  '/kcsapi/api_req_battle_midnight/battle',
+  '/kcsapi/api_req_combined_battle/airbattle',
+  '/kcsapi/api_req_combined_battle/sp_midnight',
+  '/kcsapi/api_req_combined_battle/battle',
+  '/kcsapi/api_req_combined_battle/battle_water',
+  '/kcsapi/api_req_combined_battle/midnight_battle'
+]
+listWater = ['/kcsapi/api_req_combined_battle/battle_water']
+listResult = [
+  '/kcsapi/api_req_practice/battle_result',
+  '/kcsapi/api_req_sortie/battleresult',
+  '/kcsapi/api_req_combined_battle/battleresult'
+]
+listPractice = [
+  '/kcsapi/api_req_practice/battle',
+  '/kcsapi/api_req_practice/midnight_battle',
+  '/kcsapi/api_req_practice/battle_result'
+]
+listGoBack = ['/kcsapi/api_req_combined_battle/goback_port']
+listStart = ['/kcsapi/api_req_map/start']
+listNext = ['/kcsapi/api_req_map/next']
+listCombined = [
+  '/kcsapi/api_req_combined_battle/airbattle',
+  '/kcsapi/api_req_combined_battle/sp_midnight',
+  '/kcsapi/api_req_combined_battle/battle',
+  '/kcsapi/api_req_combined_battle/battle_water',
+  '/kcsapi/api_req_combined_battle/midnight_battle'
+]
 getEnemyInfo = (enemyHp, enemyInfo, enemyId, enemyLv, enemyMaxHp, leastHp) ->
   {$ships, _ships} = window
   for shipId, i in enemyId
@@ -290,7 +325,18 @@ module.exports =
       enableProphetDamaged = config.get 'plugin.prophet.notify.damaged', true
       prophetCondShow = config.get 'plugin.prophet.show.cond', true
       flag = false
-      if path == '/kcsapi/api_req_map/start' || path == '/kcsapi/api_req_map/next'
+      isResult = isBattle = isPractice = isCombined = isWater = isGoBack = isStart = isNext = isPort = isShipDeck = null
+      isResult = true if path in listResult
+      isBattle = true if path in listBattle
+      isPractice = true if path in listPractice
+      isCombined = true if path in listCombined
+      isWater = true if path in listWater
+      isGoBack = true if path in listGoBack
+      isStart = true if path in listStart
+      isNext = true if path in listNext
+      isPort = true if path in listPort
+      isShipDeck = true if path in listShipDeck
+      if isStart? || isNext?
         flag = true
         enemyInfo[i] = -1 for i in [0..5]
         enemyHp = Object.clone initData
@@ -302,7 +348,7 @@ module.exports =
         result = __ 'Unknown'
         getShip = null
         planeCount = null
-      if path == '/kcsapi/api_req_map/start'
+      if isStart?
         flag = true
         goBack = Object.clone initData0
         for i in [0..5]
@@ -315,7 +361,7 @@ module.exports =
         else
           [sortieHp, sortieInfo] = getDeckInfo sortieHp, sortieInfo, 0
           [combinedHp, combinedInfo] = getDeckInfo combinedHp, combinedInfo, 1
-      if path == '/kcsapi/api_req_combined_battle/goback_port'
+      if isGoBack?
         flag = true
         damagedId = -1
         for i in [0..5]
@@ -329,15 +375,10 @@ module.exports =
           if combinedInfo[i] != -1 && damagedId != -1 && combinedHp[i] > 0.750001 * combinedHp[i + 6]
             goBack[i + 6] = goBack[damagedId] = 1
             break
-      if path == '/kcsapi/api_get_member/ship_deck' && combinedFlag == 0
+      if isShipDeck? && combinedFlag == 0
         flag = true
         [sortieHp, sortieInfo] = getDeckInfo sortieHp, sortieInfo, body.api_deck_data[0].api_id - 1
-      isResult = path.match /result/
-      isBattle = path.match /battle/
-      isPractice = path.match /practice/
-      isCombined = path.match /combined/
-      isWater = path.match /water/
-      if isResult? && (isBattle? || isPractice)
+      if isResult?
         flag = true
         if isPractice == null
           tmpShip = " "
@@ -353,7 +394,7 @@ module.exports =
           if body.api_get_ship?
             getShip = body.api_get_ship
         result = body.api_win_rank
-      else if isBattle?
+      if isBattle?
         flag = true
         sortiePre = Object.clone sortieHp
         enemyPre = Object.clone enemyHp
@@ -372,7 +413,7 @@ module.exports =
           sortieHp[i] = sortieHp[i] - sortiePre[i]
           enemyHp[i] = enemyHp[i] - enemyPre[i]
           combinedHp[i] = combinedHp[i] - combinedPre[i]
-      else if path == '/kcsapi/api_port/port'
+      if isPort?
         flag = true
         combinedFlag = body.api_combined_flag
         for i in [0..5]
