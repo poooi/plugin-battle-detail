@@ -288,12 +288,15 @@ analogBattle = (sortieHp, enemyHp, combinedHp, result, isCombined, isWater, body
   [sortieHp, enemyHp, combinedHp, result] = getResult sortieHp, enemyHp, combinedHp, result, leastHp
   [sortieHp, enemyHp, combinedHp, result, planeCount]
 
+escapeId = -1
+towId = -1
+
 module.exports =
   name: 'prophet'
   priority: 1
   displayName: <span><FontAwesome key={0} name='compass' />{' ' + __("Prophet")}</span>
   description: __ "Sortie Prophet"
-  version: '2.0.0'
+  version: '3.0.0'
   author: 'Chiba'
   link: 'https://github.com/Chibaheit'
   reactClass: React.createClass
@@ -363,31 +366,24 @@ module.exports =
           [combinedHp, combinedInfo] = getDeckInfo combinedHp, combinedInfo, 1
       if isGoBack?
         flag = true
-        damagedId = -1
-        for i in [0..5]
-          if sortieInfo[i] != -1 && damagedId == -1 && sortieHp[i] < 0.250001 * sortieHp[i + 6]
-            damagedId = i
-            break
-          if combinedInfo[i] != -1 && damagedId == -1 && combinedHp[i] < 0.250001 * combinedHp[i + 6]
-            damagedId = i + 6
-            break
-        for i in [0..5]
-          if combinedInfo[i] != -1 && damagedId != -1 && combinedHp[i] > 0.750001 * combinedHp[i + 6]
-            goBack[i + 6] = goBack[damagedId] = 1
-            break
+        if escapeId != -1 && towId != -1
+          goBack[escapeId] = goBack[towId] = 1
       if isShipDeck? && combinedFlag == 0
         flag = true
         [sortieHp, sortieInfo] = getDeckInfo sortieHp, sortieInfo, body.api_deck_data[0].api_id - 1
       if isResult?
         flag = true
         if isPractice == null
-          tmpShip = " "
+          if body.api_escape_flag? && body.api_escape_flag > 0
+            escapeId = body.api_escape.api_escape_idx[0] - 1
+            towId = body.api_escape.api_tow_idx[0] - 1
+          tmpShip = ""
           for i in [0..5]
-            if sortieHp[i] < (sortieHp[6 + i] * 0.2500001)
+            if sortieHp[i] < (sortieHp[6 + i] * 0.2500001) && goBack[i] == 0
               tmpShip = tmpShip + sortieInfo[6 + i] + " "
-            if combinedHp[i] < (combinedHp[6 + i] * 0.2500001)
+            if combinedHp[i] < (combinedHp[6 + i] * 0.2500001) && goBack[6 + i] == 0
               tmpShip = tmpShip + combinedInfo[6 + i] + " "
-          if tmpShip != " "
+          if tmpShip != ""
             notify "#{tmpShip}" + __ 'Heavily damaged',
               type: 'damaged'
               icon: join(ROOT, 'views', 'components', 'ship', 'assets', 'img', 'state', '4.png')
@@ -395,6 +391,7 @@ module.exports =
             getShip = body.api_get_ship
         result = body.api_win_rank
       if isBattle?
+        escapeId = towId = -1
         flag = true
         sortiePre = Object.clone sortieHp
         enemyPre = Object.clone enemyHp
@@ -414,6 +411,7 @@ module.exports =
           enemyHp[i] = enemyHp[i] - enemyPre[i]
           combinedHp[i] = combinedHp[i] - combinedPre[i]
       if isPort?
+        goBack = Object.clone initData0
         flag = true
         combinedFlag = body.api_combined_flag
         for i in [0..5]
