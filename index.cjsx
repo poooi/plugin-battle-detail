@@ -311,8 +311,8 @@ module.exports =
       combinedInfo: Object.clone initData1
       getShip: null
       planeCount: null
-      sortiePlane: null
-      enemyPlane: null
+      sortiePlane: ''
+      enemyPlane: ''
       seiku: null
       enemyFormation: 0
       enemyIntercept: 0
