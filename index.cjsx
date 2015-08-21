@@ -183,8 +183,6 @@ getShipInfo = (sortieHp, sortieInfo) ->
 analogKouku = (api_kouku, planeCount) ->
   # [seiku, f_left, f_all, e_left, e_all]
   if api_kouku.api_stage1?
-    tmp = api_kouku.api_stage1
-    planeCount = [tmp.api_disp_seiku, tmp.api_f_count - tmp.api_f_lostcount, tmp.api_f_count, tmp.api_e_count - tmp.api_e_lostcount, tmp.api_e_count]
     if api_kouku.api_stage2?
       planeCount[1] -= api_kouku.api_stage2.api_f_lostcount
       planeCount[3] -= api_kouku.api_stage2.api_e_lostcount
@@ -193,6 +191,9 @@ analogBattle = (sortieHp, enemyHp, combinedHp, isCombined, isWater, body, leastH
   # First air battle
 
   if body.api_kouku?
+    if api_kouku.api_stage1?
+      tmp = api_kouku.api_stage1
+      planeCount = [tmp.api_disp_seiku, tmp.api_f_count - tmp.api_f_lostcount, tmp.api_f_count, tmp.api_e_count - tmp.api_e_lostcount, tmp.api_e_count]
     planeCount = analogKouku body.api_kouku, planeCount
 
     if body.api_kouku.api_stage3?
@@ -202,7 +203,7 @@ analogBattle = (sortieHp, enemyHp, combinedHp, isCombined, isWater, body, leastH
   # Second air battle
 
   if body.api_kouku2?
-    planeCount = analogKouku body.api_kouku, planeCount
+    planeCount = analogKouku body.api_kouku2, planeCount
 
     if body.api_kouku2.api_stage3?
       koukuAttack sortieHp, enemyHp, body.api_kouku2.api_stage3
