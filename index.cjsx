@@ -120,7 +120,7 @@ getResult = (sortieHp, enemyHp, combinedHp, leastHp) ->
     result = 'S'
   else if enemyDrop >= dropCount[enemyCnt]
     result = 'A'
-  else if sortieDmg != 0 && (enemyHp[0] <= leastHp || (sortieDmg * sortieTot >= 2.5 * enemyDmg * enemyTot))
+  else if sortieDmg != 0 && (enemyHp.now[0] <= 0 || (sortieDmg * sortieTot >= 2.5 * enemyDmg * enemyTot))
     result = 'B'
   else if sortieDmg != 0 && (sortieDmg * sortieTot >= 1.0 * enemyDmg * enemyTot)
     result = 'C'
