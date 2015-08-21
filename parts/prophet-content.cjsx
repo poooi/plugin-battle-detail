@@ -15,50 +15,49 @@ module.exports = React.createClass
                   if @props.cols == 1 && @props.sortieInfo[j] == -1 && @props.combinedInfo[j] == -1
                     continue
                 if @props.lay == 1
-                  if @props.cols == 1 && @props.sortieInfo[j] == -1 && @props.enemyInfo[j] == -1
+                  if @props.cols == 1 && @props.sortieInfo[j] == -1 && @props.enemyInfo.lv[j] == -1
                     continue
-                  if @props.cols == 2 && @props.sortieInfo[j] == -1 && @props.enemyInfo[j] == -1 && @props.combinedInfo[j] == -1
+                  if @props.cols == 2 && @props.sortieInfo[j] == -1 && @props.enemyInfo.lv[j] == -1 && @props.combinedInfo[j] == -1
                     continue
                 list = []
                 for i in [0..(@props.cols)]
                   if (i == @props.cols) && (@props.lay == 1)
                     list.push <ProphetInfo
-                      lv={@props.enemyInfo[j]}
-                      name={@props.enemyInfo[j + 6]}
-                      cond={@props.enemyInfo[j + 12]}
+                      lv={@props.enemyInfo.lv[j]}
+                      name={@props.enemyInfo.name[j]}
                       condShow={0}
                       isBack={0}/>
                     list.push <ProphetHp
-                      lv={@props.enemyInfo[j]}
-                      now={@props.enemyHp[j]}
-                      max={@props.enemyHp[j + 6]}
-                      dmg={@props.enemyHp[j + 12]}
+                      lv={@props.enemyInfo.lv[j]}
+                      now={@props.enemyHp.now[j]}
+                      max={@props.enemyHp.max[j]}
+                      dmg={@props.enemyHp.dmg[j]}
                       isBack={0}/>
                   else if i == 1
                     list.push <ProphetInfo
-                      lv={@props.combinedInfo[j]}
-                      name={@props.combinedInfo[j + 6]}
-                      cond={@props.combinedInfo[j + 12]}
-                      condShow={0}
+                      lv={window._ships[@props.combinedInfo[j]].api_lv}
+                      name={window._ships[@props.combinedInfo[j]].api_name}
+                      cond={window._ships[@props.combinedInfo[j]].api_cond}
+                      condShow={1}
                       isBack={@props.goBack[j + 6]}/>
                     list.push <ProphetHp
-                      lv={@props.combinedInfo[j]}
-                      now={@props.combinedHp[j]}
-                      max={@props.combinedHp[j + 6]}
-                      dmg={@props.combinedHp[j + 12]}
+                      lv={window._ships[@props.combinedInfo[j]].api_lv}
+                      now={@props.combinedHp.now[j]}
+                      max={@props.combinedHp.max[j]}
+                      dmg={@props.combinedHp.dmg[j]}
                       isBack={@props.goBack[j + 6]}/>
                   else if i == 0
                     list.push <ProphetInfo
-                      lv={@props.sortieInfo[j]}
-                      name={@props.sortieInfo[j + 6]}
-                      cond={@props.sortieInfo[j + 12]}
-                      condShow={@props.prophetCondShow && (@props.cols - @props.lay) == 0}
+                      lv={window._ships[@props.sortieInfo[j]].api_lv}
+                      name={window._ships[@props.sortieInfo[j]].api_name}
+                      cond={window._ships[@props.sortieInfo[j]].api_cond}
+                      condShow={1}
                       isBack={@props.goBack[j]}/>
                     list.push <ProphetHp
-                      lv={@props.sortieInfo[j]}
-                      now={@props.sortieHp[j]}
-                      max={@props.sortieHp[j + 6]}
-                      dmg={@props.sortieHp[j + 12]}
+                      lv={window._ships[@props.sortieInfo[j]].api_lv}
+                      now={@props.sortieHp.now[j]}
+                      max={@props.sortieHp.max[j]}
+                      dmg={@props.sortieHp.dmg[j]}
                       isBack={@props.goBack[j]}/>
                 <tr key={j + 1}>
                   {list}
@@ -71,21 +70,20 @@ module.exports = React.createClass
           <tbody>
             {
               for j in [0..5]
-                if @props.enemyInfo[j] == -1
+                if @props.enemyInfo.lv[j] == -1
                   continue
                 list = []
                 for i in [0..0]
                   list.push <ProphetInfo
-                    lv={@props.enemyInfo[j]}
-                    name={@props.enemyInfo[j + 6]}
-                    cond={@props.enemyInfo[j + 12]}
+                    lv={@props.enemyInfo.lv[j]}
+                    name={@props.enemyInfo.name[j]}
                     condShow={0}
                     isBack={0}/>
                   list.push <ProphetHp
-                    lv={@props.enemyInfo[j]}
-                    now={@props.enemyHp[j]}
-                    max={@props.enemyHp[j + 6]}
-                    dmg={@props.enemyHp[j + 12]}
+                    lv={@props.enemyInfo.lv[j]}
+                    now={@props.enemyHp.now[j]}
+                    max={@props.enemyHp.max[j]}
+                    dmg={@props.enemyHp.dmg[j]}
                     isBack={0}/>
                 <tr key={j + 6}>
                   {list}
