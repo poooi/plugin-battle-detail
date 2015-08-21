@@ -65,6 +65,11 @@ initInfo =
   lv: [-1, -1, -1, -1, -1, -1]
   name: [0, 0, 0, 0, 0, 0]
 
+initPlaneCount =
+  seiku: 0
+  sortie: [0, 0]
+  enemy: [0, 0]
+
 initId = [-1, -1, -1, -1, -1, -1]
 initData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
@@ -182,19 +187,21 @@ getShipInfo = (sortieHp, sortieInfo) ->
 
 analogKouku = (api_kouku, planeCount) ->
   # [seiku, f_left, f_all, e_left, e_all]
-  if api_kouku.api_stage1?
-    if api_kouku.api_stage2?
-      planeCount[1] -= api_kouku.api_stage2.api_f_lostcount
-      planeCount[3] -= api_kouku.api_stage2.api_e_lostcount
-    planeCount
+  if api_kouku.api_stage2?
+    planeCount.sortie[0] -= api_kouku.api_stage2.api_f_lostcount
+    planeCount.enemy[0] -= api_kouku.api_stage2.api_e_lostcount
 analogBattle = (sortieHp, enemyHp, combinedHp, isCombined, isWater, body, leastHp, planeCount) ->
   # First air battle
 
   if body.api_kouku?
-    if api_kouku.api_stage1?
-      tmp = api_kouku.api_stage1
-      planeCount = [tmp.api_disp_seiku, tmp.api_f_count - tmp.api_f_lostcount, tmp.api_f_count, tmp.api_e_count - tmp.api_e_lostcount, tmp.api_e_count]
-    planeCount = analogKouku body.api_kouku, planeCount
+    if body.api_kouku.api_stage1?
+      tmp = body.api_kouku.api_stage1
+      planeCount.seiku = tmp.api_disp_seiku
+      planeCount.sortie[0] = tmp.api_f_count - tmp.api_f_lostcount
+      planeCount.sortie[1] = tmp.api_f_count
+      planeCount.enemy[0] = tmp.api_e_count - tmp.api_e_lostcount
+      planeCount.enemy[1] = tmp.api_e_count
+    analogKouku body.api_kouku, planeCount
 
     if body.api_kouku.api_stage3?
       koukuAttack sortieHp, enemyHp, body.api_kouku.api_stage3
@@ -203,7 +210,7 @@ analogBattle = (sortieHp, enemyHp, combinedHp, isCombined, isWater, body, leastH
   # Second air battle
 
   if body.api_kouku2?
-    planeCount = analogKouku body.api_kouku2, planeCount
+    analogKouku body.api_kouku2, planeCount
 
     if body.api_kouku2.api_stage3?
       koukuAttack sortieHp, enemyHp, body.api_kouku2.api_stage3
@@ -258,8 +265,7 @@ analogBattle = (sortieHp, enemyHp, combinedHp, isCombined, isWater, body, leastH
     else
       raigekiAttack sortieHp, enemyHp, body.api_raigeki
 
-  result = getResult sortieHp, enemyHp, combinedHp, leastHp
-  [result, planeCount]
+  getResult sortieHp, enemyHp, combinedHp, leastHp
 
 escapeId = -1
 towId = -1
@@ -281,7 +287,7 @@ module.exports =
       enemyInfo: Object.clone initInfo
       combinedInfo: Object.clone initId
       getShip: null
-      planeCount: null
+      planeCount: Object.clone initPlaneCount
       sortiePlane: ''
       enemyPlane: ''
       seiku: null
@@ -318,7 +324,8 @@ module.exports =
           enemyFormation = enemyIntercept = 0
           enemyName = __ 'Enemy Vessel'
           result = null
-          getShip = planeCount = null
+          getShip = null
+          planeCount = Object.clone initPlaneCount
         # Enter next point in battle
         when '/kcsapi/api_req_map/next'
           flag = true
@@ -327,7 +334,8 @@ module.exports =
           enemyFormation = enemyIntercept = 0
           enemyName = __ 'Enemy Vessel'
           result = null
-          getShip = planeCount = null
+          getShip = null
+          planeCount = Object.clone initPlaneCount
         # Some ship while go back
         when '/kcsapi/api_req_combined_battle/goback_port'
           flag = true
@@ -343,7 +351,7 @@ module.exports =
           if path != '/kcsapi/api_req_battle_midnight/battle'
             getEnemyInfo enemyHp, enemyInfo, body, false
 
-          [result, planeCount] = analogBattle sortieHp, enemyHp, combinedHp, false, false, body, 0, planeCount
+          result = analogBattle sortieHp, enemyHp, combinedHp, false, false, body, 0, planeCount
 
           for i in [0..5]
             sortieHp.dmg[i] -= daySortieDmg[i]
@@ -363,7 +371,7 @@ module.exports =
           daySortieDmg = Object.clone sortieHp.dmg
           dayEnemyDmg = Object.clone enemyHp.dmg
           dayCombinedDmg = Object.clone combinedHp.dmg
-          [result, planeCount] = analogBattle sortieHp, enemyHp, combinedHp, false, false, body, 1, planeCount
+          result = analogBattle sortieHp, enemyHp, combinedHp, false, false, body, 1, planeCount
           for i in [0..5]
             sortieHp.dmg[i] -= daySortieDmg[i]
             enemyHp.dmg[i] -= dayEnemyDmg[i]
@@ -381,7 +389,7 @@ module.exports =
           dayCombinedDmg = Object.clone combinedHp.dmg
           if path != '/kcsapi/api_req_combined_battle/midnight_battle'
             getEnemyInfo enemyHp, enemyInfo, body, false
-          [result, planeCount] = analogBattle sortieHp, enemyHp, combinedHp, true, isWater, body, 1, planeCount
+          result = analogBattle sortieHp, enemyHp, combinedHp, true, isWater, body, 1, planeCount
           for i in [0..5]
             sortieHp.dmg[i] -= daySortieDmg[i]
             enemyHp.dmg[i] -= dayEnemyDmg[i]
@@ -424,7 +432,8 @@ module.exports =
           enemyFormation = enemyIntercept = 0
           enemyName = __ 'Enemy Vessel'
           result = null
-          getShip = planeCount = null
+          getShip = null
+          planeCount = Object.clone initPlaneCount
 
       if body.api_formation?
         enemyFormation = body.api_formation[1]
@@ -433,12 +442,12 @@ module.exports =
       sortiePlane = enemyPlane = ""
       seiku = dispSeiku[0]
 
-      if planeCount?
-        if planeCount[2] != 0
-          sortiePlane = " #{__ 'Plane'} #{planeCount[1]} / #{planeCount[2]}"
-        if planeCount[4] != 0
-          enemyPlane = " #{__ 'Plane'} #{planeCount[3]} / #{planeCount[4]}"
-        seiku = dispSeiku[planeCount[0]]
+      if planeCount.seiku != 0
+        if planeCount.sortie[1] != 0
+          sortiePlane = " #{__ 'Plane'} #{planeCount.sortie[0]} / #{planeCount.sortie[1]}"
+        if planeCount.enemy[1] != 0
+          enemyPlane = " #{__ 'Plane'} #{planeCount.enemy[0]} / #{planeCount.enemy[1]}"
+        seiku = dispSeiku[planeCount.seiku]
 
       if flag
         @setState
