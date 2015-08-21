@@ -191,7 +191,6 @@ analogKouku = (api_kouku, planeCount) ->
     planeCount
 analogBattle = (sortieHp, enemyHp, combinedHp, isCombined, isWater, body, leastHp, planeCount) ->
   # First air battle
-  planeCount = null
 
   if body.api_kouku?
     planeCount = analogKouku body.api_kouku, planeCount
@@ -204,7 +203,7 @@ analogBattle = (sortieHp, enemyHp, combinedHp, isCombined, isWater, body, leastH
 
   if body.api_kouku2?
     planeCount = analogKouku body.api_kouku, planeCount
-    
+
     if body.api_kouku2.api_stage3?
       koukuAttack sortieHp, enemyHp, body.api_kouku2.api_stage3
     if body.api_kouku2.api_stage3_combined?
@@ -355,7 +354,7 @@ module.exports =
           sortieHp.dmg[i] = enemyHp.dmg[i] = combinedHp.dmg[i] = 0 for i in [0..5]
           # If practice
           if path == '/kcsapi/api_req_practice/battle'
-            enemyName == __ 'PvP'
+            enemyName = __ 'PvP'
             combinedFlag = 0
             sortieInfo = Object.clone window._decks[postBody.api_deck_id - 1].api_ship
             getShipInfo sortieHp, sortieInfo
