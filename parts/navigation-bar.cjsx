@@ -11,7 +11,10 @@ module.exports = React.createClass
               if i == 2
                 list.push <Col xs={tmp}>{@props.enemyName + @props.enemyPlane}</Col>
                 list.push <Col xs={tmp}>{@props.HP}</Col>
-              else
+              else if i == 1
+                list.push <Col xs={tmp}>{@props.sortieFleet}</Col>
+                list.push <Col xs={tmp}>{@props.HP}</Col>
+              else 
                 list.push <Col xs={tmp}>{@props.sortieFleet + @props.sortiePlane}</Col>
                 list.push <Col xs={tmp}>{@props.HP}</Col>
             <Grid>
