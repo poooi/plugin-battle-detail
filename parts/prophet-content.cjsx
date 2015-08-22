@@ -34,27 +34,43 @@ module.exports = React.createClass
                       dmg={@props.enemyHp.dmg[j]}
                       isBack={0}/>
                   else if i == 1
+                    if @props.combinedInfo[j] != -1
+                      tmpLv = window._ships[@props.combinedInfo[j]].api_lv
+                      tmpName = window._ships[@props.combinedInfo[j]].api_name
+                      tmpCond = window._ships[@props.combinedInfo[j]].api_cond
+                    else
+                      tmpLv = -1
+                      tmpName = -1
+                      tmpCond = -1
                     list.push <ProphetInfo
-                      lv={window._ships[@props.combinedInfo[j]].api_lv}
-                      name={window._ships[@props.combinedInfo[j]].api_name}
-                      cond={window._ships[@props.combinedInfo[j]].api_cond}
+                      lv={tmpLv}
+                      name={tmpName}
+                      cond={tmpCond}
                       condShow={1}
                       isBack={@props.goBack[j + 6]}/>
                     list.push <ProphetHp
-                      lv={window._ships[@props.combinedInfo[j]].api_lv}
+                      lv={tmpLv}
                       now={@props.combinedHp.now[j]}
                       max={@props.combinedHp.max[j]}
                       dmg={@props.combinedHp.dmg[j]}
                       isBack={@props.goBack[j + 6]}/>
                   else if i == 0
+                    if @props.combinedInfo[j] != -1
+                      tmpLv = window._ships[@props.sortieInfo[j]].api_lv
+                      tmpName = window._ships[@props.sortieInfo[j]].api_name
+                      tmpCond = window._ships[@props.sortieInfo[j]].api_cond
+                    else
+                      tmpLv = -1
+                      tmpName = -1
+                      tmpCond = -1
                     list.push <ProphetInfo
-                      lv={window._ships[@props.sortieInfo[j]].api_lv}
-                      name={window._ships[@props.sortieInfo[j]].api_name}
-                      cond={window._ships[@props.sortieInfo[j]].api_cond}
+                      lv={tmpLv}
+                      name={tmpName}
+                      cond={tmpCond}
                       condShow={1}
                       isBack={@props.goBack[j]}/>
                     list.push <ProphetHp
-                      lv={window._ships[@props.sortieInfo[j]].api_lv}
+                      lv={tmpLv}
                       now={@props.sortieHp.now[j]}
                       max={@props.sortieHp.max[j]}
                       dmg={@props.sortieHp.dmg[j]}
