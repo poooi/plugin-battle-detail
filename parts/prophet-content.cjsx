@@ -55,7 +55,7 @@ module.exports = React.createClass
                       dmg={@props.combinedHp.dmg[j]}
                       isBack={@props.goBack[j + 6]}/>
                   else if i == 0
-                    if @props.combinedInfo[j] != -1
+                    if @props.sortieInfo[j] != -1
                       tmpLv = window._ships[@props.sortieInfo[j]].api_lv
                       tmpName = window._ships[@props.sortieInfo[j]].api_name
                       tmpCond = window._ships[@props.sortieInfo[j]].api_cond

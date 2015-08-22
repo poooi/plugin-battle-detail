@@ -8,13 +8,13 @@ module.exports = React.createClass
             list = []
             tmp = 6 / (@props.cols + 1)
             for i in [0..(@props.cols)]
-              if i == 2
+              if (i == @props.cols) && (@props.lay == 1)
                 list.push <Col xs={tmp}>{@props.enemyName + @props.enemyPlane}</Col>
                 list.push <Col xs={tmp}>{@props.HP}</Col>
               else if i == 1
                 list.push <Col xs={tmp}>{@props.sortieFleet}</Col>
                 list.push <Col xs={tmp}>{@props.HP}</Col>
-              else 
+              else
                 list.push <Col xs={tmp}>{@props.sortieFleet + @props.sortiePlane}</Col>
                 list.push <Col xs={tmp}>{@props.HP}</Col>
             <Grid>
