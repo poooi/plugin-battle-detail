@@ -5,7 +5,7 @@ request = Promise.promisifyAll require('request')
 path = require 'path-extra'
 fs = require 'fs-extra'
 {_, $, $$, React, ReactBootstrap, ROOT, resolveTime, layout, toggleModal} = window
-{Table, ProgressBar, Grid, Input, Col, Alert, Button} = ReactBootstrap
+{Table, ProgressBar, Grid, Input, Col, Alert, Button, Divider} = ReactBootstrap
 {APPDATA_PATH, SERVER_HOSTNAME} = window
 i18n = require './node_modules/i18n'
 {__} = i18n
@@ -504,21 +504,20 @@ module.exports =
       </div>
   settingsClass: React.createClass
     getInitialState: ->
-      enableProphetDamaged: config.get 'plugin.prophet.notify.damaged'
-      prophetCondShow: config.get 'plugin.prophet.show.cond'
+      enableProphetDamaged: config.get 'plugin.prophet.notify.damaged', true
+      prophetCondShow: config.get 'plugin.prophet.show.cond', true
     handleSetProphetDamaged: ->
-      enabled = @state.enableProphetDamaged
-      config.set 'plugin.prophet.notify.damaged', !enabled
+      {enableProphetDamaged} = @state
+      config.set 'plugin.prophet.notify.damaged', !enableProphetDamaged
       @setState
-        enableProphetDamaged: !enabled
+        enableProphetDamaged: !enableProphetDamaged
     handleSetProphetCond: ->
-      enabled = @state.prophetCondShow
-      config.set 'plugin.prophet.show.cond', !enabled
+      {prophetCondShow} = @state
+      config.set 'plugin.prophet.show.cond', !prophetCondShow
       @setState
-        prophetCondShow: !enabled
+        prophetCondShow: !prophetCondShow
     render: ->
       <div className="form-group">
-        <Divider text="未卜先知" />
         <Grid>
           <Col xs={6}>
             <Button bsStyle={if @state.enableProphetDamaged then 'success' else 'danger'} onClick={@handleSetProphetDamaged} style={width: '100%'}>

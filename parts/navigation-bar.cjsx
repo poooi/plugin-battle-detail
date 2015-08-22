@@ -32,4 +32,4 @@ module.exports = React.createClass
           </Grid>
         </Alert>
     else
-      <div>""</div>
+      <div></div>

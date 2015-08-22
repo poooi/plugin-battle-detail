@@ -108,4 +108,4 @@ module.exports = React.createClass
           </tbody>
         </Table>
     else
-      <div>""</div>
+      <div></div>
