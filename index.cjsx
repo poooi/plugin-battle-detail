@@ -49,10 +49,10 @@ dropCount = [
 ]
 
 dispSeiku = [
-  __("Unknown FC"),
+  __("Air Parity"),
   __("AS+"),
   __("AS"),
-  __("Air Parity"),
+  __("Air Incapability"),
   __("Air Denial")
 ]
 
@@ -66,7 +66,7 @@ initInfo =
   name: [0, 0, 0, 0, 0, 0]
 
 initPlaneCount =
-  seiku: 0
+  seiku: -1
   sortie: [0, 0]
   enemy: [0, 0]
 
@@ -440,9 +440,9 @@ module.exports =
         enemyIntercept = body.api_formation[2]
 
       sortiePlane = enemyPlane = ""
-      seiku = dispSeiku[0]
+      seiku = __ "Unknown FC"
 
-      if planeCount.seiku != 0
+      if planeCount.seiku != -1
         if planeCount.sortie[1] != 0
           sortiePlane = " #{__ 'Plane'} #{planeCount.sortie[0]} / #{planeCount.sortie[1]}"
         if planeCount.enemy[1] != 0

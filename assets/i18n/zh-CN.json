@@ -28,6 +28,7 @@
   "Unknown FC": "不明",
   "AS+": "制空権確保",
   "AS": "航空優勢",
-  "Air Parity": "航空均勢/劣勢",
+  "Air Parity": "航空均勢",
+  "Air Incapability": "航空劣勢",
   "Air Denial": "制空権喪失"
 }
