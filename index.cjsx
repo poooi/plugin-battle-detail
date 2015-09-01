@@ -190,7 +190,43 @@ analogKouku = (api_kouku, planeCount) ->
   if api_kouku.api_stage2?
     planeCount.sortie[0] -= api_kouku.api_stage2.api_f_lostcount
     planeCount.enemy[0] -= api_kouku.api_stage2.api_e_lostcount
-analogBattle = (sortieHp, enemyHp, combinedHp, isCombined, isWater, body, leastHp, planeCount) ->
+
+checkRepair = (sortieHp, combinedHp, sortieInfo, combinedInfo) ->
+  {_ships} = window
+  for i in [0..5]
+    continue if sortieInfo[i] == -1
+    continue if sortieHp[i] > 0
+    slot = Object.clone _ships[sortieInfo[i]].api_slot
+    slot.push _ships[sortieInfo[i]].api_slot_ex
+    for x in slot
+      # Repair Team
+      if x == 42
+        sortieHp.now[i] = Math.floor(sortieHp.max[i] / 4)
+        sortieHp.dmg[i] = 0
+        break
+      # Repair Goddess
+      if x == 43
+        sortieHp.now[i] = sortieHp.max[i]
+        sortieHp.dmg[i] = 0
+        break
+  for i in [0..5]
+    continue if combinedInfo[i] == -1
+    continue if combinedHp[i] > 0
+    slot = Object.clone _ships[combinedInfo[i]].api_slot
+    slot.push _ships[combinedInfo[i]].api_slot_ex
+    for x in slot
+      # Repair Team
+      if x == 42
+        combinedHp.now[i] = Math.floor(combinedHp.max[i] / 4)
+        combinedHp.dmg[i] = 0
+        break
+      # Repair Goddess
+      if x == 43
+        combinedHp.now[i] = combinedHp.max[i]
+        combinedHp.dmg[i] = 0
+        break
+
+analogBattle = (sortieHp, enemyHp, combinedHp, isCombined, isWater, body, leastHp, planeCount, sortieInfo, combinedInfo) ->
   # First air battle
 
   if body.api_kouku?
@@ -202,11 +238,13 @@ analogBattle = (sortieHp, enemyHp, combinedHp, isCombined, isWater, body, leastH
       planeCount.enemy[0] = tmp.api_e_count - tmp.api_e_lostcount
       planeCount.enemy[1] = tmp.api_e_count
     analogKouku body.api_kouku, planeCount
+    checkRepair sortieHp, combinedHp, sortieInfo, combinedInfo
 
     if body.api_kouku.api_stage3?
       koukuAttack sortieHp, enemyHp, body.api_kouku.api_stage3
     if body.api_kouku.api_stage3_combined?
       koukuAttack combinedHp, enemyHp, body.api_kouku.api_stage3_combined
+      checkRepair sortieHp, combinedHp, sortieInfo, combinedInfo
   # Second air battle
 
   if body.api_kouku2?
@@ -216,6 +254,7 @@ analogBattle = (sortieHp, enemyHp, combinedHp, isCombined, isWater, body, leastH
       koukuAttack sortieHp, enemyHp, body.api_kouku2.api_stage3
     if body.api_kouku2.api_stage3_combined?
       koukuAttack combinedHp, enemyHp, body.api_kouku2.api_stage3_combined
+    checkRepair sortieHp, combinedHp, sortieInfo, combinedInfo
   # Support battle
 
   if body.api_support_info?
@@ -225,6 +264,7 @@ analogBattle = (sortieHp, enemyHp, combinedHp, isCombined, isWater, body, leastH
       supportAttack enemyHp, body.api_support_info.api_support_hourai.api_damage
     else
       supportAttack enemyHp, body.api_support_info.api_damage
+    checkRepair sortieHp, combinedHp, sortieInfo, combinedInfo
   # Opening battle
 
   if body.api_opening_atack?
@@ -232,6 +272,7 @@ analogBattle = (sortieHp, enemyHp, combinedHp, isCombined, isWater, body, leastH
       raigekiAttack combinedHp, enemyHp, body.api_opening_atack
     else
       raigekiAttack sortieHp, enemyHp, body.api_opening_atack
+    checkRepair sortieHp, combinedHp, sortieInfo, combinedInfo
   # Night battle
 
   if body.api_hougeki?
@@ -239,6 +280,7 @@ analogBattle = (sortieHp, enemyHp, combinedHp, isCombined, isWater, body, leastH
       hougekiAttack combinedHp, enemyHp, body.api_hougeki
     else
       hougekiAttack sortieHp, enemyHp, body.api_hougeki
+    checkRepair sortieHp, combinedHp, sortieInfo, combinedInfo
   # First hougeki battle
 
   if body.api_hougeki1?
@@ -246,10 +288,12 @@ analogBattle = (sortieHp, enemyHp, combinedHp, isCombined, isWater, body, leastH
       hougekiAttack combinedHp, enemyHp, body.api_hougeki1
     else
       hougekiAttack sortieHp, enemyHp, body.api_hougeki1
+    checkRepair sortieHp, combinedHp, sortieInfo, combinedInfo
   # Second hougeki battle
 
   if body.api_hougeki2?
     hougekiAttack sortieHp, enemyHp, body.api_hougeki2
+    checkRepair sortieHp, combinedHp, sortieInfo, combinedInfo
   # Combined hougeki battle
 
   if body.api_hougeki3?
@@ -257,6 +301,7 @@ analogBattle = (sortieHp, enemyHp, combinedHp, isCombined, isWater, body, leastH
       hougekiAttack combinedHp, enemyHp, body.api_hougeki3
     else
       hougekiAttack sortieHp, enemyHp, body.api_hougeki3
+    checkRepair sortieHp, combinedHp, sortieInfo, combinedInfo
   # Raigeki battle
 
   if body.api_raigeki?
@@ -264,7 +309,8 @@ analogBattle = (sortieHp, enemyHp, combinedHp, isCombined, isWater, body, leastH
       raigekiAttack combinedHp, enemyHp, body.api_raigeki
     else
       raigekiAttack sortieHp, enemyHp, body.api_raigeki
-
+    checkRepair sortieHp, combinedHp, sortieInfo, combinedInfo
+    
   getResult sortieHp, enemyHp, combinedHp, leastHp
 
 escapeId = -1
@@ -351,7 +397,7 @@ module.exports =
           if path != '/kcsapi/api_req_battle_midnight/battle'
             getEnemyInfo enemyHp, enemyInfo, body, false
 
-          result = analogBattle sortieHp, enemyHp, combinedHp, false, false, body, 0, planeCount
+          result = analogBattle sortieHp, enemyHp, combinedHp, false, false, body, 0, planeCount, sortieInfo, combinedInfo
 
           for i in [0..5]
             sortieHp.dmg[i] -= daySortieDmg[i]
@@ -371,7 +417,7 @@ module.exports =
           daySortieDmg = Object.clone sortieHp.dmg
           dayEnemyDmg = Object.clone enemyHp.dmg
           dayCombinedDmg = Object.clone combinedHp.dmg
-          result = analogBattle sortieHp, enemyHp, combinedHp, false, false, body, 1, planeCount
+          result = analogBattle sortieHp, enemyHp, combinedHp, false, false, body, 1, planeCount, sortieInfo, combinedInfo
           for i in [0..5]
             sortieHp.dmg[i] -= daySortieDmg[i]
             enemyHp.dmg[i] -= dayEnemyDmg[i]
@@ -389,7 +435,7 @@ module.exports =
           dayCombinedDmg = Object.clone combinedHp.dmg
           if path != '/kcsapi/api_req_combined_battle/midnight_battle'
             getEnemyInfo enemyHp, enemyInfo, body, false
-          result = analogBattle sortieHp, enemyHp, combinedHp, true, isWater, body, 1, planeCount
+          result = analogBattle sortieHp, enemyHp, combinedHp, true, isWater, body, 1, planeCount, sortieInfo, combinedInfo
           for i in [0..5]
             sortieHp.dmg[i] -= daySortieDmg[i]
             enemyHp.dmg[i] -= dayEnemyDmg[i]
