@@ -2,22 +2,22 @@
 
 getCondStyle = (cond) ->
   if window.theme.indexOf('dark') != -1 or window.theme == 'slate' or window.theme == 'superhero'
-    if cond > 52
+    if cond > 52 # 53~100
       color: '#FFFF00',
       fontWeight: 'bold',
       textShadow: '0 0 7px #FFFF00'
-    else if cond > 49
+    else if cond > 49 # 50~52
       color: '#FFFF80'
-    else if cond is 49
+    else if cond is 49 # 49
       {}
-    else if cond < 48
-      opacity: 0.5
-    else if cond < 40
-      color: '#FFC880'
-    else if cond < 30
-      color: '#F37B1D'
-    else # if cond < 20
+    else if cond < 20 # 0~19
       color: '#DD514C'
+    else if cond < 30 # 20~29
+      color: '#F37B1D'
+    else if cond < 40 # 30~39
+      color: '#FFC880'
+    else # 40~48
+      opacity: 0.5
   else
     if cond > 52
       textShadow: '0 0 3px #FFFF00'
