@@ -310,7 +310,7 @@ analogBattle = (sortieHp, enemyHp, combinedHp, isCombined, isWater, body, leastH
     else
       raigekiAttack sortieHp, enemyHp, body.api_raigeki
     checkRepair sortieHp, combinedHp, sortieInfo, combinedInfo
-    
+
   getResult sortieHp, enemyHp, combinedHp, leastHp
 
 escapeId = -1
@@ -490,9 +490,9 @@ module.exports =
 
       if planeCount.seiku != -1
         if planeCount.sortie[1] != 0
-          sortiePlane = " #{__ 'Plane'} #{planeCount.sortie[0]} / #{planeCount.sortie[1]}"
+          sortiePlane = " #{planeCount.sortie[0]}/#{planeCount.sortie[1]}"
         if planeCount.enemy[1] != 0
-          enemyPlane = " #{__ 'Plane'} #{planeCount.enemy[0]} / #{planeCount.enemy[1]}"
+          enemyPlane = " #{planeCount.enemy[0]}/#{planeCount.enemy[1]}"
         seiku = dispSeiku[planeCount.seiku]
 
       if flag
