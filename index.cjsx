@@ -310,7 +310,7 @@ analogBattle = (sortieHp, enemyHp, combinedHp, isCombined, isWater, body, leastH
     else
       raigekiAttack sortieHp, enemyHp, body.api_raigeki
     checkRepair sortieHp, combinedHp, sortieInfo, combinedInfo
-    
+
   getResult sortieHp, enemyHp, combinedHp, leastHp
 
 escapeId = -1
@@ -465,6 +465,7 @@ module.exports =
           flag = true
           goBack = Object.clone initData
           combinedFlag = body.api_combined_flag
+          combinedFlag ?= 0
           if combinedFlag == 0
             sortieInfo = Object.clone window._decks[0].api_ship
             combinedInfo = Object.clone initId
