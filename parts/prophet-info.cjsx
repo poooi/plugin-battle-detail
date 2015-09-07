@@ -2,19 +2,27 @@
 
 getCondStyle = (cond) ->
   if window.theme.indexOf('dark') != -1 or window.theme == 'slate' or window.theme == 'superhero'
-    if cond > 49
-      color: '#FFFF00'
-    else if cond < 20
+    if cond > 52 # 53~100
+      color: '#FFFF00',
+      fontWeight: 'bold',
+      textShadow: '0 0 7px #FFFF00'
+    else if cond > 49 # 50~52
+      color: '#FFFF80'
+    else if cond is 49 # 49
+      {}
+    else if cond < 20 # 0~19
       color: '#DD514C'
-    else if cond < 30
+    else if cond < 30 # 20~29
       color: '#F37B1D'
-    else if cond < 40
+    else if cond < 40 # 30~39
       color: '#FFC880'
-    else
-      null
+    else # 40~48
+      opacity: 0.5
   else
-    if cond > 49
+    if cond > 52
       textShadow: '0 0 3px #FFFF00'
+    else if cond > 49
+      textShadow: '0 0 3px #FFFF80'
     else if cond < 20
       textShadow: '0 0 3px #DD514C'
     else if cond < 30
@@ -30,11 +38,15 @@ module.exports = React.createClass
       <td>　</td>
     else
       <td style={opacity: 1 - 0.6 * @props.isBack}>
-        Lv. {@props.lv} - {@props.name}
         {
+          txt = "#{@props.name}(#{@props.lv})"
+          title = "#{@props.name}(Lv.#{@props.lv})"
           if @props.cond && @props.condShow != 0
-            <span style={getCondStyle @props.cond}>
-              <FontAwesome key={1} name='star' />{@props.cond}
+            title += " Cond.#{@props.cond}"
+            <span style={getCondStyle @props.cond} title={title}>
+              {txt}<FontAwesome key={1} name='star' />{@props.cond}
             </span>
+          else
+            <span title={title}>{txt}</span>
         }
       </td>
