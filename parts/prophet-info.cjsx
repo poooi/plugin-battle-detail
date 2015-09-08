@@ -37,16 +37,15 @@ module.exports = React.createClass
     if @props.lv == -1
       <td>　</td>
     else
-      <td style={opacity: 1 - 0.6 * @props.isBack}>
+      <td style={opacity: 1 - 0.6 * @props.isBack} className="prophet-info-content">
         {
-          txt = "#{@props.name}(#{@props.lv})"
-          title = "#{@props.name}(Lv.#{@props.lv})"
+          txt = "#{@props.name} Lv.#{@props.lv}"
           if @props.cond && @props.condShow != 0
-            title += " Cond.#{@props.cond}"
-            <span style={getCondStyle @props.cond} title={title}>
-              {txt}<FontAwesome key={1} name='star' />{@props.cond}
+            txt += " ★#{@props.cond}"
+            <span style={getCondStyle @props.cond}>
+              {txt}
             </span>
           else
-            <span title={title}>{txt}</span>
+            <span>{txt}</span>
         }
       </td>

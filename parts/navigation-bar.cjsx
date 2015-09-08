@@ -12,11 +12,11 @@ module.exports = React.createClass
                 if !@props.enemyPlane
                   list.push <Col xs={tmp}>{@props.enemyName}</Col>
                 else
-                  list.push <Col xs={tmp}>{@props.enemyName}「<FontAwesome name='plane' />{@props.enemyPlane}」</Col>
+                  list.push <Col xs={tmp} className="navigation-bar-airplane">「<FontAwesome name='plane' />{@props.enemyPlane}」{@props.enemyName}</Col>
               else if i == 1 or !@props.sortiePlane
                 list.push <Col xs={tmp}>{@props.sortieFleet}</Col>
               else
-                list.push <Col xs={tmp}>{@props.sortieFleet}「<FontAwesome name='plane' />{@props.sortiePlane}」</Col>
+                list.push <Col xs={tmp} className="navigation-bar-airplane">「<FontAwesome name='plane' />{@props.sortiePlane}」{@props.sortieFleet}</Col>
               list.push <Col xs={tmp}>{@props.HP}</Col>
             <Grid>
               {list}
@@ -27,12 +27,12 @@ module.exports = React.createClass
         <Alert>
           <Grid>
             <Col xs={12}>
-              <Col xs={6}>
-                {@props.enemyName}
+              <Col xs={6} className="navigation-bar-airplane">
                 {
                   if @props.enemyPlane
                     <span>「<FontAwesome name='plane' />{@props.enemyPlane}」</span>
                 }
+                {@props.enemyName}
               </Col>
               <Col xs={6}>{@props.HP}</Col>
             </Col>
