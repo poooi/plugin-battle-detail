@@ -126,7 +126,23 @@ getResult = (sortieHp, enemyHp, combinedHp, leastHp) ->
     result = 'C'
   result
 
-koukuAttack = (sortieHp, enemyHp, kouku) ->
+checkRepair = (shipId) ->
+  {_ships} = window
+  slot = Object.clone _ships[shipId].api_slot
+  slot.push _ships[shipId].api_slot_ex
+  # According to wiki, if both damage control and goddess are equipped,
+  # they will be consumed from top to bottom.
+  for id in slot
+    # For normal slots, -1 means empty or not usable.
+    # For the ex slot, 0 means not available, -1 means empty.
+    if id > 0
+      x = _slotitems[id].api_slotitem_id
+      # 42 == Repair Team, 43 == Repair Goddess
+      if x >= 42 && x <= 43
+        return x
+  return 0
+
+koukuAttack = (sortieHp, enemyHp, kouku, sortieInfo) ->
   if kouku.api_edam?
     for damage, i in kouku.api_edam
       damage = Math.floor(damage)
@@ -139,6 +155,14 @@ koukuAttack = (sortieHp, enemyHp, kouku) ->
       continue if damage <= 0
       sortieHp.dmg[i - 1] += damage
       sortieHp.now[i - 1] -= damage
+      if sortieHp.now[i - 1] <= 0
+        repairNum = checkRepair sortieInfo[i - 1]
+        if repairNum == 42
+          sortieHp.now[i - 1] = Math.floor(sortieHp.max[i - 1] / 5)
+          sortieHp.dmg[i - 1] = 0
+        else if repairNum == 43
+          sortieHp.now[i - 1] = sortieHp.max[i - 1]
+          sortieHp.dmg[i - 1] = 0
 
 supportAttack = (enemyHp, support) ->
   for damage, i in support
@@ -148,7 +172,7 @@ supportAttack = (enemyHp, support) ->
     enemyHp.dmg[i - 1] += damage
     enemyHp.now[i - 1] -= damage
 
-raigekiAttack = (sortieHp, enemyHp, raigeki) ->
+raigekiAttack = (sortieHp, enemyHp, raigeki, sortieInfo) ->
   if raigeki.api_edam?
     for damage, i in raigeki.api_edam
       damage = Math.floor(damage)
@@ -161,8 +185,16 @@ raigekiAttack = (sortieHp, enemyHp, raigeki) ->
       continue if damage <= 0
       sortieHp.dmg[i - 1] += damage
       sortieHp.now[i - 1] -= damage
+      if sortieHp.now[i - 1] <= 0
+        repairNum = checkRepair sortieInfo[i - 1]
+        if repairNum == 42
+          sortieHp.now[i - 1] = Math.floor(sortieHp.max[i - 1] / 5)
+          sortieHp.dmg[i - 1] = 0
+        else if repairNum == 43
+          sortieHp.now[i - 1] = sortieHp.max[i - 1]
+          sortieHp.dmg[i - 1] = 0
 
-hougekiAttack = (sortieHp, enemyHp, hougeki) ->
+hougekiAttack = (sortieHp, enemyHp, hougeki, sortieInfo) ->
   for damageFrom, i in hougeki.api_at_list
     continue if damageFrom == -1
     for damage, j in hougeki.api_damage[i]
@@ -172,6 +204,14 @@ hougekiAttack = (sortieHp, enemyHp, hougeki) ->
       if damageTo < 7
         sortieHp.dmg[damageTo - 1] += damage
         sortieHp.now[damageTo - 1] -= damage
+        if sortieHp.now[damageTo - 1] <= 0
+          repairNum = checkRepair sortieInfo[damageTo - 1]
+          if repairNum == 42
+            sortieHp.now[damageTo - 1] = Math.floor(sortieHp.max[damageTo - 1] / 5)
+            sortieHp.dmg[damageTo - 1] = 0
+          else if repairNum == 43
+            sortieHp.now[damageTo - 1] = sortieHp.max[damageTo - 1]
+            sortieHp.dmg[damageTo - 1] = 0
       else
         enemyHp.dmg[damageTo - 7] += damage
         enemyHp.now[damageTo - 7] -= damage
@@ -186,45 +226,10 @@ getShipInfo = (sortieHp, sortieInfo) ->
       sortieHp.max[i] = _ships[shipId].api_maxhp
 
 simulateKouku = (api_kouku, planeCount) ->
-  # [seiku, f_left, f_all, e_left, e_all]
   if api_kouku.api_stage2?
     planeCount.sortie[0] -= api_kouku.api_stage2.api_f_lostcount
     planeCount.enemy[0] -= api_kouku.api_stage2.api_e_lostcount
 
-checkRepair = (sortieHp, combinedHp, sortieInfo, combinedInfo) ->
-  {_ships} = window
-  for i in [0..5]
-    continue if sortieInfo[i] == -1
-    continue if sortieHp[i] > 0
-    slot = Object.clone _ships[sortieInfo[i]].api_slot
-    slot.push _ships[sortieInfo[i]].api_slot_ex
-    for x in slot
-      # Repair Team
-      if x == 42
-        sortieHp.now[i] = Math.floor(sortieHp.max[i] / 4)
-        sortieHp.dmg[i] = 0
-        break
-      # Repair Goddess
-      if x == 43
-        sortieHp.now[i] = sortieHp.max[i]
-        sortieHp.dmg[i] = 0
-        break
-  for i in [0..5]
-    continue if combinedInfo[i] == -1
-    continue if combinedHp[i] > 0
-    slot = Object.clone _ships[combinedInfo[i]].api_slot
-    slot.push _ships[combinedInfo[i]].api_slot_ex
-    for x in slot
-      # Repair Team
-      if x == 42
-        combinedHp.now[i] = Math.floor(combinedHp.max[i] / 4)
-        combinedHp.dmg[i] = 0
-        break
-      # Repair Goddess
-      if x == 43
-        combinedHp.now[i] = combinedHp.max[i]
-        combinedHp.dmg[i] = 0
-        break
 
 simulateBattle = (sortieHp, enemyHp, combinedHp, isCombined, isWater, body, leastHp, planeCount, sortieInfo, combinedInfo) ->
   # First air battle
@@ -238,23 +243,20 @@ simulateBattle = (sortieHp, enemyHp, combinedHp, isCombined, isWater, body, leas
       planeCount.enemy[0] = tmp.api_e_count - tmp.api_e_lostcount
       planeCount.enemy[1] = tmp.api_e_count
     simulateKouku body.api_kouku, planeCount
-    checkRepair sortieHp, combinedHp, sortieInfo, combinedInfo
 
     if body.api_kouku.api_stage3?
-      koukuAttack sortieHp, enemyHp, body.api_kouku.api_stage3
+      koukuAttack sortieHp, enemyHp, body.api_kouku.api_stage3, sortieInfo
     if body.api_kouku.api_stage3_combined?
-      koukuAttack combinedHp, enemyHp, body.api_kouku.api_stage3_combined
-      checkRepair sortieHp, combinedHp, sortieInfo, combinedInfo
+      koukuAttack combinedHp, enemyHp, body.api_kouku.api_stage3_combined, combinedInfo
   # Second air battle
 
   if body.api_kouku2?
     simulateKouku body.api_kouku2, planeCount
 
     if body.api_kouku2.api_stage3?
-      koukuAttack sortieHp, enemyHp, body.api_kouku2.api_stage3
+      koukuAttack sortieHp, enemyHp, body.api_kouku2.api_stage3, sortieInfo
     if body.api_kouku2.api_stage3_combined?
-      koukuAttack combinedHp, enemyHp, body.api_kouku2.api_stage3_combined
-    checkRepair sortieHp, combinedHp, sortieInfo, combinedInfo
+      koukuAttack combinedHp, enemyHp, body.api_kouku2.api_stage3_combined, combinedInfo
   # Support battle
 
   if body.api_support_info?
@@ -264,52 +266,45 @@ simulateBattle = (sortieHp, enemyHp, combinedHp, isCombined, isWater, body, leas
       supportAttack enemyHp, body.api_support_info.api_support_hourai.api_damage
     else
       supportAttack enemyHp, body.api_support_info.api_damage
-    checkRepair sortieHp, combinedHp, sortieInfo, combinedInfo
   # Opening battle
 
   if body.api_opening_atack?
     if isCombined
-      raigekiAttack combinedHp, enemyHp, body.api_opening_atack
+      raigekiAttack combinedHp, enemyHp, body.api_opening_atack, combinedInfo
     else
-      raigekiAttack sortieHp, enemyHp, body.api_opening_atack
-    checkRepair sortieHp, combinedHp, sortieInfo, combinedInfo
+      raigekiAttack sortieHp, enemyHp, body.api_opening_atack, sortieInfo
   # Night battle
 
   if body.api_hougeki?
     if isCombined
-      hougekiAttack combinedHp, enemyHp, body.api_hougeki
+      hougekiAttack combinedHp, enemyHp, body.api_hougeki, combinedInfo
     else
-      hougekiAttack sortieHp, enemyHp, body.api_hougeki
-    checkRepair sortieHp, combinedHp, sortieInfo, combinedInfo
+      hougekiAttack sortieHp, enemyHp, body.api_hougeki, sortieInfo
   # First hougeki battle
 
   if body.api_hougeki1?
     if isCombined && !isWater
-      hougekiAttack combinedHp, enemyHp, body.api_hougeki1
+      hougekiAttack combinedHp, enemyHp, body.api_hougeki1, combinedInfo
     else
-      hougekiAttack sortieHp, enemyHp, body.api_hougeki1
-    checkRepair sortieHp, combinedHp, sortieInfo, combinedInfo
+      hougekiAttack sortieHp, enemyHp, body.api_hougeki1, sortieInfo
   # Second hougeki battle
 
   if body.api_hougeki2?
-    hougekiAttack sortieHp, enemyHp, body.api_hougeki2
-    checkRepair sortieHp, combinedHp, sortieInfo, combinedInfo
+    hougekiAttack sortieHp, enemyHp, body.api_hougeki2, sortieInfo
   # Combined hougeki battle
 
   if body.api_hougeki3?
     if isCombined && isWater
-      hougekiAttack combinedHp, enemyHp, body.api_hougeki3
+      hougekiAttack combinedHp, enemyHp, body.api_hougeki3, combinedInfo
     else
-      hougekiAttack sortieHp, enemyHp, body.api_hougeki3
-    checkRepair sortieHp, combinedHp, sortieInfo, combinedInfo
+      hougekiAttack sortieHp, enemyHp, body.api_hougeki3, sortieInfo
   # Raigeki battle
 
   if body.api_raigeki?
     if isCombined
-      raigekiAttack combinedHp, enemyHp, body.api_raigeki
+      raigekiAttack combinedHp, enemyHp, body.api_raigeki, combinedInfo
     else
-      raigekiAttack sortieHp, enemyHp, body.api_raigeki
-    checkRepair sortieHp, combinedHp, sortieInfo, combinedInfo
+      raigekiAttack sortieHp, enemyHp, body.api_raigeki, sortieInfo
 
   getResult sortieHp, enemyHp, combinedHp, leastHp
 
@@ -345,6 +340,7 @@ module.exports =
       prophetCondShow: config.get 'plugin.prophet.show.cond', true
       combinedFlag: 0
       goBack: Object.clone initData
+      compactMode: false
     handleResponse: (e) ->
       {method, path, body, postBody} = e.detail
       {sortieHp, enemyHp, combinedHp, sortieInfo, enemyInfo, combinedInfo, getShip, planeCount, enemyFormation, enemyIntercept, enemyName, result, enableProphetDamaged, prophetCondShow, combinedFlag, goBack} = @state
@@ -518,11 +514,15 @@ module.exports =
           combinedFlag: combinedFlag
           goBack: goBack
 
+    handleDisplayModeSwitch: ->
+      @setState
+        compactMode: !@state.compactMode
+
     componentDidMount: ->
       window.addEventListener 'game.response', @handleResponse
 
     render: ->
-      <div>
+      <div onDoubleClick={@handleDisplayModeSwitch}>
         <link rel="stylesheet" href={join(relative(ROOT, __dirname), 'assets', 'prophet.css')} />
         <ProphetPanel
           sortieHp={@state.sortieHp}
@@ -538,7 +538,8 @@ module.exports =
           enemyPlane={@state.enemyPlane}
           cols={if @state.combinedFlag == 0 then 0 else 1}
           lay={if layout == 'horizonal' || window.doubleTabbed then 0 else 1}
-          goBack={@state.goBack}/>
+          goBack={@state.goBack}
+          compactMode={@state.compactMode}/>
         <BottomAlert
           admiral={__ "Admiral"}
           getShip={@state.getShip}
