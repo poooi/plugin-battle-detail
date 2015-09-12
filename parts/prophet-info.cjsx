@@ -13,19 +13,21 @@ module.exports = React.createClass
         {
           nameTxt = "#{@props.name}"
           lvTxt = " - Lv.#{@props.lv}"
-          condTxt = " ★#{@props.cond}"
-          showCond = @props.condShow
-
-          txt = nameTxt
           popoverTxt = nameTxt + lvTxt
           if !@props.compactMode
-            txt += lvTxt
+            nameTxt += lvTxt
+
+          showCond = @props.condShow
+          condTxt = ''
           if showCond
-            txt += condTxt
+            condTxt = " ★#{@props.cond}"
             popoverTxt += condTxt
 
           <OverlayTrigger trigger='click' rootClose placement='bottom' overlay={<Popover>{popoverTxt}</Popover>}>
-            <span className={getCondStyle(@props.cond, showCond)}>{txt}</span>
+            <span className={getCondStyle(@props.cond, showCond)}>
+              <span className="poi-prophet-non-cond">{nameTxt}</span>
+              {condTxt}
+            </span>
           </OverlayTrigger>
         }
       </td>
