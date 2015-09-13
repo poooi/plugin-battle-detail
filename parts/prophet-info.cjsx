@@ -6,9 +6,7 @@ getCondStyle = (cond, show) ->
     {}
   else if window.theme.indexOf('dark') != -1 or window.theme == 'slate' or window.theme == 'superhero'
     if cond > 52 # 53~100
-      color: '#FFFF00',
-      fontWeight: 'bold',
-      textShadow: '0 0 7px #FFFF00'
+      color: '#FFFF00'
     else if cond > 49 # 50~52
       color: '#FFFF80'
     else if cond is 49 # 49
