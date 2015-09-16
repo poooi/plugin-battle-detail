@@ -90,6 +90,7 @@ getResult = (sortieHp, enemyHp, combinedHp, leastHp) ->
   sortieCnt = enemyCnt = 0
   sortieDmg = enemyDmg = 0.0
   sortieTot = enemyTot = 0.0
+  console.log sortieHp, enemyHp, combinedHp
   for i in [0..5]
     if sortieHp.now[i] + sortieHp.dmg[i] > 0
       sortieCnt += 1
@@ -115,6 +116,8 @@ getResult = (sortieHp, enemyHp, combinedHp, leastHp) ->
         sortieDmg += (enemyHp.now[i] - leastHp)
         enemyDrop += 1
         enemyHp.now[i] = 0
+  console.log sortieHp, enemyHp, combinedHp
+  console.log enemyDmg / sortieTot, sortieDmg / enemyTot
   result = 'D'
   if enemyDrop == enemyCnt
     result = 'S'
@@ -124,6 +127,7 @@ getResult = (sortieHp, enemyHp, combinedHp, leastHp) ->
     result = 'B'
   else if sortieDmg != 0 && (sortieDmg * sortieTot >= 1.0 * enemyDmg * enemyTot)
     result = 'C'
+  console.log result
   result
 
 checkRepair = (shipId) ->
