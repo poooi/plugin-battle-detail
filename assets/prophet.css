@@ -41,6 +41,9 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+#prophet .prophet-info-name {
+  text-shadow: none;
+}
 #prophet .navigation-bar-airplane {
   overflow: hidden;
   text-overflow: ellipsis;
