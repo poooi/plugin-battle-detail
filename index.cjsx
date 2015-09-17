@@ -90,7 +90,8 @@ getResult = (sortieHp, enemyHp, combinedHp, leastHp) ->
   sortieCnt = enemyCnt = 0
   sortieDmg = enemyDmg = 0.0
   sortieTot = enemyTot = 0.0
-  console.log sortieHp, enemyHp, combinedHp
+  console.log sortieHp.dmg, sortieHp.now
+  console.log enemyHp.dmg, sortieHp.now
   for i in [0..5]
     if sortieHp.now[i] + sortieHp.dmg[i] > 0
       sortieCnt += 1
@@ -116,19 +117,35 @@ getResult = (sortieHp, enemyHp, combinedHp, leastHp) ->
         sortieDmg += (enemyHp.now[i] - leastHp)
         enemyDrop += 1
         enemyHp.now[i] = 0
-  console.log sortieHp, enemyHp, combinedHp
-  console.log enemyDmg / sortieTot, sortieDmg / enemyTot
-  result = 'D'
-  if enemyDrop == enemyCnt
-    result = 'S'
-  else if enemyDrop >= dropCount[enemyCnt]
-    result = 'A'
-  else if sortieDmg != 0 && (enemyHp.now[0] <= 0 || (sortieDmg * sortieTot >= 2.5 * enemyDmg * enemyTot) || (sortieDmg >= 0.01 * enemyTot))
-    result = 'B'
-  else if sortieDmg != 0 && (sortieDmg * sortieTot >= 1.0 * enemyDmg * enemyTot)
-    result = 'C'
-  console.log result
-  result
+  sortieRate = sortieDmg / enemyTot
+  enemyRate = enemyDmg / sortieTot
+  sortieRate = Math.floor(sortieRate * 100)
+  enemyRate = Math.floor(enemyRate * 100)
+  equalOrMore = sortieRate > 0.9 * enemyRate
+  resultB = sortieRate > 0 && sortieRate > 2.5 * enemyRate
+  console.log sortieHp.dmg, sortieHp.now
+  console.log enemyHp.dmg, enemyHp.now
+  console.log sortieRate, enemyRate
+  if sortieDrop == 0
+    if enemyDrop == enemyCnt
+      return 'S'
+    else if enemyDrop >= dropCount[enemyCnt]
+      return 'A'
+    else if enemyHp.now[0] <= 0 || resultB
+      return 'B'
+  else
+    if enemyDrop == enemyCnt
+      return 'S'
+    else if (enemyHp.now[0] <= 0 && sortieDrop < enemyDrop) || resultB
+      return 'B'
+    else if enemyHp.now[0] <= 0
+      return 'C'
+  if enemyRate > 0
+    if equalOrMore
+      return 'C'
+  if sortieDrop > 0 && (sortieCnt == sortieDrop + 1)
+    return 'E'
+  return 'D'
 
 checkRepair = (shipId) ->
   {_ships} = window
@@ -309,7 +326,6 @@ simulateBattle = (sortieHp, enemyHp, combinedHp, isCombined, isWater, body, leas
       raigekiAttack combinedHp, enemyHp, body.api_raigeki, combinedInfo
     else
       raigekiAttack sortieHp, enemyHp, body.api_raigeki, sortieInfo
-
   getResult sortieHp, enemyHp, combinedHp, leastHp
 
 escapeId = -1
