@@ -90,8 +90,6 @@ getResult = (sortieHp, enemyHp, combinedHp, leastHp) ->
   sortieCnt = enemyCnt = 0
   sortieDmg = enemyDmg = 0.0
   sortieTot = enemyTot = 0.0
-  console.log sortieHp.dmg, sortieHp.now
-  console.log enemyHp.dmg, sortieHp.now
   for i in [0..5]
     if sortieHp.now[i] + sortieHp.dmg[i] > 0
       sortieCnt += 1
@@ -123,9 +121,6 @@ getResult = (sortieHp, enemyHp, combinedHp, leastHp) ->
   enemyRate = Math.floor(enemyRate * 100)
   equalOrMore = sortieRate > 0.9 * enemyRate
   resultB = sortieRate > 0 && sortieRate > 2.5 * enemyRate
-  console.log sortieHp.dmg, sortieHp.now
-  console.log enemyHp.dmg, enemyHp.now
-  console.log sortieRate, enemyRate
   if sortieDrop == 0
     if enemyDrop == enemyCnt
       return 'S'
