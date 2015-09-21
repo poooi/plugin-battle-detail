@@ -1,7 +1,7 @@
 {
   "Heavily damaged": "大破",
-  "Prophet": "預言者",
-  "Sortie Prophet": "戦况の預言",
+  "Prophet": "予知能力",
+  "Sortie Prophet": "戦况予知",
   "Unknown Formation": "陣形不明",
   "Line Ahead": "単縦陣",
   "Double Line": "複縦陣",
@@ -12,7 +12,7 @@
   "Cruising Formation 2": "第二警戒航行序列",
   "Cruising Formation 3": "第三警戒航行序列",
   "Cruising Formation 4": "第四警戒航行序列",
-  "Unknown Engagement": "航戦不明",
+  "Unknown Engagement": "航向不明",
   "Parallel Engagement": "同航戦",
   "Head-on Engagement": "反航戦",
   "Crossing the T (Advantage)": "Ｔ字戦(有利)",
