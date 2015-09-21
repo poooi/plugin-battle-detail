@@ -9,7 +9,7 @@ module.exports = React.createClass
           </Alert>
         else if @props.formationNum != 0
           <Alert>
-            {"「#{@props.result}」「#{@props.formation}」「#{@props.intercept}」「#{@props.seiku}」"}
+            {"#{@props.result} | #{@props.formation} | #{@props.intercept} | #{@props.seiku}"}
           </Alert>
       }
     </div>
