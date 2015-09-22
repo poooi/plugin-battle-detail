@@ -109,12 +109,17 @@ getResult = (sortieHp, enemyHp, combinedHp, leastHp) ->
         combinedHp.now[i] = 0
     if enemyHp.now[i] + enemyHp.dmg[i] > 0
       enemyCnt += 1
-      enemyTot += (enemyHp.now[i] + enemyHp.dmg[i])
-      sortieDmg += enemyHp.dmg[i]
-      if enemyHp.now[i] <= 0
-        sortieDmg += (enemyHp.now[i] - leastHp)
+      if enemyHp.now[i] == 0
+        enemyTot += enemyHp.max[i]
+        sortieDmg += enemyHp.max[i]
         enemyDrop += 1
-        enemyHp.now[i] = 0
+      else
+        enemyTot += (enemyHp.now[i] + enemyHp.dmg[i])
+        sortieDmg += enemyHp.dmg[i]
+        if enemyHp.now[i] <= 0
+          sortieDmg += (enemyHp.now[i] - leastHp)
+          enemyDrop += 1
+          enemyHp.now[i] = 0
   sortieRate = sortieDmg / enemyTot
   enemyRate = enemyDmg / sortieTot
   sortieRate = Math.floor(sortieRate * 100)
