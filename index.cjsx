@@ -472,7 +472,7 @@ module.exports =
             if tmpShip != ""
               notify "#{tmpShip}" + __('Heavily damaged'),
                 type: 'damaged'
-                icon: join(ROOT, 'views', 'components', 'ship', 'assets', 'img', 'state', '4.png')
+                icon: join(ROOT, 'views', 'components', 'main', 'assets', 'img', 'state', '4.png')
             if body.api_get_ship?
               getShip = body.api_get_ship
           result = body.api_win_rank
