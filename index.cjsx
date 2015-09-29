@@ -60,6 +60,7 @@ initHp =
   now: [0, 0, 0, 0, 0, 0]
   max: [0, 0, 0, 0, 0, 0]
   dmg: [0, 0, 0, 0, 0, 0]
+  atk: [0, 0, 0, 0, 0, 0]
 
 initInfo =
   lv: [-1, -1, -1, -1, -1, -1]
@@ -200,7 +201,15 @@ raigekiAttack = (sortieHp, enemyHp, raigeki, sortieInfo) ->
       continue if damage <= 0
       enemyHp.dmg[i - 1] += damage
       enemyHp.now[i - 1] -= damage
+    for damage, i in raigeki.api_fydam
+      damage = Math.floor(damage)
+      continue if damage <= 0
+      sortieHp.atk[i - 1] += damage
   if raigeki.api_fdam?
+    for damage, i in raigeki.api_eydam
+      damage = Math.floor(damage)
+      continue if damage <= 0
+      enemyHp.atk[i - 1] += damage
     for damage, i in raigeki.api_fdam
       damage = Math.floor(damage)
       continue if damage <= 0
@@ -223,6 +232,7 @@ hougekiAttack = (sortieHp, enemyHp, hougeki, sortieInfo) ->
       damageTo = hougeki.api_df_list[i][j]
       continue if damage <= 0
       if damageTo < 7
+        enemyHp.atk[damageFrom - 1] += damage
         sortieHp.dmg[damageTo - 1] += damage
         sortieHp.now[damageTo - 1] -= damage
         if sortieHp.now[damageTo - 1] <= 0
@@ -234,6 +244,7 @@ hougekiAttack = (sortieHp, enemyHp, hougeki, sortieInfo) ->
             sortieHp.now[damageTo - 1] = sortieHp.max[damageTo - 1]
             sortieHp.dmg[damageTo - 1] = 0
       else
+        sortieHp.atk[damageFrom - 1] += damage
         enemyHp.dmg[damageTo - 7] += damage
         enemyHp.now[damageTo - 7] -= damage
 
@@ -381,7 +392,7 @@ module.exports =
             combinedInfo = Object.clone window._decks[1].api_ship
           getShipInfo sortieHp, sortieInfo
           getShipInfo combinedHp, combinedInfo
-          sortieHp.dmg[i] = enemyHp.dmg[i] = combinedHp.dmg[i] = 0 for i in [0..5]
+          sortieHp.dmg[i] = enemyHp.dmg[i] = combinedHp.dmg[i] = sortieHp.atk[i] = enemyHp.atk[i] = combinedHp.atk[i] = 0 for i in [0..5]
           enemyInfo.lv = Object.clone initId
           enemyFormation = enemyIntercept = 0
           enemyName = __ 'Enemy Vessel'
@@ -391,7 +402,7 @@ module.exports =
         # Enter next point in battle
         when '/kcsapi/api_req_map/next'
           flag = true
-          sortieHp.dmg[i] = enemyHp.dmg[i] = combinedHp.dmg[i] = 0 for i in [0..5]
+          sortieHp.dmg[i] = enemyHp.dmg[i] = combinedHp.dmg[i] = sortieHp.atk[i] = enemyHp.atk[i] = combinedHp.atk[i] = 0 for i in [0..5]
           enemyInfo.lv = Object.clone initId
           enemyFormation = enemyIntercept = 0
           enemyName = __ 'Enemy Vessel'
@@ -424,7 +435,7 @@ module.exports =
           flag = true
           # If practice
           if path == '/kcsapi/api_req_practice/battle'
-            sortieHp.dmg[i] = enemyHp.dmg[i] = combinedHp.dmg[i] = 0 for i in [0..5]
+            sortieHp.dmg[i] = enemyHp.dmg[i] = combinedHp.dmg[i] = sortieHp.atk[i] = enemyHp.atk[i] = combinedHp.atk[i] = 0 for i in [0..5]
             enemyName = __ 'PvP'
             combinedFlag = 0
             sortieInfo = Object.clone window._decks[postBody.api_deck_id - 1].api_ship
@@ -490,7 +501,7 @@ module.exports =
             combinedInfo = Object.clone window._decks[1].api_ship
           getShipInfo sortieHp, sortieInfo
           getShipInfo combinedHp, combinedInfo
-          sortieHp.dmg[i] = enemyHp.dmg[i] = combinedHp.dmg[i] = 0 for i in [0..5]
+          sortieHp.dmg[i] = enemyHp.dmg[i] = combinedHp.dmg[i] = sortieHp.atk[i] = enemyHp.atk[i] = combinedHp.atk[i] = 0 for i in [0..5]
           enemyInfo.lv = Object.clone initId
           enemyFormation = enemyIntercept = 0
           enemyName = __ 'Enemy Vessel'

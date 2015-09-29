@@ -27,7 +27,8 @@ module.exports = React.createClass
                       name={@props.enemyInfo.name[j]}
                       condShow={0}
                       isBack={0}
-                      compactMode={@props.compactMode}/>
+                      compactMode={@props.compactMode}
+                      atk={@props.enemyHp.atk[j]}/>
                     list.push <ProphetHp
                       lv={@props.enemyInfo.lv[j]}
                       now={@props.enemyHp.now[j]}
@@ -49,7 +50,8 @@ module.exports = React.createClass
                       cond={tmpCond}
                       condShow={1}
                       isBack={@props.goBack[j + 6]}
-                      compactMode={@props.compactMode}/>
+                      compactMode={@props.compactMode}
+                      atk={@props.combinedHp.atk[j]}/>
                     list.push <ProphetHp
                       lv={tmpLv}
                       now={@props.combinedHp.now[j]}
@@ -71,7 +73,8 @@ module.exports = React.createClass
                       cond={tmpCond}
                       condShow={1}
                       isBack={@props.goBack[j]}
-                      compactMode={@props.compactMode}/>
+                      compactMode={@props.compactMode}
+                      atk={@props.sortieHp.atk[j]}/>
                     list.push <ProphetHp
                       lv={tmpLv}
                       now={@props.sortieHp.now[j]}
