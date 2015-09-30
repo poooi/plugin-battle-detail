@@ -29,5 +29,17 @@
   "AS": "AS",
   "Air Parity": "Air Parity",
   "Air Incapability": "Air Incapability",
-  "Air Denial": "Air Denial"
+  "Air Denial": "Air Denial",
+  "Start": "Start",
+  "Unknown": "Unknown",
+  "Obtain Resources": "Obtain Resources",
+  "Lose Resources": "Lose Resources",
+  "Battle": "Battle",
+  "Boss Battle": "Boss Battle",
+  "Battle Avoid": "Battle Avoid",
+  "Air Strike": "Air Strike",
+  "Escort Success": "Escort Success",
+  "Enemy Detected": "Enemy Detected",
+  "Manual Selection": "Manual Selection",
+  "Aerial Recon": "Aerial Recon"
 }
