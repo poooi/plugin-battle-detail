@@ -11,5 +11,10 @@ module.exports = React.createClass
           <Alert>
             {"#{@props.result} | #{@props.formation} | #{@props.intercept} | #{@props.seiku}"}
           </Alert>
+        else if @props.cellInfo isnt ''
+          <Alert>
+            {"#{@props.admiral} #{@props.nextCell} :「#{@props.cellInfo}」"}
+          </Alert>
+          
       }
     </div>
