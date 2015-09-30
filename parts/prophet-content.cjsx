@@ -101,7 +101,8 @@ module.exports = React.createClass
                     name={@props.enemyInfo.name[j]}
                     condShow={0}
                     isBack={0}
-                    compactMode={@props.compactMode}/>
+                    compactMode={@props.compactMode}
+                    atk={@props.enemyHp.atk[j]}/>
                   list.push <ProphetHp
                     lv={@props.enemyInfo.lv[j]}
                     now={@props.enemyHp.now[j]}

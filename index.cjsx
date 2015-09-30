@@ -91,6 +91,7 @@ getResult = (sortieHp, enemyHp, combinedHp, leastHp) ->
   sortieCnt = enemyCnt = 0
   sortieDmg = enemyDmg = 0.0
   sortieTot = enemyTot = 0.0
+  mvpPos = combinedMvpPos = 0
   for i in [0..5]
     if sortieHp.now[i] + sortieHp.dmg[i] > 0
       sortieCnt += 1
@@ -100,6 +101,9 @@ getResult = (sortieHp, enemyHp, combinedHp, leastHp) ->
         enemyDmg += sortieHp.now[i]
         sortieDrop += 1
         sortieHp.now[i] = 0
+      else
+        if sortieHp.atk[i] > sortieHp.atk[mvpPos]
+          mvpPos = i
     if combinedHp.now[i] + combinedHp.dmg[i] > 0
       sortieCnt += 1
       sortieTot += (combinedHp.now[i] + combinedHp.dmg[i])
@@ -108,6 +112,9 @@ getResult = (sortieHp, enemyHp, combinedHp, leastHp) ->
         enemyDmg += combinedHp.now[i]
         sortieDrop += 1
         combinedHp.now[i] = 0
+      else
+        if combinedHp.atk[i] > combinedHp.atk[combinedMvpPos]
+          combinedMvpPos = i
     if enemyHp.now[i] + enemyHp.dmg[i] > 0
       enemyCnt += 1
       if enemyHp.now[i] == 0
@@ -121,6 +128,8 @@ getResult = (sortieHp, enemyHp, combinedHp, leastHp) ->
           sortieDmg += (enemyHp.now[i] - leastHp)
           enemyDrop += 1
           enemyHp.now[i] = 0
+  sortieHp.atk[mvpPos] = -sortieHp.atk[mvpPos]
+  combinedHp.atk[combinedMvpPos] = -combinedHp.atk[combinedMvpPos]
   sortieRate = sortieDmg / enemyTot
   enemyRate = enemyDmg / sortieTot
   sortieRate = Math.floor(sortieRate * 100)
@@ -232,7 +241,7 @@ hougekiAttack = (sortieHp, enemyHp, hougeki, sortieInfo) ->
       damageTo = hougeki.api_df_list[i][j]
       continue if damage <= 0
       if damageTo < 7
-        enemyHp.atk[damageFrom - 1] += damage
+        enemyHp.atk[damageFrom - 1 - 6] += damage
         sortieHp.dmg[damageTo - 1] += damage
         sortieHp.now[damageTo - 1] -= damage
         if sortieHp.now[damageTo - 1] <= 0
