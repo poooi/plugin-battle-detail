@@ -28,7 +28,8 @@ module.exports = React.createClass
                       condShow={0}
                       isBack={0}
                       compactMode={@props.compactMode}
-                      atk={@props.enemyHp.atk[j]}/>
+                      atk={@props.enemyHp.atk[j]}
+                      mvp={if @props.mvpPos[2] == j then true else false}/>
                     list.push <ProphetHp
                       lv={@props.enemyInfo.lv[j]}
                       now={@props.enemyHp.now[j]}
@@ -51,7 +52,8 @@ module.exports = React.createClass
                       condShow={1}
                       isBack={@props.goBack[j + 6]}
                       compactMode={@props.compactMode}
-                      atk={@props.combinedHp.atk[j]}/>
+                      atk={@props.combinedHp.atk[j]}
+                      mvp={if @props.mvpPos[1] == j then true else false}/>
                     list.push <ProphetHp
                       lv={tmpLv}
                       now={@props.combinedHp.now[j]}
@@ -74,7 +76,8 @@ module.exports = React.createClass
                       condShow={1}
                       isBack={@props.goBack[j]}
                       compactMode={@props.compactMode}
-                      atk={@props.sortieHp.atk[j]}/>
+                      atk={@props.sortieHp.atk[j]}
+                      mvp={if @props.mvpPos[0] == j then true else false}/>
                     list.push <ProphetHp
                       lv={tmpLv}
                       now={@props.sortieHp.now[j]}
@@ -102,7 +105,8 @@ module.exports = React.createClass
                     condShow={0}
                     isBack={0}
                     compactMode={@props.compactMode}
-                    atk={@props.enemyHp.atk[j]}/>
+                    atk={@props.enemyHp.atk[j]}
+                    mvp={if @props.mvpPos[2] == j then true else false}/>
                   list.push <ProphetHp
                     lv={@props.enemyInfo.lv[j]}
                     now={@props.enemyHp.now[j]}

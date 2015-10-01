@@ -102,7 +102,7 @@ getCellInfo = (eventId, eventKind, bossCell, CellNo) ->
     if eventKind is 0
       return 12
   return eventId + 1
-  
+
 getEnemyInfo = (enemyHp, enemyInfo, body, isPractice) ->
   {$ships, _ships} = window
   enemyInfo.lv = Object.clone body.api_ship_ke.slice(1, 7)
@@ -115,12 +115,12 @@ getEnemyInfo = (enemyHp, enemyInfo, body, isPractice) ->
       enemyInfo.name[i] = enemyInfo.name[i] + $ships[shipId].api_yomi
   enemyInfo.lv = Object.clone body.api_ship_lv.slice(1, 7)
 
-getResult = (sortieHp, enemyHp, combinedHp, leastHp) ->
+getResult = (sortieHp, enemyHp, combinedHp, leastHp, mvpPos) ->
   sortieDrop = enemyDrop = 0
   sortieCnt = enemyCnt = 0
   sortieDmg = enemyDmg = 0.0
   sortieTot = enemyTot = 0.0
-  mvpPos = combinedMvpPos = 0
+  mvpPos = [0, 0, 0]
   for i in [0..5]
     if sortieHp.now[i] + sortieHp.dmg[i] > 0
       sortieCnt += 1
@@ -130,9 +130,8 @@ getResult = (sortieHp, enemyHp, combinedHp, leastHp) ->
         enemyDmg += sortieHp.now[i]
         sortieDrop += 1
         sortieHp.now[i] = 0
-      else
-        if sortieHp.atk[i] > sortieHp.atk[mvpPos]
-          mvpPos = i
+      if sortieHp.atk[i] > sortieHp.atk[mvpPos[0]]
+        mvpPos[0] = i
     if combinedHp.now[i] + combinedHp.dmg[i] > 0
       sortieCnt += 1
       sortieTot += (combinedHp.now[i] + combinedHp.dmg[i])
@@ -141,9 +140,8 @@ getResult = (sortieHp, enemyHp, combinedHp, leastHp) ->
         enemyDmg += combinedHp.now[i]
         sortieDrop += 1
         combinedHp.now[i] = 0
-      else
-        if combinedHp.atk[i] > combinedHp.atk[combinedMvpPos]
-          combinedMvpPos = i
+      if combinedHp.atk[i] > combinedHp.atk[mvpPos[1]]
+        mvpPos[1] = i
     if enemyHp.now[i] + enemyHp.dmg[i] > 0
       enemyCnt += 1
       if enemyHp.now[i] == 0
@@ -157,8 +155,8 @@ getResult = (sortieHp, enemyHp, combinedHp, leastHp) ->
           sortieDmg += (enemyHp.now[i] - leastHp)
           enemyDrop += 1
           enemyHp.now[i] = 0
-  sortieHp.atk[mvpPos] = -sortieHp.atk[mvpPos]
-  combinedHp.atk[combinedMvpPos] = -combinedHp.atk[combinedMvpPos]
+        if enemyHp.atk[i] > enemyHp.atk[mvpPos[2]]
+          mvpPos[2] = i
   sortieRate = sortieDmg / enemyTot
   enemyRate = enemyDmg / sortieTot
   sortieRate = Math.floor(sortieRate * 100)
@@ -301,7 +299,7 @@ simulateKouku = (api_kouku, planeCount) ->
     planeCount.enemy[0] -= api_kouku.api_stage2.api_e_lostcount
 
 
-simulateBattle = (sortieHp, enemyHp, combinedHp, isCombined, isWater, body, leastHp, planeCount, sortieInfo, combinedInfo) ->
+simulateBattle = (sortieHp, enemyHp, combinedHp, isCombined, isWater, body, leastHp, planeCount, sortieInfo, combinedInfo, mvpPos) ->
   # First air battle
 
   if body.api_kouku?
@@ -375,7 +373,7 @@ simulateBattle = (sortieHp, enemyHp, combinedHp, isCombined, isWater, body, leas
       raigekiAttack combinedHp, enemyHp, body.api_raigeki, combinedInfo
     else
       raigekiAttack sortieHp, enemyHp, body.api_raigeki, sortieInfo
-  getResult sortieHp, enemyHp, combinedHp, leastHp
+  getResult sortieHp, enemyHp, combinedHp, leastHp, mvpPos
 
 escapeId = -1
 towId = -1
@@ -412,9 +410,10 @@ module.exports =
       compactMode: false
       nextCellNo: 0
       nextCellKind: 0
+      mvpPos: [0, 0, 0]
     handleResponse: (e) ->
       {method, path, body, postBody} = e.detail
-      {sortieHp, enemyHp, combinedHp, sortieInfo, enemyInfo, combinedInfo, getShip, planeCount, enemyFormation, enemyIntercept, enemyName, result, enableProphetDamaged, prophetCondShow, combinedFlag, goBack, nextCellNo, nextCellKind} = @state
+      {sortieHp, enemyHp, combinedHp, sortieInfo, enemyInfo, combinedInfo, getShip, planeCount, enemyFormation, enemyIntercept, enemyName, result, enableProphetDamaged, prophetCondShow, combinedFlag, goBack, nextCellNo, nextCellKind, mvpPos} = @state
       enableProphetDamaged = config.get 'plugin.prophet.notify.damaged', true
       prophetCondShow = config.get 'plugin.prophet.show.cond', true
       flag = false
@@ -439,7 +438,7 @@ module.exports =
           result = null
           getShip = null
           planeCount = Object.clone initPlaneCount
-          nextCellNo = body.api_no                    
+          nextCellNo = body.api_no
           nextCellKind = getCellInfo body.api_event_id, body.event_kind, body.api_bosscell_no, body.api_no
         # Enter next point in battle
         when '/kcsapi/api_req_map/next'
@@ -451,7 +450,7 @@ module.exports =
           result = null
           getShip = null
           planeCount = Object.clone initPlaneCount
-          nextCellNo = body.api_no                    
+          nextCellNo = body.api_no
           nextCellKind = getCellInfo body.api_event_id, body.event_kind, body.api_bosscell_no, body.api_no
         # Some ship while go back
         when '/kcsapi/api_req_combined_battle/goback_port'
@@ -468,7 +467,7 @@ module.exports =
           if path != '/kcsapi/api_req_battle_midnight/battle'
             getEnemyInfo enemyHp, enemyInfo, body, false
 
-          result = simulateBattle sortieHp, enemyHp, combinedHp, false, false, body, 0, planeCount, sortieInfo, combinedInfo
+          result = simulateBattle sortieHp, enemyHp, combinedHp, false, false, body, 0, planeCount, sortieInfo, combinedInfo, mvpPos
 
           for i in [0..5]
             sortieHp.dmg[i] -= daySortieDmg[i]
@@ -488,7 +487,7 @@ module.exports =
           daySortieDmg = Object.clone sortieHp.dmg
           dayEnemyDmg = Object.clone enemyHp.dmg
           dayCombinedDmg = Object.clone combinedHp.dmg
-          result = simulateBattle sortieHp, enemyHp, combinedHp, false, false, body, 1, planeCount, sortieInfo, combinedInfo
+          result = simulateBattle sortieHp, enemyHp, combinedHp, false, false, body, 1, planeCount, sortieInfo, combinedInfo, mvpPos
           for i in [0..5]
             sortieHp.dmg[i] -= daySortieDmg[i]
             enemyHp.dmg[i] -= dayEnemyDmg[i]
@@ -506,7 +505,7 @@ module.exports =
           dayCombinedDmg = Object.clone combinedHp.dmg
           if path != '/kcsapi/api_req_combined_battle/midnight_battle'
             getEnemyInfo enemyHp, enemyInfo, body, false
-          result = simulateBattle sortieHp, enemyHp, combinedHp, true, isWater, body, 1, planeCount, sortieInfo, combinedInfo
+          result = simulateBattle sortieHp, enemyHp, combinedHp, true, isWater, body, 1, planeCount, sortieInfo, combinedInfo, mvpPos
           for i in [0..5]
             sortieHp.dmg[i] -= daySortieDmg[i]
             enemyHp.dmg[i] -= dayEnemyDmg[i]
@@ -590,7 +589,8 @@ module.exports =
           goBack: goBack
           nextCellKind: nextCellKind
           nextCellNo: nextCellNo
-          
+          mvpPos: mvpPos
+
     handleDisplayModeSwitch: ->
       @setState
         compactMode: !@state.compactMode
@@ -616,7 +616,8 @@ module.exports =
           cols={if @state.combinedFlag == 0 then 0 else 1}
           lay={if layout == 'horizonal' || window.doubleTabbed then 0 else 1}
           goBack={@state.goBack}
-          compactMode={@state.compactMode}/>
+          compactMode={@state.compactMode}
+          mvpPos = {@state.mvpPos}/>
         <BottomAlert
           admiral={__ "Admiral"}
           getShip={@state.getShip}
@@ -625,7 +626,7 @@ module.exports =
           formation={formation[@state.enemyFormation]}
           intercept={intercept[@state.enemyIntercept]}
           seiku={@state.seiku}
-          result={@state.result} 
+          result={@state.result}
           cellInfo={if !@state.compactMode and cellInfo[@state.nextCellKind] isnt '' then cellInfo[@state.nextCellKind] + " (" + @state.nextCellNo + ")" else cellInfo[@state.nextCellKind]}
           nextCell={__ "Next Cell"}/>
       </div>

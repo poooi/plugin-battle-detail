@@ -29,10 +29,10 @@ module.exports = React.createClass
         </div>
         <div className="attack-damage">
           {
-            if @props.atk >= 0
-              <span className>{@props.atk}</span>
+            if @props.mvp == true
+              <span className={getCondStyle(100, 1)}>{@props.atk}</span>
             else
-              <span className={getCondStyle(100, 1)}>{-@props.atk}</span>
+              <span>{@props.atk}</span>
           }
         </div>
       </td>

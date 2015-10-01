@@ -24,7 +24,8 @@ module.exports = React.createClass
         lay={@props.lay}
         isFirst={1}
         goBack={@props.goBack}
-        compactMode={@props.compactMode}/>
+        compactMode={@props.compactMode}
+        mvpPos = {@props.mvpPos}/>
       <NavigationBar
         HP={@props.HP}
         sortieFleet={@props.sortieFleet}
@@ -45,5 +46,6 @@ module.exports = React.createClass
         lay={@props.lay}
         isFirst={0}
         goBack={@props.goBack}
-        compactMode={@props.compactMode}/>
+        compactMode={@props.compactMode}
+        mvpPos={@props.mvpPos}/>
     </div>
