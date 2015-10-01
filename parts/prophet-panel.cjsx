@@ -12,6 +12,7 @@ module.exports = React.createClass
         enemyPlane={@props.enemyPlane}
         cols={@props.cols + @props.lay}
         lay={@props.lay}
+        enemyInfo={@props.enemyInfo}
         isFirst={1} />
       <ProphetContent
         sortieHp={@props.sortieHp}
@@ -34,6 +35,7 @@ module.exports = React.createClass
         enemyPlane={@props.enemyPlane}
         cols={@props.cols + @props.lay}
         lay={@props.lay}
+        enemyInfo={@props.enemyInfo}
         isFirst={0} />
       <ProphetContent
         sortieHp={@props.sortieHp}

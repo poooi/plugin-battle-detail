@@ -23,7 +23,7 @@ module.exports = React.createClass
             </Grid>
           }
         </Alert>
-      else
+      else if @props.enemyInfo.lv[0] != -1
         <Alert>
           <Grid>
             <Col xs={12}>
@@ -38,5 +38,7 @@ module.exports = React.createClass
             </Col>
           </Grid>
         </Alert>
+      else
+        <div></div>
     else
       <div></div>
