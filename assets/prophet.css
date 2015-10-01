@@ -40,6 +40,14 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  display: flex;
+  flex-direction: row;
+}
+#prophet .ship-name {
+  width: calc(100% - 32px);
+}
+#prophet .attack-damage {
+  width: 32px;
 }
 #prophet .prophet-info-name {
   text-shadow: none;
