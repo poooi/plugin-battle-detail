@@ -30,5 +30,18 @@
   "AS": "航空優勢",
   "Air Parity": "航空均勢",
   "Air Incapability": "航空劣勢",
-  "Air Denial": "制空権喪失"
+  "Air Denial": "制空権喪失",
+  "Start": "开始",
+  "Unknown": "不明",
+  "Obtain Resources": "资源获得",
+  "Lose Resources": "资源损失",
+  "Battle": "普通战斗",
+  "Boss Battle": "Boss战斗",
+  "Battle Avoid": "战斗回避",
+  "Air Strike": "航空战",
+  "Escort Success": "护卫成功",
+  "Enemy Detected": "敌舰发现",
+  "Manual Selection": "能动选择",
+  "Aerial Recon": "航空侦查",
+  "Next Cell": "下一点"
 }

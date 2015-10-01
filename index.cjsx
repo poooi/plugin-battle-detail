@@ -23,6 +23,22 @@ i18n.setLocale(window.language)
 window.addEventListener 'layout.change', (e) ->
   {layout} = e.detail
 
+cellInfo = [
+  __(''),
+  __('Start'),
+  __('Unknown'),
+  __('Obtain Resources'),
+  __('Lose Resources'),
+  __('Battle'),
+  __('Boss Battle'),
+  __('Battle Avoid'),
+  __('Air Strike'),
+  __('Escort Success'),
+  __('Enemy Detected'),
+  __('Manual Selection'),
+  __('Aerial Recon')
+]
+
 formation = [
   __("Unknown Formation"),
   __("Line Ahead"),
@@ -74,6 +90,19 @@ initPlaneCount =
 initId = [-1, -1, -1, -1, -1, -1]
 initData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
+getCellInfo = (eventId, eventKind, bossCell, CellNo) ->
+  if bossCell is CellNo
+    return 6
+  if eventId is 6
+    if eventKind is 1
+      return 10
+    else if eventKind is 2
+      return 11
+  else if eventId is 7
+    if eventKind is 0
+      return 12
+  return eventId + 1
+  
 getEnemyInfo = (enemyHp, enemyInfo, body, isPractice) ->
   {$ships, _ships} = window
   enemyInfo.lv = Object.clone body.api_ship_ke.slice(1, 7)
@@ -381,9 +410,11 @@ module.exports =
       combinedFlag: 0
       goBack: Object.clone initData
       compactMode: false
+      nextCellNo: 0
+      nextCellKind: 0
     handleResponse: (e) ->
       {method, path, body, postBody} = e.detail
-      {sortieHp, enemyHp, combinedHp, sortieInfo, enemyInfo, combinedInfo, getShip, planeCount, enemyFormation, enemyIntercept, enemyName, result, enableProphetDamaged, prophetCondShow, combinedFlag, goBack} = @state
+      {sortieHp, enemyHp, combinedHp, sortieInfo, enemyInfo, combinedInfo, getShip, planeCount, enemyFormation, enemyIntercept, enemyName, result, enableProphetDamaged, prophetCondShow, combinedFlag, goBack, nextCellNo, nextCellKind} = @state
       enableProphetDamaged = config.get 'plugin.prophet.notify.damaged', true
       prophetCondShow = config.get 'plugin.prophet.show.cond', true
       flag = false
@@ -408,6 +439,8 @@ module.exports =
           result = null
           getShip = null
           planeCount = Object.clone initPlaneCount
+          nextCellNo = body.api_no                    
+          nextCellKind = getCellInfo body.api_event_id, body.event_kind, body.api_bosscell_no, body.api_no
         # Enter next point in battle
         when '/kcsapi/api_req_map/next'
           flag = true
@@ -418,6 +451,8 @@ module.exports =
           result = null
           getShip = null
           planeCount = Object.clone initPlaneCount
+          nextCellNo = body.api_no                    
+          nextCellKind = getCellInfo body.api_event_id, body.event_kind, body.api_bosscell_no, body.api_no
         # Some ship while go back
         when '/kcsapi/api_req_combined_battle/goback_port'
           flag = true
@@ -517,7 +552,7 @@ module.exports =
           result = null
           getShip = null
           planeCount = Object.clone initPlaneCount
-
+          nextCellKind = 0
       if body.api_formation?
         enemyFormation = body.api_formation[1]
         enemyIntercept = body.api_formation[2]
@@ -553,7 +588,9 @@ module.exports =
           prophetCondShow: prophetCondShow
           combinedFlag: combinedFlag
           goBack: goBack
-
+          nextCellKind: nextCellKind
+          nextCellNo: nextCellNo
+          
     handleDisplayModeSwitch: ->
       @setState
         compactMode: !@state.compactMode
@@ -588,7 +625,9 @@ module.exports =
           formation={formation[@state.enemyFormation]}
           intercept={intercept[@state.enemyIntercept]}
           seiku={@state.seiku}
-          result={@state.result} />
+          result={@state.result} 
+          cellInfo={if !@state.compactMode and cellInfo[@state.nextCellKind] isnt '' then cellInfo[@state.nextCellKind] + " (" + @state.nextCellNo + ")" else cellInfo[@state.nextCellKind]}
+          nextCell={__ "Next Cell"}/>
       </div>
   settingsClass: React.createClass
     getInitialState: ->
