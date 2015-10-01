@@ -89,6 +89,7 @@ initPlaneCount =
 
 initId = [-1, -1, -1, -1, -1, -1]
 initData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+initMvp = [0, 0, 0]
 
 getCellInfo = (eventId, eventKind, bossCell, CellNo) ->
   if bossCell is CellNo
@@ -120,7 +121,7 @@ getResult = (sortieHp, enemyHp, combinedHp, leastHp, mvpPos) ->
   sortieCnt = enemyCnt = 0
   sortieDmg = enemyDmg = 0.0
   sortieTot = enemyTot = 0.0
-  mvpPos = [0, 0, 0]
+  mvpPos[i] = 0 for i in [0..2]
   for i in [0..5]
     if sortieHp.now[i] + sortieHp.dmg[i] > 0
       sortieCnt += 1
@@ -410,7 +411,7 @@ module.exports =
       compactMode: false
       nextCellNo: 0
       nextCellKind: 0
-      mvpPos: [0, 0, 0]
+      mvpPos: Object.clone initMvp
     handleResponse: (e) ->
       {method, path, body, postBody} = e.detail
       {sortieHp, enemyHp, combinedHp, sortieInfo, enemyInfo, combinedInfo, getShip, planeCount, enemyFormation, enemyIntercept, enemyName, result, enableProphetDamaged, prophetCondShow, combinedFlag, goBack, nextCellNo, nextCellKind, mvpPos} = @state
