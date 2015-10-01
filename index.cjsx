@@ -410,6 +410,8 @@ module.exports =
       combinedFlag: 0
       goBack: Object.clone initData
       compactMode: false
+      nextCellNo: 0
+      nextCellKind: 0
     handleResponse: (e) ->
       {method, path, body, postBody} = e.detail
       {sortieHp, enemyHp, combinedHp, sortieInfo, enemyInfo, combinedInfo, getShip, planeCount, enemyFormation, enemyIntercept, enemyName, result, enableProphetDamaged, prophetCondShow, combinedFlag, goBack, nextCellNo, nextCellKind} = @state
