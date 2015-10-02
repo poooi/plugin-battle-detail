@@ -45,6 +45,8 @@
 }
 #prophet .ship-name {
   width: calc(100% - 32px);
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 #prophet .attack-damage {
   width: 32px;
