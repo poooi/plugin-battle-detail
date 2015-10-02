@@ -4,6 +4,7 @@ request = Promise.promisifyAll require('request')
 {relative, join} = require 'path-extra'
 path = require 'path-extra'
 fs = require 'fs-extra'
+CSON = require 'cson'
 {_, $, $$, React, ReactBootstrap, ROOT, resolveTime, layout, toggleModal} = window
 {Table, ProgressBar, Grid, Input, Col, Alert, Button, Divider} = ReactBootstrap
 {APPDATA_PATH, SERVER_HOSTNAME} = window
@@ -23,7 +24,7 @@ i18n.setLocale(window.language)
 window.addEventListener 'layout.change', (e) ->
   {layout} = e.detail
 
-cellInfo = [
+spotInfo = [
   __(''),
   __('Start'),
   __('Unknown'),
@@ -389,6 +390,13 @@ module.exports =
   link: 'https://github.com/Chibaheit'
   reactClass: React.createClass
     getInitialState: ->
+      # Load map data
+      mapspot = null
+      try
+        mapspot = CSON.parseCSONFile path.join(__dirname, 'assets', 'data', 'mapspot.cson')
+      catch
+        console.log 'Failed to load map data!'
+
       sortieHp: Object.clone initHp
       enemyHp: Object.clone initHp
       combinedHp: Object.clone initHp
@@ -409,12 +417,17 @@ module.exports =
       combinedFlag: 0
       goBack: Object.clone initData
       compactMode: false
-      nextCellNo: 0
-      nextCellKind: 0
       mvpPos: Object.clone initMvp
+      # Compass
+      mapArea: NaN
+      mapCell: NaN
+      nowSpot: NaN
+      nextSpot: NaN
+      nextSpotKind: NaN
+      MAPSPOT: mapspot
     handleResponse: (e) ->
       {method, path, body, postBody} = e.detail
-      {sortieHp, enemyHp, combinedHp, sortieInfo, enemyInfo, combinedInfo, getShip, planeCount, enemyFormation, enemyIntercept, enemyName, result, enableProphetDamaged, prophetCondShow, combinedFlag, goBack, nextCellNo, nextCellKind, mvpPos} = @state
+      {sortieHp, enemyHp, combinedHp, sortieInfo, enemyInfo, combinedInfo, getShip, planeCount, enemyFormation, enemyIntercept, enemyName, result, enableProphetDamaged, prophetCondShow, combinedFlag, goBack, mvpPos, mapArea, mapCell, nowSpot, nextSpot, nextSpotKind} = @state
       enableProphetDamaged = config.get 'plugin.prophet.notify.damaged', true
       prophetCondShow = config.get 'plugin.prophet.show.cond', true
       flag = false
@@ -439,8 +452,13 @@ module.exports =
           result = null
           getShip = null
           planeCount = Object.clone initPlaneCount
-          nextCellNo = body.api_no
-          nextCellKind = getCellInfo body.api_event_id, body.event_kind, body.api_bosscell_no, body.api_no
+          # Compass
+          mapArea = body.api_maparea_id
+          mapCell = body.api_mapinfo_no
+          nowSpot = 0
+          nextSpot = body.api_no
+          nextSpotKind = getCellInfo body.api_event_id, body.event_kind, body.api_bosscell_no, body.api_no
+
         # Enter next point in battle
         when '/kcsapi/api_req_map/next'
           flag = true
@@ -451,13 +469,17 @@ module.exports =
           result = null
           getShip = null
           planeCount = Object.clone initPlaneCount
-          nextCellNo = body.api_no
-          nextCellKind = getCellInfo body.api_event_id, body.event_kind, body.api_bosscell_no, body.api_no
+          # Comapss
+          nowSpot = nextSpot
+          nextSpot = body.api_no
+          nextSpotKind = getCellInfo body.api_event_id, body.event_kind, body.api_bosscell_no, body.api_no
+
         # Some ship while go back
         when '/kcsapi/api_req_combined_battle/goback_port'
           flag = true
           if escapeId != -1 && towId != -1
             goBack[escapeId] = goBack[towId] = 1
+
         # Normal battle
         when '/kcsapi/api_req_sortie/airbattle', '/kcsapi/api_req_battle_midnight/sp_midnight', '/kcsapi/api_req_sortie/battle', '/kcsapi/api_req_battle_midnight/battle'
           flag = true
@@ -474,6 +496,7 @@ module.exports =
             sortieHp.dmg[i] -= daySortieDmg[i]
             enemyHp.dmg[i] -= dayEnemyDmg[i]
             combinedHp.dmg[i] -= dayCombinedDmg[i]
+
         # Practice battle
         when '/kcsapi/api_req_practice/battle', '/kcsapi/api_req_practice/midnight_battle'
           flag = true
@@ -493,6 +516,7 @@ module.exports =
             sortieHp.dmg[i] -= daySortieDmg[i]
             enemyHp.dmg[i] -= dayEnemyDmg[i]
             combinedHp.dmg[i] -= dayCombinedDmg[i]
+
         # Combined battle
         when '/kcsapi/api_req_combined_battle/airbattle', '/kcsapi/api_req_combined_battle/sp_midnight', '/kcsapi/api_req_combined_battle/battle', '/kcsapi/api_req_combined_battle/battle_water', '/kcsapi/api_req_combined_battle/midnight_battle'
           flag = true
@@ -511,6 +535,7 @@ module.exports =
             sortieHp.dmg[i] -= daySortieDmg[i]
             enemyHp.dmg[i] -= dayEnemyDmg[i]
             combinedHp.dmg[i] -= dayCombinedDmg[i]
+
         # Battle Result
         when '/kcsapi/api_req_practice/battle_result', '/kcsapi/api_req_sortie/battleresult', '/kcsapi/api_req_combined_battle/battleresult'
           flag = true
@@ -531,6 +556,7 @@ module.exports =
             if body.api_get_ship?
               getShip = body.api_get_ship
           result = body.api_win_rank
+
         # Return to port
         when '/kcsapi/api_port/port'
           flag = true
@@ -552,7 +578,13 @@ module.exports =
           result = null
           getShip = null
           planeCount = Object.clone initPlaneCount
-          nextCellKind = 0
+          # Compass
+          mapArea = NaN
+          mapCell = NaN
+          nowSpot = NaN
+          nextSpot = NaN
+          nextSpotKind = NaN
+
       if body.api_formation?
         enemyFormation = body.api_formation[1]
         enemyIntercept = body.api_formation[2]
@@ -588,9 +620,13 @@ module.exports =
           prophetCondShow: prophetCondShow
           combinedFlag: combinedFlag
           goBack: goBack
-          nextCellKind: nextCellKind
-          nextCellNo: nextCellNo
           mvpPos: mvpPos
+          # Compass
+          mapArea: mapArea
+          mapCell: mapCell
+          nowSpot: nowSpot
+          nextSpot: nextSpot
+          nextSpotKind: nextSpotKind
 
     handleDisplayModeSwitch: ->
       @setState
@@ -598,6 +634,15 @@ module.exports =
 
     componentDidMount: ->
       window.addEventListener 'game.response', @handleResponse
+
+    getCompassAngle: ->
+      {MAPSPOT, mapArea, mapCell, nowSpot, nextSpot} = @state
+      return null unless mapspot = MAPSPOT?[mapArea]?[mapCell]
+      return null unless nowPoint = mapspot[nowSpot]
+      return null unless nextPoint = mapspot[nextSpot]
+      # Calucate and translate to css rorate angle
+      angle = Math.atan2(nextPoint[1] - nowPoint[1], nextPoint[0] - nowPoint[0]) / Math.PI * 180
+      angle = angle + 90
 
     render: ->
       <div onDoubleClick={@handleDisplayModeSwitch}>
@@ -628,8 +673,11 @@ module.exports =
           intercept={intercept[@state.enemyIntercept]}
           seiku={@state.seiku}
           result={@state.result}
-          cellInfo={if !@state.compactMode and cellInfo[@state.nextCellKind] isnt '' then cellInfo[@state.nextCellKind] + " (" + @state.nextCellNo + ")" else cellInfo[@state.nextCellKind]}
-          nextCell={__ "Next Cell"}/>
+          compassPoint={__ "Compass Point"}
+          compassAngle={@getCompassAngle()}
+          nextSpot={__ "Next Spot"}
+          nextSpotInfo={if @state.nextSpot then "#{spotInfo[@state.nextSpotKind]} (#{@state.nextSpot})"}
+          />
       </div>
   settingsClass: React.createClass
     getInitialState: ->

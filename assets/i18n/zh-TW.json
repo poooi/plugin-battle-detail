@@ -30,5 +30,7 @@
   "AS": "航空優勢",
   "Air Parity": "航空均勢",
   "Air Incapability": "航空劣勢",
-  "Air Denial": "制空権喪失"
+  "Air Denial": "制空権喪失",
+  "Compass Point": "羅盤指向",
+  "Next Spot": "下一點"
 }

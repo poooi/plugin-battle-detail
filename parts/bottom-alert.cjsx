@@ -11,9 +11,17 @@ module.exports = React.createClass
           <Alert>
             {"#{@props.result} | #{@props.formation} | #{@props.intercept} | #{@props.seiku}"}
           </Alert>
-        else if @props.cellInfo isnt ''
+        else if @props.nextSpotInfo
           <Alert>
-            {"#{@props.admiral} #{@props.nextCell} :「#{@props.cellInfo}」"}
+            {"#{@props.compassPoint}: "}
+            {
+              if @props.compassAngle
+                <FontAwesome name='long-arrow-up' fixedWidth={true}
+                             style={transform: "rotate(#{@props.compassAngle}deg)"} />
+              else
+                "?"
+            }
+            {" | #{@props.nextSpot}: #{@props.nextSpotInfo}"}
           </Alert>
           
       }
