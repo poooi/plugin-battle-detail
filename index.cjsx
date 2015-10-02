@@ -457,7 +457,7 @@ module.exports =
           mapCell = body.api_mapinfo_no
           nowSpot = 0
           nextSpot = body.api_no
-          nextSpotKind = getCellInfo body.api_event_id, body.event_kind, body.api_bosscell_no, body.api_no
+          nextSpotKind = getCellInfo body.api_event_id, body.api_event_kind, body.api_bosscell_no, body.api_no
 
         # Enter next point in battle
         when '/kcsapi/api_req_map/next'
@@ -472,7 +472,7 @@ module.exports =
           # Comapss
           nowSpot = nextSpot
           nextSpot = body.api_no
-          nextSpotKind = getCellInfo body.api_event_id, body.event_kind, body.api_bosscell_no, body.api_no
+          nextSpotKind = getCellInfo body.api_event_id, body.api_event_kind, body.api_bosscell_no, body.api_no
 
         # Some ship while go back
         when '/kcsapi/api_req_combined_battle/goback_port'
