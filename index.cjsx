@@ -419,11 +419,11 @@ module.exports =
       compactMode: false
       mvpPos: Object.clone initMvp
       # Compass
-      mapArea: null
-      mapCell: null
-      nowSpot: null
-      nextSpot: null
-      nextSpotKind: null
+      mapArea: NaN
+      mapCell: NaN
+      nowSpot: NaN
+      nextSpot: NaN
+      nextSpotKind: NaN
       MAPSPOT: mapspot
     handleResponse: (e) ->
       {method, path, body, postBody} = e.detail
@@ -579,11 +579,11 @@ module.exports =
           getShip = null
           planeCount = Object.clone initPlaneCount
           # Compass
-          mapArea = null
-          mapCell = null
-          nowSpot = null
-          nextSpot = null
-          nextSpotKind = null
+          mapArea = NaN
+          mapCell = NaN
+          nowSpot = NaN
+          nextSpot = NaN
+          nextSpotKind = NaN
 
       if body.api_formation?
         enemyFormation = body.api_formation[1]
