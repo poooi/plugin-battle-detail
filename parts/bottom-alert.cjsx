@@ -16,8 +16,9 @@ module.exports = React.createClass
             {"#{@props.compassPoint}: "}
             {
               if @props.compassAngle
-                <FontAwesome name='arrow-circle-up' fixedWidth={true}
-                             style={transform: "rotate(#{@props.compassAngle}deg)"} />
+                # FontAwesome `location-arrow` points to north by east 45 degrees.
+                <FontAwesome name='location-arrow' fixedWidth={true}
+                             style={transform: "rotate(#{@props.compassAngle - 45}deg)", width: "2rem"} />
               else
                 "?"
             }
