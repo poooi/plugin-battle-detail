@@ -36,6 +36,9 @@
   height: 30px;
   line-height: 30px;
   padding: 0 6px;
+  background-color: #464545;
+  border-color: #464545;
+  color: #fff;
 }
 #prophet .alert > span{
   height: 30px;
