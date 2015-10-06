@@ -5,6 +5,8 @@ request = Promise.promisifyAll require('request')
 path = require 'path-extra'
 fs = require 'fs-extra'
 CSON = require 'cson'
+remote = require 'remote'
+windowManager = remote.require './lib/window'
 {_, $, $$, React, ReactBootstrap, ROOT, resolveTime, layout, toggleModal} = window
 {Table, ProgressBar, Grid, Input, Col, Alert, Button, Divider} = ReactBootstrap
 {APPDATA_PATH, SERVER_HOSTNAME} = window
@@ -632,6 +634,16 @@ module.exports =
       @setState
         compactMode: !@state.compactMode
 
+    handleShowDetail: ->
+      battleDetailWindow = windowManager.createWindow
+        x: config.get 'poi.window.x', 0
+        y: config.get 'poi.window.y', 0
+        width: 1020
+        height: 650
+      battleDetailWindow.loadUrl "file://#{__dirname}/detail/index.html"
+      battleDetailWindow.openDevTools
+        detach: true
+
     componentDidMount: ->
       window.addEventListener 'game.response', @handleResponse
 
@@ -678,6 +690,7 @@ module.exports =
           nextSpot={__ "Next Spot"}
           nextSpotInfo={if @state.nextSpot then "#{spotInfo[@state.nextSpotKind]} (#{@state.nextSpot})"}
           />
+        <Button onClick={@handleShowDetail} />
       </div>
   settingsClass: React.createClass
     getInitialState: ->
