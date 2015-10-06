@@ -16,7 +16,6 @@ class Ship
 # enum ShipOwner
 ShipOwner =
   Ours: "ShipOwner.Ours"
-  Friends: "ShipOwner.Friends"
   Enemy: "ShipOwner.Enemy"
 
 ## class Attack
