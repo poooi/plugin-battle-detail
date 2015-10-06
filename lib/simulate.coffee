@@ -181,6 +181,10 @@ module.exports =
       else
         sortieProgress.push new Stage StageType.Hougeki, hougekiAttack sortieShip, enemyShip, req.api_hougeki1, false
 
+    # Combined fleet raigeki
+    if req.api_raigeki? && req.isCombined && !req.isWater
+      sortieProgress.push new Stage StageType.Raigeki, raigekiAttack combinedShip, enemyShip, req.api_raigeki
+
     # Second hougeki battle
     if req.api_hougeki2?
       sortieProgress.push new Stage StageType.Hougeki, hougekiAttack sortieShip, enemyShip, req.api_hougeki2, false
@@ -195,7 +199,8 @@ module.exports =
     # Raigeki battle
     if req.api_raigeki?
       if req.isCombined
-        sortieProgress.push new Stage StageType.Raigeki, raigekiAttack combinedShip, enemyShip, req.api_raigeki
+        if req.isWater
+          sortieProgress.push new Stage StageType.Raigeki, raigekiAttack combinedShip, enemyShip, req.api_raigeki
       else
         sortieProgress.push new Stage StageType.Raigeki, raigekiAttack sortieShip, enemyShip, req.api_raigeki
 
