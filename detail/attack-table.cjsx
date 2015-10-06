@@ -56,7 +56,7 @@ AttackInfoRow = React.createClass
     if fromShip.owner is ShipOwner.Enemy
       <tr>
         <td><HpBar max={maxHP} now={damage.reduce ((p, x) -> p - x), nowHP} /></td>
-        <td>{$ships[toShip.id].api_name}</td>
+        <td>{_ships[toShip.id].api_name}</td>
         <td>← {getAttackTypeName type} <DamageInfo damage={damage} isCritical={isCritical} /></td>
         <td>{$ships[fromShip.id].api_name}</td>
         <td></td>
@@ -64,7 +64,7 @@ AttackInfoRow = React.createClass
     else
       <tr>
         <td></td>
-        <td>{$ships[fromShip.id].api_name}</td>
+        <td>{_ships[fromShip.id].api_name}</td>
         <td>{getAttackTypeName type} <DamageInfo damage={damage} isCritical={isCritical} /> →</td>
         <td>{$ships[toShip.id].api_name}</td>
         <td><HpBar max={maxHP} now={damage.reduce ((p, x) -> p - x), nowHP} /></td>
