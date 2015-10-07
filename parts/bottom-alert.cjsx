@@ -1,18 +1,18 @@
-{Panel} = ReactBootstrap
+{Alert} = ReactBootstrap
 module.exports = React.createClass
   render: ->
     <div>
       {
         if @props.getShip?
-          <Panel>
+          <Alert>
             {"#{@props.getShip.api_ship_type} 「#{@props.getShip.api_ship_name}」 #{@props.joinFleet}"}
-          </Panel>
+          </Alert>
         else if @props.formationNum != 0
-          <Panel>
+          <Alert>
             {"#{@props.result} | #{@props.formation} | #{@props.intercept} | #{@props.seiku}"}
-          </Panel>
+          </Alert>
         else if @props.nextSpotInfo
-          <Panel>
+          <Alert>
             {"#{@props.compassPoint}: "}
             {
               if @props.compassAngle
@@ -23,6 +23,6 @@ module.exports = React.createClass
                 "?"
             }
             {" | #{@props.nextSpot}: #{@props.nextSpotInfo}"}
-          </Panel>
+          </Alert>
       }
     </div>
