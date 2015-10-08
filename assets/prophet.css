@@ -61,11 +61,17 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+#prophet .compass {
+  text-align: center;
+}
+#prophet .fa {
+  width: 1em;
+  margin-bottom: -0.14em;
+  margin-left: -0.14em;
+  overflow: visible;
+}
 #prophet span {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-#prophet .fa {
-  display: inline;
 }

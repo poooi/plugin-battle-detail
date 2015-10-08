@@ -14,14 +14,16 @@ module.exports = React.createClass
         else if @props.nextSpotInfo
           <Panel>
             {"#{@props.compassPoint}: "}
+            <span className="compass">
             {
               if @props.compassAngle
                 # FontAwesome `location-arrow` points to north by east 45 degrees.
                 <FontAwesome name='location-arrow' fixedWidth={true}
-                             style={transform: "rotate(#{@props.compassAngle - 45}deg)", width: "2rem"} />
+                             style={transform: "rotate(#{@props.compassAngle - 45}deg)"} />
               else
                 "?"
             }
+            </span>
             {" | #{@props.nextSpot}: #{@props.nextSpotInfo}"}
           </Panel>
       }
