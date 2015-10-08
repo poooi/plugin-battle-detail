@@ -1,9 +1,9 @@
-{Table, ProgressBar, Grid, Input, Col, Alert, Button} = ReactBootstrap
+{Table, ProgressBar, Grid, Input, Col, Button, Panel} = ReactBootstrap
 module.exports = React.createClass
   render: ->
     if @props.isFirst == 1 || (@props.isFirst == 0 && @props.lay == 0)
       if @props.isFirst == 1
-        <Alert>
+        <Panel >
           {
             list = []
             tmp = 6 / (@props.cols + 1)
@@ -22,22 +22,20 @@ module.exports = React.createClass
               {list}
             </Grid>
           }
-        </Alert>
+        </Panel>
       else if @props.enemyInfo.lv[0] != -1
-        <Alert>
+        <Panel>
           <Grid>
-            <Col xs={12}>
-              <Col xs={6} className="navigation-bar-airplane">
-                {
-                  if @props.enemyPlane
-                    <span>「<FontAwesome name='plane' />{@props.enemyPlane}」</span>
-                }
-                {@props.enemyName}
-              </Col>
-              <Col xs={6}>{@props.HP}</Col>
+            <Col xs={6} className="navigation-bar-airplane">
+              {
+                if @props.enemyPlane
+                  <span>「<FontAwesome name='plane' />{@props.enemyPlane}」</span>
+              }
+              {@props.enemyName}
             </Col>
+            <Col xs={6}>{@props.HP}</Col>
           </Grid>
-        </Alert>
+        </Panel>
       else
         <div></div>
     else
