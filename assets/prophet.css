@@ -35,6 +35,7 @@
 }
 #prophet .panel-body {
   padding: 6px;
+  text-align: center;
 }
 #prophet .prophet-info-content {
   overflow: hidden;
