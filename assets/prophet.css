@@ -1,4 +1,3 @@
-
 #prophet table td {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -29,21 +28,14 @@
   display: block;
 }
 #prophet .table {
-  margin-bottom: 8px;
+  margin-bottom: 3px;
 }
-#prophet .alert {
-  margin: 0px 6px;
-  height: 30px;
-  line-height: 30px;
-  padding: 0 6px;
-  background-color: #464545;
-  border-color: #464545;
-  color: #fff;
+#prophet .panel {
+  margin: 0;
 }
-#prophet .alert > span{
-  height: 30px;
-  line-height: 30px;
-  display: inline-block;
+#prophet .panel-body {
+  padding: 6px;
+  text-align: center;
 }
 #prophet .prophet-info-content {
   overflow: hidden;
@@ -69,19 +61,17 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.navigation-bar-airplane > span {
-  line-height: 30px;
-  height: 30px;
-  display: inline-block;
+#prophet .compass {
+  text-align: center;
 }
-.navigation-bar-airplane > span span{
-  display: inline-block;
+#prophet .fa {
+  width: 1em;
+  margin-bottom: -0.14em;
+  margin-left: -0.14em;
+  overflow: visible;
 }
 #prophet span {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-#prophet .fa {
-  line-height: inherit;
 }
