@@ -635,19 +635,17 @@ module.exports =
         compactMode: !@state.compactMode
 
     handleShowDetail: ->
-      battleDetailWindow = windowManager.createWindow
-        x: config.get 'poi.window.x', 0
-        y: config.get 'poi.window.y', 0
-        width: 1020
-        height: 812
-      battleDetailWindow.loadUrl "file://#{__dirname}/detail/index.html"
-      window.battleDetailWindow = battleDetailWindow
-      battleDetailWindow.show()
-      # battleDetailWindow.openDevTools
-      #   detach: true
+      window.battleDetailWindow.show()
 
     componentDidMount: ->
       window.addEventListener 'game.response', @handleResponse
+      # Init battle detail window
+      window.battleDetailWindow = windowManager.createWindow
+        x: config.get 'poi.window.x', 0
+        y: config.get 'poi.window.y', 0
+        width: 800
+        height: 650
+      window.battleDetailWindow.loadUrl "file://#{__dirname}/detail/index.html"
 
     getCompassAngle: ->
       {MAPSPOT, mapArea, mapCell, nowSpot, nextSpot} = @state
@@ -692,7 +690,7 @@ module.exports =
           nextSpot={__ "Next Spot"}
           nextSpotInfo={if @state.nextSpot then "#{spotInfo[@state.nextSpotKind]} (#{@state.nextSpot})"}
           />
-        <Button onClick={@handleShowDetail} />
+        <Button onClick={@handleShowDetail} >Battle Detail</Button>
       </div>
   settingsClass: React.createClass
     getInitialState: ->
