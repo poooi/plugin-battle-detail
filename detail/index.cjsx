@@ -6,14 +6,36 @@ simulater = require '../lib/simulate'
 AttackTable = require './attack-table'
 
 
-updateBattlePacket = (packet, isCombined, isWater, isNight,
-                      sortieID, combinedID) ->
+updateBattlePacket = (packet, isCombined, isWater, isNight, sortieFleetID, combinedFleetID) ->
   return null if packet is null
+
+  # Obtain fleet information. (Ship id and ship equipment.)
+  # Empty slot is `null`.
+  {_ships, _slotitems, _decks} = window
+  obtainFleetInfo = (id, fleet, equipment) ->
+    return unless typeof id == "number" and id >= 0
+    for ship, i in _decks[id].api_ship
+      continue unless ship > 0
+      fleet[i] = _ships[ship]?.api_ship_id
+      equipment[i] = []
+      for equipment, j in _ships[ship]?.api_slot
+        continue unless equipment > 0
+        equipment[i][j] = _slotitems[equipment].api_slotitem_id
+    return
+  sortieFleet = []
+  sortieEquipment = []
+  combinedFleet = []
+  combinedEquipment = []
+  obtainFleetInfo sortieFleetID, sortieFleet, sortieEquipment
+  obtainFleetInfo combinedFleetID, combinedFleet, combinedEquipment
+
   packet.poi_is_combined = isCombined   # 連合艦隊？
   packet.poi_is_water = isWater         # 水上打撃部隊=true, 空母機動部隊=false
   packet.poi_is_night = isNight         # 夜戦？
-  packet.poi_sortie_fleet = sortieID
-  packet.poi_combined_fleet = combinedID
+  packet.poi_sortie_fleet = sortieFleet
+  packet.poi_sortie_equipment = sortieEquipment
+  packet.poi_combined_fleet = combinedFleet
+  packet.poi_combined_equipment = combinedEquipment
   return packet
 
 parseBattleFlow = (battleFlow, isCombined, isWater) ->
@@ -50,16 +72,10 @@ BattleDetailArea = React.createClass
         # TODO: Not support combined fleet
         isCombined = false
         isWater = false
-        sortieID = [-1, -1, -1, -1, -1, -1]
-        combinedID = [-1, -1, -1, -1, -1, -1]
-        for ship, i in _decks[body.api_dock_id - 1].api_ship
-          if ship > 0
-            sortieID[i] = _ships[ship]?.api_ship_id
+        sortieID = body.api_dock_id - 1
+        combinedID = null
 
-        body.isCombined = isCombined
-        body.isWater = isWater
-        body.sortieID = sortieID
-        body.combinedID = combinedID
+        updateBattlePacket body, isCombined, isWater, false, sortieID, combinedID
         battleFlow = simulater.simulate(body)
         formedFlow = parseBattleFlow battleFlow, isCombined, isWater
 

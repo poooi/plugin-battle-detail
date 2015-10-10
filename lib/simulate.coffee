@@ -1,9 +1,14 @@
-# Alert: post the battle detail to call the function and, add attribute:
-#         isCombined: is combined fleet
-#         isWater: is combined surface water fleet
-#         sortieID: the list of the id in _ships for the sortie fleet
-#         combinedID: the list of the id in _ships for the combined fleet
 ####
+# Usage: Pass response body as argument with extra key-value below.
+# poi_is_combined = Boolean # 連合艦隊？
+# poi_is_water = Boolean    # 水上打撃部隊=true, 空母機動部隊=false
+# poi_is_night = Boolean    # 夜戦？
+# poi_sortie_fleet = [int, ...] # api_ship_id
+# poi_sortie_equipment = [[int, ...], ...]  # api_slotitem_id
+# poi_combined_fleet = [int, ...]
+# poi_combined_equipment = [[int, ...], ...]
+####
+
 {Ship, ShipOwner, Attack, AttackType, Stage, StageType} = require './common'
 
 
@@ -144,17 +149,19 @@ hougekiAttack = (sortieShip, enemyShip, hougeki, isNight) ->
 # req needs the api_data name
 module.exports =
   simulate: (req) ->
+    isCombined = req.poi_is_combined
+    isWater = req.poi_is_water
     # Initialization of sortieShip
     sortieShip = []
     enemyShip = []
     combinedShip = []
     sortiePos = 0
-    sortiePos = req.api_deck_id - 1 if !req.isCombined
+    sortiePos = req.api_deck_id - 1 if !isCombined
     for i in [0..5]
-      sortieShip.push new Ship ShipOwner.Ours, req.sortieID[i], i+1, [req.api_nowhps[i + 1], req.api_maxhps[i + 1]]
+      sortieShip.push new Ship ShipOwner.Ours, req.poi_sortie_fleet[i], i+1, [req.api_nowhps[i + 1], req.api_maxhps[i + 1]]
       enemyShip.push new Ship ShipOwner.Enemy, req.api_ship_ke[i + 1], i+1, [req.api_nowhps[i + 7], req.api_maxhps[i + 7]]
-      if req.isCombined
-        combinedShip.push new Ship ShipOwner.Ours, req.combinedID[i], i+1, [req.api_nowhps[i + 13], req.api_maxhps[i + 13]]
+      if isCombined
+        combinedShip.push new Ship ShipOwner.Ours, req.poi_combined_fleet[i], i+1, [req.api_nowhps[i + 13], req.api_maxhps[i + 13]]
     sortieProgress = []
 
     # Air battle
@@ -182,20 +189,20 @@ module.exports =
 
     # Opening battle
     if req.api_opening_atack?
-      if req.isCombined
+      if isCombined
         sortieProgress.push new Stage StageType.Raigeki, raigekiAttack combinedShip, enemyShip, req.api_opening_atack
       else
         sortieProgress.push new Stage StageType.Raigeki, raigekiAttack sortieShip, enemyShip, req.api_opening_atack
 
     # First hougeki battle
     if req.api_hougeki1?
-      if req.isCombined && !req.isWater
+      if isCombined && !isWater
         sortieProgress.push new Stage StageType.Hougeki, hougekiAttack combinedShip, enemyShip, req.api_hougeki1, false
       else
         sortieProgress.push new Stage StageType.Hougeki, hougekiAttack sortieShip, enemyShip, req.api_hougeki1, false
 
     # Combined fleet raigeki
-    if req.api_raigeki? && req.isCombined && !req.isWater
+    if req.api_raigeki? && isCombined && !isWater
       sortieProgress.push new Stage StageType.Raigeki, raigekiAttack combinedShip, enemyShip, req.api_raigeki
 
     # Second hougeki battle
@@ -204,22 +211,22 @@ module.exports =
 
     # Combined hougeki battle
     if req.api_hougeki3?
-      if req.isCombined && req.isWater
+      if isCombined && isWater
         sortieProgress.push new Stage StageType.Hougeki, hougekiAttack combinedShip, enemyShip, req.api_hougeki3, false
       else
         sortieProgress.push new Stage StageType.Hougeki, hougekiAttack sortieShip, enemyShip, req.api_hougeki3, false
 
     # Raigeki battle
     if req.api_raigeki?
-      if req.isCombined
-        if req.isWater
+      if isCombined
+        if isWater
           sortieProgress.push new Stage StageType.Raigeki, raigekiAttack combinedShip, enemyShip, req.api_raigeki
       else
         sortieProgress.push new Stage StageType.Raigeki, raigekiAttack sortieShip, enemyShip, req.api_raigeki
 
     # Night battle
     if req.api_hougeki?
-      if req.isCombined
+      if isCombined
         sortieProgress.push new Stage StageType.Hougeki, hougekiAttack combinedShip, enemyShip, req.api_hougeki, true
       else
         sortieProgress.push new Stage StageType.Hougeki, hougekiAttack sortieShip, enemyShip, req.api_hougeki, true
