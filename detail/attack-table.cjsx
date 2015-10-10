@@ -34,7 +34,10 @@ getAttackTypeName = (type) ->
 
 HpBar = React.createClass
   render: ->
-    percent = 100 * @props.now / @props.max
+    if @props.now < 0
+      percent = 0
+    else
+      percent = 100 * @props.now / @props.max
     if @props.detla and @props.detla > 0
       label = "#{@props.now} / #{@props.max} (-#{@props.detla})"
     else
@@ -113,11 +116,11 @@ module.exports = React.createClass
       }
       <div style={display: "flex"} className={"attack-table-enum"}>
         <span style={flex: 7}>{'HP'}</span>
-        <span style={flex: 6}>{'Ship Name'}</span>
+        <span style={flex: 6}>{'We'}</span>
         <span style={flex: 1}>{''}</span>
-        <span style={flex: 6}>{'Attack Info'}</span>
+        <span style={flex: 6}>{'Attack'}</span>
         <span style={flex: 1}>{''}</span>
-        <span style={flex: 6}>{'Enemy Name'}</span>
+        <span style={flex: 6}>{'Enemy'}</span>
         <span style={flex: 7}>{'HP'}</span>
       </div>
       <div>
