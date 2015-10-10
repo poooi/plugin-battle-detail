@@ -23,15 +23,23 @@ getAttackTypeName = (type) ->
       "主電CI"
     when AttackType.Primary_AP_CI
       "主徹CI"
+    when AttackType.Primary_Primary_CI
+      "主砲CI"
     when AttackType.Primary_Torpedo_CI
       "砲雷CI"
     when AttackType.Torpedo_Torpedo_CI
       "魚雷CI"
+    else
+      "?#{type}?"
 
 HpBar = React.createClass
   render: ->
     percent = 100 * @props.now / @props.max
-    <ProgressBar bsStyle={getHpStyle percent} now={percent} />
+    if @props.detla and @props.detla > 0
+      label = "#{@props.now} / #{@props.max} (-#{@props.detla})"
+    else
+      label = "#{@props.now} / #{@props.max}"
+    <ProgressBar className="hpBar" bsStyle={getHpStyle percent} now={percent} label={label} />
 
 # <DamageInfo damage={damage} isCritical={isCritical} />
 DamageInfo = React.createClass
@@ -39,10 +47,14 @@ DamageInfo = React.createClass
     <span>
     {
       elements = []
+      elements.push getAttackTypeName @props.type
+      elements.push " "
+      elements.push "("
       for damage, i in @props.damage
-        elements.push <a style={if @props.isCritical[i] then color: "#FFFF00"}>{damage}</a>
+        elements.push <span style={if @props.isCritical[i] then color: "#FFFF00"}>{damage}</span>
         elements.push ", "
       elements.pop()  # Remove last comma
+      elements.push ")"
       elements
     }
     </span>
@@ -52,22 +64,29 @@ AttackInfoRow = React.createClass
   render: ->
     {_ships, $ships} = window
     {type, fromShip, toShip, maxHP, nowHP, damage, isCritical} = @props.attack
+    fromShipName = if fromShip? then $ships[fromShip.id]?.api_name else ""
+    toShipName = if toShip? then $ships[toShip.id]?.api_name else ""
+    totalDamage = damage.reduce ((p, x) -> p + x)
     # Is enemy attack?
-    if fromShip.owner is ShipOwner.Enemy
+    if toShip.owner is ShipOwner.Ours
       <tr>
-        <td><HpBar max={maxHP} now={damage.reduce ((p, x) -> p - x), nowHP} /></td>
-        <td>{_ships[toShip.id].api_name}</td>
-        <td>← {getAttackTypeName type} <DamageInfo damage={damage} isCritical={isCritical} /></td>
-        <td>{$ships[fromShip.id].api_name}</td>
+        <td><HpBar max={maxHP} now={nowHP - totalDamage} detla={totalDamage} /></td>
+        <td>{toShipName}</td>
+        <td>←</td>
+        <td><DamageInfo type={type} damage={damage} isCritical={isCritical} /></td>
+        <td></td>
+        <td>{fromShipName}</td>
         <td></td>
       </tr>
     else
       <tr>
         <td></td>
-        <td>{_ships[fromShip.id].api_name}</td>
-        <td>{getAttackTypeName type} <DamageInfo damage={damage} isCritical={isCritical} /> →</td>
-        <td>{$ships[toShip.id].api_name}</td>
-        <td><HpBar max={maxHP} now={damage.reduce ((p, x) -> p - x), nowHP} /></td>
+        <td>{fromShipName}</td>
+        <td></td>
+        <td><DamageInfo type={type} damage={damage} isCritical={isCritical} /></td>
+        <td>→</td>
+        <td>{toShipName}</td>
+        <td><HpBar max={maxHP} now={nowHP - totalDamage} detla={totalDamage} /></td>
       </tr>
 
 # AttackTable
@@ -76,16 +95,18 @@ module.exports = React.createClass
     <Table striped condensed hover>
       <thead>
         <tr>
-          <th className='center'>{'HP'}</th>
-          <th className='center'>{'Ship Name'}</th>
-          <th className='center'>{'Attack Info'}</th>
-          <th className='center'>{'Enemy Name'}</th>
-          <th className='center'>{'HP'}</th>
+          <th className='center' style={width: '20%'}>{'HP'}</th>
+          <th className='center' style={width: '18%'}>{'Ship Name'}</th>
+          <th className='center' style={width: '3%'}>{''}</th>
+          <th className='center' style={width: '18%'}>{'Attack Info'}</th>
+          <th className='center' style={width: '3%'}>{''}</th>
+          <th className='center' style={width: '18%'}>{'Enemy Name'}</th>
+          <th className='center' style={width: '20%'}>{'HP'}</th>
         </tr>
       </thead>
       <tbody>
       {
-        for attack, i in @props.attacks
+        for attack in @props.attacks
           <AttackInfoRow attack={attack} />
       }
       </tbody>
