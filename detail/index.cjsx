@@ -60,16 +60,17 @@ BattleDetailArea = React.createClass
   render: ->
     <div>
       <TabbedArea defaultActiveKey={3} animation={false} style={display:"flex"}>
-        <TabPane eventKey={1} tab="Aerial Combat">
-          <AttackTable title={"Stage 3"} attacks={@state.flow[0]?.detail} />
-        </TabPane>
-        <TabPane eventKey={2} tab="Torpedo Salvo">
+        <TabPane eventKey={1} tab="Opening Stages">
+          <AttackTable title={"Aerial Combat - Stage 3"} attacks={@state.flow[0]?.detail} />
+          <AttackTable title={"Expedition Supporting Fire"} attacks={null} />
           <AttackTable title={"Opening Torpedo Salvo"} attacks={@state.flow[1]?.detail} />
-          <AttackTable title={"Closing Torpedo Salvo"} attacks={@state.flow[4]?.detail} />
         </TabPane>
         <TabPane eventKey={3} tab="Shelling">
           <AttackTable title={"Shelling, 1st Round"} attacks={@state.flow[2]?.detail} />
           <AttackTable title={"Shelling, 2nd Round"} attacks={@state.flow[3]?.detail} />
+        </TabPane>
+        <TabPane eventKey={2} tab="Closing Stages">
+          <AttackTable title={"Closing Torpedo Salvo"} attacks={@state.flow[4]?.detail} />
         </TabPane>
         <TabPane eventKey={4} tab="Night Combat">
           <p>Night Combat</p>
