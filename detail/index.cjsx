@@ -59,8 +59,7 @@ BattleDetailArea = React.createClass
 
   render: ->
     <div>
-      <Grid>
-      <TabbedArea defaultActiveKey={3} animation={false}>
+      <TabbedArea defaultActiveKey={3} animation={false} style={display:"flex"}>
         <TabPane eventKey={1} tab="Aerial Combat">
           <AttackTable title={"Stage 3"} attacks={@state.flow[0]?.detail} />
         </TabPane>
@@ -79,7 +78,6 @@ BattleDetailArea = React.createClass
           <p>Expedition Supporting Fire</p>
         </TabPane>
       </TabbedArea>
-      </Grid>
     </div>
 
 React.render <BattleDetailArea />, $('battle-detail-area')

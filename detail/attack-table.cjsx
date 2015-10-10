@@ -69,50 +69,50 @@ AttackTableRow = React.createClass
     totalDamage = damage.reduce ((p, x) -> p + x)
     # Is enemy attack?
     if toShip.owner is ShipOwner.Ours
-      <tr>
-        <td><HpBar max={maxHP} now={nowHP - totalDamage} detla={totalDamage} /></td>
-        <td>{toShipName}</td>
-        <td>←</td>
-        <td><DamageInfo type={type} damage={damage} isCritical={isCritical} /></td>
-        <td></td>
-        <td>{fromShipName}</td>
-        <td></td>
-      </tr>
+      <div style={display: "flex"} className={"attack-table-enum"}>
+        <span style={flex: 7}><HpBar max={maxHP} now={nowHP - totalDamage} detla={totalDamage} /></span>
+        <span style={flex: 6}>{toShipName}</span>
+        <span style={flex: 1}>←</span>
+        <span style={flex: 6}><DamageInfo type={type} damage={damage} isCritical={isCritical} /></span>
+        <span style={flex: 1}></span>
+        <span style={flex: 6}>{fromShipName}</span>
+        <span style={flex: 7}></span>
+      </div>
     else
-      <tr>
-        <td></td>
-        <td>{fromShipName}</td>
-        <td></td>
-        <td><DamageInfo type={type} damage={damage} isCritical={isCritical} /></td>
-        <td>→</td>
-        <td>{toShipName}</td>
-        <td><HpBar max={maxHP} now={nowHP - totalDamage} detla={totalDamage} /></td>
-      </tr>
+      <div style={display: "flex"} className={"attack-table-enum"}>
+        <span style={flex: 7}></span>
+        <span style={flex: 6}>{fromShipName}</span>
+        <span style={flex: 1}></span>
+        <span style={flex: 6}><DamageInfo type={type} damage={damage} isCritical={isCritical} /></span>
+        <span style={flex: 1}>→</span>
+        <span style={flex: 6}>{toShipName}</span>
+        <span style={flex: 7}><HpBar max={maxHP} now={nowHP - totalDamage} detla={totalDamage} /></span>
+      </div>
 
 # AttackTable
 module.exports = React.createClass
   render: ->
-    <Table striped condensed hover className={"attack-table"}>
+    <div className={"attack-table"} style={width: "100%"}>
       {
         if @props.title
-          <caption>{@props.title}</caption>
+          <div className={"attack-table-title"} style={display: "flex"}>
+            <caption>{@props.title}</caption>
+          </div>
       }
-      <thead>
-        <tr>
-          <th style={width: '20%'}>{'HP'}</th>
-          <th style={width: '18%'}>{'Ship Name'}</th>
-          <th style={width: '3%'}>{''}</th>
-          <th style={width: '18%'}>{'Attack Info'}</th>
-          <th style={width: '3%'}>{''}</th>
-          <th style={width: '18%'}>{'Enemy Name'}</th>
-          <th style={width: '20%'}>{'HP'}</th>
-        </tr>
-      </thead>
-      <tbody>
+      <div style={display: "flex"} className={"attack-table-enum"}>
+        <span style={flex: 7}>{'HP'}</span>
+        <span style={flex: 6}>{'Ship Name'}</span>
+        <span style={flex: 1}>{''}</span>
+        <span style={flex: 6}>{'Attack Info'}</span>
+        <span style={flex: 1}>{''}</span>
+        <span style={flex: 6}>{'Enemy Name'}</span>
+        <span style={flex: 7}>{'HP'}</span>
+      </div>
+      <div>
       {
         if @props.attacks
           for attack in @props.attacks
             <AttackTableRow attack={attack} />
       }
-      </tbody>
-    </Table>
+      </div>
+    </div>
