@@ -91,7 +91,7 @@ raigekiAttack = (sortieShip, enemyShip, raigeki) ->
     for crt, j in raigeki.api_fcl[i]
       critical.push crt == 2
     list.push new Attack AttackType[checkAttackType[0]], sortieShip[i - 1], enemyShip[target - 1], enemyShip[target - 1].hp[1], enemyShip[target - 1].hp[0], dmg, critical
-    enemyShip[i - 1].hp[0] -= damage
+    enemyShip[target - 1].hp[0] -= damage
   # 雷撃ターゲット
   for target, i in raigeki.api_erai
     continue if target <= 0
@@ -103,7 +103,7 @@ raigekiAttack = (sortieShip, enemyShip, raigeki) ->
     for crt, j in raigeki.api_ecl[i]
       critical.push crt == 2
     list.push new Attack AttackType[checkAttackType[0]], enemyShip[i - 1], sortieShip[target - 1], sortieShip[target - 1].hp[1], sortieShip[target - 1].hp[0], dmg, critical
-    sortieShip[i - 1].hp[0] -= damage
+    sortieShip[target - 1].hp[0] -= damage
   # test log
   #console.log list
   list
