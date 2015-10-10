@@ -107,27 +107,29 @@ AttackTableRow = React.createClass
 # AttackTable
 module.exports = React.createClass
   render: ->
-    <div className={"attack-table"} style={width: "100%"}>
-      {
-        if @props.title
-          <div className={"attack-table-title"} style={display: "flex"}>
-            <caption>{@props.title}</caption>
-          </div>
-      }
-      <div style={display: "flex"} className={"attack-table-enum"}>
-        <span style={flex: 7}>{'HP'}</span>
-        <span style={flex: 6}>{'We'}</span>
-        <span style={flex: 1}>{''}</span>
-        <span style={flex: 6}>{'Attack'}</span>
-        <span style={flex: 1}>{''}</span>
-        <span style={flex: 6}>{'Enemy'}</span>
-        <span style={flex: 7}>{'HP'}</span>
-      </div>
-      <div>
-      {
-        if @props.attacks
+    if @props.attacks
+      <div className={"attack-table"} style={width: "100%"}>
+        {
+          if @props.title
+            <div className={"attack-table-title"} style={display: "flex"}>
+              <h4>{@props.title}</h4>
+            </div>
+        }
+        <div style={display: "flex"} className={"attack-table-enum"}>
+          <span style={flex: 7}>{'HP'}</span>
+          <span style={flex: 6}>{'We'}</span>
+          <span style={flex: 1}>{''}</span>
+          <span style={flex: 6}>{'Attack'}</span>
+          <span style={flex: 1}>{''}</span>
+          <span style={flex: 6}>{'Enemy'}</span>
+          <span style={flex: 7}>{'HP'}</span>
+        </div>
+        <div>
+        {
           for attack in @props.attacks
             <AttackTableRow attack={attack} />
-      }
+        }
+        </div>
       </div>
-    </div>
+    else
+      <div />
