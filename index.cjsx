@@ -639,10 +639,12 @@ module.exports =
         x: config.get 'poi.window.x', 0
         y: config.get 'poi.window.y', 0
         width: 1020
-        height: 650
+        height: 812
       battleDetailWindow.loadUrl "file://#{__dirname}/detail/index.html"
-      battleDetailWindow.openDevTools
-        detach: true
+      window.battleDetailWindow = battleDetailWindow
+      battleDetailWindow.show()
+      # battleDetailWindow.openDevTools
+      #   detach: true
 
     componentDidMount: ->
       window.addEventListener 'game.response', @handleResponse
