@@ -43,7 +43,9 @@ koukuAttack = (sortieShip, enemyShip, kouku) ->
       continue if damage <= 0
       dmg = []
       dmg.push damage
-      list.push new Attack AttackType[checkAttackType[0]], null, enemyShip[i - 1], enemyShip[i - 1].hp[1], enemyShip[i - 1].hp[0], dmg, kouku.api_fcl_flag[i] == 1
+      critical = []
+      critical.push kouku.api_fcl_flag[i] == 1
+      list.push new Attack AttackType[checkAttackType[0]], null, enemyShip[i - 1], enemyShip[i - 1].hp[1], enemyShip[i - 1].hp[0], dmg, critical
       enemyShip[i - 1].hp[0] -= damage
   if kouku.api_fdam?
     for damage, i in kouku.api_fdam
@@ -51,7 +53,9 @@ koukuAttack = (sortieShip, enemyShip, kouku) ->
       continue if damage <= 0
       dmg = []
       dmg.push damage
-      list.push new Attack AttackType[checkAttackType[0]], null, sortieShip[i - 1], sortieShip[i - 1].hp[1], sortieShip[i - 1].hp[0], dmg, kouku.api_ecl_flag[i] == 1
+      critical = []
+      critical.push kouku.api_ecl_flag[i] == 1
+      list.push new Attack AttackType[checkAttackType[0]], null, sortieShip[i - 1], sortieShip[i - 1].hp[1], sortieShip[i - 1].hp[0], dmg, critical
       sortieShip[i - 1].hp[0] -= damage
   # test log
   #console.log list
@@ -83,7 +87,10 @@ raigekiAttack = (sortieShip, enemyShip, raigeki) ->
     dmg = []
     dmg.push damage
     # クリティカルフラグ 0=ミス, 1=命中, 2=クリティカル
-    list.push new Attack AttackType[checkAttackType[0]], sortieShip[i - 1], enemyShip[target - 1], enemyShip[target - 1].hp[1], enemyShip[target - 1].hp[0], dmg, raigeki.api_fcl[i] == 2
+    critical = []
+    for crt, j in raigeki.api_fcl[i]
+      critical.push crt == 2
+    list.push new Attack AttackType[checkAttackType[0]], sortieShip[i - 1], enemyShip[target - 1], enemyShip[target - 1].hp[1], enemyShip[target - 1].hp[0], dmg, critical
     enemyShip[i - 1].hp[0] -= damage
   # 雷撃ターゲット
   for target, i in raigeki.api_erai
@@ -92,7 +99,10 @@ raigekiAttack = (sortieShip, enemyShip, raigeki) ->
     dmg = []
     dmg.push damage
     # api_cl_list		：クリティカルフラグ 0=ミス, 1=命中, 2=クリティカル
-    list.push new Attack AttackType[checkAttackType[0]], enemyShip[i - 1], sortieShip[target - 1], sortieShip[target - 1].hp[1], sortieShip[target - 1].hp[0], dmg, raigeki.api_ecl[i] == 2
+    critical = []
+    for crt, j in raigeki.api_ecl[i]
+      critical.push crt == 2
+    list.push new Attack AttackType[checkAttackType[0]], enemyShip[i - 1], sortieShip[target - 1], sortieShip[target - 1].hp[1], sortieShip[target - 1].hp[0], dmg, critical
     sortieShip[i - 1].hp[0] -= damage
   # test log
   #console.log list
@@ -110,6 +120,9 @@ hougekiAttack = (sortieShip, enemyShip, hougeki, isNight) ->
       damage = Math.floor(damage)
       dmg.push damage
       totalDamage += damage
+    critical = []
+    for crt, j in hougeki.api_cl_list[i]
+      critical.push crt == 2
     target = hougeki.api_df_list[i][0] - 1
     attackType = 0
     if !isNight
@@ -119,11 +132,11 @@ hougekiAttack = (sortieShip, enemyShip, hougeki, isNight) ->
     if target < 6
       sortieShip[target].hp[0] -= totalDamage
       # api_cl_list		：クリティカルフラグ 0=ミス, 1=命中, 2=クリティカル　命中(0ダメージ)も存在する？
-      list.push new Attack AttackType[checkAttackType[attackType]], enemyShip[damageFrom - 6], sortieShip[target], sortieShip[target].hp[1], sortieShip[target].hp[0], dmg, hougeki.api_cl_list[i] == 2
+      list.push new Attack AttackType[checkAttackType[attackType]], enemyShip[damageFrom - 6], sortieShip[target], sortieShip[target].hp[1], sortieShip[target].hp[0], dmg, critical
     else
       enemyShip[target - 6].hp[0] -= totalDamage
       # api_cl_list		：クリティカルフラグ 0=ミス, 1=命中, 2=クリティカル　命中(0ダメージ)も存在する？
-      list.push new Attack AttackType[checkAttackType[attackType]], sortieShip[damageFrom], enemyShip[target - 6], enemyShip[target - 6].hp[1], enemyShip[target - 6].hp[0], dmg, hougeki.api_cl_list[i] == 2
+      list.push new Attack AttackType[checkAttackType[attackType]], sortieShip[damageFrom], enemyShip[target - 6], enemyShip[target - 6].hp[1], enemyShip[target - 6].hp[0], dmg, critical
   # test log
   #console.log list
   list
