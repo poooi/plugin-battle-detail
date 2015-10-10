@@ -130,13 +130,13 @@ hougekiAttack = (sortieShip, enemyShip, hougeki, isNight) ->
     else
       attackType = checkNightAttackType[hougeki.api_sp_list[i]]
     if target < 6
-      sortieShip[target].hp[0] -= totalDamage
       # api_cl_list		：クリティカルフラグ 0=ミス, 1=命中, 2=クリティカル　命中(0ダメージ)も存在する？
       list.push new Attack AttackType[checkAttackType[attackType]], enemyShip[damageFrom - 6], sortieShip[target], sortieShip[target].hp[1], sortieShip[target].hp[0], dmg, critical
+      sortieShip[target].hp[0] -= totalDamage
     else
-      enemyShip[target - 6].hp[0] -= totalDamage
       # api_cl_list		：クリティカルフラグ 0=ミス, 1=命中, 2=クリティカル　命中(0ダメージ)も存在する？
       list.push new Attack AttackType[checkAttackType[attackType]], sortieShip[damageFrom], enemyShip[target - 6], enemyShip[target - 6].hp[1], enemyShip[target - 6].hp[0], dmg, critical
+      enemyShip[target - 6].hp[0] -= totalDamage
   # test log
   #console.log list
   list
