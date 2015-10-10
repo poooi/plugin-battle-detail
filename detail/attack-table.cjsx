@@ -54,6 +54,8 @@ DamageInfo = React.createClass
       elements.push " "
       elements.push "("
       for damage, i in @props.damage
+        if damage == 0
+          damage = "miss"
         elements.push <span style={if @props.isCritical[i] then color: "#FFFF00"}>{damage}</span>
         elements.push ", "
       elements.pop()  # Remove last comma
@@ -107,7 +109,7 @@ AttackTableRow = React.createClass
 # AttackTable
 module.exports = React.createClass
   render: ->
-    if @props.attacks
+    if @props.attacks and @props.attacks.length > 0
       <div className={"attack-table"} style={width: "100%"}>
         {
           if @props.title

@@ -6,6 +6,16 @@ simulater = require '../lib/simulate'
 AttackTable = require './attack-table'
 
 
+updateBattlePacket = (packet, isCombined, isWater, isNight,
+                      sortieID, combinedID) ->
+  return null if packet is null
+  packet.poi_is_combined = isCombined   # 連合艦隊？
+  packet.poi_is_water = isWater         # 水上打撃部隊=true, 空母機動部隊=false
+  packet.poi_is_night = isNight         # 夜戦？
+  packet.poi_sortie_fleet = sortieID
+  packet.poi_combined_fleet = combinedID
+  return packet
+
 parseBattleFlow = (battleFlow, isCombined, isWater) ->
   return null unless battleFlow?
   if !isCombined  # Normal fleet
@@ -53,6 +63,7 @@ BattleDetailArea = React.createClass
         battleFlow = simulater.simulate(body)
         formedFlow = parseBattleFlow battleFlow, isCombined, isWater
 
+        console.log(body)
         console.log(formedFlow)
         @setState
           flow: formedFlow
