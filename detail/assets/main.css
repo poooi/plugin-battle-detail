@@ -1,3 +1,7 @@
+*, body, h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: "Ubuntu", "Helvetica Neue", "Helvetica", "Arial", "Heiti SC", "WenQuanYi Micro Hei", "Microsoft YaHei", "Droid Sans Fallback", sans-serif;
+}
+
 .progress {
   border-radius: 0px;
   background-color: #2f2f2f;
@@ -16,9 +20,7 @@
   width: 100%;
   display: block;
 }
-.attack-table th, .attack-table td {
-  text-align: center;
-}
+
 .attack-table-title {
   height: 35px;
 }
