@@ -2,17 +2,20 @@
   border-radius: 0px;
   background-color: #2f2f2f;
 }
-.hpBar.progress {
+.hp-bar.progress {
   height: 22px;
   position: relative;
   margin: 0;
 }
-.hpBar.progress .progress-bar {
+.hp-bar.progress .progress-bar {
   font-size: 13px;
   line-height: 22px;
 }
-.hpBar.progress-bar span span {
+.hp-bar.progress-bar span span {
   position: absolute;
   width: 100%;
   display: block;
+}
+.attack-table th, .attack-table td {
+  text-align: center;
 }

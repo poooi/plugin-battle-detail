@@ -39,7 +39,7 @@ HpBar = React.createClass
       label = "#{@props.now} / #{@props.max} (-#{@props.detla})"
     else
       label = "#{@props.now} / #{@props.max}"
-    <ProgressBar className="hpBar" bsStyle={getHpStyle percent} now={percent} label={label} />
+    <ProgressBar className="hp-bar" bsStyle={getHpStyle percent} now={percent} label={label} />
 
 # <DamageInfo damage={damage} isCritical={isCritical} />
 DamageInfo = React.createClass
@@ -92,7 +92,7 @@ AttackTableRow = React.createClass
 # AttackTable
 module.exports = React.createClass
   render: ->
-    <Table striped condensed hover>
+    <Table striped condensed hover className={"attack-table"}>
       {
         if @props.title
           <caption>{@props.title}</caption>
