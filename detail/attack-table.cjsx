@@ -93,6 +93,10 @@ AttackInfoRow = React.createClass
 module.exports = React.createClass
   render: ->
     <Table striped condensed hover>
+      {
+        if @props.title
+          <caption>{@props.title}</caption>
+      }
       <thead>
         <tr>
           <th className='center' style={width: '20%'}>{'HP'}</th>
@@ -106,8 +110,9 @@ module.exports = React.createClass
       </thead>
       <tbody>
       {
-        for attack in @props.attacks
-          <AttackInfoRow attack={attack} />
+        if @props.attacks
+          for attack in @props.attacks
+            <AttackInfoRow attack={attack} />
       }
       </tbody>
     </Table>

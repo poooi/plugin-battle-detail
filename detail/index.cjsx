@@ -32,21 +32,14 @@ BattleDetailArea = React.createClass
       <Grid>
       <TabbedArea defaultActiveKey={3} animation={false}>
         <TabPane eventKey={1} tab="Aerial Combat">
-          <p>Stage 1</p>
-          <p>Stage 2</p>
-          <p>Stage 3</p>
-          <AttackTable attacks={@state.result[0].detail} />
+          <AttackTable title={"Stage 3"} attacks={@state.result[0].detail} />
         </TabPane>
         <TabPane eventKey={2} tab="Torpedo Salvo">
-          <p>Opening Torpedo Salvo</p>
-          <AttackTable attacks={@state.result[1].detail} />
-          <p>Closing Torpedo Salvo</p>
+          <AttackTable title={"Opening Torpedo Salvo"} attacks={@state.result[1].detail} />
         </TabPane>
         <TabPane eventKey={3} tab="Shelling">
-          <p>Shelling, 1st Round</p>
-          <AttackTable attacks={@state.result[2].detail} />
-          <p>Shelling, 2nd Round</p>
-          <AttackTable attacks={@state.result[3].detail} />
+          <AttackTable title={"Shelling, 1st Round"} attacks={@state.result[2].detail} />
+          <AttackTable title={"Shelling, 2nd Round"} attacks={@state.result[3].detail} />
         </TabPane>
         <TabPane eventKey={4} tab="Night Combat">
           <p>Night Combat</p>
