@@ -62,10 +62,22 @@ DamageInfo = React.createClass
 # AttackInfoRow
 AttackTableRow = React.createClass
   render: ->
+    getShipName = (shipObj) ->
+      return "" if shipObj is null
+      name = []
+      ship = $ships[shipObj.id]
+      if ship?
+        if ship.api_yomi in ['elite', 'flagship']
+          name.push ship.api_name + ship.api_yomi
+        else
+          name.push ship.api_name
+      name.push "(#{shipObj.position})"
+      name.join " "
+
     {_ships, $ships} = window
     {type, fromShip, toShip, maxHP, nowHP, damage, isCritical} = @props.attack
-    fromShipName = if fromShip? then $ships[fromShip.id]?.api_name else ""
-    toShipName = if toShip? then $ships[toShip.id]?.api_name else ""
+    fromShipName = getShipName fromShip
+    toShipName = getShipName toShip
     totalDamage = damage.reduce ((p, x) -> p + x)
     # Is enemy attack?
     if toShip.owner is ShipOwner.Ours

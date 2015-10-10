@@ -5,11 +5,13 @@
 
 ## class Ship
 class Ship
-  constructor: (@owner, @id, @hp) ->
+  constructor: (@owner, @id, @position, @hp) ->
     # owner = enum ShipOwner
     # id = int
-    #       : api_id of player owned ships (window._ships) OR
-    #       : api_id of enemy ships (window.$ships)
+    #       : api_ship_id of player owned ships OR
+    #       : api_id of enemy ships
+    #       : This id will be used as index if window.$ships
+    # position = int : Position of ship in fleet
     # hp[0] = now = the array of the fleet's now hp
     # hp[1] = max = the array of the fleet's max hp
 
@@ -58,8 +60,8 @@ AttackType =
 
 ## class Stage
 class Stage
-  constructor: (@name, @detail) ->
-    # name = enum BattleType
+  constructor: (@type, @detail) ->
+    # type = enum StageType
     # detail = list of class Attack
 
 # enum StageType

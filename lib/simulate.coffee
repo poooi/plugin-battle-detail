@@ -151,10 +151,10 @@ module.exports =
     sortiePos = 0
     sortiePos = req.api_deck_id - 1 if !req.isCombined
     for i in [0..5]
-      sortieShip.push new Ship ShipOwner.Ours, req.sortieID[i], [req.api_nowhps[i + 1], req.api_maxhps[i + 1]]
-      enemyShip.push new Ship ShipOwner.Enemy, req.api_ship_ke[i + 1], [req.api_nowhps[i + 7], req.api_maxhps[i + 7]]
+      sortieShip.push new Ship ShipOwner.Ours, req.sortieID[i], i+1, [req.api_nowhps[i + 1], req.api_maxhps[i + 1]]
+      enemyShip.push new Ship ShipOwner.Enemy, req.api_ship_ke[i + 1], i+1, [req.api_nowhps[i + 7], req.api_maxhps[i + 7]]
       if req.isCombined
-        combinedShip.push new Ship ShipOwner.Ours, req.combinedID[i], [req.api_nowhps[i + 13], req.api_maxhps[i + 13]]
+        combinedShip.push new Ship ShipOwner.Ours, req.combinedID[i], i+1, [req.api_nowhps[i + 13], req.api_maxhps[i + 13]]
     sortieProgress = []
 
     # Air battle

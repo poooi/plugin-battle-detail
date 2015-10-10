@@ -17,7 +17,7 @@ parseBattleFlow = (battleFlow, isCombined, isWater) ->
 
   formedFlow = []
   for stage in stageFlow
-    if battleFlow.length > 0 and battleFlow[0].name is stage
+    if battleFlow.length > 0 and battleFlow[0].type is stage
       formedFlow.push battleFlow.shift()
     else
       formedFlow.push null
