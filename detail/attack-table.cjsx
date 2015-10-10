@@ -60,7 +60,7 @@ DamageInfo = React.createClass
     </span>
 
 # AttackInfoRow
-AttackInfoRow = React.createClass
+AttackTableRow = React.createClass
   render: ->
     {_ships, $ships} = window
     {type, fromShip, toShip, maxHP, nowHP, damage, isCritical} = @props.attack
@@ -99,20 +99,20 @@ module.exports = React.createClass
       }
       <thead>
         <tr>
-          <th className='center' style={width: '20%'}>{'HP'}</th>
-          <th className='center' style={width: '18%'}>{'Ship Name'}</th>
-          <th className='center' style={width: '3%'}>{''}</th>
-          <th className='center' style={width: '18%'}>{'Attack Info'}</th>
-          <th className='center' style={width: '3%'}>{''}</th>
-          <th className='center' style={width: '18%'}>{'Enemy Name'}</th>
-          <th className='center' style={width: '20%'}>{'HP'}</th>
+          <th style={width: '20%'}>{'HP'}</th>
+          <th style={width: '18%'}>{'Ship Name'}</th>
+          <th style={width: '3%'}>{''}</th>
+          <th style={width: '18%'}>{'Attack Info'}</th>
+          <th style={width: '3%'}>{''}</th>
+          <th style={width: '18%'}>{'Enemy Name'}</th>
+          <th style={width: '20%'}>{'HP'}</th>
         </tr>
       </thead>
       <tbody>
       {
         if @props.attacks
           for attack in @props.attacks
-            <AttackInfoRow attack={attack} />
+            <AttackTableRow attack={attack} />
       }
       </tbody>
     </Table>
