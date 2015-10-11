@@ -135,7 +135,7 @@ BattleDetailArea = React.createClass
   render: ->
     switch @state.battleType
       when 'normal'
-        <div>
+        <div className="battle-detail-container">
           <TabbedArea defaultActiveKey={1} animation={false} style={display:"flex"}>
             <TabPane eventKey={1} tab="Battle">
               <AttackTableHeader />
@@ -154,7 +154,7 @@ BattleDetailArea = React.createClass
           </TabbedArea>
         </div>
       when 'night'
-        <div>
+        <div className="battle-detail-container">
           <TabbedArea defaultActiveKey={1} animation={false} style={display:"flex"}>
             <TabPane eventKey={1} tab="Battle">
               <AttackTableHeader />
@@ -166,7 +166,7 @@ BattleDetailArea = React.createClass
           </TabbedArea>
         </div>
       else
-        <div>
+        <div className="battle-detail-container">
           <TabbedArea defaultActiveKey={1} animation={false} style={display:"flex"}>
             <TabPane eventKey={1} tab="Battle">
               <p>No Battle</p>

@@ -3,6 +3,12 @@
   font-size: 13px;
 }
 
+.battle-detail-container {
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-bottom: 15px;
+}
+
 .progress {
   border-radius: 0px;
   background-color: #2f2f2f;

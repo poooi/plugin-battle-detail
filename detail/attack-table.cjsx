@@ -85,35 +85,35 @@ AttackTableRow = React.createClass
     # Is enemy attack?
     if toShip.owner is ShipOwner.Ours
       <div style={display: "flex"} className={"attack-table-enum"}>
-        <span style={flex: 7}><HpBar max={maxHP} now={nowHP - totalDamage} detla={totalDamage} /></span>
+        <span style={flex: 6}><HpBar max={maxHP} now={nowHP - totalDamage} detla={totalDamage} /></span>
         <span style={flex: 6}>{toShipName}</span>
         <span style={flex: 1}>←</span>
         <span style={flex: 6}><DamageInfo type={type} damage={damage} isCritical={isCritical} /></span>
         <span style={flex: 1}></span>
         <span style={flex: 6}>{fromShipName}</span>
-        <span style={flex: 7}></span>
+        <span style={flex: 6}></span>
       </div>
     else
       <div style={display: "flex"} className={"attack-table-enum"}>
-        <span style={flex: 7}></span>
+        <span style={flex: 6}></span>
         <span style={flex: 6}>{fromShipName}</span>
         <span style={flex: 1}></span>
         <span style={flex: 6}><DamageInfo type={type} damage={damage} isCritical={isCritical} /></span>
         <span style={flex: 1}>→</span>
         <span style={flex: 6}>{toShipName}</span>
-        <span style={flex: 7}><HpBar max={maxHP} now={nowHP - totalDamage} detla={totalDamage} /></span>
+        <span style={flex: 6}><HpBar max={maxHP} now={nowHP - totalDamage} detla={totalDamage} /></span>
       </div>
 
 AttackTableHeader = React.createClass
   render: ->
     <div style={display: "flex"} className={"attack-table-enum"}>
-      <span style={flex: 7}>{'HP'}</span>
+      <span style={flex: 6}>{'HP'}</span>
       <span style={flex: 6}>{'We'}</span>
       <span style={flex: 1}>{''}</span>
       <span style={flex: 6}>{'Attack'}</span>
       <span style={flex: 1}>{''}</span>
       <span style={flex: 6}>{'Enemy'}</span>
-      <span style={flex: 7}>{'HP'}</span>
+      <span style={flex: 6}>{'HP'}</span>
     </div>
 
 AttackTable = React.createClass
@@ -123,13 +123,13 @@ AttackTable = React.createClass
         {
           if @props.title
             <div className={"attack-table-title"} style={display: "flex"}>
-              <h5>{@props.title}</h5>
+              <h4>{@props.title}</h4>
             </div>
         }
         <div>
         {
-          for attack in @props.attacks
-            <AttackTableRow attack={attack} />
+          for attack, i in @props.attacks
+            <AttackTableRow key={i} attack={attack} />
         }
         </div>
       </div>
