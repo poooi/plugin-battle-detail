@@ -3,7 +3,7 @@
 
 simulater = require '../lib/simulate'
 {Ship, ShipOwner, Attack, AttackType, Stage, StageType} = require '../lib/common'
-{AttackTable, AttackTableHeader} = require './attack-table'
+BattleInfoArea = require './battle-info-area'
 
 
 updateBattlePacket = (packet, path, timestamp, isCombined, isWater, sortieFleetID, combinedFleetID) ->
@@ -133,48 +133,11 @@ BattleDetailArea = React.createClass
         battlePacket: body
 
   render: ->
-    switch @state.battleType
-      when 'normal'
-        <div className="battle-detail-container">
-          <TabbedArea defaultActiveKey={1} animation={false} style={display:"flex"}>
-            <TabPane eventKey={1} tab="Battle">
-              <AttackTableHeader />
-              <AttackTable title={"Aerial Combat, 1st - Stage 3"} attacks={@state.battleFlow[0]?.detail} />
-              <AttackTable title={"Aerial Combat, 2nd - Stage 3"} attacks={@state.battleFlow[1]?.detail} />
-              <AttackTable title={"Expedition Supporting Fire"} attacks={@state.battleFlow[2]?.detail} />
-              <AttackTable title={"Opening Torpedo Salvo"} attacks={@state.battleFlow[3]?.detail} />
-              <AttackTable title={"Shelling, 1st Round"} attacks={@state.battleFlow[4]?.detail} />
-              <AttackTable title={"Shelling, 2nd Round"} attacks={@state.battleFlow[5]?.detail} />
-              <AttackTable title={"Closing Torpedo Salvo"} attacks={@state.battleFlow[6]?.detail} />
-              <AttackTable title={"Night Combat"} attacks={@state.battleFlow[7]?.detail} />
-            </TabPane>
-            <TabPane eventKey={99} tab="Setting">
-              <p>Setting View</p>
-            </TabPane>
-          </TabbedArea>
-        </div>
-      when 'night'
-        <div className="battle-detail-container">
-          <TabbedArea defaultActiveKey={1} animation={false} style={display:"flex"}>
-            <TabPane eventKey={1} tab="Battle">
-              <AttackTableHeader />
-              <AttackTable title={"Night Combat"} attacks={@state.battleFlow[0]?.detail} />
-            </TabPane>
-            <TabPane eventKey={99} tab="Setting">
-              <p>Setting View</p>
-            </TabPane>
-          </TabbedArea>
-        </div>
-      else
-        <div className="battle-detail-container">
-          <TabbedArea defaultActiveKey={1} animation={false} style={display:"flex"}>
-            <TabPane eventKey={1} tab="Battle">
-              <p>No Battle</p>
-            </TabPane>
-            <TabPane eventKey={99} tab="Setting">
-              <p>Setting View</p>
-            </TabPane>
-          </TabbedArea>
-        </div>
+    <div className="battle-detail-container">
+      <BattleInfoArea
+        battleType={@state.battleType}
+        battleFlow={@state.battleFlow}
+        />
+    </div>
 
 React.render <BattleDetailArea />, $('battle-detail-area')
