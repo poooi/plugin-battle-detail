@@ -26,14 +26,14 @@ checkAttackType = [
 ]
 # NightID DayID Type
 # 0       0     通常攻撃
-# 1       1     連撃
+# 1       2     連撃
 # 2       7     カットイン(主砲/魚雷)
 # 3       8     カットイン(魚雷/魚雷)
 # 4       3     カットイン(主砲/副砲)
 # 5       6     カットイン(主砲/主砲)
 checkNightAttackType = [
   0,
-  1,
+  2,
   7,
   8,
   3,
@@ -66,13 +66,18 @@ koukuAttack = (sortieShip, enemyShip, kouku) ->
   #console.log list
   list
 
-#supportAttack = (enemyShip, support) ->
-#  for damage, i in support
-#    damage = Math.floor(damage)
-#    continue if damage <= 0
-#    continue if i > 6
-#    enemyShip.dmg[i - 1] += damage
-#    enemyShip[i - 1].now -= damage
+supportAttack = (enemyShip, support) ->
+  list = []
+  for damage, i in support
+    continue if i > 6
+    damage = Math.floor(damage)
+    dmg = []
+    dmg.push damage
+    critical = []
+    critical.push kouku.api_ecl_flag[i] == 1
+    list.push new Attack AttackType[checkAttackType[0]], null, enemyShip[i - 1], enemyShip[i - 1].hp[1], enemyShip[i - 1].hp[0], dmg, critical
+    enemyShip[i - 1].hp[0] -= damage
+
 #api_opening_atack	：開幕雷撃戦 *スペルミスあり、注意
 #		api_frai		：雷撃ターゲット
 #		api_erai		：
@@ -179,13 +184,13 @@ module.exports =
         sortieProgress.push new Stage StageType.Kouku, koukuAttack combinedShip, enemyShip, req.api_kouku2.api_stage3_combined
 
     # Support battle
-    #  if req.api_support_info?
-    #    if req.api_support_info.api_support_airatack?
-    #      sortieProgress.push supportAttack enemyShip, req.api_support_info.api_support_airatack.api_stage3.api_edam
-    #    else if req.api_support_info.api_support_hourai?
-    #      sortieProgress.push supportAttack enemyShip, req.api_support_info.api_support_hourai.api_damage
-    #    else
-    #      sortieProgress.push supportAttack enemyShip, req.api_support_info.api_damage
+    if req.api_support_info?
+      if req.api_support_info.api_support_airatack?
+        sortieProgress.push new Stage StageType.Support, supportAttack enemyShip, req.api_support_info.api_support_airatack.api_stage3.api_edam
+      else if req.api_support_info.api_support_hourai?
+        sortieProgress.push new Stage StageType.Support, supportAttack enemyShip, req.api_support_info.api_support_hourai.api_damage
+      else
+        sortieProgress.push new Stage StageType.Support, supportAttack enemyShip, req.api_support_info.api_damage
 
     # Opening battle
     if req.api_opening_atack?

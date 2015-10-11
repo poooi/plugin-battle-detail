@@ -68,7 +68,8 @@ class Stage
 StageType =
   Kouku: "Kouku",
   Raigeki: "Raigeki",
-  Hougeki: "Hougeki"
+  Hougeki: "Hougeki",
+  Support: "Support"
 
 
 ## CommonJS exports
