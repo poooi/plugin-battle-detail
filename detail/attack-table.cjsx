@@ -123,7 +123,7 @@ AttackTable = React.createClass
         {
           if @props.title
             <div className={"attack-table-title"} style={display: "flex"}>
-              <h4>{@props.title}</h4>
+              <h5>{@props.title}</h5>
             </div>
         }
         <div>
