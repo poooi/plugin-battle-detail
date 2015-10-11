@@ -3,7 +3,7 @@
 
 simulater = require '../lib/simulate'
 {Ship, ShipOwner, Attack, AttackType, Stage, StageType} = require '../lib/common'
-AttackTable = require './attack-table'
+{AttackTable, AttackTableHeader} = require './attack-table'
 
 
 updateBattlePacket = (packet, path, isCombined, isWater, sortieFleetID, combinedFleetID) ->
@@ -90,11 +90,12 @@ BattleDetailArea = React.createClass
           oldBody.api_hougeki = body.api_hougeki
           body = oldBody
           battleType = 'normal'
+          sortieID = body.api_dock_id - 1
         else
           battleType = 'night'
+          sortieID = body.api_deck_id - 1
         isBattle = true
         isCombined = false
-        sortieID = body.api_deck_id - 1
         combinedID = null
       when '/kcsapi/api_req_battle_midnight/sp_midnight'
         isBattle = true
@@ -127,6 +128,7 @@ BattleDetailArea = React.createClass
         <div>
           <TabbedArea defaultActiveKey={1} animation={false} style={display:"flex"}>
             <TabPane eventKey={1} tab="Battle">
+              <AttackTableHeader />
               <AttackTable title={"Aerial Combat, 1st - Stage 3"} attacks={@state.battleFlow[0]?.detail} />
               <AttackTable title={"Aerial Combat, 2nd - Stage 3"} attacks={@state.battleFlow[1]?.detail} />
               <AttackTable title={"Expedition Supporting Fire"} attacks={@state.battleFlow[2]?.detail} />
@@ -145,6 +147,7 @@ BattleDetailArea = React.createClass
         <div>
           <TabbedArea defaultActiveKey={1} animation={false} style={display:"flex"}>
             <TabPane eventKey={1} tab="Battle">
+              <AttackTableHeader />
               <AttackTable title={"Night Combat"} attacks={@state.battleFlow[0]?.detail} />
             </TabPane>
             <TabPane eventKey={99} tab="Setting">

@@ -51,8 +51,7 @@ DamageInfo = React.createClass
     {
       elements = []
       elements.push getAttackTypeName @props.type
-      elements.push " "
-      elements.push "("
+      elements.push " ("
       for damage, i in @props.damage
         if damage == 0
           damage = "miss"
@@ -64,7 +63,6 @@ DamageInfo = React.createClass
     }
     </span>
 
-# AttackInfoRow
 AttackTableRow = React.createClass
   render: ->
     getShipName = (shipObj) ->
@@ -106,8 +104,19 @@ AttackTableRow = React.createClass
         <span style={flex: 7}><HpBar max={maxHP} now={nowHP - totalDamage} detla={totalDamage} /></span>
       </div>
 
-# AttackTable
-module.exports = React.createClass
+AttackTableHeader = React.createClass
+  render: ->
+    <div style={display: "flex"} className={"attack-table-enum"}>
+      <span style={flex: 7}>{'HP'}</span>
+      <span style={flex: 6}>{'We'}</span>
+      <span style={flex: 1}>{''}</span>
+      <span style={flex: 6}>{'Attack'}</span>
+      <span style={flex: 1}>{''}</span>
+      <span style={flex: 6}>{'Enemy'}</span>
+      <span style={flex: 7}>{'HP'}</span>
+    </div>
+
+AttackTable = React.createClass
   render: ->
     if @props.attacks and @props.attacks.length > 0
       <div className={"attack-table"} style={width: "100%"}>
@@ -117,15 +126,6 @@ module.exports = React.createClass
               <h4>{@props.title}</h4>
             </div>
         }
-        <div style={display: "flex"} className={"attack-table-enum"}>
-          <span style={flex: 7}>{'HP'}</span>
-          <span style={flex: 6}>{'We'}</span>
-          <span style={flex: 1}>{''}</span>
-          <span style={flex: 6}>{'Attack'}</span>
-          <span style={flex: 1}>{''}</span>
-          <span style={flex: 6}>{'Enemy'}</span>
-          <span style={flex: 7}>{'HP'}</span>
-        </div>
         <div>
         {
           for attack in @props.attacks
@@ -135,3 +135,8 @@ module.exports = React.createClass
       </div>
     else
       <div />
+
+module.exports =
+  AttackTable: AttackTable
+  AttackTableHeader: AttackTableHeader
+  AttackTableRow: AttackTableRow
