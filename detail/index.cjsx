@@ -133,7 +133,7 @@ BattleDetailArea = React.createClass
         battlePacket: body
 
   render: ->
-    <div className="battle-detail-container">
+    <div className="battle-detail-area">
       <BattleInfoArea
         battleType={@state.battleType}
         battleFlow={@state.battleFlow}

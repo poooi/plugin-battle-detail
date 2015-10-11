@@ -121,18 +121,19 @@ AttackTable = React.createClass
   render: ->
     if @props.attacks and @props.attacks.length > 0
       <div className={"attack-table"} style={width: "100%"}>
+        <div className={"attack-table-title"} style={display: "flex"}>
         {
           if @props.title
-            <div className={"attack-table-title"} style={display: "flex"}>
-              <h4>{@props.title}</h4>
-            </div>
+            @props.title
         }
+        </div>
         <div>
         {
           for attack, i in @props.attacks
             <AttackTableRow key={i} attack={attack} />
         }
         </div>
+        <hr />
       </div>
     else
       <div />

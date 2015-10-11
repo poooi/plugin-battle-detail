@@ -643,7 +643,7 @@ module.exports =
       window.battleDetailWindow = windowManager.createWindow
         x: config.get 'poi.window.x', 0
         y: config.get 'poi.window.y', 0
-        width: 800
+        width: 820
         height: 650
       window.battleDetailWindow.loadUrl "file://#{__dirname}/detail/index.html"
 

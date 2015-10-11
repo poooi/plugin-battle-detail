@@ -1,17 +1,15 @@
 *, body, h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
   font-family: "Ubuntu", "Helvetica Neue", "Helvetica", "Arial", "Heiti SC", "WenQuanYi Micro Hei", "Microsoft YaHei", "Droid Sans Fallback", sans-serif;
-  font-size: 13px;
+  font-size: 14px;
 }
 
-.battle-detail-container {
-  padding-left: 15px;
-  padding-right: 15px;
-  padding-bottom: 15px;
+.battle-detail-area {
+  padding: 10px;
 }
 
 .progress {
   border-radius: 0px;
-  background-color: #2f2f2f;
+  background-color: #2a2a2a;
 }
 .hp-bar.progress {
   height: 22px;
@@ -28,8 +26,11 @@
   display: block;
 }
 
+.attack-table hr {
+  margin: 7px 0 7px;
+}
 .attack-table-title {
-  height: 35px;
+  margin: 0 0 8px;
 }
 .attack-table-enum {
   justifyContent: "space-around";
