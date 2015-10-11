@@ -6,7 +6,7 @@ simulater = require '../lib/simulate'
 {AttackTable, AttackTableHeader} = require './attack-table'
 
 
-updateBattlePacket = (packet, path, isCombined, isWater, sortieFleetID, combinedFleetID) ->
+updateBattlePacket = (packet, path, timestamp, isCombined, isWater, sortieFleetID, combinedFleetID) ->
   return null if packet is null
   # Obtain fleet information. (Ship id and ship equipment.)
   # Empty slot is `null`.
@@ -31,6 +31,7 @@ updateBattlePacket = (packet, path, isCombined, isWater, sortieFleetID, combined
   obtainFleetInfo combinedFleetID, combinedFleet, combinedEquipment
 
   packet.poi_uri = path
+  packet.poi_timestamp = timestamp
   packet.poi_is_combined = isCombined   # 連合艦隊？
   packet.poi_is_water = isWater         # 水上打撃部隊=true, 空母機動部隊=false
   packet.poi_sortie_fleet = sortieFleet
@@ -67,9 +68,18 @@ BattleDetailArea = React.createClass
   componentWillUnmount: ->
     window.removeEventListener 'game.response', @handleResponse
 
+  shouldComponentUpdate: (nextProps, nextState) ->
+    # Dont render when battle packat isnt changed.
+    if @state.battlePacket? and nextState.battlePacket? and
+       @state.battlePacket.poi_timestamp == nextState.battlePacket.poi_timestamp
+      console.log("shouldComponentUpdate: battlePacket.poi_timestamp matched.")
+      return false
+    return true
+
   handleResponse: (e) ->
     {method, path, body, postBody} = e.detail
     {$ships, _ships, _decks} = window
+    timestamp = new Date().getTime()
     isBattle = false  # Flag of showing battle detail
     isCombined = @state.isCombined
     isWater = @state.isWater
@@ -111,7 +121,7 @@ BattleDetailArea = React.createClass
           stageFlow = [StageType.Kouku, StageType.Kouku, StageType.Support, StageType.Raigeki, StageType.Hougeki, StageType.Hougeki, StageType.Raigeki, StageType.Hougeki]
         when 'night'
           stageFlow = [StageType.Hougeki]
-      updateBattlePacket body, path, isCombined, isWater, sortieID, combinedID
+      updateBattlePacket body, path, timestamp, isCombined, isWater, sortieID, combinedID
       battleFlow = simulater.simulate(body)
       formedFlow = parseBattleFlow battleFlow, stageFlow
 
