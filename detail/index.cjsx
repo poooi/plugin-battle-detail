@@ -68,14 +68,6 @@ BattleDetailArea = React.createClass
   componentWillUnmount: ->
     window.removeEventListener 'game.response', @handleResponse
 
-  shouldComponentUpdate: (nextProps, nextState) ->
-    # Dont render when battle packat isnt changed.
-    if @state.battlePacket? and nextState.battlePacket? and
-       @state.battlePacket.poi_timestamp == nextState.battlePacket.poi_timestamp
-      console.log("shouldComponentUpdate: battlePacket.poi_timestamp matched.")
-      return false
-    return true
-
   handleResponse: (e) ->
     {method, path, body, postBody} = e.detail
     {$ships, _ships, _decks} = window
