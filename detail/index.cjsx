@@ -107,7 +107,7 @@ BattleDetailArea = React.createClass
       stageFlow = null
       switch battleType
         when 'normal'
-          stageFlow = [StageType.Kouku, StageType.Kouku, StageType.Raigeki, StageType.Hougeki, StageType.Hougeki, StageType.Raigeki, StageType.Hougeki]
+          stageFlow = [StageType.Kouku, StageType.Kouku, StageType.Support, StageType.Raigeki, StageType.Hougeki, StageType.Hougeki, StageType.Raigeki, StageType.Hougeki]
         when 'night'
           stageFlow = [StageType.Hougeki]
       updateBattlePacket body, path, isCombined, isWater, sortieID, combinedID
@@ -129,12 +129,12 @@ BattleDetailArea = React.createClass
             <TabPane eventKey={1} tab="Battle">
               <AttackTable title={"Aerial Combat, 1st - Stage 3"} attacks={@state.battleFlow[0]?.detail} />
               <AttackTable title={"Aerial Combat, 2nd - Stage 3"} attacks={@state.battleFlow[1]?.detail} />
-              <AttackTable title={"Expedition Supporting Fire"} attacks={null} />
-              <AttackTable title={"Opening Torpedo Salvo"} attacks={@state.battleFlow[2]?.detail} />
-              <AttackTable title={"Shelling, 1st Round"} attacks={@state.battleFlow[3]?.detail} />
-              <AttackTable title={"Shelling, 2nd Round"} attacks={@state.battleFlow[4]?.detail} />
-              <AttackTable title={"Closing Torpedo Salvo"} attacks={@state.battleFlow[5]?.detail} />
-              <AttackTable title={"Night Combat"} attacks={@state.battleFlow[6]?.detail} />
+              <AttackTable title={"Expedition Supporting Fire"} attacks={@state.battleFlow[2]?.detail} />
+              <AttackTable title={"Opening Torpedo Salvo"} attacks={@state.battleFlow[3]?.detail} />
+              <AttackTable title={"Shelling, 1st Round"} attacks={@state.battleFlow[4]?.detail} />
+              <AttackTable title={"Shelling, 2nd Round"} attacks={@state.battleFlow[5]?.detail} />
+              <AttackTable title={"Closing Torpedo Salvo"} attacks={@state.battleFlow[6]?.detail} />
+              <AttackTable title={"Night Combat"} attacks={@state.battleFlow[7]?.detail} />
             </TabPane>
             <TabPane eventKey={99} tab="Setting">
               <p>Setting View</p>
