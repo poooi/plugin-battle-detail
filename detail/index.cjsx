@@ -15,12 +15,14 @@ updateBattlePacket = (packet, isCombined, isWater, isNight, sortieFleetID, combi
   obtainFleetInfo = (id, fleet, equipment) ->
     return unless typeof id == "number" and id >= 0
     for ship, i in _decks[id].api_ship
+      fleet[i] = null
       continue unless ship > 0
       fleet[i] = _ships[ship]?.api_ship_id
       equipment[i] = []
-      for equipment, j in _ships[ship]?.api_slot
-        continue unless equipment > 0
-        equipment[i][j] = _slotitems[equipment].api_slotitem_id
+      for equip, j in _ships[ship]?.api_slot
+        equipment[i][j] = null
+        continue unless equip > 0
+        equipment[i][j] = _slotitems[equip].api_slotitem_id
     return
   sortieFleet = []
   sortieEquipment = []
