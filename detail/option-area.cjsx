@@ -1,5 +1,6 @@
 {React, ReactBootstrap} = window
-{Panel, Grid, Row, Col, Button, Input} = ReactBootstrap
+{Panel, Grid, Row, Col, Button, Input, Modal} = ReactBootstrap
+clipboard = require 'clipboard'
 
 
 OptionArea = React.createClass
@@ -21,13 +22,25 @@ OptionArea = React.createClass
   handleClickExport: ->
     index = parseInt(@refs.selectedIndex.getValue())
     return if index is NaN
-    if index == -1
-      index = 0
+    index = 0 if index == -1
     packet = @props.battlePackets[index]
-    window.toggleModal "Export", packet
+    packet = JSON.stringify packet
+    if packet
+      clipboard.writeText(packet)
+      window.showModal
+        title: "Export"
+        body: "The battle packet was exported to clipboard."
+        footer: null
 
   handleClickImport: ->
-    window.toggleModal "Import", "Coming soon..."
+    packet = clipboard.readText(packet)
+    packet = JSON.parse packet
+    if packet
+      @props.updateBattleDetail packet
+      window.showModal
+        title: "Import"
+        body: "A battle packet was imported from clipboard.\nYou may have a broken packet if you see no battle detail."
+        footer: null
 
   render: ->
     <div className="option">

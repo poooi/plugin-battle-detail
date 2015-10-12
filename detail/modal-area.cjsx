@@ -3,33 +3,30 @@
 
 ModalArea = React.createClass
   componentDidMount: ->
-    window.toggleModal = @handleToggleModal
+    window.showModal = @showModal
   componentWillUnmount: ->
-    window.toggleModal = null
+    window.showModal = null
 
   getInitialState: ->
-    isShowModal: false
+    isShow: false
     title: null
     body: null
-    callback: null
+    footer: null
 
-  handleToggleModal: (title, body, callback) ->
+  showModal: (options) ->
+    return unless options?
     @setState
-      isShowModal: true
-      title: title
-      body: body
-      callback: callback
+      isShow: true
+      title: options.title
+      body: options.body
+      footer: options.footer
 
-  onHide: ->
-    callback?()
+  close: ->
     @setState
-      isShowModal: false
+      isShow: false
 
   render: ->
-    <Modal autoFocus={true}
-           animation={true}
-           show={@state.isShowModal}
-           onHide={@onHide}>
+    <Modal autoFocus={true} animation={true} show={@state.isShow} onHide={@close}>
       <Modal.Header>
         <Modal.Title>{@state.title}</Modal.Title>
       </Modal.Header>
@@ -37,7 +34,8 @@ ModalArea = React.createClass
         {@state.body}
       </Modal.Body>
       <Modal.Footer>
-        <Button onClick={@onHide}>{"Close"}</Button>
+        {@state.footer}
+        <Button onClick={@close}>{"Close"}</Button>
       </Modal.Footer>
     </Modal>
 
