@@ -10,10 +10,27 @@ OptionArea = React.createClass
     return false if @props.battlePacketsNonce == nextProps.battlePacketsNonce
     return true
 
-  handleSelectPacket: (e) ->
-    index = parseInt(e.target.value)
+  handleSelectPacket: ->
+    index = parseInt(@refs.selectedIndex.getValue())
     return if index is NaN
-    @props.handleSelectPacket index
+    if index == -1
+      index = 0
+      @props.toggleAutoShow true
+    else
+      @props.toggleAutoShow false
+    packet = @props.battlePackets[index]
+    @props.updateBattleDetail index
+
+  handleClickExport: ->
+    index = parseInt(@refs.selectedIndex.getValue())
+    return if index is NaN
+    if index == -1
+      index = 0
+    packet = @props.battlePackets[index]
+    window.toggleModal "Export", packet
+
+  handleClickImport: ->
+    window.toggleModal "Import", "Coming soon..."
 
   render: ->
     <div className="option">
@@ -29,10 +46,17 @@ OptionArea = React.createClass
                 date = date.slice(0, 19).replace('T', ' ')
                 comment = packet.poi_comment
                 options.push <option key={i} value={i}>{"#{date} #{comment}"}</option>
-              <Input type="select" defaultValue={-1} onChange={@handleSelectPacket}>
+
+              <Input type="select" ref="selectedIndex" defaultValue={-1} onChange={@handleSelectPacket}>
                 {options}
               </Input>
             }
+            </Col>
+            <Col xs={2}>
+              <Button bsStyle='primary' style={width: '100%'} onClick={@handleClickExport}>{"Export"}</Button>
+            </Col>
+            <Col xs={2}>
+              <Button bsStyle='primary' style={width: '100%'} onClick={@handleClickImport}>{"Import"}</Button>
             </Col>
           </Row>
         </Grid>

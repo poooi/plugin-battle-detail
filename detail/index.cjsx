@@ -3,6 +3,7 @@
 
 simulater = require '../lib/simulate'
 {Ship, ShipOwner, Attack, AttackType, Stage, StageType} = require '../lib/common'
+ModalArea = require './modal-area'
 OptionArea = require './option-area'
 BattleDetailArea = require './battle-detail-area'
 
@@ -171,31 +172,38 @@ MainArea = React.createClass
       battleType: battleType
       battleFlow: battleFlow
 
-  # Component <OptionArea /> property
+  # API for Component <OptionArea />
   shouldAutoShow: true
 
-  # Component <OptionArea /> property
-  handleSelectPacket: (index) ->
-    if index == -1
-      @shouldAutoShow = true
-      index = 0
+  # API for Component <OptionArea />
+  toggleAutoShow: (value) ->
+    if value
+      @shouldAutoShow = value
     else
-      @shouldAutoShow = false
-    # Render battle packet
-    {battleNonce, battlePackets} = @state
-    {battleType, battleFlow} = parseBattleFlow battlePackets[index]
+      @shouldAutoShow = !@shouldAutoShow
+
+  # API for Component <OptionArea />
+  updateBattleDetail: (packet) ->
+    {battleNonce} = @state
+    {battleType, battleFlow} = parseBattleFlow packet
     battleNonce = updateNonce battleNonce
     @setState
       battleNonce: battleNonce
       battleType: battleType
       battleFlow: battleFlow
 
+  # API for Component <OptionArea />
+  importBattlePacket: (packet) ->
+    # TODO
+
   render: ->
     <div className="main">
+      <ModalArea />
       <OptionArea
         battlePackets={@state.battlePackets}
         battlePacketsNonce={@state.battlePacketsNonce}
-        handleSelectPacket={@handleSelectPacket}
+        toggleAutoShow={@toggleAutoShow}
+        updateBattleDetail={@updateBattleDetail}
         />
       <BattleDetailArea
         battleNonce={@state.battleNonce}
