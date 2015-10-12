@@ -21,15 +21,16 @@ updatePacketWithFleetInfo = (packet, isCombined, isWater, sortieFleetID, combine
   {_ships, _slotitems, _decks} = window
   obtainFleetInfo = (id, fleet, equipment) ->
     return unless typeof id == "number" and id >= 0
-    for ship, i in _decks[id].api_ship
+    for ship_id, i in _decks[id].api_ship
       fleet[i] = null
-      continue unless ship > 0
-      fleet[i] = _ships[ship]?.api_ship_id
+      continue unless ship = _ships[ship_id]
+      fleet[i] = ship.api_ship_id
       equipment[i] = []
-      for equip, j in _ships[ship]?.api_slot
+      for equip_id, j in ship.api_slot
         equipment[i][j] = null
-        continue unless equip > 0
-        equipment[i][j] = _slotitems[equip].api_slotitem_id
+        continue unless equip = _slotitems[equip_id]
+        equipment[i][j] = equip.api_slotitem_id
+      equipment[i].push if ship.api_slot_ex > 0 then ship.api_slot_ex else null
     return
   sortieFleet = []
   sortieEquipment = []
