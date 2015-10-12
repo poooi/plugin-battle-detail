@@ -28,7 +28,7 @@ OptionArea = React.createClass
       autoShow: !@state.autoShow
 
   render: ->
-    <div className="control-area">
+    <div className="option">
       <Panel header={"Options"}>
         <Grid>
           <Row>
