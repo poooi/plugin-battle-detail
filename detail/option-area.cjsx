@@ -1,9 +1,6 @@
 {React, ReactBootstrap} = window
 {Panel, Grid, Row, Col, Button, Input} = ReactBootstrap
 
-PacketDropdown = React.createClass
-  render: ->
-    
 
 OptionArea = React.createClass
   shouldComponentUpdate: (nextProps, nextState) ->
@@ -19,7 +16,7 @@ OptionArea = React.createClass
     else
       @props.toggleAutoShow false
     packet = @props.battlePackets[index]
-    @props.updateBattleDetail index
+    @props.updateBattleDetail packet
 
   handleClickExport: ->
     index = parseInt(@refs.selectedIndex.getValue())
