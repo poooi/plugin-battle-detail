@@ -158,7 +158,7 @@ BattleDetailArea = React.createClass
     {
       switch @props.battleType
         when 'normal'
-          <Panel header={"Battle Information"}>
+          <Panel header={"Battle Detail"}>
             <AttackTable title={"Aerial Combat, 1st - Stage 3"} attacks={@props.battleFlow[0]?.detail} />
             <AttackTable title={"Aerial Combat, 2nd - Stage 3"} attacks={@props.battleFlow[1]?.detail} />
             <AttackTable title={"Expedition Supporting Fire"} attacks={@props.battleFlow[2]?.detail} />
@@ -169,11 +169,11 @@ BattleDetailArea = React.createClass
             <AttackTable title={"Night Combat"} attacks={@props.battleFlow[7]?.detail} />
           </Panel>
         when 'night'
-          <Panel header={"Battle Information"}>
+          <Panel header={"Battle Detail"}>
             <AttackTable title={"Night Combat"} attacks={@props.battleFlow[0]?.detail} />
           </Panel>
         else
-          <Panel header={"Battle Information"}>
+          <Panel header={"Battle Detail"}>
             {"No battle"}
           </Panel>
       }

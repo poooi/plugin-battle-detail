@@ -103,11 +103,12 @@ MainArea = React.createClass
 
     # Game states
     switch path
-      when '/kcsapi/api_req_map/start'
+      when '/kcsapi/api_req_map/start', '/kcsapi/api_req_map/next'
         sortie = __ "Sortie"
         mapArea = body.api_maparea_id
         mapCell = body.api_mapinfo_no
-        battleComment = "#{sortie} #{mapArea}-#{mapCell}"
+        mapSpot = body.api_no
+        battleComment = "#{sortie} #{mapArea}-#{mapCell} (#{mapSpot})"
       when '/kcsapi/api_req_member/get_practice_enemyinfo'
         practice = __ "Pratice"
         name = body.nickname
@@ -147,13 +148,18 @@ MainArea = React.createClass
         isCombined = false
         sortieID = body.api_deck_id - 1
         combinedID = null
+
     if isBattle
       updatePacketWithFleetInfo body, isCombined, isWater, sortieID, combinedID
       updatePacketWithMetadata body, path, timestamp, battleComment
       battlePackets.unshift body
-      while battlePackets.length > 32
-        battlePackets.pop()
       battlePacketsNonce = updateNonce battlePacketsNonce
+      while battlePackets.length > 40
+        battlePackets.pop()
+      # Render battle packet
+      if @shouldAutoShow
+        {battleType, battleFlow} = parseBattleFlow body
+        battleNonce = updateNonce battleNonce
 
     @setState
       isCombined: isCombined
@@ -165,22 +171,31 @@ MainArea = React.createClass
       battleType: battleType
       battleFlow: battleFlow
 
-  handleShowPacket: (i) ->
+  # Component <OptionArea /> property
+  shouldAutoShow: true
+
+  # Component <OptionArea /> property
+  handleSelectPacket: (index) ->
+    if index == -1
+      @shouldAutoShow = true
+      index = 0
+    else
+      @shouldAutoShow = false
+    # Render battle packet
     {battleNonce, battlePackets} = @state
-    {battleType, battleFlow} = parseBattleFlow battlePackets[i]
-    if battleType
-      battleNonce = updateNonce battleNonce
-      @setState
-        battleNonce: battleNonce
-        battleType: battleType
-        battleFlow: battleFlow
+    {battleType, battleFlow} = parseBattleFlow battlePackets[index]
+    battleNonce = updateNonce battleNonce
+    @setState
+      battleNonce: battleNonce
+      battleType: battleType
+      battleFlow: battleFlow
 
   render: ->
     <div className="main">
       <OptionArea
         battlePackets={@state.battlePackets}
-        battlePacketsNonce=(@state.battlePacketsNonce)
-        handleShowPacket=(@handleShowPacket)
+        battlePacketsNonce={@state.battlePacketsNonce}
+        handleSelectPacket={@handleSelectPacket}
         />
       <BattleDetailArea
         battleNonce={@state.battleNonce}

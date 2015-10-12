@@ -10,22 +10,10 @@ OptionArea = React.createClass
     return false if @props.battlePacketsNonce == nextProps.battlePacketsNonce
     return true
 
-  getInitialState: ->
-    autoShow: false
-
   handleSelectPacket: (e) ->
     index = parseInt(e.target.value)
     return if index is NaN
-    @props.handleShowPacket index
-
-  handleToggleAutoShow: (e) ->
-    # <Col xs={4}>
-    #   <Button bsStyle={if @state.autoShow then 'success' else 'danger'} onClick={@handleToggleAutoShow}>
-    #     {if @state.autoShow then '√ ' else ''}{'Auto Show'}
-    #   </Button>
-    # </Col>
-    @setState
-      autoShow: !@state.autoShow
+    @props.handleSelectPacket index
 
   render: ->
     <div className="option">
@@ -34,20 +22,16 @@ OptionArea = React.createClass
           <Row>
             <Col xs={8}>
             {
-              if @props.battlePackets?.length > 0
-                options = []
-                for packet, i in @props.battlePackets
-                  dateObj = new Date(packet.poi_timestamp)
-                  date = "#{dateObj.getFullYear()}-#{dateObj.getMonth() + 1}-#{dateObj.getDate()} #{dateObj.getHours()}:#{dateObj.getMinutes()}:#{dateObj.getSeconds()}"
-                  comment = packet.poi_comment
-                  options.push <option key={i} value={i}>{"#{date} #{comment}"}</option>
-                <Input type="select" defaultValue={0} onChange={@handleSelectPacket}>
-                  {options}
-                </Input> 
-              else
-                <Input type="select" value={0} disabled>
-                  <option key={0} value={0}>{"No battle"}</option>
-                </Input>
+              options = []
+              options.push <option key={-1} value={-1}>{"Last Battle"}</option>
+              for packet, i in @props.battlePackets
+                dateObj = new Date(packet.poi_timestamp)
+                date = "#{dateObj.getFullYear()}-#{dateObj.getMonth() + 1}-#{dateObj.getDate()} #{dateObj.getHours()}:#{dateObj.getMinutes()}:#{dateObj.getSeconds()}"
+                comment = packet.poi_comment
+                options.push <option key={i} value={i}>{"#{date} #{comment}"}</option>
+              <Input type="select" defaultValue={-1} onChange={@handleSelectPacket}>
+                {options}
+              </Input>
             }
             </Col>
           </Row>
