@@ -15,5 +15,7 @@ require '../../../views/env'
 # window.language = config.get 'poi.language', navigator.language
 # i18n.setLocale(window.language)
 # window.__ = i18n.__
+window.__ = (text) ->
+  return text
 
 require './index.cjsx'

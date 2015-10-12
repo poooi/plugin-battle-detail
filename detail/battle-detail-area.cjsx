@@ -2,6 +2,7 @@
 {Panel, ProgressBar} = ReactBootstrap
 {Ship, ShipOwner, Attack, AttackType, Stage, StageType} = require '../lib/common'
 
+
 getHpStyle = (percent) ->
   if percent <= 25
     'danger'
@@ -31,19 +32,24 @@ getAttackTypeName = (type) ->
     when AttackType.Torpedo_Torpedo_CI
       "魚雷CI"
     else
-      "?#{type}?"
+      "#{type}?"
+
 
 HpBar = React.createClass
   render: ->
-    if @props.now < 0
+    {max, now, detla} = @props
+    if detla > now
+      now = 0
       percent = 0
     else
-      percent = 100 * @props.now / @props.max
-    if @props.detla and @props.detla > 0
-      label = "#{@props.now} / #{@props.max} (-#{@props.detla})"
+      now -= detla
+      percent = 100 * now / max
+    if detla > 0
+      label = "#{now} / #{max} (-#{detla})"
     else
-      label = "#{@props.now} / #{@props.max}"
+      label = "#{now} / #{max}"
     <ProgressBar className="hp-bar" bsStyle={getHpStyle percent} now={percent} label={label} />
+
 
 # <DamageInfo damage={damage} isCritical={isCritical} />
 DamageInfo = React.createClass
@@ -63,6 +69,7 @@ DamageInfo = React.createClass
       elements
     }
     </span>
+
 
 AttackTableRow = React.createClass
   render: ->
@@ -86,7 +93,7 @@ AttackTableRow = React.createClass
     # Is enemy attack?
     if toShip.owner is ShipOwner.Ours
       <div style={display: "flex"} className={"attack-table-enum"}>
-        <span style={flex: 6}><HpBar max={maxHP} now={nowHP - totalDamage} detla={totalDamage} /></span>
+        <span style={flex: 6}><HpBar max={maxHP} now={nowHP} detla={totalDamage} /></span>
         <span style={flex: 6}>{toShipName}</span>
         <span style={flex: 1}>←</span>
         <span style={flex: 6}><DamageInfo type={type} damage={damage} isCritical={isCritical} /></span>
@@ -102,8 +109,9 @@ AttackTableRow = React.createClass
         <span style={flex: 6}><DamageInfo type={type} damage={damage} isCritical={isCritical} /></span>
         <span style={flex: 1}>→</span>
         <span style={flex: 6}>{toShipName}</span>
-        <span style={flex: 6}><HpBar max={maxHP} now={nowHP - totalDamage} detla={totalDamage} /></span>
+        <span style={flex: 6}><HpBar max={maxHP} now={nowHP} detla={totalDamage} /></span>
       </div>
+
 
 AttackTableHeader = React.createClass
   render: ->
@@ -116,6 +124,7 @@ AttackTableHeader = React.createClass
       <span style={flex: 6}>{'Enemy'}</span>
       <span style={flex: 6}>{'HP'}</span>
     </div>
+
 
 AttackTable = React.createClass
   render: ->
@@ -138,9 +147,14 @@ AttackTable = React.createClass
     else
       <div />
 
+
 BattleDetailArea = React.createClass
+  shouldComponentUpdate: (nextProps, nextState) ->
+    return false if @props.battleNonce == nextProps.battleNonce
+    return true
+
   render: ->
-    <div className="battle-info-area">
+    <div className="battle-detail">
     {
       switch @props.battleType
         when 'normal'
