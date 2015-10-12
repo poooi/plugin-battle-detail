@@ -6,7 +6,11 @@
 .main {
   padding: 10px;
 }
+.panel {
+  margin-bottom: 12px;
+}
 
+/* HP Bar (battle-detail-area.cjsx) */
 .progress {
   border-radius: 0px;
   background-color: #2a2a2a;
@@ -26,8 +30,9 @@
   display: block;
 }
 
-.attack-table hr {
-  margin: 7px 0 7px;
+/* Attack Table (battle-detail-area.cjsx) */
+.attack-table {
+  width: 100%;
 }
 .attack-table-title {
   margin: 0 0 8px;
@@ -42,13 +47,6 @@
   margin: 2px;
   text-align: center;
 }
-.nav-tabs {
-  width: 100%;
-  text-align: center;
-}
-.nav-tabs > li {
-  flex: 1;
-}
-.attack-table {
-  width: 100%;
+.attack-table hr {
+  margin: 7px 0 7px;
 }
