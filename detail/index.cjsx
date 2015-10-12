@@ -111,7 +111,7 @@ MainArea = React.createClass
         battleComment = "#{sortie} #{mapArea}-#{mapCell} (#{mapSpot})"
       when '/kcsapi/api_req_member/get_practice_enemyinfo'
         practice = __ "Pratice"
-        name = body.nickname
+        name = body.api_nickname
         level = body.api_level
         battleComment = "#{practice} #{name} (Lv.#{level})"
 
