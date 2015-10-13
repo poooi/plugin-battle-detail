@@ -50,6 +50,8 @@ OptionArea = React.createClass
                <p>{__ "If you see no battle detail, you may have a broken packet."}</p>]
         footer: null
       @props.updateBattleDetail packet
+      @setState
+        selectedTimestamp: 0
 
   render: ->
     <div className="option-area">
