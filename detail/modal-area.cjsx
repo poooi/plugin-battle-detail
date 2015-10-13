@@ -26,17 +26,19 @@ ModalArea = React.createClass
       isShow: false
 
   render: ->
-    <Modal autoFocus={true} animation={true} show={@state.isShow} onHide={@close}>
-      <Modal.Header>
-        <Modal.Title>{@state.title}</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        {@state.body}
-      </Modal.Body>
-      <Modal.Footer>
-        {@state.footer}
-        <Button onClick={@close}>{"Close"}</Button>
-      </Modal.Footer>
-    </Modal>
+    <div className="modal-area">
+      <Modal autoFocus={true} animation={true} show={@state.isShow} onHide={@close}>
+        <Modal.Header>
+          <Modal.Title>{@state.title}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {@state.body}
+        </Modal.Body>
+        <Modal.Footer>
+          {@state.footer}
+          <Button onClick={@close}>{"Close"}</Button>
+        </Modal.Footer>
+      </Modal>
+    </div>
 
 module.exports = ModalArea

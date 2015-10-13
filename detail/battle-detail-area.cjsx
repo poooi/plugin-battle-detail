@@ -92,7 +92,7 @@ AttackTableRow = React.createClass
     totalDamage = damage.reduce ((p, x) -> p + x)
     # Is enemy attack?
     if toShip.owner is ShipOwner.Ours
-      <div style={display: "flex"} className={"attack-table-enum"}>
+      <div style={display: "flex"} className={"attack-table-row"}>
         <span style={flex: 6}><HpBar max={maxHP} now={nowHP} detla={totalDamage} /></span>
         <span style={flex: 6}>{toShipName}</span>
         <span style={flex: 1}>←</span>
@@ -102,7 +102,7 @@ AttackTableRow = React.createClass
         <span style={flex: 6}></span>
       </div>
     else
-      <div style={display: "flex"} className={"attack-table-enum"}>
+      <div style={display: "flex"} className={"attack-table-row"}>
         <span style={flex: 6}></span>
         <span style={flex: 6}>{fromShipName}</span>
         <span style={flex: 1}></span>
@@ -115,7 +115,7 @@ AttackTableRow = React.createClass
 
 AttackTableHeader = React.createClass
   render: ->
-    <div style={display: "flex"} className={"attack-table-enum"}>
+    <div style={display: "flex"} className={"attack-table-row"}>
       <span style={flex: 6}>{'HP'}</span>
       <span style={flex: 6}>{'We'}</span>
       <span style={flex: 1}>{''}</span>
@@ -154,7 +154,7 @@ BattleDetailArea = React.createClass
     return true
 
   render: ->
-    <div className="battle-detail">
+    <div className="battle-detail-area">
     {
       switch @props.battleType
         when 'normal'

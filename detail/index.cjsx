@@ -193,10 +193,6 @@ MainArea = React.createClass
       battleType: battleType
       battleFlow: battleFlow
 
-  # API for Component <OptionArea />
-  importBattlePacket: (packet) ->
-    # TODO
-
   render: ->
     <div className="main">
       <ModalArea />
