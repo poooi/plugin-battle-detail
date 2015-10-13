@@ -21,7 +21,7 @@ initialWindow = ->
     y: config.get 'poi.window.y', 0
     width: 820
     height: 650
-  window.battleDetailWindow.loadUrl "file://#{__dirname}/views/index.html"
+  window.battleDetailWindow.loadUrl "file://#{__dirname}/views.html"
   if process.env.DEBUG?
     window.battleDetailWindow.openDevTools
       detach: true
@@ -31,7 +31,7 @@ if config.get('plugin.BattleDetail.enable', true)
 module.exports =
   name: 'BattleDetail'
   priority: 11
-  displayName: <span><FontAwesome name='rocket' key={0} />{' ' + __('Battle Detail')}</span>
+  displayName: <span><FontAwesome name='info' fixedWidth={true} />{' ' + __('Battle Detail')}</span>
   author: 'Dazzy Ding'
   link: 'https://github.com/yukixz'
   version: '1.0.0'

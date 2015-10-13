@@ -1,6 +1,5 @@
 require 'coffee-react/register'
-remote = require 'remote'
-remote.require './views/env'
+require '../../views/env'
 
 i18n = require 'i18n'
 {join} = require 'path-extra'
@@ -17,4 +16,4 @@ window.language = config.get 'poi.language', navigator.language
 i18n.setLocale(window.language)
 window.__ = i18n.__
 
-require './index.cjsx'
+require './views/index.cjsx'
