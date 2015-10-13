@@ -1,3 +1,38 @@
 {
-  
+  "__COMMENT_001__": "Please organize i18n text by modules (.cjsx).",
+  "__COMMENT_002__": "Sort phrase block of modules by module name.",
+  "__COMMENT_003__": "Sort phrase by first exist line number inside a block.",
+
+  "Sortie": "出撃",
+  "Pratice": "演習",
+
+  "Battle Detail": "Battle Detail",
+  "AT.Normal": "通常",
+  "AT.Double": "連撃",
+  "AT.Primary_Secondary_CI": "副砲CI",
+  "AT.Primary_Radar_CI": "電探CI",
+  "AT.Primary_AP_CI": "徹甲CO",
+  "AT.Primary_Primary_CI": "主砲CI",
+  "AT.Primary_Torpedo_CI": "砲雷CI",
+  "AT.Torpedo_Torpedo_CI": "魚雷CI",
+  "Aerial Combat": "航空戦",
+  "Expedition Supporting Fire": "支援艦隊",
+  "Opening Torpedo Salvo": "開幕雷撃",
+  "Shelling": "砲撃戦",
+  "Torpedo Salvo": "雷撃戦",
+  "Night Combat": "夜戦",
+  "No battle": "No battle",
+
+  "Modal": "Modal",
+  "Close": "Close",
+
+  "Options": "Options",
+  "Copy Packet": "Copy Packet",
+  "The battle packet was copied to clipboard.": "The battle packet was copied to clipboard.",
+  "Paste Packet": "Paste Packet",
+  "A battle packet was pasted from clipboard.": "A battle packet was pasted from clipboard.",
+  "If you see no battle detail, you may have a broken packet.": "If you see no battle detail, you may have a broken packet.",
+  "Last Battle": "Last Battle",
+
+  "": ""
 }
