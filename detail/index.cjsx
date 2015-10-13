@@ -178,7 +178,7 @@ MainArea = React.createClass
 
   # API for Component <OptionArea />
   toggleAutoShow: (value) ->
-    if value
+    if value?
       @shouldAutoShow = value
     else
       @shouldAutoShow = !@shouldAutoShow
