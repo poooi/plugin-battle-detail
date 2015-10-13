@@ -12,12 +12,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/poooi/plugin-prophet.git"
+    "url": "git+https://github.com/poooi/plugin-battle-detail.git"
   },
   "author": "Chiba",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/poooi/plugin-prophet/issues"
+    "url": "https://github.com/poooi/plugin-battle-detail/issues"
   },
-  "homepage": "https://github.com/poooi/plugin-prophet#readme"
+  "homepage": "https://github.com/poooi/plugin-battle-detail"
 }
