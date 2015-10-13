@@ -29,6 +29,7 @@
   "Options": "Options",
   "Copy Packet": "Copy Packet",
   "The battle packet was copied to clipboard.": "The battle packet was copied to clipboard.",
+  "Failed to copy battle packet to clipboard!": "Failed to copy battle packet to clipboard!",
   "Paste Packet": "Paste Packet",
   "A battle packet was pasted from clipboard.": "A battle packet was pasted from clipboard.",
   "If you see no battle detail, you may have a broken packet.": "If you see no battle detail, you may have a broken packet.",

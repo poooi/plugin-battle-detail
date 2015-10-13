@@ -31,27 +31,38 @@ OptionArea = React.createClass
     index = parseInt(@refs.selectedIndex.getValue())
     return if index is NaN
     index = 0 if index == -1
-    packet = @props.battlePackets[index]
-    packet = JSON.stringify packet
-    if packet
+    isSuccessful = true
+    try
+      packet = @props.battlePackets[index]
+      packet = JSON.stringify packet
       clipboard.writeText(packet)
+    catch e
+      isSuccessful = false
+
+    if isSuccessful
       window.showModal
         title: __ "Copy Packet"
         body: [<p>{__ "The battle packet was copied to clipboard."}</p>]
         footer: null
+    else
+      window.showModal
+        title: __ "Copy Packet"
+        body: [<p>{__ "Failed to copy battle packet to clipboard!"}</p>]
+        footer: null
 
   handleClickImport: ->
-    packet = clipboard.readText(packet)
-    packet = JSON.parse packet
-    if packet
+    try
+      packet = clipboard.readText(packet)
+      packet = JSON.parse packet
+      @props.updateBattleDetail packet
+      @setState
+        selectedTimestamp: 0
+    finally
       window.showModal
         title: __ "Paste Packet"
         body: [<p>{__ "A battle packet was pasted from clipboard."}</p>,
                <p>{__ "If you see no battle detail, you may have a broken packet."}</p>]
         footer: null
-      @props.updateBattleDetail packet
-      @setState
-        selectedTimestamp: 0
 
   render: ->
     <div className="option-area">
