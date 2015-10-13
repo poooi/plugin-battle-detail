@@ -2,17 +2,17 @@ remote = require 'remote'
 windowManager = remote.require './lib/window'
 {FontAwesome} = window
 
-i18n = require 'i18n'
-{join} = require 'path-extra'
+path = require 'path-extra'
+i18n = require './node_modules/i18n'
 i18n.configure
-  locales: ['en-US', 'ja-JP', 'zh-CN', 'zh-TW']
-  defaultLocale: 'zh-CN'
-  directory: join(__dirname, 'assets', 'i18n')
-  updateFiles: false
-  indent: '\t'
+  locales: ['en-US', 'ja-JP', 'zh-CN', 'zh-TW'],
+  defaultLocale: 'zh-CN',
+  directory: path.join(__dirname, 'assets', 'i18n'),
+  updateFiles: false,
+  indent: '\t',
   extension: '.json'
-i18n.setLocale config.get 'poi.language', navigator.language
-__ = i18n.__
+i18n.setLocale(window.language)
+{__} = i18n
 
 window.battleDetailWindow = null
 initialWindow = ->
