@@ -15,22 +15,22 @@ getHpStyle = (percent) ->
 
 getAttackTypeName = (type) ->
   switch type
-    when AttackType.Normal
-      "通常"
-    when AttackType.Double
-      "連撃"
-    when AttackType.Primary_Secondary_CI
-      "主副CI"
-    when AttackType.Primary_Radar_CI
-      "主電CI"
-    when AttackType.Primary_AP_CI
-      "主徹CI"
-    when AttackType.Primary_Primary_CI
-      "主砲CI"
-    when AttackType.Primary_Torpedo_CI
-      "砲雷CI"
-    when AttackType.Torpedo_Torpedo_CI
-      "魚雷CI"
+    when AttackType.Normal    # 通常攻撃
+      __ "AT.Normal"
+    when AttackType.Double    # 連撃
+      __ "AT.Double"
+    when AttackType.Primary_Secondary_CI  # カットイン(主砲/副砲)
+      __ "AT.Primary_Secondary_CI"
+    when AttackType.Primary_Radar_CI    # カットイン(主砲/電探)
+      __ "AT.Primary_Radar_CI"
+    when AttackType.Primary_AP_CI       # カットイン(主砲/徹甲)
+      __ "AT.Primary_AP_CI"
+    when AttackType.Primary_Primary_CI  # カットイン(主砲/主砲)
+      __ "AT.Primary_Primary_CI"
+    when AttackType.Primary_Torpedo_CI  # カットイン(主砲/魚雷)
+      __ "AT.Primary_Torpedo_CI"
+    when AttackType.Torpedo_Torpedo_CI  # カットイン(魚雷/魚雷)
+      __ "AT.Torpedo_Torpedo_CI"
     else
       "#{type}?"
 
@@ -158,23 +158,23 @@ BattleDetailArea = React.createClass
     {
       switch @props.battleType
         when 'normal'
-          <Panel header={"Battle Detail"}>
-            <AttackTable title={"Aerial Combat, 1st - Stage 3"} attacks={@props.battleFlow[0]?.detail} />
-            <AttackTable title={"Aerial Combat, 2nd - Stage 3"} attacks={@props.battleFlow[1]?.detail} />
-            <AttackTable title={"Expedition Supporting Fire"} attacks={@props.battleFlow[2]?.detail} />
-            <AttackTable title={"Opening Torpedo Salvo"} attacks={@props.battleFlow[3]?.detail} />
-            <AttackTable title={"Shelling, 1st Round"} attacks={@props.battleFlow[4]?.detail} />
-            <AttackTable title={"Shelling, 2nd Round"} attacks={@props.battleFlow[5]?.detail} />
-            <AttackTable title={"Closing Torpedo Salvo"} attacks={@props.battleFlow[6]?.detail} />
-            <AttackTable title={"Night Combat"} attacks={@props.battleFlow[7]?.detail} />
+          <Panel header={__ "Battle Detail"}>
+            <AttackTable title={__("Aerial Combat") + " - Stage 3"} attacks={@props.battleFlow[0]?.detail} />
+            <AttackTable title={__("Aerial Combat") + " - Stage 3"} attacks={@props.battleFlow[1]?.detail} />
+            <AttackTable title={__ "Expedition Supporting Fire"} attacks={@props.battleFlow[2]?.detail} />
+            <AttackTable title={__ "Opening Torpedo Salvo"} attacks={@props.battleFlow[3]?.detail} />
+            <AttackTable title={__ "Shelling, 1st Round"} attacks={@props.battleFlow[4]?.detail} />
+            <AttackTable title={__ "Shelling, 2nd Round"} attacks={@props.battleFlow[5]?.detail} />
+            <AttackTable title={__ "Closing Torpedo Salvo"} attacks={@props.battleFlow[6]?.detail} />
+            <AttackTable title={__ "Night Combat"} attacks={@props.battleFlow[7]?.detail} />
           </Panel>
         when 'night'
-          <Panel header={"Battle Detail"}>
-            <AttackTable title={"Night Combat"} attacks={@props.battleFlow[0]?.detail} />
+          <Panel header={__ "Battle Detail"}>
+            <AttackTable title={__ "Night Combat"} attacks={@props.battleFlow[0]?.detail} />
           </Panel>
         else
-          <Panel header={"Battle Detail"}>
-            {"No battle"}
+          <Panel header={__ "Battle Detail"}>
+            {__ "No battle"}
           </Panel>
       }
     </div>

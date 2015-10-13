@@ -36,7 +36,7 @@ OptionArea = React.createClass
     if packet
       clipboard.writeText(packet)
       window.showModal
-        title: "Copy Packet"
+        title: __ "Copy Packet"
         body: [<p>{__ "The battle packet was copied to clipboard."}</p>]
         footer: null
 
@@ -45,7 +45,7 @@ OptionArea = React.createClass
     packet = JSON.parse packet
     if packet
       window.showModal
-        title: "Paste Packet"
+        title: __ "Paste Packet"
         body: [<p>{__ "A battle packet was pasted from clipboard."}</p>,
                <p>{__ "If you see no battle detail, you may have a broken packet."}</p>]
         footer: null
@@ -53,14 +53,14 @@ OptionArea = React.createClass
 
   render: ->
     <div className="option-area">
-      <Panel header={"Options"}>
+      <Panel header={__ "Options"}>
         <Grid>
           <Row>
             <Col xs={6}>
             {
               options = []
               selectedIndex = -1
-              options.push <option key={-1} value={-1}>{"Last Battle"}</option>
+              options.push <option key={-1} value={-1}>{__ "Last Battle"}</option>
               for packet, i in @props.battlePackets
                 date = new Date(packet.poi_timestamp).toISOString()
                 date = date.slice(0, 19).replace('T', ' ')
@@ -75,10 +75,10 @@ OptionArea = React.createClass
             }
             </Col>
             <Col xs={3}>
-              <Button bsStyle='primary' style={width: '100%'} onClick={@handleClickExport}>{"Copy Packet"}</Button>
+              <Button bsStyle='primary' style={width: '100%'} onClick={@handleClickExport}>{__ "Copy Packet"}</Button>
             </Col>
             <Col xs={3}>
-            <Button bsStyle='primary' style={width: '100%'} onClick={@handleClickImport}>{"Paste Packet"}</Button>
+            <Button bsStyle='primary' style={width: '100%'} onClick={@handleClickImport}>{__ "Paste Packet"}</Button>
             </Col>
           </Row>
         </Grid>

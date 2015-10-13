@@ -36,7 +36,7 @@ ModalArea = React.createClass
         </Modal.Body>
         <Modal.Footer>
           {@state.footer}
-          <Button onClick={@close}>{"Close"}</Button>
+          <Button onClick={@close}>{__ "Close"}</Button>
         </Modal.Footer>
       </Modal>
     </div>
