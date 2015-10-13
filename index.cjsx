@@ -30,7 +30,7 @@ if config.get('plugin.BattleDetail.enable', true)
 
 module.exports =
   name: 'BattleDetail'
-  priority: 52
+  priority: 11
   displayName: <span><FontAwesome name='rocket' key={0} />{' ' + __('Battle Detail')}</span>
   author: 'Dazzy Ding'
   link: 'https://github.com/yukixz'
