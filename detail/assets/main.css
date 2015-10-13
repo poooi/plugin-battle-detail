@@ -13,7 +13,7 @@
 /* HP Bar */
 .progress {
   border-radius: 0px;
-  background-color: #2a2a2a;
+  background-color: rgba(0, 0, 0, 0.2);
 }
 .hp-bar.progress {
   height: 22px;
