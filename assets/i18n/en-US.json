@@ -1,0 +1,38 @@
+{
+  "__COMMENT_001__": "Please organize i18n text by modules (.cjsx).",
+  "__COMMENT_002__": "Sort phrase block of modules by module name.",
+  "__COMMENT_003__": "Sort phrase by first exist line number inside a block.",
+
+  "Sortie": "Sortie",
+  "Pratice": "Pratice",
+
+  "Battle Detail": "Battle Detail",
+  "AT.Normal": "Normal",
+  "AT.Double": "Double",
+  "AT.Primary_Secondary_CI": "Sec.Gun CI",
+  "AT.Primary_Radar_CI": "Radar CI",
+  "AT.Primary_AP_CI": "AP Shell CI",
+  "AT.Primary_Primary_CI": "Main Gun CI",
+  "AT.Primary_Torpedo_CI": "Mixed CI",
+  "AT.Torpedo_Torpedo_CI": "Torpedo CI",
+  "Aerial Combat": "Aerial Combat",
+  "Expedition Supporting Fire": "Expedition Supporting Fire",
+  "Opening Torpedo Salvo": "Opening Torpedo Salvo",
+  "Shelling": "Shelling",
+  "Torpedo Salvo": "Torpedo Salvo",
+  "Night Combat": "Night Combat",
+  "No battle": "No battle",
+
+  "Modal": "Modal",
+  "Close": "Close",
+
+  "Options": "Options",
+  "Copy Packet": "Copy Packet",
+  "The battle packet was copied to clipboard.": "The battle packet was copied to clipboard.",
+  "Paste Packet": "Paste Packet",
+  "A battle packet was pasted from clipboard.": "A battle packet was pasted from clipboard.",
+  "If you see no battle detail, you may have a broken packet.": "If you see no battle detail, you may have a broken packet.",
+  "Last Battle": "Last Battle",
+
+  "": ""
+}

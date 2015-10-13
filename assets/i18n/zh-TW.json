@@ -1,0 +1,38 @@
+{
+  "__COMMENT_001__": "Please organize i18n text by modules (.cjsx).",
+  "__COMMENT_002__": "Sort phrase block of modules by module name.",
+  "__COMMENT_003__": "Sort phrase by first exist line number inside a block.",
+
+  "Sortie": "出擊",
+  "Pratice": "演習",
+
+  "Battle Detail": "戰鬥詳情",
+  "AT.Normal": "普通",
+  "AT.Double": "連擊",
+  "AT.Primary_Secondary_CI": "副炮CI",
+  "AT.Primary_Radar_CI": "電探CI",
+  "AT.Primary_AP_CI": "徹甲CI",
+  "AT.Primary_Primary_CI": "主炮CI",
+  "AT.Primary_Torpedo_CI": "炮雷CI",
+  "AT.Torpedo_Torpedo_CI": "魚雷CI",
+  "Aerial Combat": "航空戰",
+  "Expedition Supporting Fire": "支援艦隊",
+  "Opening Torpedo Salvo": "開幕雷擊",
+  "Shelling": "炮擊戰",
+  "Torpedo Salvo": "雷擊戰",
+  "Night Combat": "夜戰",
+  "No battle": "無戰鬥",
+
+  "Modal": "模態框",
+  "Close": "關閉",
+
+  "Options": "選項",
+  "Copy Packet": "複製數據包",
+  "The battle packet was copied to clipboard.": "戰鬥數據包已複製到剪貼板。",
+  "Paste Packet": "粘貼數據包",
+  "A battle packet was pasted from clipboard.": "已從剪貼板讀取戰鬥數據包。",
+  "If you see no battle detail, you may have a broken packet.": "如果您未能看到戰鬥詳情，您可能使用了損壞的數據包。",
+  "Last Battle": "最後一場戰鬥",
+
+  "": ""
+}

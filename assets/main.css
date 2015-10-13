@@ -1,0 +1,52 @@
+*, body, h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: "Ubuntu", "Helvetica Neue", "Helvetica", "Arial", "Heiti SC", "WenQuanYi Micro Hei", "Microsoft YaHei", "Droid Sans Fallback", sans-serif;
+  font-size: 14px;
+}
+
+.main {
+  padding: 10px;
+}
+.panel {
+  margin-bottom: 12px;
+}
+
+/* HP Bar */
+.progress {
+  border-radius: 0px;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+.hp-bar.progress {
+  height: 22px;
+  position: relative;
+  margin: 0;
+}
+.hp-bar.progress .progress-bar {
+  font-size: 13px;
+  line-height: 22px;
+}
+.hp-bar.progress-bar span span {
+  position: absolute;
+  width: 100%;
+  display: block;
+}
+
+/* Attack Table */
+.attack-table {
+  width: 100%;
+}
+.attack-table-title {
+  margin: 0 0 8px;
+}
+.attack-table-row {
+  justifyContent: "space-around";
+  width: 100%;
+  height: 30px;
+}
+.attack-table-row > span {
+  height: 20px;
+  margin: 2px;
+  text-align: center;
+}
+.attack-table hr {
+  margin: 7px 0 7px;
+}
