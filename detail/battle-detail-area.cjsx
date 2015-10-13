@@ -165,7 +165,7 @@ BattleDetailArea = React.createClass
             <AttackTable title={__ "Opening Torpedo Salvo"} attacks={@props.battleFlow[3]?.detail} />
             <AttackTable title={__ "Shelling, 1st Round"} attacks={@props.battleFlow[4]?.detail} />
             <AttackTable title={__ "Shelling, 2nd Round"} attacks={@props.battleFlow[5]?.detail} />
-            <AttackTable title={__ "Closing Torpedo Salvo"} attacks={@props.battleFlow[6]?.detail} />
+            <AttackTable title={__ "Torpedo Salvo"} attacks={@props.battleFlow[6]?.detail} />
             <AttackTable title={__ "Night Combat"} attacks={@props.battleFlow[7]?.detail} />
           </Panel>
         when 'night'

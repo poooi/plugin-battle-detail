@@ -9,7 +9,7 @@
   "Battle Detail": "战斗详情",
   "AT.Normal": "普通",
   "AT.Double": "连击",
-  "AT.Primary_Secondary_CI": "主副CI",
+  "AT.Primary_Secondary_CI": "副砲CI",
   "AT.Primary_Radar_CI": "电探CI",
   "AT.Primary_AP_CI": "彻甲CI",
   "AT.Primary_Primary_CI": "主炮CI",
@@ -20,7 +20,7 @@
   "Opening Torpedo Salvo": "开幕雷击",
   "Shelling, 1st Round": "炮击战（第一轮）",
   "Shelling, 2nd Round": "炮击战（第二轮）",
-  "Closing Torpedo Salvo": "闭幕雷击",
+  "Torpedo Salvo": "雷击战",
   "Night Combat": "夜战",
   "No battle": "无战斗",
 
