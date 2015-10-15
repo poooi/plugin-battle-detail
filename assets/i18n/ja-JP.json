@@ -30,6 +30,7 @@
   "Options": "設定",
   "Copy Data": "データをコピー",
   "The battle packet was copied to clipboard.": "戦闘データは既にクリップボードにコピーされました",
+  "You can send your friends the packet to share the battle.": "You can send your friends the packet to share the battle.",
   "Failed to copy battle packet to clipboard!": "戦闘データをクリップボードにコピーすることに失敗しました",
   "Paste Data": "データをペースト",
   "A battle packet was pasted from clipboard.": "戦闘データは既にクリップボードからペーストしました",

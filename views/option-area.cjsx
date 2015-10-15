@@ -44,7 +44,8 @@ OptionArea = React.createClass
     if isSuccessful
       window.showModal
         title: __ "Copy Data"
-        body: [<p>{__ "The battle packet was copied to clipboard."}</p>]
+        body: [<p>{__ "The battle packet was copied to clipboard."}</p>,
+               <p>{__ "You can send your friends the packet to share the battle."}</p>]
         footer: null
     else
       window.showModal

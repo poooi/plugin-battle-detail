@@ -30,6 +30,7 @@
   "Options": "选项",
   "Copy Data": "复制数据",
   "The battle packet was copied to clipboard.": "战斗数据包已复制到剪贴板。",
+  "You can send your friends the packet to share the battle.": "您可以通过将此数据包发给您的朋友，从而分享这场战斗。",
   "Failed to copy battle packet to clipboard!": "无法复制战斗数据包到剪贴板！",
   "Paste Data": "粘贴数据",
   "A battle packet was pasted from clipboard.": "已从剪贴板读取战斗数据包。",
