@@ -33,7 +33,8 @@
   "Paste Data": "データをペースト",
   "A battle packet was pasted from clipboard.": "戦闘データは既にクリップボードからペーストしました",
   "If you see no battle detail, you may have a broken packet.": "戦闘情報を表示できない場合にはデータが破損した可能性があります",
-  "Last Battle": "最後の戦闘",
+  "Last Battle": "最後の戦い",
+  "Selected battle": "Selected battle",
 
   "": ""
 }
