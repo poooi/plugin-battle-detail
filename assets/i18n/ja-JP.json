@@ -27,12 +27,12 @@
   "Close": "閉じる",
 
   "Options": "オプション",
-  "Copy Packet": "データパケットをコピーします",
-  "The battle packet was copied to clipboard.": "戦闘のデータパックは既にクリップボードにコピーしました",
-  "Failed to copy battle packet to clipboard!": "戦闘のデータパックをクリップボードにコピーすることに失敗しました",
-  "Paste Packet": "データパックをペーストします",
-  "A battle packet was pasted from clipboard.": "戦闘のデータパックは既にクリップボードからペーストしました",
-  "If you see no battle detail, you may have a broken packet.": "戦闘情報を表示できない場合にはデータパックが損壊された可能性があります",
+  "Copy Packet": "データをコピー",
+  "The battle packet was copied to clipboard.": "戦闘データは既にクリップボードにコピーされました",
+  "Failed to copy battle packet to clipboard!": "戦闘データをクリップボードにコピーすることに失敗しました",
+  "Paste Packet": "データをペースト",
+  "A battle packet was pasted from clipboard.": "戦闘データは既にクリップボードからペーストしました",
+  "If you see no battle detail, you may have a broken packet.": "戦闘情報を表示できない場合にはデータが破損した可能性があります",
   "Last Battle": "最後の戦い",
 
   "": ""
