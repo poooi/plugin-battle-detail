@@ -29,6 +29,7 @@
   "Options": "オプション",
   "Copy Packet": "データパケットをコピーする",
   "The battle packet was copied to clipboard.": "バトルデータパックは既にクリップボードにコピー済み",
+  "Failed to copy battle packet to clipboard!": "Failed to copy battle packet to clipboard!",
   "Paste Packet": "データパックを贴り付く",
   "A battle packet was pasted from clipboard.": "バトルデータパックは既にクリップボードからペースト済み",
   "If you see no battle detail, you may have a broken packet.": "もしバトルの詳細がディスプレイ出来なかったら、壊れたデータパックを使った可能性がある",
