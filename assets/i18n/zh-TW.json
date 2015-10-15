@@ -27,10 +27,10 @@
   "Close": "關閉",
 
   "Options": "選項",
-  "Copy Packet": "複製數據包",
+  "Copy Data": "複製數據",
   "The battle packet was copied to clipboard.": "戰鬥數據包已複製到剪貼板。",
   "Failed to copy battle packet to clipboard!": "無法複製戰鬥數據包到剪貼板！",
-  "Paste Packet": "粘貼數據包",
+  "Paste Data": "粘貼數據",
   "A battle packet was pasted from clipboard.": "已從剪貼板讀取戰鬥數據包。",
   "If you see no battle detail, you may have a broken packet.": "如果您未能看到戰鬥詳情，您可能使用了損壞的數據包。",
   "Last Battle": "最後一場戰鬥",

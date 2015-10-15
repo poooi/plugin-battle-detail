@@ -27,10 +27,10 @@
   "Close": "Close",
 
   "Options": "Options",
-  "Copy Packet": "Copy Packet",
+  "Copy Data": "Copy Data",
   "The battle packet was copied to clipboard.": "The battle packet was copied to clipboard.",
   "Failed to copy battle packet to clipboard!": "Failed to copy battle packet to clipboard!",
-  "Paste Packet": "Paste Packet",
+  "Paste Data": "Paste Data",
   "A battle packet was pasted from clipboard.": "A battle packet was pasted from clipboard.",
   "If you see no battle detail, you may have a broken packet.": "If you see no battle detail, you may have a broken packet.",
   "Last Battle": "Last Battle",

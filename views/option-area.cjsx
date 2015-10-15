@@ -41,12 +41,12 @@ OptionArea = React.createClass
 
     if isSuccessful
       window.showModal
-        title: __ "Copy Packet"
+        title: __ "Copy Data"
         body: [<p>{__ "The battle packet was copied to clipboard."}</p>]
         footer: null
     else
       window.showModal
-        title: __ "Copy Packet"
+        title: __ "Copy Data"
         body: [<p>{__ "Failed to copy battle packet to clipboard!"}</p>]
         footer: null
 
@@ -59,7 +59,7 @@ OptionArea = React.createClass
         selectedTimestamp: 0
     finally
       window.showModal
-        title: __ "Paste Packet"
+        title: __ "Paste Data"
         body: [<p>{__ "A battle packet was pasted from clipboard."}</p>,
                <p>{__ "If you see no battle detail, you may have a broken packet."}</p>]
         footer: null
@@ -88,10 +88,10 @@ OptionArea = React.createClass
             }
             </Col>
             <Col xs={3}>
-              <Button bsStyle='primary' style={width: '100%'} onClick={@handleClickExport}>{__ "Copy Packet"}</Button>
+              <Button bsStyle='primary' style={width: '100%'} onClick={@handleClickExport}>{__ "Copy Data"}</Button>
             </Col>
             <Col xs={3}>
-            <Button bsStyle='primary' style={width: '100%'} onClick={@handleClickImport}>{__ "Paste Packet"}</Button>
+            <Button bsStyle='primary' style={width: '100%'} onClick={@handleClickImport}>{__ "Paste Data"}</Button>
             </Col>
           </Row>
         </Grid>
