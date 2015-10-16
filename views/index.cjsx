@@ -102,16 +102,19 @@ MainArea = React.createClass
     {method, path, body, postBody} = e.detail
     {$ships, _ships, _decks} = window
     {isCombined, isWater, battleComment, battlePackets, battlePacketsNonce, battleNonce, battleType, battleFlow} = @state
+    isStateChanged = false
 
     # Game states
     switch path
       when '/kcsapi/api_req_map/start', '/kcsapi/api_req_map/next'
+        isStateChanged = true
         sortie = __ "Sortie"
         mapArea = body.api_maparea_id
         mapCell = body.api_mapinfo_no
         mapSpot = body.api_no
         battleComment = "#{sortie} #{mapArea}-#{mapCell} (#{mapSpot})"
       when '/kcsapi/api_req_member/get_practice_enemyinfo'
+        isStateChanged = true
         practice = __ "Pratice"
         name = body.api_nickname
         level = body.api_level
@@ -119,7 +122,6 @@ MainArea = React.createClass
 
     # Battle Packets Management
     isBattle = false
-    packet = body
     timestamp = new Date().getTime()
     switch path
       when '/kcsapi/api_req_sortie/battle', '/kcsapi/api_req_practice/battle', '/kcsapi/api_req_sortie/airbattle'
@@ -136,7 +138,7 @@ MainArea = React.createClass
           isCombined = false
           sortieID = body.api_dock_id - 1
           combinedID = null
-          # Dont update packet metadata and fleet info
+          # Dont update packet metadata
           path = body.poi_uri
           timestamp = body.poi_timestamp
           battleComment = body.poi_comment
@@ -152,6 +154,7 @@ MainArea = React.createClass
         combinedID = null
 
     if isBattle
+      isStateChanged = true
       updatePacketWithFleetInfo body, isCombined, isWater, sortieID, combinedID
       updatePacketWithMetadata body, path, timestamp, battleComment
       battlePackets.unshift body
@@ -163,15 +166,17 @@ MainArea = React.createClass
         {battleType, battleFlow} = parseBattleFlow body
         battleNonce = updateNonce battleNonce
 
-    @setState
-      isCombined: isCombined
-      isWater: isWater
-      battleComment: battleComment
-      battlePackets: battlePackets
-      battlePacketsNonce: battlePacketsNonce
-      battleNonce: battleNonce
-      battleType: battleType
-      battleFlow: battleFlow
+    # update state
+    if isStateChanged
+      @setState
+        isCombined: isCombined
+        isWater: isWater
+        battleComment: battleComment
+        battlePackets: battlePackets
+        battlePacketsNonce: battlePacketsNonce
+        battleNonce: battleNonce
+        battleType: battleType
+        battleFlow: battleFlow
 
   # API for Component <OptionArea />
   shouldAutoShow: true
