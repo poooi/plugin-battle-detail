@@ -77,7 +77,7 @@ supportAttack = (enemyShip, support) ->
     critical.push false   # TODO: Aerial support may be cirtical attack.
     list.push new Attack AttackType[checkAttackType[0]], null, enemyShip[i - 1], enemyShip[i - 1].hp[1], enemyShip[i - 1].hp[0], dmg, critical
     enemyShip[i - 1].hp[0] -= damage
-  return list
+  list
 
 #api_opening_atack	：開幕雷撃戦 *スペルミスあり、注意
 #		api_frai		：雷撃ターゲット
