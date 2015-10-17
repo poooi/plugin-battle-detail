@@ -1,5 +1,4 @@
 {React, ReactBootstrap} = window
-{Grid, TabbedArea, TabPane} = ReactBootstrap
 
 simulater = require '../lib/simulate'
 {Ship, ShipOwner, Attack, AttackType, Stage, StageType} = require '../lib/common'
