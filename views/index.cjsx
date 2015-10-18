@@ -59,10 +59,10 @@ parseBattleFlow = (packet) ->
   switch packet?.poi_uri
     when '/kcsapi/api_req_sortie/battle', '/kcsapi/api_req_practice/battle', '/kcsapi/api_req_sortie/airbattle'
       battleType = 'normal'
-      stageFlow = [StageType.Kouku, StageType.Kouku, StageType.Support, StageType.Raigeki, StageType.Hougeki, StageType.Hougeki, StageType.Raigeki, StageType.Hougeki]
+      stageFlow = [StageType.AerialCombat, StageType.AerialCombat, StageType.Support, StageType.TorpedoSalvo, StageType.Shelling, StageType.Shelling, StageType.TorpedoSalvo, StageType.Shelling]
     when '/kcsapi/api_req_battle_midnight/battle', '/kcsapi/api_req_practice/midnight_battle', '/kcsapi/api_req_battle_midnight/sp_midnight'
       battleType = 'night'
-      stageFlow = [StageType.Hougeki]
+      stageFlow = [StageType.Shelling]
   if battleType
     battleFlow = simulater.simulate(packet)
     for stage in stageFlow
