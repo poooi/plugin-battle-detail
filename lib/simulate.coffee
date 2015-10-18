@@ -69,7 +69,7 @@ AerialCombat = (sortieShip, enemyShip, kouku) ->
 SupportFire = (enemyShip, support) ->
   list = []
   for damage, i in support
-    continue unless 1 < i < 6
+    continue unless i < 6
     damage = Math.floor(damage)
     dmg = []
     dmg.push damage
