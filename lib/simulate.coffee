@@ -40,7 +40,7 @@ checkNightAttackType = [
   6
 ]
 
-koukuAttack = (sortieShip, enemyShip, kouku) ->
+AerialCombat = (sortieShip, enemyShip, kouku) ->
   list = []
   if kouku.api_edam?
     for damage, i in kouku.api_edam
@@ -66,7 +66,7 @@ koukuAttack = (sortieShip, enemyShip, kouku) ->
   #console.log list
   list
 
-supportAttack = (enemyShip, support) ->
+SupportFire = (enemyShip, support) ->
   list = []
   for damage, i in support
     continue unless 1 < i < 6
@@ -89,7 +89,7 @@ supportAttack = (enemyShip, support) ->
 #		api_fcl			：クリティカルフラグ 0=ミス, 1=命中, 2=クリティカル
 #		api_ecl			：攻撃側に記述される
 
-raigekiAttack = (sortieShip, enemyShip, raigeki) ->
+TorpedoSalvo = (sortieShip, enemyShip, raigeki) ->
   list = []
   # 雷撃ターゲット
   for target, i in raigeki.api_frai
@@ -119,7 +119,7 @@ raigekiAttack = (sortieShip, enemyShip, raigeki) ->
   #console.log list
   list
 
-hougekiAttack = (sortieShip, enemyShip, hougeki, isNight) ->
+Shelling = (sortieShip, enemyShip, hougeki, isNight) ->
   list = []
   # 砲撃戦行動順
   for damageFrom, i in hougeki.api_at_list
@@ -173,67 +173,67 @@ module.exports =
     # Air battle
     if req.api_kouku?
       if req.api_kouku.api_stage3?
-        sortieProgress.push new Stage StageType.Kouku, koukuAttack sortieShip, enemyShip, req.api_kouku.api_stage3
+        sortieProgress.push new Stage StageType.AerialCombat, AerialCombat sortieShip, enemyShip, req.api_kouku.api_stage3
       if req.api_kouku.api_stage3_combined?
-        sortieProgress.push new Stage StageType.Kouku, koukuAttack combinedShip, enemyShip, req.api_kouku.api_stage3_combined
+        sortieProgress.push new Stage StageType.AerialCombat, AerialCombat combinedShip, enemyShip, req.api_kouku.api_stage3_combined
 
     # Second air battle
     if req.api_kouku2?
       if req.api_kouku2.api_stage3?
-        sortieProgress.push new Stage StageType.Kouku, koukuAttack sortieShip, enemyShip, req.api_kouku2.api_stage3
+        sortieProgress.push new Stage StageType.AerialCombat, AerialCombat sortieShip, enemyShip, req.api_kouku2.api_stage3
       if req.api_kouku2.api_stage3_combined?
-        sortieProgress.push new Stage StageType.Kouku, koukuAttack combinedShip, enemyShip, req.api_kouku2.api_stage3_combined
+        sortieProgress.push new Stage StageType.AerialCombat, AerialCombat combinedShip, enemyShip, req.api_kouku2.api_stage3_combined
 
     # Support battle
     if req.api_support_info?
       if req.api_support_info.api_support_airatack?
-        sortieProgress.push new Stage StageType.Support, supportAttack enemyShip, req.api_support_info.api_support_airatack.api_stage3.api_edam
+        sortieProgress.push new Stage StageType.Support, SupportFire enemyShip, req.api_support_info.api_support_airatack.api_stage3.api_edam
       else if req.api_support_info.api_support_hourai?
-        sortieProgress.push new Stage StageType.Support, supportAttack enemyShip, req.api_support_info.api_support_hourai.api_damage
+        sortieProgress.push new Stage StageType.Support, SupportFire enemyShip, req.api_support_info.api_support_hourai.api_damage
       else
-        sortieProgress.push new Stage StageType.Support, supportAttack enemyShip, req.api_support_info.api_damage
+        sortieProgress.push new Stage StageType.Support, SupportFire enemyShip, req.api_support_info.api_damage
 
     # Opening battle
     if req.api_opening_atack?
       if isCombined
-        sortieProgress.push new Stage StageType.Raigeki, raigekiAttack combinedShip, enemyShip, req.api_opening_atack
+        sortieProgress.push new Stage StageType.TorpedoSalvo, TorpedoSalvo combinedShip, enemyShip, req.api_opening_atack
       else
-        sortieProgress.push new Stage StageType.Raigeki, raigekiAttack sortieShip, enemyShip, req.api_opening_atack
+        sortieProgress.push new Stage StageType.TorpedoSalvo, TorpedoSalvo sortieShip, enemyShip, req.api_opening_atack
 
     # First hougeki battle
     if req.api_hougeki1?
       if isCombined && !isWater
-        sortieProgress.push new Stage StageType.Hougeki, hougekiAttack combinedShip, enemyShip, req.api_hougeki1, false
+        sortieProgress.push new Stage StageType.Shelling, Shelling combinedShip, enemyShip, req.api_hougeki1, false
       else
-        sortieProgress.push new Stage StageType.Hougeki, hougekiAttack sortieShip, enemyShip, req.api_hougeki1, false
+        sortieProgress.push new Stage StageType.Shelling, Shelling sortieShip, enemyShip, req.api_hougeki1, false
 
     # Combined fleet raigeki
     if req.api_raigeki? && isCombined && !isWater
-      sortieProgress.push new Stage StageType.Raigeki, raigekiAttack combinedShip, enemyShip, req.api_raigeki
+      sortieProgress.push new Stage StageType.TorpedoSalvo, TorpedoSalvo combinedShip, enemyShip, req.api_raigeki
 
     # Second hougeki battle
     if req.api_hougeki2?
-      sortieProgress.push new Stage StageType.Hougeki, hougekiAttack sortieShip, enemyShip, req.api_hougeki2, false
+      sortieProgress.push new Stage StageType.Shelling, Shelling sortieShip, enemyShip, req.api_hougeki2, false
 
     # Combined hougeki battle
     if req.api_hougeki3?
       if isCombined && isWater
-        sortieProgress.push new Stage StageType.Hougeki, hougekiAttack combinedShip, enemyShip, req.api_hougeki3, false
+        sortieProgress.push new Stage StageType.Shelling, Shelling combinedShip, enemyShip, req.api_hougeki3, false
       else
-        sortieProgress.push new Stage StageType.Hougeki, hougekiAttack sortieShip, enemyShip, req.api_hougeki3, false
+        sortieProgress.push new Stage StageType.Shelling, Shelling sortieShip, enemyShip, req.api_hougeki3, false
 
     # Raigeki battle
     if req.api_raigeki?
       if isCombined
         if isWater
-          sortieProgress.push new Stage StageType.Raigeki, raigekiAttack combinedShip, enemyShip, req.api_raigeki
+          sortieProgress.push new Stage StageType.TorpedoSalvo, TorpedoSalvo combinedShip, enemyShip, req.api_raigeki
       else
-        sortieProgress.push new Stage StageType.Raigeki, raigekiAttack sortieShip, enemyShip, req.api_raigeki
+        sortieProgress.push new Stage StageType.TorpedoSalvo, TorpedoSalvo sortieShip, enemyShip, req.api_raigeki
 
     # Night battle
     if req.api_hougeki?
       if isCombined
-        sortieProgress.push new Stage StageType.Hougeki, hougekiAttack combinedShip, enemyShip, req.api_hougeki, true
+        sortieProgress.push new Stage StageType.Shelling, Shelling combinedShip, enemyShip, req.api_hougeki, true
       else
-        sortieProgress.push new Stage StageType.Hougeki, hougekiAttack sortieShip, enemyShip, req.api_hougeki, true
+        sortieProgress.push new Stage StageType.Shelling, Shelling sortieShip, enemyShip, req.api_hougeki, true
     sortieProgress

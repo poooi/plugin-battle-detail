@@ -66,9 +66,9 @@ class Stage
 
 # enum StageType
 StageType =
-  Kouku: "Kouku",
-  Raigeki: "Raigeki",
-  Hougeki: "Hougeki",
+  AerialCombat: "AerialCombat",
+  TorpedoSalvo: "TorpedoSalvo",
+  Shelling: "Shelling",
   Support: "Support"
 
 
