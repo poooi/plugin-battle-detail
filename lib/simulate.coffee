@@ -156,7 +156,7 @@ Shelling = (sortieShip, enemyShip, hougeki, isNight) ->
 module.exports =
   simulate: (req) ->
     isCombined = req.poi_is_combined
-    isWater = req.poi_is_water
+    isWater = !req.poi_is_carrier
     # Initialization of sortieShip
     sortieShip = []
     enemyShip = []

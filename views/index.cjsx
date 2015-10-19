@@ -13,7 +13,7 @@ updateNonce = (nonce) ->
   else
     return 1
 
-updatePacketWithFleetInfo = (packet, isCombined, isWater, sortieFleetID, combinedFleetID) ->
+updatePacketWithFleetInfo = (packet, isCombined, isCarrier, sortieFleetID, combinedFleetID) ->
   return null if packet is null
   # Obtain fleet information. (Ship id and ship equipment.)
   # Empty slot is `null`.
@@ -39,7 +39,7 @@ updatePacketWithFleetInfo = (packet, isCombined, isWater, sortieFleetID, combine
   obtainFleetInfo combinedFleetID, combinedFleet, combinedEquipment
 
   packet.poi_is_combined = isCombined   # 連合艦隊？
-  packet.poi_is_water = isWater         # 水上打撃部隊=true, 空母機動部隊=false
+  packet.poi_is_carrier = isCarrier     # 空母機動部隊=true, 水上打撃部隊=false
   packet.poi_sortie_fleet = sortieFleet
   packet.poi_sortie_equipment = sortieEquipment
   packet.poi_combined_fleet = combinedFleet
@@ -53,16 +53,46 @@ updatePacketWithMetadata = (packet, path, timestamp, comment) ->
   packet.poi_comment = comment
   return packet
 
-parseBattleFlow = (packet) ->
+parseBattlePacket = (packet) ->
+  isCombined = packet.poi_is_combined
+  isCarrier = packet.poi_is_carrier
+
   battleType = null
+  # Normal Fleet
+  if not isCombined
+    switch packet?.poi_uri
+      # Battle, Air battle
+      when '/kcsapi/api_req_sortie/battle', '/kcsapi/api_req_practice/battle', '/kcsapi/api_req_sortie/airbattle'
+        battleType = 'normal'
+        stageFlow = [StageType.AerialCombat, StageType.AerialCombat, StageType.Support, StageType.TorpedoSalvo, StageType.Shelling, StageType.Shelling, StageType.TorpedoSalvo, StageType.Shelling]
+      # Night battle
+      when '/kcsapi/api_req_battle_midnight/battle', '/kcsapi/api_req_practice/midnight_battle', '/kcsapi/api_req_battle_midnight/sp_midnight'
+        battleType = 'night'
+        stageFlow = [StageType.Shelling]
+  # Carrier Task Force (空母機動部隊)
+  if isCombined and isCarrier
+    switch packet?.poi_uri
+      # Battle, Air battle
+      when 'api_req_combined_battle/battle', 'api_req_combined_battle/airbattle'
+        battleType = 'carrier'
+        stageFlow = [StageType.AerialCombat, StageType.AerialCombat, StageType.Support, StageType.TorpedoSalvo, StageType.Shelling, StageType.TorpedoSalvo, StageType.Shelling, StageType.Shelling, StageType.Shelling]
+      # Night battle
+      when 'api_req_combined_battle/midnight_battle'
+        battleType = 'night'
+        stageFlow = [StageType.Shelling]
+  # Surface Task Force (水上打撃部隊)
+  if isCombined and not isCarrier
+    switch packet?.poi_uri
+      # Battle, Air battle
+      when 'api_req_combined_battle/battle_water', 'api_req_combined_battle/airbattle'
+        battleType = 'surface'
+        stageFlow = [StageType.AerialCombat, StageType.AerialCombat, StageType.Support, StageType.TorpedoSalvo, StageType.Shelling, StageType.Shelling, StageType.Shelling, StageType.TorpedoSalvo, StageType.Shelling]
+      # Night battle
+      when 'api_req_combined_battle/midnight_battle'
+        battleType = 'night'
+        stageFlow = [StageType.Shelling]
+
   formedFlow = []
-  switch packet?.poi_uri
-    when '/kcsapi/api_req_sortie/battle', '/kcsapi/api_req_practice/battle', '/kcsapi/api_req_sortie/airbattle'
-      battleType = 'normal'
-      stageFlow = [StageType.AerialCombat, StageType.AerialCombat, StageType.Support, StageType.TorpedoSalvo, StageType.Shelling, StageType.Shelling, StageType.TorpedoSalvo, StageType.Shelling]
-    when '/kcsapi/api_req_battle_midnight/battle', '/kcsapi/api_req_practice/midnight_battle', '/kcsapi/api_req_battle_midnight/sp_midnight'
-      battleType = 'night'
-      stageFlow = [StageType.Shelling]
   if battleType
     battleFlow = simulater.simulate(packet)
     for stage in stageFlow
@@ -74,6 +104,7 @@ parseBattleFlow = (packet) ->
     battleType: battleType
     battleFlow: formedFlow
 
+
 MainArea = React.createClass
   componentDidMount: ->
     window.addEventListener 'game.response', @handleResponse
@@ -83,7 +114,7 @@ MainArea = React.createClass
   getInitialState: ->
     # Game states
     isCombined: false
-    isWater: false
+    isCarrier: false
     battleComment: ""
     # Battle Packets Management
     battlePackets: []
@@ -91,8 +122,8 @@ MainArea = React.createClass
     ## Battle Detail related
     # type = normal    : Normal battle
     # type = night     : Only night battle
-    # type = combined1 : 水上打撃部隊
-    # type = combined2 : 空母機動部隊
+    # type = carrier   : Carrier Task Force (空母機動部隊)
+    # type = surface   : Surface Task Force (水上打撃部隊)
     battleNonce: 0
     battleType: null
     battleFlow: []
@@ -100,7 +131,7 @@ MainArea = React.createClass
   handleResponse: (e) ->
     {method, path, body, postBody} = e.detail
     {$ships, _ships, _decks} = window
-    {isCombined, isWater, battleComment, battlePackets, battlePacketsNonce, battleNonce, battleType, battleFlow} = @state
+    {isCombined, isCarrier, battleComment, battlePackets, battlePacketsNonce, battleNonce, battleType, battleFlow} = @state
     isStateChanged = false
 
     # Game states
@@ -154,7 +185,7 @@ MainArea = React.createClass
 
     if isBattle
       isStateChanged = true
-      updatePacketWithFleetInfo body, isCombined, isWater, sortieID, combinedID
+      updatePacketWithFleetInfo body, isCombined, isCarrier, sortieID, combinedID
       updatePacketWithMetadata body, path, timestamp, battleComment
       battlePackets.unshift body
       battlePacketsNonce = updateNonce battlePacketsNonce
@@ -162,14 +193,14 @@ MainArea = React.createClass
         battlePackets.pop()
       # Render battle packet
       if @shouldAutoShow
-        {battleType, battleFlow} = parseBattleFlow body
+        {battleType, battleFlow} = parseBattlePacket body
         battleNonce = updateNonce battleNonce
 
     # update state
     if isStateChanged
       @setState
         isCombined: isCombined
-        isWater: isWater
+        isCarrier: isCarrier
         battleComment: battleComment
         battlePackets: battlePackets
         battlePacketsNonce: battlePacketsNonce
@@ -190,7 +221,7 @@ MainArea = React.createClass
   # API for Component <OptionArea />
   updateBattleDetail: (packet) ->
     {battleNonce} = @state
-    {battleType, battleFlow} = parseBattleFlow packet
+    {battleType, battleFlow} = parseBattlePacket packet
     battleNonce = updateNonce battleNonce
     @setState
       battleNonce: battleNonce
