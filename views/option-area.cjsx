@@ -30,12 +30,9 @@ OptionArea = React.createClass
     @props.updateBattleDetail packet
 
   handleClickExport: ->
-    index = parseInt(@refs.selectedIndex.getValue())
-    return if index is NaN
-    index = 0 if index == -1
     isSuccessful = true
     try
-      packet = @props.battlePackets[index]
+      packet = @state.selectedPacket
       packet = JSON.stringify packet
       clipboard.writeText(packet)
     catch e
