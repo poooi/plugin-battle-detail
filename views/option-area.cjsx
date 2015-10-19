@@ -18,16 +18,19 @@ OptionArea = React.createClass
   handleSelectPacket: ->
     index = parseInt(@refs.selectedIndex.getValue())
     return if index is NaN
-    if index == -1
+    # Use 'default' when selected packet out of range
+    if index < 0
       packet = @props.battlePackets[0]
       @props.toggleAutoShow true
+      @setState
+        selectedPacket: null
+      @props.updateBattleDetail packet
     else
       packet = @props.battlePackets[index]
       @props.toggleAutoShow false
-
-    @setState
-      selectedPacket: packet
-    @props.updateBattleDetail packet
+      @setState
+        selectedPacket: packet
+      @props.updateBattleDetail packet
 
   handleClickExport: ->
     isSuccessful = true
