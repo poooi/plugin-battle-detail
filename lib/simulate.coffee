@@ -44,22 +44,22 @@ AerialCombat = (sortieShip, enemyShip, kouku) ->
   list = []
   if kouku.api_edam?
     for damage, i in kouku.api_edam
+      continue if (kouku.api_ebak_flag <= 0 && kouku.api_erai_flag <= 0) || i == 0
       damage = Math.floor(damage)
-      continue if damage <= 0
-      dmg = []
-      dmg.push damage
-      critical = []
-      critical.push kouku.api_fcl_flag[i] == 1
-      list.push new Attack AttackType[checkAttackType[0]], null, enemyShip[i - 1], enemyShip[i - 1].hp[1], enemyShip[i - 1].hp[0], dmg, critical
-      enemyShip[i - 1].hp[0] -= damage
-  if kouku.api_fdam?
-    for damage, i in kouku.api_fdam
-      damage = Math.floor(damage)
-      continue if damage <= 0
       dmg = []
       dmg.push damage
       critical = []
       critical.push kouku.api_ecl_flag[i] == 1
+      list.push new Attack AttackType[checkAttackType[0]], null, enemyShip[i - 1], enemyShip[i - 1].hp[1], enemyShip[i - 1].hp[0], dmg, critical
+      enemyShip[i - 1].hp[0] -= damage
+  if kouku.api_fdam?
+    for damage, i in kouku.api_fdam
+      continue if kouku.api_fbak_flag <= 0 && kouku.api_frai_flag <= 0
+      damage = Math.floor(damage)
+      dmg = []
+      dmg.push damage
+      critical = []
+      critical.push kouku.api_fcl_flag[i] == 1
       list.push new Attack AttackType[checkAttackType[0]], null, sortieShip[i - 1], sortieShip[i - 1].hp[1], sortieShip[i - 1].hp[0], dmg, critical
       sortieShip[i - 1].hp[0] -= damage
   # test log
