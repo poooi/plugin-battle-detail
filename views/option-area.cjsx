@@ -60,9 +60,10 @@ OptionArea = React.createClass
     try
       packet = clipboard.readText(packet)
       packet = JSON.parse packet
-      @props.updateBattleDetail packet
+      @props.toggleAutoShow false
       @setState
         selectedPacket: packet
+      @props.updateBattleDetail packet
     finally
       window.showModal
         title: __ "Paste Data"
