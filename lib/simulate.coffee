@@ -40,6 +40,16 @@ checkNightAttackType = [
   6
 ]
 
+checkRepairItem = (sortieShip) ->
+  if sortieShip.hp[0] <= 0
+    for id, i in sortieShip.equipment
+      if id == 42
+        sortieShip.hp[0] = Math.floor(sortieShip.hp[1] / 5)
+        break
+      else if id == 43
+        sortieShip.hp[0] = sortieShip.hp[1]
+        break
+
 AerialCombat = (sortieShip, enemyShip, kouku) ->
   list = []
   if kouku.api_edam?
@@ -62,6 +72,7 @@ AerialCombat = (sortieShip, enemyShip, kouku) ->
       critical.push kouku.api_ecl_flag[i] == 1
       list.push new Attack AttackType[checkAttackType[0]], null, sortieShip[i - 1], sortieShip[i - 1].hp[1], sortieShip[i - 1].hp[0], dmg, critical
       sortieShip[i - 1].hp[0] -= damage
+      checkRepairItem sortieShip[i - 1]
   # test log
   #console.log list
   list
@@ -115,6 +126,7 @@ TorpedoSalvo = (sortieShip, enemyShip, raigeki) ->
       critical.push crt == 2
     list.push new Attack AttackType[checkAttackType[0]], enemyShip[i - 1], sortieShip[target - 1], sortieShip[target - 1].hp[1], sortieShip[target - 1].hp[0], dmg, critical
     sortieShip[target - 1].hp[0] -= damage
+    checkRepairItem sortieShip[i - 1]
   # test log
   #console.log list
   list
@@ -144,6 +156,7 @@ Shelling = (sortieShip, enemyShip, hougeki, isNight) ->
       # api_cl_list		：クリティカルフラグ 0=ミス, 1=命中, 2=クリティカル　命中(0ダメージ)も存在する？
       list.push new Attack AttackType[checkAttackType[attackType]], enemyShip[damageFrom - 6], sortieShip[target], sortieShip[target].hp[1], sortieShip[target].hp[0], dmg, critical
       sortieShip[target].hp[0] -= totalDamage
+      checkRepairItem sortieShip[i - 1]
     else
       # api_cl_list		：クリティカルフラグ 0=ミス, 1=命中, 2=クリティカル　命中(0ダメージ)も存在する？
       list.push new Attack AttackType[checkAttackType[attackType]], sortieShip[damageFrom], enemyShip[target - 6], enemyShip[target - 6].hp[1], enemyShip[target - 6].hp[0], dmg, critical
@@ -164,10 +177,10 @@ module.exports =
     sortiePos = 0
     sortiePos = req.api_deck_id - 1 if !isCombined
     for i in [0..5]
-      sortieShip.push new Ship ShipOwner.Ours, req.poi_sortie_fleet[i], i+1, [req.api_nowhps[i + 1], req.api_maxhps[i + 1]]
-      enemyShip.push new Ship ShipOwner.Enemy, req.api_ship_ke[i + 1], i+1, [req.api_nowhps[i + 7], req.api_maxhps[i + 7]]
+      sortieShip.push new Ship ShipOwner.Ours, req.poi_sortie_fleet[i], i + 1, [req.api_nowhps[i + 1], req.api_maxhps[i + 1]], req.poi_sortie_equipment[i]
+      enemyShip.push new Ship ShipOwner.Enemy, req.api_ship_ke[i + 1], i + 1, [req.api_nowhps[i + 7], req.api_maxhps[i + 7]], req.poi_combined_equipment[i]
       if isCombined
-        combinedShip.push new Ship ShipOwner.Ours, req.poi_combined_fleet[i], i+1, [req.api_nowhps[i + 13], req.api_maxhps[i + 13]]
+        combinedShip.push new Ship ShipOwner.Ours, req.poi_combined_fleet[i], i + 1, [req.api_nowhps[i + 13], req.api_maxhps[i + 13]]
     sortieProgress = []
 
     # Air battle
