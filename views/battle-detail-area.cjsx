@@ -51,21 +51,20 @@ HpBar = React.createClass
     <ProgressBar className="hp-bar" bsStyle={getHpStyle percent} now={percent} label={label} />
 
 
-# <DamageInfo damage={damage} isCritical={isCritical} />
 DamageInfo = React.createClass
   render: ->
     <span>
     {
       elements = []
-      elements.push getAttackTypeName @props.type
-      elements.push " ("
+      elements.push <span key={-1}>{getAttackTypeName @props.type}</span>
+      elements.push <span key={-2}>{" ("}</span>
       for damage, i in @props.damage
         if damage == 0
           damage = "miss"
-        elements.push <span style={if @props.isCritical[i] then color: "#FFFF00"}>{damage}</span>
-        elements.push ", "
+        elements.push <span key={10*i + 1} style={if @props.isCritical[i] then color: "#FFFF00"}>{damage}</span>
+        elements.push <span key={10*i + 2}>{", "}</span>
       elements.pop()  # Remove last comma
-      elements.push ")"
+      elements.push <span key={-3}>{")"}</span>
       elements
     }
     </span>
