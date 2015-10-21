@@ -33,13 +33,16 @@ OptionArea = React.createClass
       @props.updateBattleDetail packet
 
   handleClickExport: ->
-    isSuccessful = true
+    isSuccessful = false
     try
       packet = @state.selectedPacket
-      packet = JSON.stringify packet
-      clipboard.writeText(packet)
+      packet = @props.battlePackets[0] if packet is null
+      if packet isnt null
+        packet = JSON.stringify packet
+        clipboard.writeText(packet)
+        isSuccessful = true
     catch e
-      isSuccessful = false
+      # do nothing
 
     if isSuccessful
       window.showModal
