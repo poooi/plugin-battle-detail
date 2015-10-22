@@ -61,7 +61,7 @@ simulateAerialCombat = (sortieShip, enemyShip, kouku) ->
       dmg = []
       dmg.push damage
       critical = []
-      critical.push if kouku.api_ecl_flag[i] == 1 then HitType.Critical else HitType.Hit
+      critical.push if kouku.api_ecl_flag[i] == 1 then HitType.Critical else if damage == 0 then HitType.Miss else HitType.Hit
       list.push new Attack AttackType[AttackTypeMap[0]], null, enemyShip[i - 1], enemyShip[i - 1].maxHP, enemyShip[i - 1].nowHP, dmg, critical
       enemyShip[i - 1].nowHP -= damage
   if kouku.api_fdam?
@@ -71,7 +71,7 @@ simulateAerialCombat = (sortieShip, enemyShip, kouku) ->
       dmg = []
       dmg.push damage
       critical = []
-      critical.push if kouku.api_fcl_flag[i] == 1 then HitType.Critical else HitType.Hit
+      critical.push if kouku.api_fcl_flag[i] == 1 then HitType.Critical else if damage == 0 then HitType.Miss else HitType.Hit
       list.push new Attack AttackType[AttackTypeMap[0]], null, sortieShip[i - 1], sortieShip[i - 1].maxHP, sortieShip[i - 1].nowHP, dmg, critical
       sortieShip[i - 1].nowHP -= damage
       checkRepairItem sortieShip[i - 1]
@@ -81,15 +81,36 @@ simulateAerialCombat = (sortieShip, enemyShip, kouku) ->
 
 simulateSupportFire = (enemyShip, support) ->
   list = []
-  for damage, i in support
-    continue unless 1 <= i <= 6
-    damage = Math.floor(damage)
-    dmg = []
-    dmg.push damage
-    critical = []
-    critical.push HitType.Hit   # TODO: Aerial support may be cirtical attack.
-    list.push new Attack AttackType[AttackTypeMap[0]], null, enemyShip[i - 1], enemyShip[i - 1].maxHP, enemyShip[i - 1].nowHP, dmg, critical
-    enemyShip[i - 1].nowHP -= damage
+  if support.api_support_airatack?
+    for damage, i in support.api_support_airatack.api_stage3.api_edam
+      continue unless 1 <= i <= 6
+      damage = Math.floor(damage)
+      dmg = []
+      dmg.push damage
+      critical = []
+      if support.api_support_airatack.api_stage3.api_ecl_flag[i] == 2
+        critical.push HitType.Critical
+      else if support.api_support_airatack.api_stage3.api_ecl_flag[i] == 1
+        critical.push HitType.Hit
+      else
+        critical.push HitType.Miss
+      list.push new Attack AttackType[AttackTypeMap[0]], null, enemyShip[i - 1], enemyShip[i - 1].maxHP, enemyShip[i - 1].nowHP, dmg, critical
+      enemyShip[i - 1].nowHP -= damage
+  else if support.api_support_hourai?
+    for damage, i in support.api_support_hourai.api_damage
+      continue unless 1 <= i <= 6
+      damage = Math.floor(damage)
+      dmg = []
+      dmg.push damage
+      critical = []
+      if support.api_support_hourai.api_cl_list[i] == 2
+        critical.push HitType.Critical
+      else if support.api_support_hourai.api_cl_list[i] == 1
+        critical.push HitType.Hit
+      else
+        critical.push HitType.Miss
+      list.push new Attack AttackType[AttackTypeMap[0]], null, enemyShip[i - 1], enemyShip[i - 1].maxHP, enemyShip[i - 1].nowHP, dmg, critical
+      enemyShip[i - 1].nowHP -= damage
   list
 
 #api_opening_atack	：開幕雷撃戦 *スペルミスあり、注意
@@ -113,7 +134,12 @@ simulateTorpedoSalvo = (sortieShip, enemyShip, raigeki) ->
     # クリティカルフラグ 0=ミス, 1=命中, 2=クリティカル
     critical = []
     for crt, j in raigeki.api_fcl[i]
-      critical.push if crt == 2 then HitType.Critical else HitType.Hit
+      if crt == 2
+        critical.push HitType.Critical
+      else if crt == 1
+        critical.push HitType.Hit
+      else
+        critical.push HitType.Miss
     list.push new Attack AttackType[AttackTypeMap[0]], sortieShip[i - 1], enemyShip[target - 1], enemyShip[target - 1].maxHP, enemyShip[target - 1].nowHP, dmg, critical
     enemyShip[target - 1].nowHP -= damage
   # 雷撃ターゲット
@@ -125,7 +151,12 @@ simulateTorpedoSalvo = (sortieShip, enemyShip, raigeki) ->
     # api_cl_list		：クリティカルフラグ 0=ミス, 1=命中, 2=クリティカル
     critical = []
     for crt, j in raigeki.api_ecl[i]
-      critical.push if crt == 2 then HitType.Critical else HitType.Hit
+      if crt == 2
+        critical.push HitType.Critical
+      else if crt == 1
+        critical.push HitType.Hit
+      else
+        critical.push HitType.Miss
     list.push new Attack AttackType[AttackTypeMap[0]], enemyShip[i - 1], sortieShip[target - 1], sortieShip[target - 1].maxHP, sortieShip[target - 1].nowHP, dmg, critical
     sortieShip[target - 1].nowHP -= damage
     checkRepairItem sortieShip[target - 1]
@@ -147,7 +178,12 @@ simulateShelling = (sortieShip, enemyShip, hougeki, isNight) ->
       totalDamage += damage
     critical = []
     for crt, j in hougeki.api_cl_list[i]
-      critical.push if crt == 2 then HitType.Critical else HitType.Hit
+      if crt == 2
+        critical.push HitType.Critical
+      else if crt == 1
+        critical.push HitType.Hit
+      else
+        critical.push HitType.Miss
     target = hougeki.api_df_list[i][0] - 1
     attackType = 0
     if !isNight
@@ -200,12 +236,7 @@ simulate = (req) ->
 
     # Support battle
     if req.api_support_info?
-      if req.api_support_info.api_support_airatack?
-        sortieProgress.push new Stage StageType.Support, simulateSupportFire enemyShip, req.api_support_info.api_support_airatack.api_stage3.api_edam
-      else if req.api_support_info.api_support_hourai?
-        sortieProgress.push new Stage StageType.Support, simulateSupportFire enemyShip, req.api_support_info.api_support_hourai.api_damage
-      else
-        sortieProgress.push new Stage StageType.Support, simulateSupportFire enemyShip, req.api_support_info.api_damage
+      sortieProgress.push new Stage StageType.Support, simulateSupportFire enemyShip, req.api_support_info
 
     # Opening battle
     if req.api_opening_atack?
