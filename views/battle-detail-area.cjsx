@@ -1,6 +1,6 @@
 {React, ReactBootstrap} = window
 {Panel, ProgressBar} = ReactBootstrap
-{Ship, ShipOwner, Attack, AttackType, Stage, StageType} = require '../lib/common'
+{Ship, ShipOwner, Attack, AttackType, HitType, Stage, StageType} = require '../lib/common'
 
 
 getHpStyle = (percent) ->
@@ -61,7 +61,7 @@ DamageInfo = React.createClass
       for damage, i in @props.damage
         if damage == 0
           damage = "miss"
-        elements.push <span key={10*i + 1} style={if @props.isCritical[i] then color: "#FFFF00"}>{damage}</span>
+        elements.push <span key={10*i + 1} style={if @props.hit[i] == HitType.Critical then color: "#FFFF00"}>{damage}</span>
         elements.push <span key={10*i + 2}>{", "}</span>
       elements.pop()  # Remove last comma
       elements.push <span key={-3}>{")"}</span>
@@ -85,7 +85,7 @@ AttackTableRow = React.createClass
       name.join " "
 
     {_ships, $ships} = window
-    {type, fromShip, toShip, maxHP, nowHP, damage, isCritical} = @props.attack
+    {type, fromShip, toShip, maxHP, nowHP, damage, hit, useItem} = @props.attack
     fromShipName = getShipName fromShip
     toShipName = getShipName toShip
     totalDamage = damage.reduce ((p, x) -> p + x)
@@ -95,7 +95,7 @@ AttackTableRow = React.createClass
         <span style={flex: 6}><HpBar max={maxHP} now={nowHP} detla={totalDamage} /></span>
         <span style={flex: 6}>{toShipName}</span>
         <span style={flex: 1}>←</span>
-        <span style={flex: 6}><DamageInfo type={type} damage={damage} isCritical={isCritical} /></span>
+        <span style={flex: 6}><DamageInfo type={type} damage={damage} hit={hit} /></span>
         <span style={flex: 1}></span>
         <span style={flex: 6}>{fromShipName}</span>
         <span style={flex: 6}></span>
@@ -105,7 +105,7 @@ AttackTableRow = React.createClass
         <span style={flex: 6}></span>
         <span style={flex: 6}>{fromShipName}</span>
         <span style={flex: 1}></span>
-        <span style={flex: 6}><DamageInfo type={type} damage={damage} isCritical={isCritical} /></span>
+        <span style={flex: 6}><DamageInfo type={type} damage={damage} hit={hit} /></span>
         <span style={flex: 1}>→</span>
         <span style={flex: 6}>{toShipName}</span>
         <span style={flex: 6}><HpBar max={maxHP} now={nowHP} detla={totalDamage} /></span>
