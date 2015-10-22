@@ -9,7 +9,7 @@
 # poi_combined_equipment = [[int, ...], ...]
 ####
 
-{Ship, ShipOwner, Attack, AttackType, Stage, StageType} = require './common'
+{Ship, ShipOwner, Attack, AttackType, HitType, Stage, StageType} = require './common'
 
 
 # 特殊砲撃　0=通常, 1=レーザー攻撃, 2=連撃, 3=カットイン(主砲/副砲), 4=カットイン(主砲/電探), 5=カットイン(主砲/徹甲), 6=カットイン(主砲/主砲)
@@ -59,7 +59,7 @@ AerialCombat = (sortieShip, enemyShip, kouku) ->
       dmg = []
       dmg.push damage
       critical = []
-      critical.push kouku.api_ecl_flag[i] == 1
+      critical.push if kouku.api_ecl_flag[i] == 1 then HitType.Critical else HitType.Hit
       list.push new Attack AttackType[checkAttackType[0]], null, enemyShip[i - 1], enemyShip[i - 1].hp[1], enemyShip[i - 1].hp[0], dmg, critical
       enemyShip[i - 1].hp[0] -= damage
   if kouku.api_fdam?
@@ -69,7 +69,7 @@ AerialCombat = (sortieShip, enemyShip, kouku) ->
       dmg = []
       dmg.push damage
       critical = []
-      critical.push kouku.api_fcl_flag[i] == 1
+      critical.push if kouku.api_fcl_flag[i] == 1 then HitType.Critical else HitType.Hit
       list.push new Attack AttackType[checkAttackType[0]], null, sortieShip[i - 1], sortieShip[i - 1].hp[1], sortieShip[i - 1].hp[0], dmg, critical
       sortieShip[i - 1].hp[0] -= damage
       checkRepairItem sortieShip[i - 1]
@@ -85,7 +85,7 @@ SupportFire = (enemyShip, support) ->
     dmg = []
     dmg.push damage
     critical = []
-    critical.push false   # TODO: Aerial support may be cirtical attack.
+    critical.push HitType.Hit   # TODO: Aerial support may be cirtical attack.
     list.push new Attack AttackType[checkAttackType[0]], null, enemyShip[i - 1], enemyShip[i - 1].hp[1], enemyShip[i - 1].hp[0], dmg, critical
     enemyShip[i - 1].hp[0] -= damage
   list
@@ -111,7 +111,7 @@ TorpedoSalvo = (sortieShip, enemyShip, raigeki) ->
     # クリティカルフラグ 0=ミス, 1=命中, 2=クリティカル
     critical = []
     for crt, j in raigeki.api_fcl[i]
-      critical.push crt == 2
+      critical.push if crt == 2 then HitType.Critical else HitType.Hit
     list.push new Attack AttackType[checkAttackType[0]], sortieShip[i - 1], enemyShip[target - 1], enemyShip[target - 1].hp[1], enemyShip[target - 1].hp[0], dmg, critical
     enemyShip[target - 1].hp[0] -= damage
   # 雷撃ターゲット
@@ -123,7 +123,7 @@ TorpedoSalvo = (sortieShip, enemyShip, raigeki) ->
     # api_cl_list		：クリティカルフラグ 0=ミス, 1=命中, 2=クリティカル
     critical = []
     for crt, j in raigeki.api_ecl[i]
-      critical.push crt == 2
+      critical.push if crt == 2 then HitType.Critical else HitType.Hit
     list.push new Attack AttackType[checkAttackType[0]], enemyShip[i - 1], sortieShip[target - 1], sortieShip[target - 1].hp[1], sortieShip[target - 1].hp[0], dmg, critical
     sortieShip[target - 1].hp[0] -= damage
     checkRepairItem sortieShip[target - 1]
@@ -145,7 +145,7 @@ Shelling = (sortieShip, enemyShip, hougeki, isNight) ->
       totalDamage += damage
     critical = []
     for crt, j in hougeki.api_cl_list[i]
-      critical.push crt == 2
+      critical.push if crt == 2 then HitType.Critical else HitType.Hit
     target = hougeki.api_df_list[i][0] - 1
     attackType = 0
     if !isNight
@@ -177,8 +177,8 @@ module.exports =
     sortiePos = 0
     sortiePos = req.api_deck_id - 1 if !isCombined
     for i in [0..5]
-      sortieShip.push new Ship ShipOwner.Ours, req.poi_sortie_fleet[i], i + 1, [req.api_nowhps[i + 1], req.api_maxhps[i + 1]], req.poi_sortie_equipment[i]
-      enemyShip.push new Ship ShipOwner.Enemy, req.api_ship_ke[i + 1], i + 1, [req.api_nowhps[i + 7], req.api_maxhps[i + 7]], req.poi_combined_equipment[i]
+      sortieShip.push new Ship ShipOwner.Ours, req.poi_sortie_fleet[i], i + 1, req.poi_sortie_equipment[i], [req.api_nowhps[i + 1], req.api_maxhps[i + 1]]
+      enemyShip.push new Ship ShipOwner.Enemy, req.api_ship_ke[i + 1], i + 1, req.poi_combined_equipment[i], [req.api_nowhps[i + 7], req.api_maxhps[i + 7]]
       if isCombined
         combinedShip.push new Ship ShipOwner.Ours, req.poi_combined_fleet[i], i + 1, [req.api_nowhps[i + 13], req.api_maxhps[i + 13]]
     sortieProgress = []
