@@ -6,14 +6,13 @@
 
 ## class Ship
 class Ship
-  constructor: (@owner, @id, @position, @equipment, @hp) ->
+  constructor: (@owner, @id, @position, @equipment, @nowHP, @maxHP) ->
     # owner = enum ShipOwner
     # id = int : api_id of api_start2.api_mst_ship
     # position = int : Position of ship in fleet
     # equipment = [int, ...] : api_id of api_start2.api_mst_slotitem
-    # hp[0] = now = the array of the fleet's now hp
-    # hp[1] = max = the array of the fleet's max hp
-    # equipment = the array of the fleet's equipment
+    # nowHP = int
+    # maxHP = int
 
 # enum ShipOwner
 ShipOwner =
