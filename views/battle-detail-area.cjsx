@@ -153,29 +153,61 @@ BattleDetailArea = React.createClass
     return true
 
   render: ->
+    switch @props.battleType
+      when 'normal'
+        titles = [
+          "#{__ "Aerial Combat"} - Stage 3",
+          "#{__ "Aerial Combat"} - Stage 3",
+          "#{__ 'Expedition Supporting Fire'}",
+          "#{__ 'Opening Torpedo Salvo'}",
+          "#{__ 'Shelling'}",
+          "#{__ 'Shelling'}",
+          "#{__ 'Torpedo Salvo'}",
+          "#{__ 'Night Combat'}"
+        ]
+      when 'carrier'
+        titles = [
+          "#{__ "Aerial Combat"} - Stage 3",
+          "#{__ "Aerial Combat"} - Stage 3",
+          "#{__ 'Expedition Supporting Fire'}",
+          "#{__ 'Opening Torpedo Salvo'}",
+          "#{__ 'Shelling'} - #{__ 'Escort Fleet'}",
+          "#{__ 'Torpedo Salvo'}",
+          "#{__ 'Shelling'} - #{__ 'Main Fleet'}",
+          "#{__ 'Shelling'} - #{__ 'Main Fleet'}",
+          "#{__ 'Night Combat'}"
+        ]
+      when 'surface'
+        titles = [
+          "#{__ "Aerial Combat"} - Stage 3",
+          "#{__ "Aerial Combat"} - Stage 3",
+          "#{__ 'Expedition Supporting Fire'}",
+          "#{__ 'Opening Torpedo Salvo'}",
+          "#{__ 'Shelling'} - #{__ 'Main Fleet'}",
+          "#{__ 'Shelling'} - #{__ 'Main Fleet'}",
+          "#{__ 'Shelling'} - #{__ 'Escort Fleet'}",
+          "#{__ 'Torpedo Salvo'}",
+          "#{__ 'Night Combat'}"
+        ]
+      when 'night'
+        titles = [
+          "#{__ 'Night Combat'}"
+        ]
+      else
+        titles = null
+
     <div className="battle-detail-area">
-    {
-      switch @props.battleType
-        when 'normal'
-          <Panel header={__ "Battle Detail"}>
-            <AttackTable title={__("Aerial Combat") + " - Stage 3"} attacks={@props.battleFlow[0]?.detail} />
-            <AttackTable title={__("Aerial Combat") + " - Stage 3"} attacks={@props.battleFlow[1]?.detail} />
-            <AttackTable title={__ "Expedition Supporting Fire"} attacks={@props.battleFlow[2]?.detail} />
-            <AttackTable title={__ "Opening Torpedo Salvo"} attacks={@props.battleFlow[3]?.detail} />
-            <AttackTable title={__ "Shelling"} attacks={@props.battleFlow[4]?.detail} />
-            <AttackTable title={__ "Shelling"} attacks={@props.battleFlow[5]?.detail} />
-            <AttackTable title={__ "Torpedo Salvo"} attacks={@props.battleFlow[6]?.detail} />
-            <AttackTable title={__ "Night Combat"} attacks={@props.battleFlow[7]?.detail} />
-          </Panel>
-        when 'night'
-          <Panel header={__ "Battle Detail"}>
-            <AttackTable title={__ "Night Combat"} attacks={@props.battleFlow[0]?.detail} />
-          </Panel>
+      <Panel header={__ "Battle Detail"}>
+      {
+        if titles
+          tables = []
+          for title, i in titles
+            tables.push <AttackTable key={i} title={title} attacks={@props.battleFlow[i]?.detail} />
+          tables
         else
-          <Panel header={__ "Battle Detail"}>
-            {__ "No battle"}
-          </Panel>
+          __ "No battle"
       }
+      </Panel>
     </div>
 
 module.exports = BattleDetailArea
