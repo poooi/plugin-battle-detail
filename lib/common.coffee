@@ -72,7 +72,7 @@ StageType =
 
 ## CommonJS exports
 module.exports = {
-  Ship, ShipOwner,
+  Ship, ShipOwner
   Attack, AttackType, HitType
   Stage, StageType
 }
