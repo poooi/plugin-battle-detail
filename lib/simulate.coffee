@@ -64,7 +64,7 @@ AerialCombat = (sortieShip, enemyShip, kouku) ->
       enemyShip[i - 1].hp[0] -= damage
   if kouku.api_fdam?
     for damage, i in kouku.api_fdam
-      continue if kouku.api_fbak_flag <= 0 && kouku.api_frai_flag <= 0
+      continue if (kouku.api_fbak_flag <= 0 && kouku.api_frai_flag <= 0) || i == 0
       damage = Math.floor(damage)
       dmg = []
       dmg.push damage
