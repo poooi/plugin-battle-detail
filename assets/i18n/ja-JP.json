@@ -28,15 +28,15 @@
   "Close": "閉じる",
 
   "Options": "設定",
-  "Copy Data": "データをコピー",
-  "The battle packet was copied to clipboard.": "戦闘データは既にクリップボードにコピーされました",
-  "You can send your friends the packet to share the battle.": "～友達に戦報（データ）を送って暁の水平線で収めた勝利をシェアしましょっぽい～",
-  "Failed to copy battle packet to clipboard!": "戦闘データをクリップボードにコピーすることに失敗しました",
-  "Paste Data": "データをペースト",
-  "A battle packet was pasted from clipboard.": "戦闘データは既にクリップボードからペーストしました",
-  "If you see no battle detail, you may have a broken packet.": "戦闘情報を表示できない場合にはデータが破損した可能性があります",
-  "Last Battle": "最新の戦い",
-  "Selected battle": "選択した戦い",
+  "Copy Data": "データをコピーします",
+  "The battle packet was copied to clipboard.": "戦闘データのクリップボードへのコピーに成功しました",
+  "You can send your friends the packet to share the battle.": "データを公開することで、戦闘を友達に共有できます！",
+  "Failed to copy battle packet to clipboard!": "戦闘データのクリップボードへのコピーに失敗しました",
+  "Paste Data": "データを贴り付けます",
+  "A battle packet was pasted from clipboard.": "戦闘データのクリップボードからの読込みに成功しました",
+  "If you see no battle detail, you may have a broken packet.": "戦闘の詳細が正しく表示されていない場合、破損したデータを使用した恐れがあります",
+  "Last Battle": "最後の戦闘",
+  "Selected battle": "選択した戦闘",
 
   "": ""
 }
