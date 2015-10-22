@@ -5,7 +5,7 @@
 
 ## class Ship
 class Ship
-  constructor: (@owner, @id, @position, @hp) ->
+  constructor: (@owner, @id, @position, @hp, @equipment) ->
     # owner = enum ShipOwner
     # id = int
     #       : api_ship_id of player owned ships OR
@@ -14,6 +14,7 @@ class Ship
     # position = int : Position of ship in fleet
     # hp[0] = now = the array of the fleet's now hp
     # hp[1] = max = the array of the fleet's max hp
+    # equipment = the array of the fleet's equipment
 
 # enum ShipOwner
 ShipOwner =
