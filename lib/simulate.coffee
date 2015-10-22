@@ -54,7 +54,7 @@ AerialCombat = (sortieShip, enemyShip, kouku) ->
   list = []
   if kouku.api_edam?
     for damage, i in kouku.api_edam
-      continue if (kouku.api_ebak_flag <= 0 && kouku.api_erai_flag <= 0) || i == 0
+      continue if (kouku.api_ebak_flag[i] <= 0 && kouku.api_erai_flag[i] <= 0) || i == 0
       damage = Math.floor(damage)
       dmg = []
       dmg.push damage
@@ -64,7 +64,7 @@ AerialCombat = (sortieShip, enemyShip, kouku) ->
       enemyShip[i - 1].hp[0] -= damage
   if kouku.api_fdam?
     for damage, i in kouku.api_fdam
-      continue if (kouku.api_fbak_flag <= 0 && kouku.api_frai_flag <= 0) || i == 0
+      continue if (kouku.api_fbak_flag[i] <= 0 && kouku.api_frai_flag[i] <= 0) || i == 0
       damage = Math.floor(damage)
       dmg = []
       dmg.push damage
@@ -126,7 +126,7 @@ TorpedoSalvo = (sortieShip, enemyShip, raigeki) ->
       critical.push crt == 2
     list.push new Attack AttackType[checkAttackType[0]], enemyShip[i - 1], sortieShip[target - 1], sortieShip[target - 1].hp[1], sortieShip[target - 1].hp[0], dmg, critical
     sortieShip[target - 1].hp[0] -= damage
-    checkRepairItem sortieShip[i - 1]
+    checkRepairItem sortieShip[target - 1]
   # test log
   #console.log list
   list
@@ -156,7 +156,7 @@ Shelling = (sortieShip, enemyShip, hougeki, isNight) ->
       # api_cl_list		：クリティカルフラグ 0=ミス, 1=命中, 2=クリティカル　命中(0ダメージ)も存在する？
       list.push new Attack AttackType[checkAttackType[attackType]], enemyShip[damageFrom - 6], sortieShip[target], sortieShip[target].hp[1], sortieShip[target].hp[0], dmg, critical
       sortieShip[target].hp[0] -= totalDamage
-      checkRepairItem sortieShip[i - 1]
+      checkRepairItem sortieShip[target]
     else
       # api_cl_list		：クリティカルフラグ 0=ミス, 1=命中, 2=クリティカル　命中(0ダメージ)も存在する？
       list.push new Attack AttackType[checkAttackType[attackType]], sortieShip[damageFrom], enemyShip[target - 6], enemyShip[target - 6].hp[1], enemyShip[target - 6].hp[0], dmg, critical
