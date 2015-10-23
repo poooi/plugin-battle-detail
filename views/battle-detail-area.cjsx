@@ -38,11 +38,10 @@ getAttackTypeName = (type) ->
 HpBar = React.createClass
   render: ->
     {max, now, detla} = @props
-    if detla > now
+    if now < 0
       now = 0
       percent = 0
     else
-      now -= detla
       percent = 100 * now / max
     if detla > 0
       label = "#{now} / #{max} (-#{detla})"
