@@ -27,8 +27,8 @@ class Attack
     # type = enum AttackType
     # fromShip = class Ship
     # toShip = class Ship
-    # maxHP = int : property of `@toShip`
-    # nowHP = int : ^
+    # maxHP = int : Max HP of @toShip
+    # nowHP = int : HP of @toShip after the attack.
     # damage = [int, ...]
     # hit = [enum HitType, ...]
     # useItem = int : api_id of api_start2.api_mst_slotitem
