@@ -38,12 +38,8 @@ getAttackTypeName = (type) ->
 HpBar = React.createClass
   render: ->
     {max, now, detla} = @props
-    if detla > now
-      now = 0
-      percent = 0
-    else
-      now -= detla
-      percent = 100 * now / max
+    now = 0 if now < 0
+    percent = 100 * now / max
     if detla > 0
       label = "#{now} / #{max} (-#{detla})"
     else
@@ -59,10 +55,13 @@ DamageInfo = React.createClass
       elements.push <span key={-1}>{getAttackTypeName @props.type}</span>
       elements.push <span key={-2}>{" ("}</span>
       for damage, i in @props.damage
-        if damage == 0
+        style = null
+        if @props.hit[i] == HitType.Miss
           damage = "miss"
-        elements.push <span key={10*i + 1} style={if @props.hit[i] == HitType.Critical then color: "#FFFF00"}>{damage}</span>
-        elements.push <span key={10*i + 2}>{", "}</span>
+        if @props.hit[i] == HitType.Critical
+          style = {color: "#FFFF00"}
+        elements.push <span key={10 * i + 1} style={style}>{damage}</span>
+        elements.push <span key={10 * i + 2}>{", "}</span>
       elements.pop()  # Remove last comma
       elements.push <span key={-3}>{")"}</span>
       elements
