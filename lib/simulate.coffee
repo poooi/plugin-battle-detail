@@ -47,10 +47,11 @@ checkRepairItem = (sortieShip) ->
     for id, i in sortieShip.equipment
       if id == 42
         sortieShip.nowHP = Math.floor(sortieShip.maxHP / 5)
-        break
+        return 42
       else if id == 43
         sortieShip.nowHP = sortieShip.maxHP
-        break
+        return 43
+  return 0
 
 simulateAerialCombat = (sortieShip, enemyShip, kouku) ->
   list = []
