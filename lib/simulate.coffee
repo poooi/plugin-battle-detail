@@ -72,9 +72,9 @@ simulateAerialCombat = (sortieShip, enemyShip, kouku) ->
       dmg.push damage
       critical = []
       critical.push if kouku.api_fcl_flag[i] == 1 then HitType.Critical else if damage == 0 then HitType.Miss else HitType.Hit
-      list.push new Attack AttackType[AttackTypeMap[0]], null, sortieShip[i - 1], sortieShip[i - 1].maxHP, sortieShip[i - 1].nowHP, dmg, critical
       sortieShip[i - 1].nowHP -= damage
-      checkRepairItem sortieShip[i - 1]
+      userItem = checkRepairItem sortieShip[i - 1]
+      list.push new Attack AttackType[AttackTypeMap[0]], null, sortieShip[i - 1], sortieShip[i - 1].maxHP, sortieShip[i - 1].nowHP, dmg, critical, userItem
   # test log
   #console.log list
   list
@@ -94,8 +94,8 @@ simulateSupportFire = (enemyShip, support) ->
         critical.push HitType.Hit
       else
         critical.push HitType.Miss
-      list.push new Attack AttackType[AttackTypeMap[0]], null, enemyShip[i - 1], enemyShip[i - 1].maxHP, enemyShip[i - 1].nowHP, dmg, critical
       enemyShip[i - 1].nowHP -= damage
+      list.push new Attack AttackType[AttackTypeMap[0]], null, enemyShip[i - 1], enemyShip[i - 1].maxHP, enemyShip[i - 1].nowHP, dmg, critical
   else if support.api_support_hourai?
     for damage, i in support.api_support_hourai.api_damage
       continue unless 1 <= i <= 6
@@ -109,8 +109,8 @@ simulateSupportFire = (enemyShip, support) ->
         critical.push HitType.Hit
       else
         critical.push HitType.Miss
-      list.push new Attack AttackType[AttackTypeMap[0]], null, enemyShip[i - 1], enemyShip[i - 1].maxHP, enemyShip[i - 1].nowHP, dmg, critical
       enemyShip[i - 1].nowHP -= damage
+      list.push new Attack AttackType[AttackTypeMap[0]], null, enemyShip[i - 1], enemyShip[i - 1].maxHP, enemyShip[i - 1].nowHP, dmg, critical
   list
 
 #api_opening_atack	：開幕雷撃戦 *スペルミスあり、注意
@@ -140,8 +140,8 @@ simulateTorpedoSalvo = (sortieShip, enemyShip, raigeki) ->
         critical.push HitType.Hit
       else
         critical.push HitType.Miss
-    list.push new Attack AttackType[AttackTypeMap[0]], sortieShip[i - 1], enemyShip[target - 1], enemyShip[target - 1].maxHP, enemyShip[target - 1].nowHP, dmg, critical
     enemyShip[target - 1].nowHP -= damage
+    list.push new Attack AttackType[AttackTypeMap[0]], sortieShip[i - 1], enemyShip[target - 1], enemyShip[target - 1].maxHP, enemyShip[target - 1].nowHP, dmg, critical
   # 雷撃ターゲット
   for target, i in raigeki.api_erai
     continue if target <= 0
@@ -157,9 +157,9 @@ simulateTorpedoSalvo = (sortieShip, enemyShip, raigeki) ->
         critical.push HitType.Hit
       else
         critical.push HitType.Miss
-    list.push new Attack AttackType[AttackTypeMap[0]], enemyShip[i - 1], sortieShip[target - 1], sortieShip[target - 1].maxHP, sortieShip[target - 1].nowHP, dmg, critical
     sortieShip[target - 1].nowHP -= damage
-    checkRepairItem sortieShip[target - 1]
+    userItem = checkRepairItem sortieShip[target - 1]
+    list.push new Attack AttackType[AttackTypeMap[0]], enemyShip[i - 1], sortieShip[target - 1], sortieShip[target - 1].maxHP, sortieShip[target - 1].nowHP, dmg, critical, userItem
   # test log
   #console.log list
   list
@@ -192,13 +192,13 @@ simulateShelling = (sortieShip, enemyShip, hougeki, isNight) ->
       attackType = NightAttackTypeMap[hougeki.api_sp_list[i]]
     if target < 6
       # api_cl_list		：クリティカルフラグ 0=ミス, 1=命中, 2=クリティカル　命中(0ダメージ)も存在する？
-      list.push new Attack AttackType[AttackTypeMap[attackType]], enemyShip[damageFrom - 6], sortieShip[target], sortieShip[target].maxHP, sortieShip[target].nowHP, dmg, critical
       sortieShip[target].nowHP -= totalDamage
-      checkRepairItem sortieShip[target]
+      userItem = checkRepairItem sortieShip[target]
+      list.push new Attack AttackType[AttackTypeMap[attackType]], enemyShip[damageFrom - 6], sortieShip[target], sortieShip[target].maxHP, sortieShip[target].nowHP, dmg, critical, userItem
     else
       # api_cl_list		：クリティカルフラグ 0=ミス, 1=命中, 2=クリティカル　命中(0ダメージ)も存在する？
-      list.push new Attack AttackType[AttackTypeMap[attackType]], sortieShip[damageFrom], enemyShip[target - 6], enemyShip[target - 6].maxHP, enemyShip[target - 6].nowHP, dmg, critical
       enemyShip[target - 6].nowHP -= totalDamage
+      list.push new Attack AttackType[AttackTypeMap[attackType]], sortieShip[damageFrom], enemyShip[target - 6], enemyShip[target - 6].maxHP, enemyShip[target - 6].nowHP, dmg, critical
   # test log
   #console.log list
   list
