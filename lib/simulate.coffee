@@ -63,8 +63,8 @@ simulateAerialCombat = (sortieShip, enemyShip, kouku) ->
       dmg.push damage
       critical = []
       critical.push if kouku.api_ecl_flag[i] == 1 then HitType.Critical else if damage == 0 then HitType.Miss else HitType.Hit
-      list.push new Attack AttackType[AttackTypeMap[0]], null, enemyShip[i - 1], enemyShip[i - 1].maxHP, enemyShip[i - 1].nowHP, dmg, critical
       enemyShip[i - 1].nowHP -= damage
+      list.push new Attack AttackType[AttackTypeMap[0]], null, enemyShip[i - 1], enemyShip[i - 1].maxHP, enemyShip[i - 1].nowHP, dmg, critical
   if kouku.api_fdam?
     for damage, i in kouku.api_fdam
       continue if (kouku.api_fbak_flag[i] <= 0 && kouku.api_frai_flag[i] <= 0) || i == 0
