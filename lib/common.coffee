@@ -23,7 +23,7 @@ ShipOwner =
 ## class Attack
 class Attack
   constructor: (@type, @fromShip, @toShip,
-                @maxHP, @nowHP, @damage, @hit, @useItem = 0) ->
+                @maxHP, @nowHP, @damage, @hit, @useItem = NaN) ->
     # type = enum AttackType
     # fromShip = class Ship
     # toShip = class Ship
@@ -32,7 +32,7 @@ class Attack
     # damage = [int, ...]
     # hit = [enum HitType, ...]
     # useItem = int : api_id of api_start2.api_mst_slotitem
-    # useItem = 0 means don't use item
+    #           NaN : if didnt used any item
     # Assert: @damage.length == @hit.length
 
 # enum AttackType
