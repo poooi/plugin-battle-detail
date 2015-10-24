@@ -68,6 +68,8 @@ simualteBattlePacket = (packet) ->
           formedFlow.push battleFlow.shift()
         else
           formedFlow.push null
+    catch err
+      console.error(err)
 
   return result =
     battleType: battleType
