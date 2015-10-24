@@ -13,7 +13,7 @@ updateNonce = (nonce) ->
     return 1
 
 updatePacketWithFleetInfo = (packet, isCombined, isCarrier, sortieFleetID, combinedFleetID) ->
-  return null if packet is null
+  return unless packet?
   # Obtain fleet information. (Ship id and ship equipment.)
   # Empty slot is `null`.
   {_ships, _slotitems, _decks} = window
@@ -48,14 +48,24 @@ updatePacketWithFleetInfo = (packet, isCombined, isCarrier, sortieFleetID, combi
   #       Please remove these after 2016 autumn event.
   packet.poi_is_water = !isCarrier
 
-  return packet
+updatePacketWithDockInfo = (packet) ->
+  return unless packet?
+  {_slotitems} = window
+  equipment = {}
+
+  # Update equipment map by api_touch_plane
+  for kouku in [packet.api_kouku, packet.api_kouku2]
+    id = kouku?.api_stage1?.api_touch_plane?[0]
+    continue unless equip = _slotitems[id]
+    equipment[id] = equip.api_slotitem_id
+
+  packet.poi_equipment = equipment
 
 updatePacketWithMetadata = (packet, path, timestamp, comment) ->
-  return null if packet is null
+  return unless packet?
   packet.poi_uri = path
   packet.poi_timestamp = timestamp
   packet.poi_comment = comment
-  return packet
 
 
 MainArea = React.createClass
@@ -77,7 +87,6 @@ MainArea = React.createClass
 
   handleResponse: (e) ->
     {method, path, body, postBody} = e.detail
-    {$ships, _ships, _decks} = window
     {isCombined, isCarrier, battleComment, battlePackets, battlePacketsNonce, battleNonce, battlePacket} = @state
     isStateChanged = false
 
@@ -193,6 +202,7 @@ MainArea = React.createClass
     if isBattle
       isStateChanged = true
       updatePacketWithFleetInfo body, isCombined, isCarrier, sortieID, combinedID
+      updatePacketWithDockInfo body
       updatePacketWithMetadata body, path, timestamp, battleComment
       battlePackets.unshift body
       battlePacketsNonce = updateNonce battlePacketsNonce
