@@ -180,19 +180,6 @@ AttackTableRow = React.createClass
       </div>
 
 
-AttackTableHeader = React.createClass
-  render: ->
-    <div style={display: "flex"} className={"attack-table-row"}>
-      <span style={flex: 6}>{'HP'}</span>
-      <span style={flex: 6}>{'We'}</span>
-      <span style={flex: 1}>{''}</span>
-      <span style={flex: 6}>{'Attack'}</span>
-      <span style={flex: 1}>{''}</span>
-      <span style={flex: 6}>{'Enemy'}</span>
-      <span style={flex: 6}>{'HP'}</span>
-    </div>
-
-
 AttackTable = React.createClass
   render: ->
     if @props.attacks and @props.attacks.length > 0
