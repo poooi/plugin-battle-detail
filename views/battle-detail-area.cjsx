@@ -1,6 +1,75 @@
 {React, ReactBootstrap} = window
 {Panel, ProgressBar} = ReactBootstrap
 {Ship, ShipOwner, Attack, AttackType, HitType, Stage, StageType} = require '../lib/common'
+simulator = require '../lib/simulate'
+
+
+## simualteBattlePacket
+# battleType = normal    : Normal battle
+# battleType = night     : Only night battle
+# battleType = carrier   : Carrier Task Force (空母機動部隊)
+# battleType = surface   : Surface Task Force (水上打撃部隊)
+simualteBattlePacket = (packet) ->
+  if not packet?
+    return result =
+      battleType: null
+      battleFlow: []
+
+  isCombined = packet.poi_is_combined
+  isCarrier = packet.poi_is_carrier
+  uri = packet.poi_uri
+
+  # TODO: Keep compatibility with version 1.0.0
+  #       Please remove these after 2016 autumn event.
+  if packet.poi_is_water? and not packet.poi_is_carrier?
+    isCarrier = !packet.poi_is_water
+
+  battleType = null
+  # Normal Fleet
+  if not isCombined
+    switch uri
+      # Battle, Air battle
+      when '/kcsapi/api_req_sortie/battle', '/kcsapi/api_req_practice/battle', '/kcsapi/api_req_sortie/airbattle'
+        battleType = 'normal'
+        stageFlow = [StageType.AerialCombat, StageType.AerialCombat, StageType.Support, StageType.TorpedoSalvo, StageType.Shelling, StageType.Shelling, StageType.TorpedoSalvo, StageType.Shelling]
+      # Night battle
+      when '/kcsapi/api_req_battle_midnight/battle', '/kcsapi/api_req_practice/midnight_battle', '/kcsapi/api_req_battle_midnight/sp_midnight'
+        battleType = 'night'
+        stageFlow = [StageType.Shelling]
+  # Carrier Task Force
+  if isCombined and isCarrier
+    switch uri
+      # Battle, Air battle
+      when '/kcsapi/api_req_combined_battle/battle', '/kcsapi/api_req_combined_battle/airbattle'
+        battleType = 'carrier'
+        stageFlow = [StageType.AerialCombat, StageType.AerialCombat, StageType.Support, StageType.TorpedoSalvo, StageType.Shelling, StageType.TorpedoSalvo, StageType.Shelling, StageType.Shelling, StageType.Shelling]
+      # Night battle
+      when '/kcsapi/api_req_combined_battle/midnight_battle'
+        battleType = 'night'
+        stageFlow = [StageType.Shelling]
+  # Surface Task Force
+  if isCombined and not isCarrier
+    switch uri
+      # Battle, Air battle
+      when '/kcsapi/api_req_combined_battle/battle_water', '/kcsapi/api_req_combined_battle/airbattle'
+        battleType = 'surface'
+        stageFlow = [StageType.AerialCombat, StageType.AerialCombat, StageType.Support, StageType.TorpedoSalvo, StageType.Shelling, StageType.Shelling, StageType.Shelling, StageType.TorpedoSalvo, StageType.Shelling]
+      # Night battle
+      when '/kcsapi/api_req_combined_battle/midnight_battle'
+        battleType = 'night'
+        stageFlow = [StageType.Shelling]
+
+  formedFlow = []
+  if battleType
+    battleFlow = simulator.simulate(packet)
+    for stage in stageFlow
+      if battleFlow.length > 0 and battleFlow[0].type is stage
+        formedFlow.push battleFlow.shift()
+      else
+        formedFlow.push null
+  return result =
+    battleType: battleType
+    battleFlow: formedFlow
 
 
 getHpStyle = (percent) ->
@@ -152,7 +221,8 @@ BattleDetailArea = React.createClass
     return true
 
   render: ->
-    switch @props.battleType
+    {battleType, battleFlow} = simualteBattlePacket @props.battlePacket
+    switch battleType
       when 'normal'
         titles = [
           "#{__ "Aerial Combat"} - Stage 3",
@@ -201,7 +271,7 @@ BattleDetailArea = React.createClass
         if titles
           tables = []
           for title, i in titles
-            tables.push <AttackTable key={i} title={title} attacks={@props.battleFlow[i]?.detail} />
+            tables.push <AttackTable key={i} title={title} attacks={battleFlow[i]?.detail} />
           tables
         else
           __ "No battle"

@@ -1,7 +1,5 @@
 {React, ReactBootstrap} = window
 
-simulater = require '../lib/simulate'
-{Ship, ShipOwner, Attack, AttackType, Stage, StageType} = require '../lib/common'
 ModalArea = require './modal-area'
 OptionArea = require './option-area'
 BattleDetailArea = require './battle-detail-area'
@@ -58,63 +56,6 @@ updatePacketWithMetadata = (packet, path, timestamp, comment) ->
   packet.poi_comment = comment
   return packet
 
-parseBattlePacket = (packet) ->
-  isCombined = packet.poi_is_combined
-  isCarrier = packet.poi_is_carrier
-  uri = packet.poi_uri
-
-  # TODO: Keep compatibility with version 1.0.0
-  #       Please remove these after 2016 autumn event.
-  if packet.poi_is_water? and not packet.poi_is_carrier?
-    isCarrier = !packet.poi_is_water
-
-  battleType = null
-  # Normal Fleet
-  if not isCombined
-    switch uri
-      # Battle, Air battle
-      when '/kcsapi/api_req_sortie/battle', '/kcsapi/api_req_practice/battle', '/kcsapi/api_req_sortie/airbattle'
-        battleType = 'normal'
-        stageFlow = [StageType.AerialCombat, StageType.AerialCombat, StageType.Support, StageType.TorpedoSalvo, StageType.Shelling, StageType.Shelling, StageType.TorpedoSalvo, StageType.Shelling]
-      # Night battle
-      when '/kcsapi/api_req_battle_midnight/battle', '/kcsapi/api_req_practice/midnight_battle', '/kcsapi/api_req_battle_midnight/sp_midnight'
-        battleType = 'night'
-        stageFlow = [StageType.Shelling]
-  # Carrier Task Force
-  if isCombined and isCarrier
-    switch uri
-      # Battle, Air battle
-      when '/kcsapi/api_req_combined_battle/battle', '/kcsapi/api_req_combined_battle/airbattle'
-        battleType = 'carrier'
-        stageFlow = [StageType.AerialCombat, StageType.AerialCombat, StageType.Support, StageType.TorpedoSalvo, StageType.Shelling, StageType.TorpedoSalvo, StageType.Shelling, StageType.Shelling, StageType.Shelling]
-      # Night battle
-      when '/kcsapi/api_req_combined_battle/midnight_battle'
-        battleType = 'night'
-        stageFlow = [StageType.Shelling]
-  # Surface Task Force
-  if isCombined and not isCarrier
-    switch uri
-      # Battle, Air battle
-      when '/kcsapi/api_req_combined_battle/battle_water', '/kcsapi/api_req_combined_battle/airbattle'
-        battleType = 'surface'
-        stageFlow = [StageType.AerialCombat, StageType.AerialCombat, StageType.Support, StageType.TorpedoSalvo, StageType.Shelling, StageType.Shelling, StageType.Shelling, StageType.TorpedoSalvo, StageType.Shelling]
-      # Night battle
-      when '/kcsapi/api_req_combined_battle/midnight_battle'
-        battleType = 'night'
-        stageFlow = [StageType.Shelling]
-
-  formedFlow = []
-  if battleType
-    battleFlow = simulater.simulate(packet)
-    for stage in stageFlow
-      if battleFlow.length > 0 and battleFlow[0].type is stage
-        formedFlow.push battleFlow.shift()
-      else
-        formedFlow.push null
-  return result =
-    battleType: battleType
-    battleFlow: formedFlow
-
 
 MainArea = React.createClass
   componentDidMount: ->
@@ -130,19 +71,13 @@ MainArea = React.createClass
     # Battle Packets Management
     battlePackets: []
     battlePacketsNonce: 0
-    ## Battle Detail related
-    # type = normal    : Normal battle
-    # type = night     : Only night battle
-    # type = carrier   : Carrier Task Force (空母機動部隊)
-    # type = surface   : Surface Task Force (水上打撃部隊)
     battleNonce: 0
-    battleType: null
-    battleFlow: []
+    battlePacket: null
 
   handleResponse: (e) ->
     {method, path, body, postBody} = e.detail
     {$ships, _ships, _decks} = window
-    {isCombined, isCarrier, battleComment, battlePackets, battlePacketsNonce, battleNonce, battleType, battleFlow} = @state
+    {isCombined, isCarrier, battleComment, battlePackets, battlePacketsNonce, battleNonce, battlePacket} = @state
     isStateChanged = false
 
     # Combined Fleet Status
@@ -264,8 +199,8 @@ MainArea = React.createClass
         battlePackets.pop()
       # Render battle packet
       if @shouldAutoShow
-        {battleType, battleFlow} = parseBattlePacket body
         battleNonce = updateNonce battleNonce
+        battlePacket = body
 
     # Update State
     if isStateChanged
@@ -276,8 +211,7 @@ MainArea = React.createClass
         battlePackets: battlePackets
         battlePacketsNonce: battlePacketsNonce
         battleNonce: battleNonce
-        battleType: battleType
-        battleFlow: battleFlow
+        battlePacket: battlePacket
 
   # API for Component <OptionArea />
   shouldAutoShow: true
@@ -291,13 +225,9 @@ MainArea = React.createClass
 
   # API for Component <OptionArea />
   updateBattleDetail: (packet) ->
-    {battleNonce} = @state
-    {battleType, battleFlow} = parseBattlePacket packet
-    battleNonce = updateNonce battleNonce
     @setState
-      battleNonce: battleNonce
-      battleType: battleType
-      battleFlow: battleFlow
+      battleNonce: updateNonce @state.battleNonce
+      battlePacket: packet
 
   render: ->
     <div className="main">
@@ -310,8 +240,7 @@ MainArea = React.createClass
         />
       <BattleDetailArea
         battleNonce={@state.battleNonce}
-        battleType={@state.battleType}
-        battleFlow={@state.battleFlow}
+        battlePacket={@state.battlePacket}
         />
     </div>
 
