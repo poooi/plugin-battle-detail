@@ -61,12 +61,14 @@ simualteBattlePacket = (packet) ->
 
   formedFlow = []
   if battleType
-    battleFlow = simulator.simulate(packet)
-    for stage in stageFlow
-      if battleFlow.length > 0 and battleFlow[0].type is stage
-        formedFlow.push battleFlow.shift()
-      else
-        formedFlow.push null
+    try
+      battleFlow = simulator.simulate(packet)
+      for stage in stageFlow
+        if battleFlow.length > 0 and battleFlow[0].type is stage
+          formedFlow.push battleFlow.shift()
+        else
+          formedFlow.push null
+
   return result =
     battleType: battleType
     battleFlow: formedFlow
