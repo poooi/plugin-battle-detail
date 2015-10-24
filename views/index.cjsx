@@ -2,6 +2,7 @@
 
 ModalArea = require './modal-area'
 OptionArea = require './option-area'
+BattleInfoArea = require './battle-info-area'
 BattleDetailArea = require './battle-detail-area'
 
 
@@ -237,6 +238,10 @@ MainArea = React.createClass
         battlePacketsNonce={@state.battlePacketsNonce}
         toggleAutoShow={@toggleAutoShow}
         updateBattleDetail={@updateBattleDetail}
+        />
+      <BattleInfoArea
+        battleNonce={@state.battleNonce}
+        battlePacket={@state.battlePacket}
         />
       <BattleDetailArea
         battleNonce={@state.battleNonce}
