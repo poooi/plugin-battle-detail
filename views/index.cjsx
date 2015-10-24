@@ -97,7 +97,7 @@ MainArea = React.createClass
             isStateChanged = true
             isCombined = false
             isCarrier = false
-      # Oh fuck. Someone sorties with No.3/4 fleet when having combined fleet. 
+      # Oh fuck. Someone sorties with No.3/4 fleet when having combined fleet.
       when '/kcsapi/api_req_map/start'
         if isCombined and parseInt(postBody.api_deck_id) != 1
           isStateChanged = true

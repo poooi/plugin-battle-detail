@@ -50,3 +50,9 @@
 .attack-table hr {
   margin: 7px 0 7px;
 }
+.battle-info span {
+  text-align: center;
+  font-size: 105%;
+  margin-bottom: 7px;
+  margin-top: -10px;
+}

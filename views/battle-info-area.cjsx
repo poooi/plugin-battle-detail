@@ -34,6 +34,9 @@ EngagementNameMap =
   3: __ 'Crossing the T (Advantage)'
   4: __ 'Crossing the T (Disadvantage)'
 
+PlaneCount = React.createClass
+  render: ->
+    <span style={flex: 13} key={@props.key}>「<FontAwesome name='plane' /> {@props.count - @props.lostcount}/{@props.count}」</span>
 
 BattleDetailArea = React.createClass
   shouldComponentUpdate: (nextProps, nextState) ->
@@ -44,12 +47,29 @@ BattleDetailArea = React.createClass
     packet = @props.battlePacket
     info = []
     if packet?
-      info.push <p>{__ 'Detection'}: {DetectionNameMap[packet.api_search[0]]} / {DetectionNameMap[packet.api_search[1]]}</p>
-      info.push <p>{__ 'Formation'}: {FormationNameMap[packet.api_formation[0]]} / {FormationNameMap[packet.api_formation[1]]}</p>
-      info.push <p>{__ 'Engagement'}: {EngagementNameMap[packet.api_formation[2]]}</p>
-      for kouku in [packet.api_kouku, packet.api_kouku2]
+      info.push <div style={display: "flex"} className={"battle-info"}>
+        <span style={flex: 13} key={0}>{DetectionNameMap[packet.api_search[0]]} {FormationNameMap[packet.api_formation[0]]}</span>
+        <span style={flex: 6} key={1}>{EngagementNameMap[packet.api_formation[2]]}</span>
+        <span style={flex: 13} key={2}>{DetectionNameMap[packet.api_search[0]]} {FormationNameMap[packet.api_formation[0]]}</span>
+      </div>
+      for kouku, idx in [packet.api_kouku, packet.api_kouku2]
         if api_air_fire = kouku?.api_stage2?.api_air_fire
-          info.push <p>{__ 'AA CI'}: {__ 'Kind'} {api_air_fire.api_kind}</p>
+          info.push <div style={display: "flex"} className={"battle-info"}>
+            <span style={flex: 13} key={3 + idx * 6 + 1}></span>
+            <span style={flex: 6} key={3 + idx * 6 + 2}>{__ "Aerial Combat"} {idx + 1}</span>
+            <span style={flex: 13} key={3 + idx * 6 + 3}></span>
+          </div>
+          #TODO: api_stage1.api_touch_plane	：触接装備ID　[0]=味方, [1]=敵
+          info.push <div style={display: "flex"} className={"battle-info"}>
+            <PlaneCount key={3 + idx * 6 + 4} count={kouku.api_stage1.api_f_count} lostcount={kouku.api_stage1.api_f_lostcount} />
+            <span style={flex: 6} key={3 + idx * 6 + 5}></span>
+            <PlaneCount key={3 + idx * 6 + 6} count={kouku.api_stage1.api_e_count} lostcount={kouku.api_stage1.api_e_lostcount} />
+          </div>
+          info.push <div style={display: "flex"} className={"battle-info"}>
+            <PlaneCount key={3 + idx * 6 + 4} count={kouku.api_stage2.api_f_count} lostcount={kouku.api_stage2.api_f_lostcount} />
+            <span style={flex: 6} key={3 + idx * 6 + 5}>{__ 'AA CI'}: {__ 'Kind'} {api_air_fire.api_kind}</span>
+            <PlaneCount key={3 + idx * 6 + 6} count={kouku.api_stage2.api_e_count} lostcount={kouku.api_stage2.api_e_lostcount} />
+          </div>
 
     <div className="battle-info-area">
       <Panel header={__ "Battle Information"} collapsible>
