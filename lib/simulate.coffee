@@ -22,7 +22,7 @@ NightAttackTypeMap =
 
 
 checkRepairItem = (sortieShip) ->
-  if sortieShip.nowHP <= 0
+  if sortieShip.nowHP <= 0 && sortieShip.equipment?
     for id, i in sortieShip.equipment
       if id == 42
         sortieShip.nowHP = Math.floor(sortieShip.maxHP / 5)
