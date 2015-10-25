@@ -64,3 +64,6 @@
   display: block;
   width: 100%;
 }
+.battle-info-area hr {
+  margin: 7px 0 7px;
+}

@@ -95,6 +95,8 @@ BattleDetailArea = React.createClass
           <span style={flex: 3}>{__ "Detection"}</span>
           <span style={flex: 4}>{DetectionNameMap[packet.api_search[1]]}</span>
         </div>
+      info.push <hr key={9} />
+
       # Aerial combat detail
       # TODO: Show touch plane
       for kouku, id in [packet.api_kouku, packet.api_kouku2]
@@ -135,6 +137,7 @@ BattleDetailArea = React.createClass
                           lost={kouku.api_stage2.api_e_lostcount} />
             </span>
           </div>
+        info.push <hr key={10 * id + 19}/>
 
     <div className="battle-info-area">
       <Panel header={__ "Battle Information"} collapsible>
