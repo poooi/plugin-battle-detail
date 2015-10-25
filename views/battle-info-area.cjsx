@@ -34,6 +34,15 @@ EngagementNameMap =
   3: __ 'Crossing the T (Advantage)'
   4: __ 'Crossing the T (Disadvantage)'
 
+# Air Control name map from api_kouku.api_stage1.api_disp_seiku to name
+# 0=制空均衡, 1=制空権確保, 2=航空優勢, 3=航空劣勢, 4=制空権喪失
+AirControlNameMap =
+  0: __ 'Air Parity'
+  1: __ 'Air Supremacy'
+  2: __ 'Air Superiority'
+  3: __ 'Air Incapability'
+  4: __ 'Air Denial'
+
 
 PlaneCount = React.createClass
   render: ->
@@ -85,14 +94,14 @@ BattleDetailArea = React.createClass
       # Formation & Engagement
       info.push <div key={0} style={display: "flex"} className={"battle-info-row"}>
         <span style={flex: 4}>{FormationNameMap[packet.api_formation[0]]}</span>
-        <span style={flex: 3}>{EngagementNameMap[packet.api_formation[2]]}</span>
+        <span style={flex: 4}>{EngagementNameMap[packet.api_formation[2]]}</span>
         <span style={flex: 4}>{FormationNameMap[packet.api_formation[1]]}</span>
       </div>
       # Detection
       if packet.api_search?
         info.push <div key={1} style={display: "flex"} className={"battle-info-row"}>
           <span style={flex: 4}>{DetectionNameMap[packet.api_search[0]]}</span>
-          <span style={flex: 3}>{__ "Detection"}</span>
+          <span style={flex: 4}>{__ "Detection"}</span>
           <span style={flex: 4}>{DetectionNameMap[packet.api_search[1]]}</span>
         </div>
       info.push <hr key={9} />
@@ -103,7 +112,7 @@ BattleDetailArea = React.createClass
         continue unless kouku?
         info.push <div key={10 * id + 10} style={display: "flex"} className={"battle-info-row"}>
           <span style={flex: 4}></span>
-          <span style={flex: 3}>{__ "Aerial Combat"}</span>
+          <span style={flex: 4}>{__ "Aerial Combat"}</span>
           <span style={flex: 4}></span>
         </div>
         # Stage 1
@@ -113,7 +122,9 @@ BattleDetailArea = React.createClass
               <PlaneCount count={kouku.api_stage1.api_f_count}
                           lost={kouku.api_stage1.api_f_lostcount} />
             </span>
-            <span style={flex: 3}>{"Stage 1"}</span>
+            <span style={flex: 4}>
+              {AirControlNameMap[kouku.api_stage1.api_disp_seiku]}
+            </span>
             <span style={flex: 4}>
               <PlaneCount count={kouku.api_stage1.api_e_count}
                           lost={kouku.api_stage1.api_e_lostcount} />
@@ -126,7 +137,8 @@ BattleDetailArea = React.createClass
               <PlaneCount count={kouku.api_stage2.api_f_count}
                           lost={kouku.api_stage2.api_f_lostcount} />
             </span>
-            <span style={flex: 3}>{"Stage 2"}</span>
+            <span style={flex: 4}>
+            </span>
             <span style={flex: 4}>
               <PlaneCount count={kouku.api_stage2.api_e_count}
                           lost={kouku.api_stage2.api_e_lostcount} />
@@ -141,7 +153,7 @@ BattleDetailArea = React.createClass
                                combinedFleet={packet.poi_combined_fleet}
                                />
               </span>
-              <span style={flex: 3}>{"Anti-air Cutin"}</span>
+              <span style={flex: 4}>{"Anti-air Cutin"}</span>
               <span style={flex: 4}></span>
             </div>
         info.push <hr key={10 * id + 19}/>
