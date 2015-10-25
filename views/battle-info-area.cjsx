@@ -153,7 +153,7 @@ BattleDetailArea = React.createClass
                                combinedFleet={packet.poi_combined_fleet}
                                />
               </span>
-              <span style={flex: 4}>{"Anti-air Cut-in"}</span>
+              <span style={flex: 4}>{__ "Anti-air Cut-in"}</span>
               <span style={flex: 4}></span>
             </div>
         info.push <hr key={10 * id + 19}/>
