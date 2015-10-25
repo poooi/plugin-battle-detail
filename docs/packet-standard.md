@@ -2,7 +2,7 @@
 
 ## Necessary data
 
-You MUST copy values of these keys from API if exist.
+The following keys MUST be copied, if present in the API.
 
     api_ship_ke
     api_nowhps
@@ -21,7 +21,7 @@ You MUST copy values of these keys from API if exist.
     api_raigeki
     api_hougeki
 
-You MUST add these keys into the battle packet.
+The following keys MUST be present in the packet.
 
     poi_is_combined         # true=Combined fleet, false=Normal fleet
     poi_is_carrier          # true=Carrier Task Force, false=Surface Task Force
@@ -34,7 +34,7 @@ You MUST add these keys into the battle packet.
 
 ## Optional data
 
-We ADVISE you add these keys into the packet.
+The following keys are RECOMMENDED in the packet.
 
     poi_uri         # The URI of battle API request.
     poi_timestamp   # When did the battle happens. (millisecond from 1970-01-01T00:00:00Z)
