@@ -34,9 +34,42 @@ EngagementNameMap =
   3: __ 'Crossing the T (Advantage)'
   4: __ 'Crossing the T (Disadvantage)'
 
+
 PlaneCount = React.createClass
   render: ->
-    <span style={flex: 13} key={@props.key}>「<FontAwesome name='plane' /> {@props.count - @props.lostcount}/{@props.count}」</span>
+    total = @props.count
+    now = @props.count - @props.lost
+    <span><FontAwesome name='plane' /> {total} <FontAwesome name='long-arrow-right' /> {now}</span>
+
+AntiAirCICell = React.createClass
+  render: ->
+    {$ships, $slotitems} = window
+    {api, sortieFleet, combinedFleet} = @props
+
+    if not api?
+      return <span />
+
+    shipId = api.api_idx
+    shipName = null
+    if 0 <= shipId <= 5
+      shipName = $ships[sortieFleet[shipId]]?.api_name
+    else if 6 <= api.api_idx <= 11
+      shipName = $ships[combinedFleet[shipId]]?.api_name
+    if not shipName?
+      shipName = [api.api_idx, '?'].join ' '
+
+    tooltip = []
+    tooltip.push <span key={-1}>{__ 'Anti Air Kind'}: {api.api_kind}</span>
+    for itemId, i in api.api_use_items
+      tooltip.push <span key={i}>{$slotitems[itemId]?.api_name}</span>
+
+    <OverlayTrigger placement='top' overlay={
+      <Tooltip id="battle-info-anti-air">
+        {tooltip}
+      </Tooltip>
+    }>
+      <span>{__ 'AA CI'}: {shipName}</span>
+    </OverlayTrigger>
 
 BattleDetailArea = React.createClass
   shouldComponentUpdate: (nextProps, nextState) ->
@@ -47,53 +80,68 @@ BattleDetailArea = React.createClass
     packet = @props.battlePacket
     info = []
     if packet?
-      info.push <div style={display: "flex"} className={"battle-info"}>
-        <span style={flex: 13} key={0}>{DetectionNameMap[packet.api_search[0]]} {FormationNameMap[packet.api_formation[0]]}</span>
-        <span style={flex: 6} key={1}>{EngagementNameMap[packet.api_formation[2]]}</span>
-        <span style={flex: 13} key={2}>{DetectionNameMap[packet.api_search[0]]} {FormationNameMap[packet.api_formation[0]]}</span>
+      # Formation & Engagement
+      info.push <div key={0} style={display: "flex"} className={"battle-info-row"}>
+        <span style={flex: 4}>{FormationNameMap[packet.api_formation[0]]}</span>
+        <span style={flex: 3}>{EngagementNameMap[packet.api_formation[2]]}</span>
+        <span style={flex: 4}>{FormationNameMap[packet.api_formation[1]]}</span>
       </div>
-      for kouku, idx in [packet.api_kouku, packet.api_kouku2]
-        if api_air_fire = kouku?.api_stage2?.api_air_fire
-          info.push <div style={display: "flex"} className={"battle-info"}>
-            <span style={flex: 13} key={3 + idx * 6 + 1}></span>
-            <span style={flex: 6} key={3 + idx * 6 + 2}>{__ "Aerial Combat"} {idx + 1}</span>
-            <span style={flex: 13} key={3 + idx * 6 + 3}></span>
-          </div>
-          #TODO: api_stage1.api_touch_plane	：触接装備ID　[0]=味方, [1]=敵
-          info.push <div style={display: "flex"} className={"battle-info"}>
-            <PlaneCount key={3 + idx * 6 + 4} count={kouku.api_stage1.api_f_count} lostcount={kouku.api_stage1.api_f_lostcount} />
-            <span style={flex: 6} key={3 + idx * 6 + 5}></span>
-            <PlaneCount key={3 + idx * 6 + 6} count={kouku.api_stage1.api_e_count} lostcount={kouku.api_stage1.api_e_lostcount} />
-          </div>
-          shipInfo = []
-          shipInfo.push <div>
-            <span key={100 + idx * 5}>{__ 'Kind'}: {api_air_fire.api_kind}</span>
-          </div>
-          for itemId, i in api_air_fire.api_use_items
-            shipInfo.push <div>
-              <span key={100 + idx * 5 + 1 + i}>{window.$slotitems[api_air_fire.api_use_items[i]].api_name}</span>
-            </div>
-          info.push <div style={display: "flex"} className={"battle-info"}>
-            <PlaneCount key={3 + idx * 6 + 4} count={kouku.api_stage2.api_f_count} lostcount={kouku.api_stage2.api_f_lostcount} />
-            <span style={flex: 6} key={3 + idx * 6 + 5}>
-              <OverlayTrigger placement='top' overlay={
-                <Tooltip id="battle-info-#{idx}">
-                  <div>
-                    {shipInfo}
-                  </div>
-                </Tooltip>
-              }>
-                <div>
-                  <span key={100 + idx * 5+ 4}>{__ 'AA CI'}: {window.$ships[packet.poi_sortie_fleet[api_air_fire.api_idx]].api_name}</span>
-                </div>
-              </OverlayTrigger>
+      # Detection
+      if packet.api_search?
+        info.push <div key={1} style={display: "flex"} className={"battle-info-row"}>
+          <span style={flex: 4}>{DetectionNameMap[packet.api_search[0]]}</span>
+          <span style={flex: 3}>{__ "Detection"}</span>
+          <span style={flex: 4}>{DetectionNameMap[packet.api_search[1]]}</span>
+        </div>
+      # Aerial combat detail
+      # TODO: Show touch plane
+      for kouku, id in [packet.api_kouku, packet.api_kouku2]
+        continue unless kouku?
+        info.push <div key={10 * id + 10} style={display: "flex"} className={"battle-info-row"}>
+          <span style={flex: 4}></span>
+          <span style={flex: 3}>{__ "Aerial Combat"} {id + 1}</span>
+          <span style={flex: 4}></span>
+        </div>
+        # Stage 1
+        if kouku.api_stage1?
+          info.push <div key={10 * id + 11} style={display: "flex"} className={"battle-info-row"}>
+            <span style={flex: 4}>
+              <PlaneCount count={kouku.api_stage1.api_f_count}
+                          lost={kouku.api_stage1.api_f_lostcount} />
             </span>
-            <PlaneCount key={3 + idx * 6 + 6} count={kouku.api_stage2.api_e_count} lostcount={kouku.api_stage2.api_e_lostcount} />
+            <span style={flex: 3}></span>
+            <span style={flex: 4}>
+              <PlaneCount count={kouku.api_stage1.api_e_count}
+                          lost={kouku.api_stage1.api_e_lostcount} />
+            </span>
+          </div>
+        # Stage 2
+        if kouku.api_stage2?
+          info.push <div key={10 * id + 12} style={display: "flex"} className={"battle-info-row"}>
+            <span style={flex: 4}>
+              <PlaneCount count={kouku.api_stage2.api_f_count}
+                          lost={kouku.api_stage2.api_f_lostcount} />
+            </span>
+            <span style={flex: 3}>
+              <AntiAirCICell api={kouku.api_stage2.api_air_fire}
+                             sortieFleet={packet.poi_sortie_fleet}
+                             combinedFleet={packet.poi_combined_fleet}
+                             />
+            </span>
+            <span style={flex: 4}>
+              <PlaneCount count={kouku.api_stage2.api_e_count}
+                          lost={kouku.api_stage2.api_e_lostcount} />
+            </span>
           </div>
 
     <div className="battle-info-area">
       <Panel header={__ "Battle Information"} collapsible>
-        {info}
+        {
+          if info.length > 0
+            info
+          else
+            __ "No battle"
+        }
       </Panel>
     </div>
 
