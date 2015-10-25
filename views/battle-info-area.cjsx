@@ -59,13 +59,15 @@ AntiAirCICell = React.createClass
       shipName = [api.api_idx, '?'].join ' '
 
     tooltip = []
-    tooltip.push <span key={-1}>{__ 'Anti Air Kind'}: {api.api_kind}</span>
+    tooltip.push <div key={-1}>{__ 'Anti Air Kind'}: {api.api_kind}</div>
     for itemId, i in api.api_use_items
-      tooltip.push <span key={i}>{$slotitems[itemId]?.api_name}</span>
+      tooltip.push <div key={i}>{$slotitems[itemId]?.api_name}</div>
 
     <OverlayTrigger placement='top' overlay={
       <Tooltip id="battle-info-anti-air">
-        {tooltip}
+        <div className="anti-air-tooltip">
+          {tooltip}
+        </div>
       </Tooltip>
     }>
       <span>{__ 'AA CI'}: {shipName}</span>
