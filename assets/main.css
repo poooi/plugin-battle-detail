@@ -38,7 +38,6 @@
   margin: 0 0 8px;
 }
 .attack-table-row {
-  justifyContent: "space-around";
   width: 100%;
   height: 30px;
 }
@@ -48,5 +47,23 @@
   text-align: center;
 }
 .attack-table hr {
+  margin: 7px 0 7px;
+}
+
+/* Battle Info Panel */
+.battle-info-row {
+  width: 100%;
+  height: 30px;
+}
+.battle-info-row > span {
+  height: 20px;
+  margin: 2px;
+  text-align: center;
+}
+.anti-air-tooltip div {
+  display: block;
+  width: 100%;
+}
+.battle-info-area hr {
   margin: 7px 0 7px;
 }
