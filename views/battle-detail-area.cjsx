@@ -10,70 +10,73 @@ simulator = require '../lib/simulate'
 # battleType = carrier   : Carrier Task Force (空母機動部隊)
 # battleType = surface   : Surface Task Force (水上打撃部隊)
 simualteBattlePacket = (packet) ->
-  if not packet?
-    return result =
-      battleType: null
-      battleFlow: []
+  return unless packet?
 
   isCombined = packet.poi_is_combined
   isCarrier = packet.poi_is_carrier
-  uri = packet.poi_uri
-
   # TODO: Keep compatibility with version 1.0.0
   #       Please remove these after 2016 autumn event.
   if packet.poi_is_water? and not packet.poi_is_carrier?
     isCarrier = !packet.poi_is_water
 
-  battleType = null
+  stageFlow = null
   # Normal Fleet
-  if not isCombined
-    switch uri
-      # Battle, Air battle
-      when '/kcsapi/api_req_sortie/battle', '/kcsapi/api_req_practice/battle', '/kcsapi/api_req_sortie/airbattle'
-        battleType = 'normal'
-        stageFlow = [StageType.AerialCombat, StageType.AerialCombat, StageType.Support, StageType.TorpedoSalvo, StageType.Shelling, StageType.Shelling, StageType.TorpedoSalvo, StageType.Shelling]
-      # Night battle
-      when '/kcsapi/api_req_battle_midnight/battle', '/kcsapi/api_req_practice/midnight_battle', '/kcsapi/api_req_battle_midnight/sp_midnight'
-        battleType = 'night'
-        stageFlow = [StageType.Shelling]
+  if isCombined is false
+    stageFlow = [StageType.AerialCombat, StageType.AerialCombat, StageType.Support, StageType.TorpedoSalvo, StageType.Shelling, StageType.Shelling, StageType.TorpedoSalvo, StageType.Shelling]
+    stageTitle = [
+      "#{__ "Aerial Combat"} - Stage 3",
+      "#{__ "Aerial Combat"} - Stage 3",
+      "#{__ 'Expedition Supporting Fire'}",
+      "#{__ 'Opening Torpedo Salvo'}",
+      "#{__ 'Shelling'}",
+      "#{__ 'Shelling'}",
+      "#{__ 'Torpedo Salvo'}",
+      "#{__ 'Night Combat'}"
+    ]
   # Carrier Task Force
-  if isCombined and isCarrier
-    switch uri
-      # Battle, Air battle
-      when '/kcsapi/api_req_combined_battle/battle', '/kcsapi/api_req_combined_battle/airbattle'
-        battleType = 'carrier'
-        stageFlow = [StageType.AerialCombat, StageType.AerialCombat, StageType.Support, StageType.TorpedoSalvo, StageType.Shelling, StageType.TorpedoSalvo, StageType.Shelling, StageType.Shelling, StageType.Shelling]
-      # Night battle
-      when '/kcsapi/api_req_combined_battle/midnight_battle'
-        battleType = 'night'
-        stageFlow = [StageType.Shelling]
+  if isCombined is true and isCarrier true
+    stageFlow = [StageType.AerialCombat, StageType.AerialCombat, StageType.Support, StageType.TorpedoSalvo, StageType.Shelling, StageType.TorpedoSalvo, StageType.Shelling, StageType.Shelling, StageType.Shelling]
+    stageTitle = [
+      "#{__ "Aerial Combat"} - Stage 3",
+      "#{__ "Aerial Combat"} - Stage 3",
+      "#{__ 'Expedition Supporting Fire'}",
+      "#{__ 'Opening Torpedo Salvo'}",
+      "#{__ 'Shelling'} - #{__ 'Escort Fleet'}",
+      "#{__ 'Torpedo Salvo'}",
+      "#{__ 'Shelling'} - #{__ 'Main Fleet'}",
+      "#{__ 'Shelling'} - #{__ 'Main Fleet'}",
+      "#{__ 'Night Combat'}"
+    ]
   # Surface Task Force
-  if isCombined and not isCarrier
-    switch uri
-      # Battle, Air battle
-      when '/kcsapi/api_req_combined_battle/battle_water', '/kcsapi/api_req_combined_battle/airbattle'
-        battleType = 'surface'
-        stageFlow = [StageType.AerialCombat, StageType.AerialCombat, StageType.Support, StageType.TorpedoSalvo, StageType.Shelling, StageType.Shelling, StageType.Shelling, StageType.TorpedoSalvo, StageType.Shelling]
-      # Night battle
-      when '/kcsapi/api_req_combined_battle/midnight_battle'
-        battleType = 'night'
-        stageFlow = [StageType.Shelling]
+  if isCombined is true and isCarrier is false
+    stageFlow = [StageType.AerialCombat, StageType.AerialCombat, StageType.Support, StageType.TorpedoSalvo, StageType.Shelling, StageType.Shelling, StageType.Shelling, StageType.TorpedoSalvo, StageType.Shelling]
+    stageTitle = [
+      "#{__ "Aerial Combat"} - Stage 3",
+      "#{__ "Aerial Combat"} - Stage 3",
+      "#{__ 'Expedition Supporting Fire'}",
+      "#{__ 'Opening Torpedo Salvo'}",
+      "#{__ 'Shelling'} - #{__ 'Main Fleet'}",
+      "#{__ 'Shelling'} - #{__ 'Main Fleet'}",
+      "#{__ 'Shelling'} - #{__ 'Escort Fleet'}",
+      "#{__ 'Torpedo Salvo'}",
+      "#{__ 'Night Combat'}"
+    ]
 
   formedFlow = []
-  if battleType
+  if stageFlow
+    console.assert(stageFlow.length == stageTitle.length, "`stageFlow` and `stageTitle` have different length!")
     try
       battleFlow = simulator.simulate(packet)
-      for stage in stageFlow
-        if battleFlow.length > 0 and battleFlow[0].type is stage
-          formedFlow.push battleFlow.shift()
-        else
-          formedFlow.push null
+      for battle in battleFlow
+        if stageFlow.length > 0 and stageFlow[0] == battle.type
+          stageFlow.shift()
+          battle.title = stageTitle.shift()
+          formedFlow.push battle
     catch err
       console.error(err)
+      return
 
-  return result =
-    battleType: battleType
-    battleFlow: formedFlow
+  return formedFlow
 
 
 getHpStyle = (percent) ->
@@ -212,57 +215,15 @@ BattleDetailArea = React.createClass
     return true
 
   render: ->
-    {battleType, battleFlow} = simualteBattlePacket @props.battlePacket
-    switch battleType
-      when 'normal'
-        titles = [
-          "#{__ "Aerial Combat"} - Stage 3",
-          "#{__ "Aerial Combat"} - Stage 3",
-          "#{__ 'Expedition Supporting Fire'}",
-          "#{__ 'Opening Torpedo Salvo'}",
-          "#{__ 'Shelling'}",
-          "#{__ 'Shelling'}",
-          "#{__ 'Torpedo Salvo'}",
-          "#{__ 'Night Combat'}"
-        ]
-      when 'carrier'
-        titles = [
-          "#{__ "Aerial Combat"} - Stage 3",
-          "#{__ "Aerial Combat"} - Stage 3",
-          "#{__ 'Expedition Supporting Fire'}",
-          "#{__ 'Opening Torpedo Salvo'}",
-          "#{__ 'Shelling'} - #{__ 'Escort Fleet'}",
-          "#{__ 'Torpedo Salvo'}",
-          "#{__ 'Shelling'} - #{__ 'Main Fleet'}",
-          "#{__ 'Shelling'} - #{__ 'Main Fleet'}",
-          "#{__ 'Night Combat'}"
-        ]
-      when 'surface'
-        titles = [
-          "#{__ "Aerial Combat"} - Stage 3",
-          "#{__ "Aerial Combat"} - Stage 3",
-          "#{__ 'Expedition Supporting Fire'}",
-          "#{__ 'Opening Torpedo Salvo'}",
-          "#{__ 'Shelling'} - #{__ 'Main Fleet'}",
-          "#{__ 'Shelling'} - #{__ 'Main Fleet'}",
-          "#{__ 'Shelling'} - #{__ 'Escort Fleet'}",
-          "#{__ 'Torpedo Salvo'}",
-          "#{__ 'Night Combat'}"
-        ]
-      when 'night'
-        titles = [
-          "#{__ 'Night Combat'}"
-        ]
-      else
-        titles = null
+    stages = simualteBattlePacket @props.battlePacket
 
     <div className="battle-detail-area">
       <Panel header={__ "Battle Detail"}>
       {
-        if titles
+        if stages
           tables = []
-          for title, i in titles
-            tables.push <AttackTable key={i} title={title} attacks={battleFlow[i]?.detail} />
+          for stage, i in stages
+            tables.push <AttackTable key={i} title={stage.title} attacks={stage.detail} />
           tables
         else
           __ "No battle"
