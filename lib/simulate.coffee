@@ -201,66 +201,96 @@ simulate = (req) ->
     sortieProgress = []
 
     # Air battle
+    tempList = []
     if req.api_kouku?
       if req.api_kouku.api_stage3?
-        sortieProgress.push new Stage StageType.AerialCombat, simulateAerialCombat sortieShip, enemyShip, req.api_kouku.api_stage3
+        tempList.concat simulateAerialCombat sortieShip, enemyShip, req.api_kouku.api_stage3
       if req.api_kouku.api_stage3_combined?
-        sortieProgress.push new Stage StageType.AerialCombat, simulateAerialCombat combinedShip, enemyShip, req.api_kouku.api_stage3_combined
+        tempList.concat simulateAerialCombat combinedShip, enemyShip, req.api_kouku.api_stage3_combined
+    tempList = null if tempList.length == 0
+    sortieProgress.push new Stage StageType.AerialCombat, tempList
 
     # Second air battle
+    tempList = []
     if req.api_kouku2?
       if req.api_kouku2.api_stage3?
-        sortieProgress.push new Stage StageType.AerialCombat, simulateAerialCombat sortieShip, enemyShip, req.api_kouku2.api_stage3
+        tempList.concat simulateAerialCombat sortieShip, enemyShip, req.api_kouku2.api_stage3
       if req.api_kouku2.api_stage3_combined?
-        sortieProgress.push new Stage StageType.AerialCombat, simulateAerialCombat combinedShip, enemyShip, req.api_kouku2.api_stage3_combined
+        tempList.concat simulateAerialCombat combinedShip, enemyShip, req.api_kouku2.api_stage3_combined
+    tempList = null if tempList.length == 0
+    sortieProgress.push new Stage StageType.AerialCombat, tempList
 
     # Support battle
+    tempList = []
     if req.api_support_info?
-      sortieProgress.push new Stage StageType.Support, simulateSupportFire enemyShip, req.api_support_info
+      tempList.concat simulateSupportFire enemyShip, req.api_support_info
+    tempList = null if tempList.length == 0
+    sortieProgress.push new Stage StageType.Support, tempList
 
     # Opening battle
+    tempList = []
     if req.api_opening_atack?
       if isCombined
-        sortieProgress.push new Stage StageType.TorpedoSalvo, simulateTorpedoSalvo combinedShip, enemyShip, req.api_opening_atack
+        tempList.concat simulateTorpedoSalvo combinedShip, enemyShip, req.api_opening_atack
       else
-        sortieProgress.push new Stage StageType.TorpedoSalvo, simulateTorpedoSalvo sortieShip, enemyShip, req.api_opening_atack
+        tempList.concat simulateTorpedoSalvo sortieShip, enemyShip, req.api_opening_atack
+    tempList = null if tempList.length == 0
+    sortieProgress.push new Stage StageType.TorpedoSalvo, tempList
 
     # First hougeki battle
+    tempList = []
     if req.api_hougeki1?
       if isCombined && !isWater
-        sortieProgress.push new Stage StageType.Shelling, simulateShelling combinedShip, enemyShip, req.api_hougeki1, false
+        tempList.concat simulateShelling combinedShip, enemyShip, req.api_hougeki1, false
       else
-        sortieProgress.push new Stage StageType.Shelling, simulateShelling sortieShip, enemyShip, req.api_hougeki1, false
+        tempList.concat simulateShelling sortieShip, enemyShip, req.api_hougeki1, false
+    tempList = null if tempList.length == 0
+    sortieProgress.push new Stage StageType.Shelling, tempList
 
     # Combined fleet raigeki
+    tempList = []
     if req.api_raigeki? && isCombined && !isWater
-      sortieProgress.push new Stage StageType.TorpedoSalvo, simulateTorpedoSalvo combinedShip, enemyShip, req.api_raigeki
+      tempList.concat simulateTorpedoSalvo combinedShip, enemyShip, req.api_raigeki
+    tempList = null if tempList.length == 0
+    sortieProgress.push new Stage StageType.TorpedoSalvo, tempList
 
     # Second hougeki battle
+    tempList = []
     if req.api_hougeki2?
-      sortieProgress.push new Stage StageType.Shelling, simulateShelling sortieShip, enemyShip, req.api_hougeki2, false
+      tempList.concat simulateShelling sortieShip, enemyShip, req.api_hougeki2, false
+    tempList = null if tempList.length == 0
+    sortieProgress.push new Stage StageType.Shelling, tempList
 
     # Combined hougeki battle
+    tempList = []
     if req.api_hougeki3?
       if isCombined && isWater
-        sortieProgress.push new Stage StageType.Shelling, simulateShelling combinedShip, enemyShip, req.api_hougeki3, false
+        tempList.concat simulateShelling combinedShip, enemyShip, req.api_hougeki3, false
       else
-        sortieProgress.push new Stage StageType.Shelling, simulateShelling sortieShip, enemyShip, req.api_hougeki3, false
+        tempList.concat simulateShelling sortieShip, enemyShip, req.api_hougeki3, false
+    tempList = null if tempList.length == 0
+    sortieProgress.push new Stage StageType.Shelling, tempList
 
     # Raigeki battle
+    tempList = []
     if req.api_raigeki?
       if isCombined
         if isWater
-          sortieProgress.push new Stage StageType.TorpedoSalvo, simulateTorpedoSalvo combinedShip, enemyShip, req.api_raigeki
+          tempList.concat simulateTorpedoSalvo combinedShip, enemyShip, req.api_raigeki
       else
-        sortieProgress.push new Stage StageType.TorpedoSalvo, simulateTorpedoSalvo sortieShip, enemyShip, req.api_raigeki
+        tempList.concat simulateTorpedoSalvo sortieShip, enemyShip, req.api_raigeki
+    tempList = null if tempList.length == 0
+    sortieProgress.push new Stage StageType.TorpedoSalvo, tempList
 
     # Night battle
+    tempList = []
     if req.api_hougeki?
       if isCombined
-        sortieProgress.push new Stage StageType.Shelling, simulateShelling combinedShip, enemyShip, req.api_hougeki, true
+        tempList.concat simulateShelling combinedShip, enemyShip, req.api_hougeki, true
       else
-        sortieProgress.push new Stage StageType.Shelling, simulateShelling sortieShip, enemyShip, req.api_hougeki, true
+        tempList.concat simulateShelling sortieShip, enemyShip, req.api_hougeki, true
+    tempList = null if tempList.length == 0
+    sortieProgress.push new Stage StageType.Shelling, tempList
 
     sortieProgress
 
