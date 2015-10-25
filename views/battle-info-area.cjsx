@@ -70,7 +70,7 @@ AntiAirCICell = React.createClass
         </div>
       </Tooltip>
     }>
-      <span>{__ 'AA CI'}: {shipName}</span>
+      <span>{shipName}</span>
     </OverlayTrigger>
 
 BattleDetailArea = React.createClass
@@ -103,7 +103,7 @@ BattleDetailArea = React.createClass
         continue unless kouku?
         info.push <div key={10 * id + 10} style={display: "flex"} className={"battle-info-row"}>
           <span style={flex: 4}></span>
-          <span style={flex: 3}>{__ "Aerial Combat"} {id + 1}</span>
+          <span style={flex: 3}>{__ "Aerial Combat"}</span>
           <span style={flex: 4}></span>
         </div>
         # Stage 1
@@ -113,7 +113,7 @@ BattleDetailArea = React.createClass
               <PlaneCount count={kouku.api_stage1.api_f_count}
                           lost={kouku.api_stage1.api_f_lostcount} />
             </span>
-            <span style={flex: 3}></span>
+            <span style={flex: 3}>{"Stage 1"}</span>
             <span style={flex: 4}>
               <PlaneCount count={kouku.api_stage1.api_e_count}
                           lost={kouku.api_stage1.api_e_lostcount} />
@@ -126,17 +126,24 @@ BattleDetailArea = React.createClass
               <PlaneCount count={kouku.api_stage2.api_f_count}
                           lost={kouku.api_stage2.api_f_lostcount} />
             </span>
-            <span style={flex: 3}>
-              <AntiAirCICell api={kouku.api_stage2.api_air_fire}
-                             sortieFleet={packet.poi_sortie_fleet}
-                             combinedFleet={packet.poi_combined_fleet}
-                             />
-            </span>
+            <span style={flex: 3}>{"Stage 2"}</span>
             <span style={flex: 4}>
               <PlaneCount count={kouku.api_stage2.api_e_count}
                           lost={kouku.api_stage2.api_e_lostcount} />
             </span>
           </div>
+          # Anti air cut-in in stage 2
+          if kouku.api_stage2.api_air_fire?
+            info.push <div key={10 * id + 13} style={display: "flex"} className={"battle-info-row"}>
+              <span style={flex: 4}>
+                <AntiAirCICell api={kouku.api_stage2.api_air_fire}
+                               sortieFleet={packet.poi_sortie_fleet}
+                               combinedFleet={packet.poi_combined_fleet}
+                               />
+              </span>
+              <span style={flex: 3}>{"Anti-air Cutin"}</span>
+              <span style={flex: 4}></span>
+            </div>
         info.push <hr key={10 * id + 19}/>
 
     <div className="battle-info-area">
