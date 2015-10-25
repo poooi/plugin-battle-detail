@@ -1,5 +1,5 @@
 {React, ReactBootstrap} = window
-{Panel, ProgressBar} = ReactBootstrap
+{Panel, ProgressBar, OverlayTrigger, Overlay, Tooltip} = ReactBootstrap
 {Ship, ShipOwner, Attack, AttackType, HitType, Stage, StageType} = require '../lib/common'
 
 
@@ -65,9 +65,29 @@ BattleDetailArea = React.createClass
             <span style={flex: 6} key={3 + idx * 6 + 5}></span>
             <PlaneCount key={3 + idx * 6 + 6} count={kouku.api_stage1.api_e_count} lostcount={kouku.api_stage1.api_e_lostcount} />
           </div>
+          shipInfo = []
+          shipInfo.push <div>
+            <span key={100 + idx * 5}>{__ 'Kind'}: {api_air_fire.api_kind}</span>
+          </div>
+          for itemId, i in api_air_fire.api_use_items
+            shipInfo.push <div>
+              <span key={100 + idx * 5 + 1 + i}>{window.$slotitems[api_air_fire.api_use_items[i]].api_name}</span>
+            </div>
           info.push <div style={display: "flex"} className={"battle-info"}>
             <PlaneCount key={3 + idx * 6 + 4} count={kouku.api_stage2.api_f_count} lostcount={kouku.api_stage2.api_f_lostcount} />
-            <span style={flex: 6} key={3 + idx * 6 + 5}>{__ 'AA CI'}: {__ 'Kind'} {api_air_fire.api_kind}</span>
+            <span style={flex: 6} key={3 + idx * 6 + 5}>
+              <OverlayTrigger placement='top' overlay={
+                <Tooltip id="battle-info-#{idx}">
+                  <div>
+                    {shipInfo}
+                  </div>
+                </Tooltip>
+              }>
+                <div>
+                  <span key={100 + idx * 5+ 4}>{__ 'AA CI'}: {window.$ships[packet.poi_sortie_fleet[api_air_fire.api_idx]].api_name}</span>
+                </div>
+              </OverlayTrigger>
+            </span>
             <PlaneCount key={3 + idx * 6 + 6} count={kouku.api_stage2.api_e_count} lostcount={kouku.api_stage2.api_e_lostcount} />
           </div>
 
