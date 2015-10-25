@@ -59,7 +59,7 @@ AntiAirCICell = React.createClass
       shipName = [api.api_idx, '?'].join ' '
 
     tooltip = []
-    tooltip.push <div key={-1}>{__ 'Anti Air Kind'}: {api.api_kind}</div>
+    tooltip.push <div key={-1}>{__ 'Anti-air Kind'}: {api.api_kind}</div>
     for itemId, i in api.api_use_items
       tooltip.push <div key={i}>{$slotitems[itemId]?.api_name}</div>
 
