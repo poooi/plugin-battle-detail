@@ -3,6 +3,17 @@
 clipboard = require 'clipboard'
 
 
+getPacketDescription = (packet) ->
+  desc = []
+  if packet.poi_timestamp
+    date = new Date(packet.poi_timestamp)
+    date.setMinutes(date.getMinutes() - date.getTimezoneOffset())
+    desc.push date.toISOString().slice(0, 19).replace('T', ' ')
+  if packet.poi_comment
+    desc.push packet.poi_comment
+  return desc.join ' '
+
+
 OptionArea = React.createClass
   getInitialState: ->
     # selectedPacket can be 3 type
@@ -84,12 +95,9 @@ OptionArea = React.createClass
 
               # Is selectedPacket in @props.battlePackets ?
               for packet, i in @props.battlePackets
-                date = new Date(packet.poi_timestamp).toISOString()
-                date = date.slice(0, 19).replace('T', ' ')
-                comment = packet.poi_comment
                 if packet.poi_timestamp == selectedTimestamp
                   selectedIndex = i
-                options.push <option key={i} value={i}>{"#{date} #{comment}"}</option>
+                options.push <option key={i} value={i}>{getPacketDescription packet}</option>
 
               # If selectedPacket exists but not in @props.battlePackets
               if selectedIndex < 0 and selectedTimestamp?
