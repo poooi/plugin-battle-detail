@@ -107,7 +107,6 @@ BattleDetailArea = React.createClass
       info.push <hr key={9} />
 
       # Aerial combat detail
-      # TODO: Show touch plane
       for kouku, id in [packet.api_kouku, packet.api_kouku2]
         continue unless kouku?
         info.push <div key={10 * id + 10} style={display: "flex"} className={"battle-info-row"}>
@@ -117,6 +116,29 @@ BattleDetailArea = React.createClass
         </div>
         # Stage 1
         if kouku.api_stage1?
+          # Air contact
+          if kouku.api_stage1.api_touch_plane?
+            {$slotitems} = window
+            plane = kouku.api_stage1.api_touch_plane
+            equipment = packet.poi_equipment
+
+            # TODO: Keep compatibility with version 1.0.0
+            #       Please remove these after 2016 autumn event.
+            equipment = {} unless equipment?
+
+            info.pop()  # Remove default title
+            info.push <div key={10 * id + 10} style={display: "flex"} className={"battle-info-row"}>
+              <span style={flex: 4}>{
+                if name = $slotitems[equipment[plane[0]]]?.api_name
+                  [__("Contacting"), ": ", name].join ''
+                }</span>
+              <span style={flex: 4}>{__ "Aerial Combat"}</span>
+              <span style={flex: 4}>{
+                if name = $slotitems[plane[1]]?.api_name
+                  [__("Contacting"), ": ", name].join ''
+                }</span>
+            </div>
+          # Air control & air plane count
           info.push <div key={10 * id + 11} style={display: "flex"} className={"battle-info-row"}>
             <span style={flex: 4}>
               <PlaneCount count={kouku.api_stage1.api_f_count}
