@@ -23,6 +23,7 @@
 .hp-bar.progress .progress-bar {
   font-size: 13px;
   line-height: 22px;
+  transition: none;
 }
 .hp-bar.progress-bar span span {
   position: absolute;
