@@ -29,8 +29,6 @@ The following keys MUST be present in the packet.
     poi_sortie_equipment    # Equipments of sortied fleet. Values are `api_id` of api_start2.api_mst_slotitem
     poi_combined_fleet      # Organization of combined escort fleet.
     poi_combined_equipment  # Equipments of combined escort fleet.
-    poi_equipment           # A map from api_get_member/slot_item.api_id to slot_item.api_slotitem_id.
-                            # Use for api_kouku.api_stage1.api_touch_plane[0] and etc.
 
 ## Optional data
 

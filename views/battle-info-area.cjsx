@@ -120,16 +120,10 @@ BattleDetailArea = React.createClass
           if kouku.api_stage1.api_touch_plane?
             {$slotitems} = window
             plane = kouku.api_stage1.api_touch_plane
-            equipment = packet.poi_equipment
-
-            # TODO: Keep compatibility with version 1.0.0
-            #       Please remove these after 2016 autumn event.
-            equipment = {} unless equipment?
-
             info.pop()  # Remove default title
             info.push <div key={10 * id + 10} style={display: "flex"} className={"battle-info-row"}>
               <span style={flex: 4}>{
-                if name = $slotitems[equipment[plane[0]]]?.api_name
+                if name = $slotitems[plane[0]]?.api_name
                   [__("Contacting"), ": ", name].join ''
                 }</span>
               <span style={flex: 4}>{__ "Aerial Combat"}</span>

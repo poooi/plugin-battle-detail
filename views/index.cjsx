@@ -48,19 +48,6 @@ updatePacketWithFleetInfo = (packet, isCombined, isCarrier, sortieFleetID, combi
   #       Please remove these after 2016 autumn event.
   packet.poi_is_water = !isCarrier
 
-updatePacketWithDockInfo = (packet) ->
-  return unless packet?
-  {_slotitems} = window
-  equipment = {}
-
-  # Update equipment map by api_touch_plane
-  for kouku in [packet.api_kouku, packet.api_kouku2]
-    id = kouku?.api_stage1?.api_touch_plane?[0]
-    continue unless equip = _slotitems[id]
-    equipment[id] = equip.api_slotitem_id
-
-  packet.poi_equipment = equipment
-
 updatePacketWithMetadata = (packet, path, timestamp, comment) ->
   return unless packet?
   packet.poi_uri = path
@@ -202,7 +189,6 @@ MainArea = React.createClass
     if isBattle
       isStateChanged = true
       updatePacketWithFleetInfo body, isCombined, isCarrier, sortieID, combinedID
-      updatePacketWithDockInfo body
       updatePacketWithMetadata body, path, timestamp, battleComment
       battlePackets.unshift body
       battlePacketsNonce = updateNonce battlePacketsNonce
