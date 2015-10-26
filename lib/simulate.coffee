@@ -10,6 +10,7 @@ AttackTypeMap =
   3: AttackType.Primary_Secondary_CI
   4: AttackType.Primary_Radar_CI
   5: AttackType.Primary_AP_CI
+  6: AttackType.Primary_Primary_CI
 # Map from api id of night attack type to day attack type id
 # 夜戦攻撃種別 0=通常攻撃, 1=連撃, 2=カットイン(主砲/魚雷), 3=カットイン(魚雷/魚雷), 4=カットイン(主砲/副砲), 5=カットイン(主砲/主砲)
 NightAttackTypeMap =
