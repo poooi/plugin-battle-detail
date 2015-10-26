@@ -108,6 +108,8 @@ MainArea = React.createClass
         mapArea = body.api_maparea_id
         mapCell = body.api_mapinfo_no
         mapSpot = body.api_no
+        if body.api_event_id == 5   # 5=ボス戦闘
+          mapSpot += ", boss"
         battleComment = "#{sortie} #{mapArea}-#{mapCell} (#{mapSpot})"
       when '/kcsapi/api_req_member/get_practice_enemyinfo'
         isStateChanged = true
