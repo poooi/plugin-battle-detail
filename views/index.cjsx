@@ -129,7 +129,7 @@ MainArea = React.createClass
         sortieID = body.api_dock_id - 1
         combinedID = null
       when '/kcsapi/api_req_battle_midnight/battle', '/kcsapi/api_req_practice/midnight_battle'
-        if @state.battlePackets[0]?
+        if @state.battlePackets[0]?.api_midnight_flag
           oldBody = @state.battlePackets.shift()
           oldBody.api_hougeki = body.api_hougeki
           body = oldBody
@@ -168,7 +168,7 @@ MainArea = React.createClass
         sortieID = body.api_deck_id - 1
         combinedID = 1
       when '/kcsapi/api_req_combined_battle/midnight_battle'
-        if @state.battlePackets[0]?
+        if @state.battlePackets[0]?.api_midnight_flag
           oldBody = @state.battlePackets.shift()
           oldBody.api_hougeki = body.api_hougeki
           body = oldBody
