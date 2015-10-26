@@ -26,8 +26,8 @@
 
   "Battle Information": "Battle Information",
   "Detection": "Detection",
-  "Success": "Success",
-  "Failure": "Failure",
+  "Detection Success": "Detection Success",
+  "Detection Failure": "Detection Failure",
   "not return": "not return",
   "without plane": "without plane",
   "Line Ahead": "Line Ahead",

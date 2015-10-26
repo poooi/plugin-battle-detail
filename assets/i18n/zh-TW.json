@@ -26,8 +26,8 @@
 
   "Battle Information": "戰鬥信息",
   "Detection": "索敵",
-  "Success": "成功",
-  "Failure": "失敗",
+  "Detection Success": "索敵成功",
+  "Detection Failure": "索敵失敗",
   "not return": "未歸還",
   "without plane": "未使用艦載機",
   "Line Ahead": "単縦陣",

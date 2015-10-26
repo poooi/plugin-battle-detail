@@ -6,12 +6,12 @@
 # Formation name map from api_search[0-1] to name
 # 1=成功, 2=成功(未帰還機あり), 3=未帰還, 4=失敗, 5=成功(艦載機使用せず), 6=失敗(艦載機使用せず)
 DetectionNameMap =
-  1: __('Success')
-  2: __('Success') + ' (' + __('not return') + ')'
-  3: __('Failure') + ' (' + __('not return') + ')'
-  4: __('Failure')
-  5: __('Success') + ' (' + __('without plane') + ')'
-  6: __('Failure') + ' (' + __('without plane') + ')'
+  1: __('Detection Success')
+  2: __('Detection Success') + ' (' + __('not return') + ')'
+  3: __('Detection Failure') + ' (' + __('not return') + ')'
+  4: __('Detection Failure')
+  5: __('Detection Success') + ' (' + __('without plane') + ')'
+  6: __('Detection Failure') + ' (' + __('without plane') + ')'
 
 # Formation name map from api_formation[0-1] to name
 # 1=単縦陣, 2=複縦陣, 3=輪形陣, 4=梯形陣, 5=単横陣, 11-14=第n警戒航行序列
@@ -79,7 +79,7 @@ AntiAirCICell = React.createClass
         </div>
       </Tooltip>
     }>
-      <span>{shipName}</span>
+      <span>{__ "Anti-air Cut-in"}: {shipName}</span>
     </OverlayTrigger>
 
 BattleDetailArea = React.createClass
@@ -101,7 +101,7 @@ BattleDetailArea = React.createClass
       if packet.api_search?
         info.push <div key={1} style={display: "flex"} className={"battle-info-row"}>
           <span style={flex: 4}>{DetectionNameMap[packet.api_search[0]]}</span>
-          <span style={flex: 4}>{__ "Detection"}</span>
+          <span style={flex: 4}></span>
           <span style={flex: 4}>{DetectionNameMap[packet.api_search[1]]}</span>
         </div>
       info.push <hr key={9} />
@@ -138,24 +138,16 @@ BattleDetailArea = React.createClass
                           lost={kouku.api_stage2.api_f_lostcount} />
             </span>
             <span style={flex: 4}>
+              <AntiAirCICell api={kouku.api_stage2.api_air_fire}
+                             sortieFleet={packet.poi_sortie_fleet}
+                             combinedFleet={packet.poi_combined_fleet}
+                             />
             </span>
             <span style={flex: 4}>
               <PlaneCount count={kouku.api_stage2.api_e_count}
                           lost={kouku.api_stage2.api_e_lostcount} />
             </span>
           </div>
-          # Anti air cut-in in stage 2
-          if kouku.api_stage2.api_air_fire?
-            info.push <div key={10 * id + 13} style={display: "flex"} className={"battle-info-row"}>
-              <span style={flex: 4}>
-                <AntiAirCICell api={kouku.api_stage2.api_air_fire}
-                               sortieFleet={packet.poi_sortie_fleet}
-                               combinedFleet={packet.poi_combined_fleet}
-                               />
-              </span>
-              <span style={flex: 4}>{__ "Anti-air Cut-in"}</span>
-              <span style={flex: 4}></span>
-            </div>
         info.push <hr key={10 * id + 19}/>
 
     <div className="battle-info-area">
