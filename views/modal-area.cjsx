@@ -32,7 +32,13 @@ ModalArea = React.createClass
           <Modal.Title>{@state.title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {@state.body}
+          {
+            if @state.body instanceof Array
+              for body, i in @state.body
+                <div key={i}>{body}</div>
+            else
+              @state.body
+          }
         </Modal.Body>
         <Modal.Footer>
           {@state.footer}
