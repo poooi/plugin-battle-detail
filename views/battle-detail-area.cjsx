@@ -117,10 +117,10 @@ HpBar = React.createClass
     else
       label = "#{to} / #{max}"
     now = 100 * to / max
-    detla = 100 * (from - to) / max
+    lost = 100 * (from - to) / max
     <ProgressBar className="hp-bar">
       <ProgressBar className="hp-bar" bsStyle={getHpStyle now} now={now} label={label} />
-      <ProgressBar className="hp-bar detla" now={detla} />
+      <ProgressBar className="hp-bar lost" now={lost} />
     </ProgressBar>
 
 

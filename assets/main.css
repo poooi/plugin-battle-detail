@@ -25,7 +25,7 @@
   line-height: 22px;
   transition: none;
 }
-.hp-bar.detla.progress-bar {
+.hp-bar.lost.progress-bar {
   background-color: rgba(255, 255, 255, 0.1);
 }
 .hp-bar.progress-bar span span {
