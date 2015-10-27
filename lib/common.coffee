@@ -23,7 +23,8 @@ ShipOwner =
 ## class Attack
 class Attack
   constructor: (@type, @fromShip, @toShip,
-                @maxHP, @nowHP, @damage, @hit, @useItem = NaN) ->
+                @maxHP, @fromHP, @toHP,
+                @damage, @hit, @useItem = NaN) ->
     # type = enum AttackType
     # fromShip = class Ship
     # toShip = class Ship
