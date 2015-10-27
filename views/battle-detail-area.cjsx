@@ -113,14 +113,19 @@ getAttackTypeName = (type) ->
 
 HpBar = React.createClass
   render: ->
-    {max, now, detla} = @props
-    now = 0 if now < 0
-    percent = 100 * now / max
-    if detla > 0
-      label = "#{now} / #{max} (-#{detla})"
+    {max, from, to, damage} = @props
+    to = 0 if to < 0
+    from = max if from > max
+    if damage > 0
+      label = "#{to} / #{max} (-#{damage})"
     else
-      label = "#{now} / #{max}"
-    <ProgressBar className="hp-bar" bsStyle={getHpStyle percent} now={percent} label={label} />
+      label = "#{to} / #{max}"
+    now = 100 * to / max
+    detla = 100 * (from - to) / max
+    <ProgressBar className="hp-bar">
+      <ProgressBar className="hp-bar" bsStyle={getHpStyle now} now={now} label={label} />
+      <ProgressBar className="hp-bar detla" now={detla} />
+    </ProgressBar>
 
 
 DamageInfo = React.createClass
@@ -167,7 +172,7 @@ AttackTableRow = React.createClass
     # Is enemy attack?
     if toShip.owner is ShipOwner.Ours
       <div style={display: "flex"} className={"attack-table-row"}>
-        <span style={flex: 6}><HpBar max={maxHP} now={nowHP} detla={totalDamage} /></span>
+        <span style={flex: 6}><HpBar max={maxHP} from={nowHP+totalDamage} to={nowHP} damage={totalDamage} /></span>
         <span style={flex: 6}>{toShipName}</span>
         <span style={flex: 1}><FontAwesome name='long-arrow-left' /></span>
         <span style={flex: 6}><DamageInfo type={type} damage={damage} hit={hit} /></span>
@@ -183,7 +188,7 @@ AttackTableRow = React.createClass
         <span style={flex: 6}><DamageInfo type={type} damage={damage} hit={hit} /></span>
         <span style={flex: 1}><FontAwesome name='long-arrow-right' /></span>
         <span style={flex: 6}>{toShipName}</span>
-        <span style={flex: 6}><HpBar max={maxHP} now={nowHP} detla={totalDamage} /></span>
+        <span style={flex: 6}><HpBar max={maxHP} from={nowHP+totalDamage} to={nowHP} damage={totalDamage} /></span>
       </div>
 
 
