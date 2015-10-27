@@ -169,7 +169,7 @@ AttackTableRow = React.createClass
       <div style={display: "flex"} className={"attack-table-row"}>
         <span style={flex: 6}><HpBar max={maxHP} now={nowHP} detla={totalDamage} /></span>
         <span style={flex: 6}>{toShipName}</span>
-        <span style={flex: 1}>←</span>
+        <span style={flex: 1}><FontAwesome name='long-arrow-left' /></span>
         <span style={flex: 6}><DamageInfo type={type} damage={damage} hit={hit} /></span>
         <span style={flex: 1}></span>
         <span style={flex: 6}>{fromShipName}</span>
@@ -181,7 +181,7 @@ AttackTableRow = React.createClass
         <span style={flex: 6}>{fromShipName}</span>
         <span style={flex: 1}></span>
         <span style={flex: 6}><DamageInfo type={type} damage={damage} hit={hit} /></span>
-        <span style={flex: 1}>→</span>
+        <span style={flex: 1}><FontAwesome name='long-arrow-right' /></span>
         <span style={flex: 6}>{toShipName}</span>
         <span style={flex: 6}><HpBar max={maxHP} now={nowHP} detla={totalDamage} /></span>
       </div>
