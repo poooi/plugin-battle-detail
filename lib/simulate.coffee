@@ -113,16 +113,16 @@ simulateTorpedoSalvo = (sortieShip, enemyShip, raigeki) ->
     dmg = []
     dmg.push damage
     # クリティカルフラグ 0=ミス, 1=命中, 2=クリティカル
-    critical = []
-    for crt, j in raigeki.api_fcl[i]
-      if crt == 2
-        critical.push HitType.Critical
-      else if crt == 1
-        critical.push HitType.Hit
-      else
-        critical.push HitType.Miss
+    hit = []
+    api_hit = raigeki.api_fcl[i]
+    if api_hit == 2
+      hit.push HitType.Critical
+    else if api_hit == 1
+      hit.push HitType.Hit
+    else
+      hit.push HitType.Miss
     enemyShip[target - 1].nowHP -= damage
-    list.push new Attack AttackType.Normal, sortieShip[i - 1], enemyShip[target - 1], enemyShip[target - 1].maxHP, enemyShip[target - 1].nowHP, dmg, critical
+    list.push new Attack AttackType.Normal, sortieShip[i - 1], enemyShip[target - 1], enemyShip[target - 1].maxHP, enemyShip[target - 1].nowHP, dmg, hit
   # 雷撃ターゲット
   for target, i in raigeki.api_erai
     continue if target <= 0
@@ -130,17 +130,17 @@ simulateTorpedoSalvo = (sortieShip, enemyShip, raigeki) ->
     dmg = []
     dmg.push damage
     # api_cl_list		：クリティカルフラグ 0=ミス, 1=命中, 2=クリティカル
-    critical = []
-    for crt, j in raigeki.api_ecl[i]
-      if crt == 2
-        critical.push HitType.Critical
-      else if crt == 1
-        critical.push HitType.Hit
-      else
-        critical.push HitType.Miss
+    hit = []
+    api_hit = raigeki.api_ecl[i]
+    if api_hit == 2
+      hit.push HitType.Critical
+    else if api_hit == 1
+      hit.push HitType.Hit
+    else
+      hit.push HitType.Miss
     sortieShip[target - 1].nowHP -= damage
     useItem = checkRepairItem sortieShip[target - 1]
-    list.push new Attack AttackType.Normal, enemyShip[i - 1], sortieShip[target - 1], sortieShip[target - 1].maxHP, sortieShip[target - 1].nowHP, dmg, critical, useItem
+    list.push new Attack AttackType.Normal, enemyShip[i - 1], sortieShip[target - 1], sortieShip[target - 1].maxHP, sortieShip[target - 1].nowHP, dmg, hit, useItem
   # test log
   #console.log list
   list
