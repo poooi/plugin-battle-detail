@@ -18,7 +18,7 @@
   margin: 0;
   height: 22px;
   position: relative;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: #1F1F1F;
 }
 .hp-bar.progress-bar {
   font-size: 13px;
