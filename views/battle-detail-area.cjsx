@@ -4,11 +4,6 @@
 simulator = require '../lib/simulate'
 
 
-## simualteBattlePacket
-# battleType = normal    : Normal battle
-# battleType = night     : Only night battle
-# battleType = carrier   : Carrier Task Force (空母機動部隊)
-# battleType = surface   : Surface Task Force (水上打撃部隊)
 simualteBattlePacket = (packet) ->
   return unless packet?
 
@@ -89,6 +84,7 @@ getHpStyle = (percent) ->
   else
     'success'
 
+
 getAttackTypeName = (type) ->
   switch type
     when AttackType.Normal    # 通常攻撃
@@ -113,14 +109,19 @@ getAttackTypeName = (type) ->
 
 HpBar = React.createClass
   render: ->
-    {max, now, detla} = @props
-    now = 0 if now < 0
-    percent = 100 * now / max
-    if detla > 0
-      label = "#{now} / #{max} (-#{detla})"
+    {max, from, to, damage} = @props
+    to = 0 if to < 0
+    from = max if from > max
+    if damage > 0
+      label = "#{to} / #{max} (-#{damage})"
     else
-      label = "#{now} / #{max}"
-    <ProgressBar className="hp-bar" bsStyle={getHpStyle percent} now={percent} label={label} />
+      label = "#{to} / #{max}"
+    now = 100 * to / max
+    lost = 100 * (from - to) / max
+    <ProgressBar className="hp-bar">
+      <ProgressBar className="hp-bar" bsStyle={getHpStyle now} now={now} label={label} />
+      <ProgressBar className="hp-bar lost" now={lost} />
+    </ProgressBar>
 
 
 DamageInfo = React.createClass
@@ -160,14 +161,14 @@ AttackTableRow = React.createClass
       name.join " "
 
     {_ships, $ships} = window
-    {type, fromShip, toShip, maxHP, nowHP, damage, hit, useItem} = @props.attack
+    {type, fromShip, toShip, maxHP, fromHP, toHP, damage, hit, useItem} = @props.attack
     fromShipName = getShipName fromShip
     toShipName = getShipName toShip
     totalDamage = damage.reduce ((p, x) -> p + x)
     # Is enemy attack?
     if toShip.owner is ShipOwner.Ours
       <div style={display: "flex"} className={"attack-table-row"}>
-        <span style={flex: 6}><HpBar max={maxHP} now={nowHP} detla={totalDamage} /></span>
+        <span style={flex: 6}><HpBar max={maxHP} from={fromHP} to={toHP} damage={totalDamage} /></span>
         <span style={flex: 6}>{toShipName}</span>
         <span style={flex: 1}><FontAwesome name='long-arrow-left' /></span>
         <span style={flex: 6}><DamageInfo type={type} damage={damage} hit={hit} /></span>
@@ -183,7 +184,7 @@ AttackTableRow = React.createClass
         <span style={flex: 6}><DamageInfo type={type} damage={damage} hit={hit} /></span>
         <span style={flex: 1}><FontAwesome name='long-arrow-right' /></span>
         <span style={flex: 6}>{toShipName}</span>
-        <span style={flex: 6}><HpBar max={maxHP} now={nowHP} detla={totalDamage} /></span>
+        <span style={flex: 6}><HpBar max={maxHP} from={fromHP} to={toHP} damage={totalDamage} /></span>
       </div>
 
 

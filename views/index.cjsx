@@ -1,9 +1,12 @@
 {React, ReactBootstrap} = window
-
 ModalArea = require './modal-area'
 OptionArea = require './option-area'
 BattleInfoArea = require './battle-info-area'
 BattleDetailArea = require './battle-detail-area'
+
+
+# constant
+MAX_PACKET_NUMBER = 128
 
 
 updateNonce = (nonce) ->
@@ -194,7 +197,7 @@ MainArea = React.createClass
       updatePacketWithMetadata body, path, timestamp, battleComment
       battlePackets.unshift body
       battlePacketsNonce = updateNonce battlePacketsNonce
-      while battlePackets.length > 40
+      while battlePackets.length > MAX_PACKET_NUMBER
         battlePackets.pop()
       # Render battle packet
       if @shouldAutoShow
