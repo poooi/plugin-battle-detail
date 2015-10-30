@@ -19,6 +19,7 @@
   height: 22px;
   position: relative;
   background-color: #1F1F1F;
+  /* background-color: rgba(0, 0, 0, 0.2); */
 }
 .hp-bar.progress-bar {
   font-size: 13px;
@@ -26,6 +27,7 @@
   transition: none;
 }
 .hp-bar.lost.progress-bar {
+  /*background-color: #272727;*/
   background-color: rgba(255, 255, 255, 0.1);
 }
 .hp-bar.progress-bar span span {

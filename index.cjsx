@@ -31,7 +31,7 @@ if config.get('plugin.BattleDetail.enable', true)
 module.exports =
   name: 'BattleDetail'
   priority: 11
-  displayName: <span><FontAwesome name='info-circle' />{' ' + __('Battle Detail')}</span>
+  displayName: <span><FontAwesome name='info-circle' /> {__('Battle Detail')}</span>
   author: 'Dazzy Ding'
   link: 'https://github.com/yukixz'
   version: '1.2.0'
