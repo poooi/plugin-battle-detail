@@ -19,8 +19,8 @@ simualteBattlePacket = (packet) ->
   if isCombined is false
     stageFlow = [StageType.AerialCombat, StageType.AerialCombat, StageType.Support, StageType.TorpedoSalvo, StageType.Shelling, StageType.Shelling, StageType.TorpedoSalvo, StageType.Shelling]
     stageTitle = [
-      "#{__ "Aerial Combat"} - Stage 3",
-      "#{__ "Aerial Combat"} - Stage 3",
+      "#{__ "Aerial Combat"}",
+      "#{__ "Aerial Combat"}",
       "#{__ 'Expedition Supporting Fire'}",
       "#{__ 'Opening Torpedo Salvo'}",
       "#{__ 'Shelling'}",
@@ -32,8 +32,8 @@ simualteBattlePacket = (packet) ->
   if isCombined is true and isCarrier true
     stageFlow = [StageType.AerialCombat, StageType.AerialCombat, StageType.Support, StageType.TorpedoSalvo, StageType.Shelling, StageType.TorpedoSalvo, StageType.Shelling, StageType.Shelling, StageType.Shelling]
     stageTitle = [
-      "#{__ "Aerial Combat"} - Stage 3",
-      "#{__ "Aerial Combat"} - Stage 3",
+      "#{__ "Aerial Combat"}",
+      "#{__ "Aerial Combat"}",
       "#{__ 'Expedition Supporting Fire'}",
       "#{__ 'Opening Torpedo Salvo'}",
       "#{__ 'Shelling'} - #{__ 'Escort Fleet'}",
@@ -46,8 +46,8 @@ simualteBattlePacket = (packet) ->
   if isCombined is true and isCarrier is false
     stageFlow = [StageType.AerialCombat, StageType.AerialCombat, StageType.Support, StageType.TorpedoSalvo, StageType.Shelling, StageType.Shelling, StageType.Shelling, StageType.TorpedoSalvo, StageType.Shelling]
     stageTitle = [
-      "#{__ "Aerial Combat"} - Stage 3",
-      "#{__ "Aerial Combat"} - Stage 3",
+      "#{__ "Aerial Combat"}",
+      "#{__ "Aerial Combat"}",
       "#{__ 'Expedition Supporting Fire'}",
       "#{__ 'Opening Torpedo Salvo'}",
       "#{__ 'Shelling'} - #{__ 'Main Fleet'}",
