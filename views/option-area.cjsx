@@ -35,13 +35,13 @@ OptionArea = React.createClass
       @props.toggleAutoShow true
       @setState
         selectedPacket: null
-      @props.updateBattleDetail packet
+      @props.updateBattlePacket packet
     else
       packet = @props.battlePackets[index]
       @props.toggleAutoShow false
       @setState
         selectedPacket: packet
-      @props.updateBattleDetail packet
+      @props.updateBattlePacket packet
 
   handleClickExport: ->
     isSuccessful = false
@@ -74,7 +74,7 @@ OptionArea = React.createClass
       @props.toggleAutoShow false
       @setState
         selectedPacket: packet
-      @props.updateBattleDetail packet
+      @props.updateBattlePacket packet
     finally
       window.showModal
         title: __ "Paste Data"

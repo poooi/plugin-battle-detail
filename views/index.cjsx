@@ -226,7 +226,7 @@ MainArea = React.createClass
       @shouldAutoShow = !@shouldAutoShow
 
   # API for Component <OptionArea />
-  updateBattleDetail: (packet) ->
+  updateBattlePacket: (packet) ->
     @setState
       battleNonce: updateNonce @state.battleNonce
       battlePacket: packet
@@ -238,7 +238,7 @@ MainArea = React.createClass
         battlePackets={@state.battlePackets}
         battlePacketsNonce={@state.battlePacketsNonce}
         toggleAutoShow={@toggleAutoShow}
-        updateBattleDetail={@updateBattleDetail}
+        updateBattlePacket={@updateBattlePacket}
         />
       <BattleInfoArea
         battleNonce={@state.battleNonce}
