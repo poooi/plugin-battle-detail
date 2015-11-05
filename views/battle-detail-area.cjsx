@@ -109,15 +109,22 @@ getAttackTypeName = (type) ->
 
 HpBar = React.createClass
   render: ->
-    {max, from, to, damage} = @props
+    {max, from, to, damage, item} = @props
     to = 0 if to < 0
     from = max if from > max
-    if damage > 0
-      label = "#{to} / #{max} (-#{damage})"
-    else
-      label = "#{to} / #{max}"
+
     now = 100 * to / max
     lost = 100 * (from - to) / max
+    labels = []
+    labels.push <span key={0}>{"#{to} / #{max}"}</span>
+    if damage > 0
+      labels.push <span key={10}>{" (-#{damage}"}</span>
+      if item in [42, 43]
+        labels.push <span key={20}>{", "}</span>
+        labels.push <img key={21} className="damage-control"></img>
+      labels.push <span key={11}>{")"}</span>
+    label = <span>{labels}</span>
+
     <ProgressBar className="hp-bar">
       <ProgressBar className="hp-bar" bsStyle={getHpStyle now} now={now} label={label} />
       <ProgressBar className="hp-bar lost" now={lost} />
@@ -168,7 +175,7 @@ AttackTableRow = React.createClass
     # Is enemy attack?
     if toShip.owner is ShipOwner.Ours
       <div style={display: "flex"} className={"attack-table-row"}>
-        <span style={flex: 6}><HpBar max={maxHP} from={fromHP} to={toHP} damage={totalDamage} /></span>
+        <span style={flex: 6}><HpBar max={maxHP} from={fromHP} to={toHP} damage={totalDamage} item={useItem} /></span>
         <span style={flex: 6}>{toShipName}</span>
         <span style={flex: 1}><FontAwesome name='long-arrow-left' /></span>
         <span style={flex: 6}><DamageInfo type={type} damage={damage} hit={hit} /></span>
@@ -184,7 +191,7 @@ AttackTableRow = React.createClass
         <span style={flex: 6}><DamageInfo type={type} damage={damage} hit={hit} /></span>
         <span style={flex: 1}><FontAwesome name='long-arrow-right' /></span>
         <span style={flex: 6}>{toShipName}</span>
-        <span style={flex: 6}><HpBar max={maxHP} from={fromHP} to={toHP} damage={totalDamage} /></span>
+        <span style={flex: 6}><HpBar max={maxHP} from={fromHP} to={toHP} damage={totalDamage} item={useItem} /></span>
       </div>
 
 

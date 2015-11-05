@@ -27,13 +27,17 @@
   transition: none;
 }
 .hp-bar.lost.progress-bar {
-  /*background-color: #272727;*/
   background-color: rgba(255, 255, 255, 0.06);
 }
-.hp-bar.progress-bar span span {
+.hp-bar.progress-bar > span {
   position: absolute;
   width: 100%;
   display: block;
+}
+.hp-bar .damage-control {
+  content: url("./images/damage-control.png");
+  height: 18px;
+  overflow: hidden;
 }
 
 /* Attack Table */
