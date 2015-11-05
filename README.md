@@ -1,7 +1,7 @@
 # plugin-battle-detail
 
-A prophet plugin for Poi
+A plugin that showing battle detail for Poi.
 
 ## Poi Battle Pakcet Standard
 
-If you need to exchange battle packet with poi, please read [this dococument](./docs/packet-standard.md).
+If you need to exchange battle packet with poi, please read [the document](./docs/packet-standard.md).
