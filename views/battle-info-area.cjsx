@@ -166,8 +166,9 @@ BattleDetailArea = React.createClass
           </div>
         info.push <hr key={10 * id + 19}/>
 
+    # Use <div><div> as panel header to make the whole title clickable.
     <div className="battle-info-area">
-      <Panel header={__ "Battle Information"} collapsible>
+      <Panel collapsible header={<div><div>{__ "Battle Information"}</div></div>} >
         {
           if info.length > 0
             info
