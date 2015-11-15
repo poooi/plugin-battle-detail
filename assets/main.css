@@ -35,7 +35,7 @@
   display: block;
 }
 .hp-bar .damage-control {
-  content: url("./images/damage-control.png");
+  content: url("../../../assets/img/slotitem/114.png");
   height: 18px;
   overflow: hidden;
 }
