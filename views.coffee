@@ -16,4 +16,4 @@ window.language = config.get 'poi.language', navigator.language
 i18n.setLocale(window.language)
 window.__ = i18n.__
 
-require './views/index.cjsx'
+require './views'
