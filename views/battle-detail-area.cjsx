@@ -29,7 +29,7 @@ simualteBattlePacket = (packet) ->
       "#{__ 'Night Combat'}"
     ]
   # Carrier Task Force
-  if isCombined is true and isCarrier true
+  if isCombined is true and isCarrier is true
     stageFlow = [StageType.AerialCombat, StageType.AerialCombat, StageType.Support, StageType.TorpedoSalvo, StageType.Shelling, StageType.TorpedoSalvo, StageType.Shelling, StageType.Shelling, StageType.Shelling]
     stageTitle = [
       "#{__ "Aerial Combat"}",
