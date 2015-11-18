@@ -34,7 +34,7 @@ module.exports =
   displayName: <span><FontAwesome name='info-circle' /> {__('Battle Detail')}</span>
   author: 'Dazzy Ding'
   link: 'https://github.com/yukixz'
-  version: '1.2.1'
+  version: '1.2.2'
   description: __ "Show battle detail"
   handleClick: ->
     window.battleDetailWindow.show()
