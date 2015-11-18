@@ -186,9 +186,9 @@ simulate = (req) ->
     sortiePos = req.api_deck_id - 1 if !isCombined
     for i in [0..5]
       sortieShip.push new Ship ShipOwner.Ours, req.poi_sortie_fleet[i], i + 1, req.poi_sortie_equipment[i], req.api_nowhps[i + 1], req.api_maxhps[i + 1]
-      enemyShip.push new Ship ShipOwner.Enemy, req.api_ship_ke[i + 1], i + 1, req.poi_combined_equipment[i], req.api_nowhps[i + 7], req.api_maxhps[i + 7]
+      enemyShip.push new Ship ShipOwner.Enemy, req.api_ship_ke[i + 1], i + 1, null, req.api_nowhps[i + 7], req.api_maxhps[i + 7]
       if isCombined
-        combinedShip.push new Ship ShipOwner.Ours, req.poi_combined_fleet[i], i + 1, req.api_nowhps[i + 13], req.api_maxhps[i + 13]
+        combinedShip.push new Ship ShipOwner.Ours, req.poi_combined_fleet[i], i + 1, req.poi_combined_equipment[i], req.api_nowhps_combined[i + 1], req.api_maxhps_combined[i + 1]
     sortieProgress = []
 
     # Air battle
