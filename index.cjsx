@@ -19,7 +19,7 @@ initialWindow = ->
   window.battleDetailWindow = windowManager.createWindow
     x: config.get 'poi.window.x', 0
     y: config.get 'poi.window.y', 0
-    width: 820
+    width: 850
     height: 650
   window.battleDetailWindow.loadUrl "file://#{__dirname}/views.html"
   if process.env.DEBUG?

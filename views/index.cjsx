@@ -84,11 +84,11 @@ MainArea = React.createClass
     switch path
       when '/kcsapi/api_port/port'
         switch body.api_combined_flag
-          when 1  # 1=機動部隊
+          when 1, 3  # 1=空母機動部隊, 3=輸送護衛部隊
             isStateChanged = true
             isCombined = true
             isCarrier = true
-          when 2  # 2=水上部隊
+          when 2  # 2=水上打撃部隊
             isStateChanged = true
             isCombined = true
             isCarrier = false
