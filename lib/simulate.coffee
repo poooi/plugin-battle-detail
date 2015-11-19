@@ -69,9 +69,9 @@ simulateSupportFire = (enemyShip, support) ->
       dmg = []
       dmg.push damage
       critical = []
-      if support.api_support_airatack.api_stage3.api_ecl_flag[i] == 2
+      if support.api_support_airatack.api_stage3.api_ecl_flag[i] == 1
         critical.push HitType.Critical
-      else if support.api_support_airatack.api_stage3.api_ecl_flag[i] == 1
+      else if support.api_support_airatack.api_stage3.api_ecl_flag[i] == 0 && damage != 0
         critical.push HitType.Hit
       else
         critical.push HitType.Miss
