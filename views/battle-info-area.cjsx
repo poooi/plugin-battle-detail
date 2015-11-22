@@ -62,10 +62,10 @@ AntiAirCICell = React.createClass
     shipName = null
     if 0 <= shipId <= 5
       shipName = $ships[sortieFleet[shipId]]?.api_name
-    else if 6 <= api.api_idx <= 11
-      shipName = $ships[combinedFleet[shipId]]?.api_name
+    else if 6 <= shipId <= 11
+      shipName = $ships[combinedFleet[shipId - 6]]?.api_name
     if not shipName?
-      shipName = [api.api_idx, '?'].join ' '
+      shipName = "? (#{shipId})"
 
     tooltip = []
     tooltip.push <div key={-1}>{__ 'Anti-air Kind'}: {api.api_kind}</div>
