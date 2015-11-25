@@ -4,10 +4,10 @@ OptionArea = require './option-area'
 BattleInfoArea = require './battle-info-area'
 BattleDetailArea = require './battle-detail-area'
 
-
 # constant
 MAX_PACKET_NUMBER = 128
 
+$('#font-awesome')?.setAttribute 'href', "#{ROOT}/components/font-awesome/css/font-awesome.min.css"
 
 updateNonce = (nonce) ->
   if typeof nonce == "number" and nonce > 0
