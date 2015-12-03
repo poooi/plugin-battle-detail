@@ -1,4 +1,4 @@
-{React, ReactBootstrap} = window
+{React, ReactDOM, ReactBootstrap} = window
 ModalArea = require './modal-area'
 OptionArea = require './option-area'
 BattleInfoArea = require './battle-info-area'
@@ -250,4 +250,4 @@ MainArea = React.createClass
         />
     </div>
 
-React.render <MainArea />, $('main')
+ReactDOM.render <MainArea />, $('main')
