@@ -21,7 +21,7 @@ initialWindow = ->
     y: config.get 'poi.window.y', 0
     width: 850
     height: 650
-  window.battleDetailWindow.loadURL "file://#{__dirname}/views.html"
+  window.battleDetailWindow.loadURL "file://#{__dirname}/battle-detail.html"
   if process.env.DEBUG?
     window.battleDetailWindow.openDevTools
       detach: true

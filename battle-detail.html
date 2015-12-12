@@ -7,9 +7,12 @@
   <link rel="stylesheet" id="font-awesome" href="">
   <link rel="stylesheet" href="./assets/main.css">
   <script src="./env-loader.js"></script>
-  <script type="text/coffeescript" src="./views.coffee"></script>
 </head>
 <body>
   <main />
+  <script>
+    require('coffee-react/register');
+    require('./battle-detail');
+  </script>
 </body>
 </html>
