@@ -131,6 +131,24 @@ HpBar = React.createClass
     </ProgressBar>
 
 
+ShipInfo = React.createClass
+  render: ->
+    {ship} = @props
+    if not ship?
+      return <span />
+
+    $ship = window.$ships[ship.id]
+    name = "?"
+    if $ship?
+      name = $ship.api_name
+      name += $ship.api_yomi if $ship.api_yomi in ['elite', 'flagship']
+    position = ship.position
+    <span>
+      <span>{name}</span>
+      <span className="position-indicator">{"(#{position})"}</span>
+    </span>
+
+
 DamageInfo = React.createClass
   render: ->
     <span>
@@ -155,42 +173,27 @@ DamageInfo = React.createClass
 
 AttackTableRow = React.createClass
   render: ->
-    getShipName = (shipObj) ->
-      return "" if shipObj is null
-      name = []
-      ship = $ships[shipObj.id]
-      if ship?
-        if ship.api_yomi in ['elite', 'flagship']
-          name.push ship.api_name + ship.api_yomi
-        else
-          name.push ship.api_name
-      name.push "(#{shipObj.position})"
-      name.join " "
-
-    {_ships, $ships} = window
     {type, fromShip, toShip, maxHP, fromHP, toHP, damage, hit, useItem} = @props.attack
-    fromShipName = getShipName fromShip
-    toShipName = getShipName toShip
     totalDamage = damage.reduce ((p, x) -> p + x)
     # Is enemy attack?
     if toShip.owner is ShipOwner.Ours
       <div style={display: "flex"} className={"attack-table-row"}>
         <span style={flex: 6}><HpBar max={maxHP} from={fromHP} to={toHP} damage={totalDamage} item={useItem} /></span>
-        <span style={flex: 6}>{toShipName}</span>
+        <span style={flex: 6}><ShipInfo ship={toShip} /></span>
         <span style={flex: 1}><FontAwesome name='long-arrow-left' /></span>
         <span style={flex: 6}><DamageInfo type={type} damage={damage} hit={hit} /></span>
         <span style={flex: 1}></span>
-        <span style={flex: 6}>{fromShipName}</span>
+        <span style={flex: 6}><ShipInfo ship={fromShip} /></span>
         <span style={flex: 6}></span>
       </div>
     else
       <div style={display: "flex"} className={"attack-table-row"}>
         <span style={flex: 6}></span>
-        <span style={flex: 6}>{fromShipName}</span>
+        <span style={flex: 6}><ShipInfo ship={fromShip} /></span>
         <span style={flex: 1}></span>
         <span style={flex: 6}><DamageInfo type={type} damage={damage} hit={hit} /></span>
         <span style={flex: 1}><FontAwesome name='long-arrow-right' /></span>
-        <span style={flex: 6}>{toShipName}</span>
+        <span style={flex: 6}><ShipInfo ship={toShip} /></span>
         <span style={flex: 6}><HpBar max={maxHP} from={fromHP} to={toHP} damage={totalDamage} item={useItem} /></span>
       </div>
 
