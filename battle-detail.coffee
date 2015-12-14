@@ -1,6 +1,11 @@
 require 'coffee-react/register'
 require "#{ROOT}/views/env"
 
+try
+	require 'poi-plugin-translator'
+catch error
+  console.error error
+
 i18n = require './node_modules/i18n'
 {join} = require 'path-extra'
 
