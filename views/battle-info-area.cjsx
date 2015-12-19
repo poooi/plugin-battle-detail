@@ -61,16 +61,18 @@ AntiAirCICell = React.createClass
     shipId = api.api_idx
     shipName = null
     if 0 <= shipId <= 5
-      shipName = $ships[sortieFleet[shipId]]?.api_name
+      if $ships[sortieFleet[shipId]]?
+        shipName = window.i18n.resources.__ $ships[sortieFleet[shipId]].api_name
     else if 6 <= shipId <= 11
-      shipName = $ships[combinedFleet[shipId - 6]]?.api_name
+      if $ships[combinedFleet[shipId - 6]]?
+        shipName = window.i18n.resources.__ $ships[combinedFleet[shipId - 6]].api_name
     if not shipName?
       shipName = "? (#{shipId})"
 
     tooltip = []
     tooltip.push <div key={-1}>{__ 'Anti-air Kind'}: {api.api_kind}</div>
     for itemId, i in api.api_use_items
-      tooltip.push <div key={i}>{$slotitems[itemId]?.api_name}</div>
+      tooltip.push <div key={i}>{if $slotitems[itemId]? then window.i18n.resources.__ $slotitems[itemId].api_name}</div>
 
     <OverlayTrigger placement='top' overlay={
       <Tooltip id="battle-info-anti-air">
@@ -124,12 +126,12 @@ BattleDetailArea = React.createClass
             info.push <div key={10 * id + 10} style={display: "flex"} className={"battle-info-row"}>
               <span style={flex: 4}>{
                 if name = $slotitems[plane[0]]?.api_name
-                  [__("Contacting"), ": ", name].join ''
+                  [__("Contacting"), ": ", window.i18n.resources.__ name].join ''
                 }</span>
               <span style={flex: 4}>{__ "Aerial Combat"}</span>
               <span style={flex: 4}>{
                 if name = $slotitems[plane[1]]?.api_name
-                  [__("Contacting"), ": ", name].join ''
+                  [__("Contacting"), ": ", window.i18n.resources.__ name].join ''
                 }</span>
             </div>
           # Air control & air plane count

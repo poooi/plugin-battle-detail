@@ -140,7 +140,7 @@ ShipInfo = React.createClass
     $ship = window.$ships[ship.id]
     name = "?"
     if $ship?
-      name = $ship.api_name
+      name = window.i18n.resources.__ $ship.api_name
       name += $ship.api_yomi if $ship.api_yomi in ['elite', 'flagship']
     position = ship.position
     <span>
