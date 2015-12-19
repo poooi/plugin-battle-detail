@@ -82,7 +82,7 @@ AntiAirCICell = React.createClass
       <span>{__ "Anti-air Cut-in"}: {shipName}</span>
     </OverlayTrigger>
 
-BattleDetailArea = React.createClass
+BattleInfoArea = React.createClass
   shouldComponentUpdate: (nextProps, nextState) ->
     return false if @props.battleNonce == nextProps.battleNonce
     return true
@@ -168,7 +168,8 @@ BattleDetailArea = React.createClass
 
     # Use <div><div> as panel header to make the whole title clickable.
     <div className="battle-info-area">
-      <Panel collapsible header={<div><div>{__ "Battle Information"}</div></div>} >
+      <Panel collapsible defaultExpanded={true}
+             header={<div><div>{__ "Battle Information"}</div></div>} >
         {
           if info.length > 0
             info
@@ -178,4 +179,4 @@ BattleDetailArea = React.createClass
       </Panel>
     </div>
 
-module.exports = BattleDetailArea
+module.exports = BattleInfoArea

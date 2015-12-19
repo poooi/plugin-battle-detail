@@ -4,7 +4,7 @@ require "#{ROOT}/views/env"
 try
 	require 'poi-plugin-translator'
 catch error
-  console.error error
+  console.log "Cannot find poi-plugin-translator."
 
 i18n = require './node_modules/i18n'
 {join} = require 'path-extra'
