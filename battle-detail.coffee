@@ -1,23 +1,26 @@
 require 'coffee-react/register'
 require "#{ROOT}/views/env"
 
-try
-	require 'poi-plugin-translator'
-catch error
-  console.log "Cannot find poi-plugin-translator."
-
-i18n = require './node_modules/i18n'
 {join} = require 'path-extra'
 
-i18n.configure
+window.i18n = {}
+window.i18n.main = new(require 'i18n-2')
   locales: ['en-US', 'ja-JP', 'zh-CN', 'zh-TW']
   defaultLocale: 'zh-CN'
   directory: join(__dirname, 'assets', 'i18n')
   updateFiles: false
   indent: '\t'
   extension: '.json'
+window.i18n.main.setLocale(window.language)
+window.__ = window.i18n.main.__.bind(window.i18n.main)
+window.i18n.resources = {}
+window.i18n.resources.__ = (str) -> return str
+window.i18n.resources.translate = (locale, str) -> return str
+window.i18n.resources.setLocale = (str) -> return
 
-i18n.setLocale(window.language)
-window.__ = i18n.__
+try
+  require 'poi-plugin-translator'
+catch error
+  console.log error
 
 require './views'
