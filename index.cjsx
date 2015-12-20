@@ -22,7 +22,7 @@ initialWindow = ->
     width: 850
     height: 650
   window.battleDetailWindow.loadURL "file://#{__dirname}/battle-detail.html"
-  if process.env.DEBUG?
+  if process.env.DEBUG_BATTLE_DETAIL?
     window.battleDetailWindow.openDevTools
       detach: true
 if config.get('plugin.BattleDetail.enable', true)
