@@ -3,15 +3,14 @@ windowManager = remote.require './lib/window'
 {FontAwesome} = window
 
 path = require 'path-extra'
-window.i18n.battleInfo = new(require 'i18n-2')
+window.i18n.battleDetail = new(require 'i18n-2')
   locales: ['en-US', 'ja-JP', 'zh-CN', 'zh-TW'],
   defaultLocale: 'zh-CN',
   directory: path.join(__dirname, 'assets', 'i18n'),
   updateFiles: false,
-  indent: '\t',
   extension: '.json'
-window.i18n.battleInfo.setLocale(window.language)
-__ = window.i18n.battleInfo.__.bind(window.i18n.battleInfo)
+window.i18n.battleDetail.setLocale(window.language)
+__ = window.i18n.battleDetail.__.bind(window.i18n.battleDetail)
 
 window.battleDetailWindow = null
 initialWindow = ->
