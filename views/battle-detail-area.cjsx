@@ -9,10 +9,6 @@ simualteBattlePacket = (packet) ->
 
   isCombined = packet.poi_is_combined
   isCarrier = packet.poi_is_carrier
-  # TODO: Keep compatibility with version 1.0.0
-  #       Please remove these after 2016 autumn event.
-  if packet.poi_is_water? and not packet.poi_is_carrier?
-    isCarrier = !packet.poi_is_water
 
   stageFlow = null
   # Normal Fleet

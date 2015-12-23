@@ -47,10 +47,6 @@ updatePacketWithFleetInfo = (packet, isCombined, isCarrier, sortieFleetID, combi
   packet.poi_combined_fleet = combinedFleet
   packet.poi_combined_equipment = combinedEquipment
 
-  # TODO: Keep compatibility with version 1.0.0
-  #       Please remove these after 2016 autumn event.
-  packet.poi_is_water = !isCarrier
-
 updatePacketWithMetadata = (packet, path, timestamp, comment) ->
   return unless packet?
   packet.poi_uri = path
