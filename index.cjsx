@@ -21,9 +21,6 @@ initialWindow = ->
     width: 850
     height: 650
   window.battleDetailWindow.loadURL "file://#{__dirname}/battle-detail.html"
-  if process.env.DEBUG_PLUGIN is 'battle-detail'
-    window.battleDetailWindow.openDevTools
-      detach: true
 if config.get('plugin.BattleDetail.enable', true)
   initialWindow()
 
@@ -37,3 +34,6 @@ module.exports =
   description: __ "Show battle detail"
   handleClick: ->
     window.battleDetailWindow.show()
+    if process.env.DEBUG?
+      window.battleDetailWindow.openDevTools
+        detach: true
