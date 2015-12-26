@@ -26,5 +26,8 @@ window.i18n.resources.translate ?= (locale, str) -> return str
 window.i18n.resources.setLocale ?= (str) -> return
 window.__r = window.i18n.resources.__.bind(window.i18n.resources)
 
+# css
+$('#font-awesome')?.setAttribute 'href', "#{ROOT}/components/font-awesome/css/font-awesome.min.css"
+
 
 require './views'
