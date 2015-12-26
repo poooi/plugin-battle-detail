@@ -9,7 +9,7 @@ window.i18n = {}
 window.i18n.main = new(require 'i18n-2')
   locales: ['en-US', 'ja-JP', 'zh-CN', 'zh-TW']
   defaultLocale: 'zh-CN'
-  directory: path.join(__dirname, 'assets', 'i18n')
+  directory: join(__dirname, 'assets', 'i18n')
   extension: '.json'
   updateFiles: false
   devMode: false
