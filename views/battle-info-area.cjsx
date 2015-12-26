@@ -168,7 +168,7 @@ BattleInfoArea = React.createClass
           </div>
         info.push <hr key={10 * id + 19}/>
 
-    # Use <div><div> as panel header to make the whole title clickable.
+    # HACK: Use <div><div> as panel header to make the whole title clickable.
     <div className="battle-info-area">
       <Panel collapsible defaultExpanded={true}
              header={<div><div>{__ "Battle Information"}</div></div>} >

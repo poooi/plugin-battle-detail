@@ -26,7 +26,7 @@ OptionArea = React.createClass
     return false if @props.battlePacketsNonce == nextProps.battlePacketsNonce
     return true
 
-  handleSelectPacket: ->
+  onSelectPacket: ->
     index = parseInt(@refs.selectedIndex.getValue())
     return if index is NaN
     # Use 'default' when selected packet out of range
@@ -43,7 +43,7 @@ OptionArea = React.createClass
         selectedPacket: packet
       @props.updateBattlePacket packet
 
-  handleClickExport: ->
+  onClickExport: ->
     isSuccessful = false
     try
       packet = @state.selectedPacket
@@ -67,7 +67,7 @@ OptionArea = React.createClass
         body: [<p>{__ "Failed to copy battle packet to clipboard!"}</p>]
         footer: null
 
-  handleClickImport: ->
+  onClickImport: ->
     try
       packet = clipboard.readText(packet)
       packet = JSON.parse packet
@@ -107,16 +107,16 @@ OptionArea = React.createClass
               # Default option: last battle
               options.unshift <option key={-1} value={-1}>{__ "Last Battle"}</option>
 
-              <Input type="select" ref="selectedIndex" value={selectedIndex} onChange={@handleSelectPacket}>
+              <Input type="select" ref="selectedIndex" value={selectedIndex} onChange={@onSelectPacket}>
                 {options}
               </Input>
             }
             </Col>
             <Col xs={3}>
-              <Button bsStyle='primary' style={width: '100%'} onClick={@handleClickExport}>{__ "Copy Data"}</Button>
+              <Button bsStyle='primary' style={width: '100%'} onClick={@onClickExport}>{__ "Copy Data"}</Button>
             </Col>
             <Col xs={3}>
-            <Button bsStyle='primary' style={width: '100%'} onClick={@handleClickImport}>{__ "Paste Data"}</Button>
+            <Button bsStyle='primary' style={width: '100%'} onClick={@onClickImport}>{__ "Paste Data"}</Button>
             </Col>
           </Row>
         </Grid>
