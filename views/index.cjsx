@@ -1,3 +1,6 @@
+fs = require('fs');
+path = require('path-extra');
+
 {React, ReactDOM, ReactBootstrap} = window
 ModalArea = require './modal-area'
 OptionArea = require './option-area'
@@ -6,8 +9,11 @@ BattleDetailArea = require './battle-detail-area'
 
 # constant
 MAX_PACKET_NUMBER = 128
-
-$('#font-awesome')?.setAttribute 'href', "#{ROOT}/components/font-awesome/css/font-awesome.min.css"
+APPDATA = path.join(window.APPDATA_PATH, 'battle-detail');
+fs.mkdir APPDATA, (error) ->
+  return if !error
+  return if error.code == 'EEXIST'
+  console.error(error)
 
 updateNonce = (nonce) ->
   if typeof nonce == "number" and nonce > 0
@@ -53,6 +59,17 @@ updatePacketWithMetadata = (packet, path, timestamp, comment) ->
   packet.poi_timestamp = timestamp
   packet.poi_comment = comment
 
+savePacket = (packet) ->
+  setTimeout (->
+    return unless packet? and packet.poi_timestamp?
+    filename = packet.poi_timestamp
+    file = path.join(APPDATA, "#{filename}.json")
+    data = JSON.stringify(packet)
+    fs.writeFile file, data, (error) ->
+      return unless error
+      console.error error
+  ), 0
+
 
 MainArea = React.createClass
   componentDidMount: ->
@@ -72,6 +89,7 @@ MainArea = React.createClass
     battlePacket: null
 
   handleResponse: (e) ->
+    `var path;`   # HACK: Force shadowing an variable `path`;
     {method, path, body, postBody} = e.detail
     {isCombined, isCarrier, battleComment, battlePackets, battlePacketsNonce, battleNonce, battlePacket} = @state
     isStateChanged = false
@@ -195,6 +213,8 @@ MainArea = React.createClass
       battlePacketsNonce = updateNonce battlePacketsNonce
       while battlePackets.length > MAX_PACKET_NUMBER
         battlePackets.pop()
+      # Save packet
+      savePacket body
       # Render battle packet
       if @shouldAutoShow
         battleNonce = updateNonce battleNonce
