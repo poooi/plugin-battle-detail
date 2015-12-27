@@ -8,12 +8,14 @@ BattleInfoArea = require './battle-info-area'
 BattleDetailArea = require './battle-detail-area'
 
 # constant
-MAX_PACKET_NUMBER = 128
+MAX_PACKET_NUMBER = 64
 APPDATA = path.join(window.APPDATA_PATH, 'battle-detail');
 fs.mkdir APPDATA, (error) ->
   return if !error
   return if error.code == 'EEXIST'
   console.error(error)
+FS_RW_OPTIONS =
+  encoding: 'UTF-8'
 
 updateNonce = (nonce) ->
   if typeof nonce == "number" and nonce > 0
@@ -61,12 +63,26 @@ updatePacketWithMetadata = (packet, path, timestamp, comment) ->
 
 savePacket = (packet) ->
   setTimeout (->
-    return unless packet? and packet.poi_timestamp?
-    filename = packet.poi_timestamp
-    file = path.join(APPDATA, "#{filename}.json")
-    data = JSON.stringify(packet)
-    fs.writeFile file, data, (error) ->
-      return unless error
+    try
+      return unless packet? and packet.poi_timestamp?
+      filename = packet.poi_timestamp
+      file = path.join(APPDATA, "#{filename}.json")
+      data = JSON.stringify(packet)
+      fs.writeFileSync(file, data, FS_RW_OPTIONS)
+    catch error
+      console.error error
+  ), 0
+
+# filename = "#{packet.poi_timestamp}.json"
+loadPacket = (filename, callback) ->
+  setTimeout (->
+    try
+      return unless filename? and callback?
+      file = path.join(APPDATA, filename)
+      data = fs.readFileSync(file, FS_RW_OPTIONS)
+      packet = JSON.parse(data)
+      callback(packet)
+    catch error
       console.error error
   ), 0
 
