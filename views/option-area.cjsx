@@ -18,12 +18,12 @@ OptionArea = React.createClass
   getInitialState: ->
     # selectedPacket can be 3 type
     #   null : Last battle packet
-    #   packet in @props.battlePackets
-    #   packet not in @props.battlePackets (imported)
+    #   packet in @props.packetList
+    #   packet not in @props.packetList (imported)
     selectedPacket: null
   shouldComponentUpdate: (nextProps, nextState) ->
     return true if @state.selectedPacket?.poi_timestamp != nextState.selectedPacket?.poi_timestamp
-    return false if @props.battlePacketsNonce == nextProps.battlePacketsNonce
+    return false if @props.packetListNonce == nextProps.packetListNonce
     return true
 
   onSelectPacket: ->
@@ -31,13 +31,13 @@ OptionArea = React.createClass
     return if index is NaN
     # Use 'default' when selected packet out of range
     if index < 0
-      packet = @props.battlePackets[0]
+      packet = @props.packetList[0]
       @props.toggleAutoShow true
       @setState
         selectedPacket: null
       @props.updateBattlePacket packet
     else
-      packet = @props.battlePackets[index]
+      packet = @props.packetList[index]
       @props.toggleAutoShow false
       @setState
         selectedPacket: packet
@@ -47,7 +47,7 @@ OptionArea = React.createClass
     isSuccessful = false
     try
       packet = @state.selectedPacket
-      packet = @props.battlePackets[0] if packet is null
+      packet = @props.packetList[0] if packet is null
       if packet isnt null
         packet = JSON.stringify packet
         clipboard.writeText(packet)
@@ -93,13 +93,13 @@ OptionArea = React.createClass
               selectedIndex = -1  # Default: last battle (-1)
               selectedTimestamp = @state.selectedPacket?.poi_timestamp
 
-              # Is selectedPacket in @props.battlePackets ?
-              for packet, i in @props.battlePackets
+              # Is selectedPacket in @props.packetList ?
+              for packet, i in @props.packetList
                 if packet.poi_timestamp == selectedTimestamp
                   selectedIndex = i
                 options.push <option key={i} value={i}>{getPacketDescription packet}</option>
 
-              # If selectedPacket exists but not in @props.battlePackets
+              # If selectedPacket exists but not in @props.packetList
               if selectedIndex < 0 and selectedTimestamp?
                 selectedIndex = -2
                 options.unshift <option key={-2} value={-2}>{__ "Selected battle"}</option>

@@ -95,10 +95,10 @@ MainArea = React.createClass
     isCarrier: false
     battleComment: ""
     # Battle Packets Management
-    battlePackets: []
-    battlePacketsNonce: 0
-    battleNonce: 0
+    packetList: []
+    packetListNonce: 0
     battlePacket: null
+    battleNonce: 0
 
   componentDidMount: ->
     window.addEventListener 'game.response', @handleResponse
@@ -116,11 +116,11 @@ MainArea = React.createClass
         break if packets.length >= MAX_PACKET_NUMBER
 
       # Update state with loaded packets.
-      {battlePackets, battlePacketsNonce} = _this.state
-      battlePackets = battlePackets.concat(packets).slice(0, MAX_PACKET_NUMBER)
+      {packetList, packetListNonce} = _this.state
+      packetList = packetList.concat(packets).slice(0, MAX_PACKET_NUMBER)
       _this.setState
-        battlePackets: battlePackets
-        battlePacketsNonce: updateNonce battlePacketsNonce
+        packetList: packetList
+        packetListNonce: updateNonce packetListNonce
 
   componentWillUnmount: ->
     window.removeEventListener 'game.response', @handleResponse
@@ -128,7 +128,7 @@ MainArea = React.createClass
   handleResponse: (e) ->
     `var path;`   # HACK: Force shadowing an variable `path`;
     {method, path, body, postBody} = e.detail
-    {isCombined, isCarrier, battleComment, battlePackets, battlePacketsNonce, battleNonce, battlePacket} = @state
+    {isCombined, isCarrier, battleComment, packetList, packetListNonce, battleNonce, battlePacket} = @state
     isStateChanged = false
 
     # Combined Fleet Status
@@ -183,8 +183,8 @@ MainArea = React.createClass
         sortieID = body.api_dock_id - 1
         combinedID = null
       when '/kcsapi/api_req_battle_midnight/battle', '/kcsapi/api_req_practice/midnight_battle'
-        if @state.battlePackets[0]?.api_midnight_flag
-          oldBody = @state.battlePackets.shift()
+        if packetList[0]?.api_midnight_flag
+          oldBody = packetList.shift()
           oldBody.api_hougeki = body.api_hougeki
           body = oldBody
           # Dont update packet metadata
@@ -222,8 +222,8 @@ MainArea = React.createClass
         sortieID = body.api_deck_id - 1
         combinedID = 1
       when '/kcsapi/api_req_combined_battle/midnight_battle'
-        if @state.battlePackets[0]?.api_midnight_flag
-          oldBody = @state.battlePackets.shift()
+        if packetList[0]?.api_midnight_flag
+          oldBody = packetList.shift()
           oldBody.api_hougeki = body.api_hougeki
           body = oldBody
           # Dont update packet metadata
@@ -246,10 +246,10 @@ MainArea = React.createClass
       isStateChanged = true
       updatePacketWithFleetInfo body, isCombined, isCarrier, sortieID, combinedID
       updatePacketWithMetadata body, path, timestamp, battleComment
-      battlePackets.unshift body
-      battlePacketsNonce = updateNonce battlePacketsNonce
-      while battlePackets.length > MAX_PACKET_NUMBER
-        battlePackets.pop()
+      packetList.unshift body
+      packetListNonce = updateNonce packetListNonce
+      while packetList.length > MAX_PACKET_NUMBER
+        packetList.pop()
       # Save packet
       savePacket body
       # Render battle packet
@@ -263,8 +263,8 @@ MainArea = React.createClass
         isCombined: isCombined
         isCarrier: isCarrier
         battleComment: battleComment
-        battlePackets: battlePackets
-        battlePacketsNonce: battlePacketsNonce
+        packetList: packetList
+        packetListNonce: packetListNonce
         battleNonce: battleNonce
         battlePacket: battlePacket
 
@@ -288,8 +288,8 @@ MainArea = React.createClass
     <div className="main">
       <ModalArea />
       <OptionArea
-        battlePackets={@state.battlePackets}
-        battlePacketsNonce={@state.battlePacketsNonce}
+        packetList={@state.packetList}
+        packetListNonce={@state.packetListNonce}
         toggleAutoShow={@toggleAutoShow}
         updateBattlePacket={@updateBattlePacket}
         />
