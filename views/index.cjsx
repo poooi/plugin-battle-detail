@@ -116,11 +116,13 @@ MainArea = React.createClass
         break if packets.length >= MAX_PACKET_NUMBER
 
       # Update state with loaded packets.
-      {packetList, packetListNonce} = _this.state
+      {packetList, packetListNonce, battlePacket, battleNonce} = _this.state
       packetList = packetList.concat(packets).slice(0, MAX_PACKET_NUMBER)
       _this.setState
         packetList: packetList
         packetListNonce: updateNonce packetListNonce
+        battlePacket: packetList[0]
+        battleNonce: updateNonce battleNonce
 
   componentWillUnmount: ->
     window.removeEventListener 'game.response', @handleResponse
