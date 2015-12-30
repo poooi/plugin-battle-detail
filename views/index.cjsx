@@ -1,5 +1,6 @@
-fs = require('fs');
-path = require('path-extra');
+fs = require 'fs'
+glob = require 'glob'
+path = require 'path-extra'
 
 {React, ReactDOM, ReactBootstrap} = window
 ModalArea = require './modal-area'
@@ -62,37 +63,32 @@ updatePacketWithMetadata = (packet, path, timestamp, comment) ->
   packet.poi_comment = comment
 
 savePacket = (packet) ->
-  setTimeout (->
-    try
-      return unless packet? and packet.poi_timestamp?
-      filename = packet.poi_timestamp
-      file = path.join(APPDATA, "#{filename}.json")
-      data = JSON.stringify(packet)
-      fs.writeFileSync(file, data, FS_RW_OPTIONS)
-    catch error
-      console.error error
-  ), 0
+  setTimeout ->
+    return unless packet? and packet.poi_timestamp?
+    filename = packet.poi_timestamp
+    file = path.join(APPDATA, "#{filename}.json")
+    data = JSON.stringify(packet)
+    fs.writeFileSync(file, data, FS_RW_OPTIONS)
 
 # filename = "#{packet.poi_timestamp}.json"
 loadPacket = (filename, callback) ->
-  setTimeout (->
-    try
-      return unless filename? and callback?
-      file = path.join(APPDATA, filename)
-      data = fs.readFileSync(file, FS_RW_OPTIONS)
-      packet = JSON.parse(data)
-      callback(packet)
-    catch error
-      console.error error
-  ), 0
+  setTimeout ->
+    return unless filename? and callback?
+    file = path.join(APPDATA, filename)
+    data = fs.readFileSync(file, FS_RW_OPTIONS)
+    packet = JSON.parse(data)
+    callback(packet)
+
+loadPacketSync = (path) ->
+  try
+    return unless path?
+    data = fs.readFileSync(path, FS_RW_OPTIONS)
+    packet = JSON.parse(data)
+  catch error
+    console.error error
 
 
 MainArea = React.createClass
-  componentDidMount: ->
-    window.addEventListener 'game.response', @handleResponse
-  componentWillUnmount: ->
-    window.removeEventListener 'game.response', @handleResponse
-
   getInitialState: ->
     # Game states
     isCombined: false
@@ -103,6 +99,31 @@ MainArea = React.createClass
     battlePacketsNonce: 0
     battleNonce: 0
     battlePacket: null
+
+  componentDidMount: ->
+    window.addEventListener 'game.response', @handleResponse
+
+    _this = @
+    setTimeout ->
+      # Read packets from disk.
+      list = glob.sync(path.join(APPDATA, "*.json"))
+      list.sort (a, b) ->     # Sort from newest to older
+        parseInt(path.parse(b).name) - parseInt(path.parse(a).name)
+      packets = []
+      for fp in list
+        packet = loadPacketSync fp
+        packets.push(packet) if packet?
+        break if packets.length >= MAX_PACKET_NUMBER
+
+      # Update state with loaded packets.
+      {battlePackets, battlePacketsNonce} = _this.state
+      battlePackets = battlePackets.concat(packets).slice(0, MAX_PACKET_NUMBER)
+      _this.setState
+        battlePackets: battlePackets
+        battlePacketsNonce: updateNonce battlePacketsNonce
+
+  componentWillUnmount: ->
+    window.removeEventListener 'game.response', @handleResponse
 
   handleResponse: (e) ->
     `var path;`   # HACK: Force shadowing an variable `path`;
