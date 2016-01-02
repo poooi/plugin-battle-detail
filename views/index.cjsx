@@ -1,6 +1,9 @@
+{remote} = window
 fs = require 'fs'
 glob = require 'glob'
 path = require 'path-extra'
+try ipc = remote.require './lib/ipc'
+catch error then console.log error
 
 {React, ReactDOM, ReactBootstrap} = window
 ModalArea = require './modal-area'
@@ -102,6 +105,10 @@ MainArea = React.createClass
 
   componentDidMount: ->
     window.addEventListener 'game.response', @handleResponse
+    try
+      ipc.register "BattleDetail",
+        showBattleWithTimestamp: @showBattleWithTimestamp
+    catch error then console.log error
 
     setTimeout =>
       # Read packets from disk.
@@ -125,6 +132,9 @@ MainArea = React.createClass
 
   componentWillUnmount: ->
     window.removeEventListener 'game.response', @handleResponse
+    try
+      ipc.unregisterAll "BattleDetail"
+    catch error then console.log error
 
   handleResponse: (e) ->
     `var path;`   # HACK: Force shadowing an variable `path`;
@@ -268,6 +278,24 @@ MainArea = React.createClass
         packetListNonce: packetListNonce
         battleNonce: battleNonce
         battlePacket: battlePacket
+
+  # API for IPC
+  showBattleWithTimestamp: (timestamp, callback) ->
+    range = [timestamp - 2000, timestamp + 2000]
+    list = glob.sync(path.join(APPDATA, "{#{range[0]}..#{range[1]}}.json"))
+    if list.length == 1
+      try
+        packet = loadPacketSync list[0]
+        @updateBattlePacket packet
+        remote.getCurrentWindow().focus()
+      catch error
+        message __ "Unknown error"
+        console.error error
+    if list.length <= 0
+      message = __ "Packet not found."
+    if list.length >= 2
+      message = __ "Multiple packets found."
+    callback(message)
 
   # API for Component <OptionArea />
   shouldAutoShow: true
