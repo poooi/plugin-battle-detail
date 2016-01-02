@@ -103,8 +103,7 @@ MainArea = React.createClass
   componentDidMount: ->
     window.addEventListener 'game.response', @handleResponse
 
-    _this = @
-    setTimeout ->
+    setTimeout =>
       # Read packets from disk.
       list = glob.sync(path.join(APPDATA, "*.json"))
       list.sort (a, b) ->     # Sort from newest to older
@@ -116,9 +115,9 @@ MainArea = React.createClass
         break if packets.length >= MAX_PACKET_NUMBER
 
       # Update state with loaded packets.
-      {packetList, packetListNonce, battlePacket, battleNonce} = _this.state
+      {packetList, packetListNonce, battlePacket, battleNonce} = @state
       packetList = packetList.concat(packets).slice(0, MAX_PACKET_NUMBER)
-      _this.setState
+      @setState
         packetList: packetList
         packetListNonce: updateNonce packetListNonce
         battlePacket: packetList[0]
