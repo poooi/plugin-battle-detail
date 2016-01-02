@@ -3,7 +3,7 @@
 clipboard = require 'clipboard'
 
 
-getPacketDescription = (packet) ->
+getDescription = (packet) ->
   desc = []
   if packet.poi_timestamp
     date = new Date(packet.poi_timestamp)
@@ -15,39 +15,26 @@ getPacketDescription = (packet) ->
 
 
 OptionArea = React.createClass
-  getInitialState: ->
-    # selectedPacket can be 3 type
-    #   null : Last battle packet
-    #   packet in @props.packetList
-    #   packet not in @props.packetList (imported)
-    selectedPacket: null
   shouldComponentUpdate: (nextProps, nextState) ->
-    return true if @state.selectedPacket?.poi_timestamp != nextState.selectedPacket?.poi_timestamp
-    return false if @props.packetListNonce == nextProps.packetListNonce
-    return true
+    return not (
+      @props.packetListNonce == nextProps.packetListNonce and
+      @props.battleNonce == nextProps.battleNonce and
+      @props.shouldAutoShow == nextProps.shouldAutoShow
+    )
 
   onSelectPacket: ->
     index = parseInt(@refs.selectedIndex.getValue())
     return if index is NaN
-    # Use 'default' when selected packet out of range
     if index < 0
-      packet = @props.packetList[0]
-      @props.toggleAutoShow true
-      @setState
-        selectedPacket: null
-      @props.updateBattlePacket packet
+      @props.updateBattlePacket null
     else
       packet = @props.packetList[index]
-      @props.toggleAutoShow false
-      @setState
-        selectedPacket: packet
       @props.updateBattlePacket packet
 
   onClickExport: ->
     isSuccessful = false
     try
-      packet = @state.selectedPacket
-      packet = @props.packetList[0] if packet is null
+      packet = @props.battlePacket
       if packet isnt null
         packet = JSON.stringify packet
         clipboard.writeText(packet)
@@ -71,9 +58,6 @@ OptionArea = React.createClass
     try
       packet = clipboard.readText(packet)
       packet = JSON.parse packet
-      @props.toggleAutoShow false
-      @setState
-        selectedPacket: packet
       @props.updateBattlePacket packet
     finally
       window.showModal
@@ -91,20 +75,22 @@ OptionArea = React.createClass
             {
               options = []
               selectedIndex = -1  # Default: last battle (-1)
-              selectedTimestamp = @state.selectedPacket?.poi_timestamp
+              selectedTimestamp = @props.battlePacket?.poi_timestamp
 
-              # Is selectedPacket in @props.packetList ?
+              # Is @props.battlePacket in @props.packetList ?
               for packet, i in @props.packetList
                 if packet.poi_timestamp == selectedTimestamp
                   selectedIndex = i
-                options.push <option key={i} value={i}>{getPacketDescription packet}</option>
+                options.push <option key={i} value={i}>{getDescription packet}</option>
 
-              # If selectedPacket exists but not in @props.packetList
+              # If @props.battlePacket exists but not in @props.packetList
               if selectedIndex < 0 and selectedTimestamp?
                 selectedIndex = -2
-                options.unshift <option key={-2} value={-2}>{__ "Selected battle"}</option>
+                options.unshift <option key={-2} value={-2}>{__ "Selected"}: {getDescription packet}</option>
 
               # Default option: last battle
+              if @props.shouldAutoShow
+                selectedIndex = -1
               options.unshift <option key={-1} value={-1}>{__ "Last Battle"}</option>
 
               <Input type="select" ref="selectedIndex" value={selectedIndex} onChange={@onSelectPacket}>

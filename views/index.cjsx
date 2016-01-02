@@ -102,6 +102,7 @@ MainArea = React.createClass
     packetListNonce: 0
     battlePacket: null
     battleNonce: 0
+    shouldAutoShow: true
 
   componentDidMount: ->
     window.addEventListener 'game.response', @handleResponse
@@ -298,20 +299,18 @@ MainArea = React.createClass
     callback(message)
 
   # API for Component <OptionArea />
-  shouldAutoShow: true
-
-  # API for Component <OptionArea />
-  toggleAutoShow: (value) ->
-    if value?
-      @shouldAutoShow = value
-    else
-      @shouldAutoShow = !@shouldAutoShow
-
-  # API for Component <OptionArea />
+  #   packet=null: using last battle and set `shouldAutoShow` to true.
   updateBattlePacket: (packet) ->
-    @setState
-      battleNonce: updateNonce @state.battleNonce
-      battlePacket: packet
+    if packet?
+      @setState
+        shouldAutoShow: false
+        battlePacket: packet
+        battleNonce: updateNonce @state.battleNonce
+    else
+      @setState
+        shouldAutoShow: true
+        battlePacket: @state.packetList[0]
+        battleNonce: updateNonce @state.battleNonce
 
   render: ->
     <div className="main">
@@ -319,7 +318,9 @@ MainArea = React.createClass
       <OptionArea
         packetList={@state.packetList}
         packetListNonce={@state.packetListNonce}
-        toggleAutoShow={@toggleAutoShow}
+        battlePacket={@state.battlePacket}
+        battleNonce={@state.battleNonce}
+        shouldAutoShow={@state.shouldAutoShow}
         updateBattlePacket={@updateBattlePacket}
         />
       <BattleInfoArea
