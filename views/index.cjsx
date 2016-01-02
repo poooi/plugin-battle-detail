@@ -176,7 +176,6 @@ MainArea = React.createClass
 
     # Battle Packets Management
     isBattle = false
-    timestamp = new Date().getTime()
     switch path
       # Normal fleet
       when '/kcsapi/api_req_sortie/battle', '/kcsapi/api_req_practice/battle', '/kcsapi/api_req_sortie/airbattle'
@@ -246,6 +245,7 @@ MainArea = React.createClass
 
     if isBattle
       isStateChanged = true
+      timestamp = Date.now()
       updatePacketWithFleetInfo body, isCombined, isCarrier, sortieID, combinedID
       updatePacketWithMetadata body, path, timestamp, battleComment
       packetList.unshift body
