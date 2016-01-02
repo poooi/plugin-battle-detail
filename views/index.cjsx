@@ -265,7 +265,7 @@ MainArea = React.createClass
       # Save packet
       savePacket body
       # Render battle packet
-      if @shouldAutoShow
+      if @state.shouldAutoShow
         battleNonce = updateNonce battleNonce
         battlePacket = body
 
@@ -288,7 +288,7 @@ MainArea = React.createClass
       try
         packet = loadPacketSync list[0]
         @updateBattlePacket packet
-        remote.getCurrentWindow().focus()
+        remote.getCurrentWindow().show()
       catch error
         message __ "Unknown error"
         console.error error
