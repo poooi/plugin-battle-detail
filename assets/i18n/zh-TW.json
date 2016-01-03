@@ -6,6 +6,9 @@
   "Show battle detail": "顯示戰鬥詳情",
   "Sortie": "出擊",
   "Pratice": "演習",
+  "Unknown error": "未知錯誤",
+  "Battle not found": "無法找到該戰鬥",
+  "Multiple battle found": "找到多場匹配的戰鬥",
 
   "Battle Detail": "戰鬥詳情",
   "AT.Normal": "普通",

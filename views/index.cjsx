@@ -290,12 +290,12 @@ MainArea = React.createClass
         @updateBattlePacket packet
         remote.getCurrentWindow().show()
       catch error
-        message __ "Unknown error"
         console.error error
+        message __ "Unknown error"
     if list.length <= 0
-      message = __ "Packet not found."
+      message = __ "Battle not found"
     if list.length >= 2
-      message = __ "Multiple packets found."
+      message = __ "Multiple battle found"
     callback(message)
 
   # API for Component <OptionArea />

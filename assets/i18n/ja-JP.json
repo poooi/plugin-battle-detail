@@ -6,6 +6,9 @@
   "Show battle detail": "戦闘情報を表示します",
   "Sortie": "出撃",
   "Pratice": "演習",
+  "Unknown error": "不明エラー",
+  "Battle not found": "戦闘記録が見つからない",
+  "Multiple battle found": "複数の戦闘記録発見",
 
   "Battle Detail": "戦闘詳細",
   "AT.Normal": "通常",
