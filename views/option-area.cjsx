@@ -86,7 +86,7 @@ OptionArea = React.createClass
               # If @props.battlePacket exists but not in @props.packetList
               if selectedIndex < 0 and selectedTimestamp?
                 selectedIndex = -2
-                options.unshift <option key={-2} value={-2}>{__ "Selected"}: {getDescription packet}</option>
+                options.unshift <option key={-2} value={-2}>{__ "Selected"}: {getDescription @props.battlePacket}</option>
 
               # Default option: last battle
               if @props.shouldAutoShow
