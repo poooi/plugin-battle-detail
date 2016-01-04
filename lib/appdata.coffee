@@ -3,7 +3,7 @@ glob = require 'glob'
 path = require 'path-extra'
 
 # constant
-APPDATA = path.join(window.APPDATA_PATH, 'battle-detail')
+window.APPDATA = path.join(window.APPDATA_PATH, 'battle-detail')
 REFRESH_INTERVAL = 60000
 FS_RW_OPTIONS =
   encoding: 'UTF-8'
@@ -59,16 +59,15 @@ class AppData
       console.error error
       return null
 
-  # Accept 
   searchPacket: (start, end) ->
     return unless start? and end?
     return unless start <= end
+    @_refreshPacket()
     list = []
     for timestamp, i in @packetList
       continue if timestamp < start
       break    if timestamp > end
       list.push timestamp
-    @_refreshPacket()
     return list
 
   _refreshPacket: ->

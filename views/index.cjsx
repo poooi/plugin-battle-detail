@@ -79,10 +79,10 @@ MainArea = React.createClass
     catch error then console.log error
 
     setTimeout =>
-      # Read packets from disk.
       list = appdata.listPacket()
+      return unless list?.length > 0
       packets = []
-      for fp in list.reverse()
+      for fp in list by -1
         packet = appdata.loadPacketSync fp
         packets.push(packet) if packet?
         break if packets.length >= MAX_PACKET_NUMBER
