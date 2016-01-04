@@ -1,9 +1,8 @@
 {remote} = window
-fs = require 'fs'
-glob = require 'glob'
 path = require 'path-extra'
 try ipc = remote.require './lib/ipc'
 catch error then console.log error
+appdata = require '../lib/appdata'
 
 {React, ReactDOM, ReactBootstrap} = window
 ModalArea = require './modal-area'
@@ -13,13 +12,6 @@ BattleDetailArea = require './battle-detail-area'
 
 # constant
 MAX_PACKET_NUMBER = 64
-APPDATA = path.join(window.APPDATA_PATH, 'battle-detail');
-fs.mkdir APPDATA, (error) ->
-  return if !error
-  return if error.code == 'EEXIST'
-  console.error(error)
-FS_RW_OPTIONS =
-  encoding: 'UTF-8'
 
 updateNonce = (nonce) ->
   if typeof nonce == "number" and nonce > 0
@@ -65,31 +57,6 @@ updatePacketWithMetadata = (packet, path, timestamp, comment) ->
   packet.poi_timestamp = timestamp
   packet.poi_comment = comment
 
-savePacket = (packet) ->
-  setTimeout ->
-    return unless packet? and packet.poi_timestamp?
-    filename = packet.poi_timestamp
-    file = path.join(APPDATA, "#{filename}.json")
-    data = JSON.stringify(packet)
-    fs.writeFileSync(file, data, FS_RW_OPTIONS)
-
-# filename = "#{packet.poi_timestamp}.json"
-loadPacket = (filename, callback) ->
-  setTimeout ->
-    return unless filename? and callback?
-    file = path.join(APPDATA, filename)
-    data = fs.readFileSync(file, FS_RW_OPTIONS)
-    packet = JSON.parse(data)
-    callback(packet)
-
-loadPacketSync = (path) ->
-  try
-    return unless path?
-    data = fs.readFileSync(path, FS_RW_OPTIONS)
-    packet = JSON.parse(data)
-  catch error
-    console.error error
-
 
 MainArea = React.createClass
   getInitialState: ->
@@ -113,12 +80,10 @@ MainArea = React.createClass
 
     setTimeout =>
       # Read packets from disk.
-      list = glob.sync(path.join(APPDATA, "*.json"))
-      list.sort (a, b) ->     # Sort from newest to older
-        parseInt(path.parse(b).name) - parseInt(path.parse(a).name)
+      list = appdata.listPacket()
       packets = []
-      for fp in list
-        packet = loadPacketSync fp
+      for fp in list.reverse()
+        packet = appdata.loadPacketSync fp
         packets.push(packet) if packet?
         break if packets.length >= MAX_PACKET_NUMBER
 
@@ -263,7 +228,7 @@ MainArea = React.createClass
       while packetList.length > MAX_PACKET_NUMBER
         packetList.pop()
       # Save packet
-      savePacket body
+      appdata.savePacket body
       # Render battle packet
       if @state.shouldAutoShow
         battleNonce = updateNonce battleNonce
@@ -282,11 +247,12 @@ MainArea = React.createClass
 
   # API for IPC
   showBattleWithTimestamp: (timestamp, callback) ->
-    range = [timestamp - 2000, timestamp + 2000]
-    list = glob.sync(path.join(APPDATA, "{#{range[0]}..#{range[1]}}.json"))
+    start = timestamp - 2000
+    end = timestamp + 2000
+    list = appdata.searchPacket start, end
     if list.length == 1
       try
-        packet = loadPacketSync list[0]
+        packet = appdata.loadPacketSync list[0]
         @updateBattlePacket packet
         remote.getCurrentWindow().show()
       catch error
