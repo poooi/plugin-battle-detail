@@ -247,22 +247,27 @@ MainArea = React.createClass
 
   # API for IPC
   showBattleWithTimestamp: (timestamp, callback) ->
-    start = timestamp - 2000
-    end = timestamp + 2000
-    list = appdata.searchPacket start, end
-    if list.length == 1
-      try
-        packet = appdata.loadPacketSync list[0]
-        @updateBattlePacket packet
-        remote.getCurrentWindow().show()
-      catch error
-        console.error error
-        message __ "Unknown error"
-    if list.length <= 0
-      message = __ "Battle not found"
-    if list.length >= 2
-      message = __ "Multiple battle found"
-    callback(message)
+    if timestamp?
+      start = timestamp - 2000
+      end = timestamp + 2000
+      list = appdata.searchPacket start, end
+      if not list?
+        message = __ "Unknown error"
+      else if list.length == 1
+        try
+          packet = appdata.loadPacketSync list[0]
+          @updateBattlePacket packet
+          remote.getCurrentWindow().show()
+        catch error
+          console.error error
+          message __ "Unknown error"
+      else if list.length <= 0
+        message = __ "Battle not found"
+      else if list.length >= 2
+        message = __ "Multiple battle found"
+    else
+      message __ "Unknown error"
+    callback?(message)
 
   # API for Component <OptionArea />
   #   packet=null: using last battle and set `shouldAutoShow` to true.
