@@ -26,7 +26,8 @@ window.i18n.resources.translate ?= (locale, str) -> return str
 window.i18n.resources.setLocale ?= (str) -> return
 window.__r = window.i18n.resources.__.bind(window.i18n.resources)
 
-# css
+
+document.title = __ 'Battle Detail'
 $('#font-awesome')?.setAttribute 'href', "#{ROOT}/components/font-awesome/css/font-awesome.min.css"
 
 
