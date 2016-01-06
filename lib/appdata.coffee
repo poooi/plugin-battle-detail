@@ -44,7 +44,7 @@ class AppData
 
   loadPacket: (timestamp, callback) ->
     setTimeout =>
-      return unless filename? and callback?
+      return unless timestamp? and callback?
       packet = @loadPacketSync timestamp
       callback(packet)
 
