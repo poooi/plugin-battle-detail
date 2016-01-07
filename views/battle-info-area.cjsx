@@ -1,6 +1,6 @@
 {React, ReactBootstrap} = window
 {Panel, ProgressBar, OverlayTrigger, Overlay, Tooltip} = ReactBootstrap
-{Ship, ShipOwner, Attack, AttackType, HitType, Stage, StageType} = require '../lib/common'
+{Ship, ShipOwner, Attack, AttackType, HitType, Stage, StageType} = require '../lib/simulator'
 
 
 # Formation name map from api_search[0-1] to name

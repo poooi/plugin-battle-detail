@@ -1,7 +1,8 @@
 {React, ReactBootstrap} = window
 {Panel, ProgressBar} = ReactBootstrap
-{Ship, ShipOwner, Attack, AttackType, HitType, Stage, StageType} = require '../lib/common'
-simulator = require '../lib/simulate'
+
+simulator = require '../lib/simulator'
+{Ship, ShipOwner, Attack, AttackType, HitType, Stage, StageType} = simulator
 
 
 simualteBattlePacket = (packet) ->
