@@ -1,7 +1,5 @@
 {remote} = window
 path = require 'path-extra'
-try ipc = remote.require './lib/ipc'
-catch error then console.log error
 appdata = require '../lib/appdata'
 
 {React, ReactDOM, ReactBootstrap} = window
