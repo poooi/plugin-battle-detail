@@ -1,3 +1,5 @@
+"use strict"
+
 ## class Ship
 class Ship
   constructor: (@owner, @id, @position, @equipment, @nowHP, @maxHP) ->

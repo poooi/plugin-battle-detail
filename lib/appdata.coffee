@@ -1,3 +1,5 @@
+"use strict"
+
 fs = require 'fs'
 glob = require 'glob'
 path = require 'path-extra'

@@ -1,3 +1,5 @@
+"use strict"
+
 {React, ReactBootstrap} = window
 {Panel, ProgressBar} = ReactBootstrap
 

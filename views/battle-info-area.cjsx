@@ -1,3 +1,5 @@
+"use strict"
+
 {React, ReactBootstrap} = window
 {Panel, ProgressBar, OverlayTrigger, Overlay, Tooltip} = ReactBootstrap
 {Ship, ShipOwner, Attack, AttackType, HitType, Stage, StageType} = require '../lib/simulator'

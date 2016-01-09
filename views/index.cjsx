@@ -1,3 +1,5 @@
+"use strict"
+
 {remote} = window
 path = require 'path-extra'
 appdata = require '../lib/appdata'
