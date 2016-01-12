@@ -176,24 +176,24 @@ AttackTableRow = React.createClass
     totalDamage = damage.reduce ((p, x) -> p + x)
     # Is enemy attack?
     if toShip.owner is ShipOwner.Ours
-      <div style={display: "flex"} className={"attack-table-row"}>
-        <span style={flex: 6}><HpBar max={maxHP} from={fromHP} to={toHP} damage={totalDamage} item={useItem} /></span>
-        <span style={flex: 6}><ShipInfo ship={toShip} /></span>
-        <span style={flex: 1}><FontAwesome name='long-arrow-left' /></span>
-        <span style={flex: 6}><DamageInfo type={type} damage={damage} hit={hit} /></span>
-        <span style={flex: 1}></span>
-        <span style={flex: 6}><ShipInfo ship={fromShip} /></span>
-        <span style={flex: 6}></span>
+      <div className={"attack-table-row"}>
+        <span><HpBar max={maxHP} from={fromHP} to={toHP} damage={totalDamage} item={useItem} /></span>
+        <span><ShipInfo ship={toShip} /></span>
+        <span><FontAwesome name='long-arrow-left' /></span>
+        <span><DamageInfo type={type} damage={damage} hit={hit} /></span>
+        <span></span>
+        <span><ShipInfo ship={fromShip} /></span>
+        <span></span>
       </div>
     else
-      <div style={display: "flex"} className={"attack-table-row"}>
-        <span style={flex: 6}></span>
-        <span style={flex: 6}><ShipInfo ship={fromShip} /></span>
-        <span style={flex: 1}></span>
-        <span style={flex: 6}><DamageInfo type={type} damage={damage} hit={hit} /></span>
-        <span style={flex: 1}><FontAwesome name='long-arrow-right' /></span>
-        <span style={flex: 6}><ShipInfo ship={toShip} /></span>
-        <span style={flex: 6}><HpBar max={maxHP} from={fromHP} to={toHP} damage={totalDamage} item={useItem} /></span>
+      <div className={"attack-table-row"}>
+        <span></span>
+        <span><ShipInfo ship={fromShip} /></span>
+        <span></span>
+        <span><DamageInfo type={type} damage={damage} hit={hit} /></span>
+        <span><FontAwesome name='long-arrow-right' /></span>
+        <span><ShipInfo ship={toShip} /></span>
+        <span><HpBar max={maxHP} from={fromHP} to={toHP} damage={totalDamage} item={useItem} /></span>
       </div>
 
 
