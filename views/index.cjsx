@@ -294,10 +294,6 @@ MainArea = React.createClass
         shouldAutoShow={@state.shouldAutoShow}
         updateBattlePacket={@updateBattlePacket}
         />
-      <BattleInfoArea
-        battleNonce={@state.battleNonce}
-        battlePacket={@state.battlePacket}
-        />
       <BattleDetailArea
         battleNonce={@state.battleNonce}
         battlePacket={@state.battlePacket}
