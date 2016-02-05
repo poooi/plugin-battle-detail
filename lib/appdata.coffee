@@ -1,6 +1,6 @@
 "use strict"
 
-fs = require 'fs'
+fs = require 'fs-extra'
 glob = require 'glob'
 path = require 'path-extra'
 
@@ -11,9 +11,8 @@ FS_RW_OPTIONS =
   encoding: 'UTF-8'
 
 # init
-fs.mkdir APPDATA, (error) ->
+fs.ensureDir APPDATA, (error) ->
   return if !error
-  return if error.code == 'EEXIST'
   console.error(error)
 
 
