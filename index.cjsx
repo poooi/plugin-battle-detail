@@ -5,3 +5,4 @@ module.exports =
     width: 850
     height: 650
   windowURL: "file://#{__dirname}/battle-detail.html"
+  useEnv: true
