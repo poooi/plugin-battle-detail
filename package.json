@@ -13,11 +13,20 @@
     "type": "git",
     "url": "git+https://github.com/poooi/plugin-battle-detail.git"
   },
-  "author": "Dazzy Ding",
+  "author": {
+    "name":"Dazzy Ding",
+    "link": "https://github.com/yukixz"
+  },
   "contributors": ["Chiba"],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/poooi/plugin-battle-detail/issues"
   },
-  "homepage": "https://github.com/poooi/plugin-battle-detail"
+  "homepage": "https://github.com/poooi/plugin-battle-detail",
+  "poiPlugin": {
+    "title": "Battle Detail",
+    "description": "Show battle detail",
+    "icon": "fa/info-circle",
+    "priority": 11
+  }
 }
