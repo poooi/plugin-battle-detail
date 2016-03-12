@@ -28,7 +28,7 @@ window.__r = window.i18n.resources.__.bind(window.i18n.resources)
 
 
 document.title = __ 'Battle Detail'
-$('#font-awesome')?.setAttribute 'href', "#{ROOT}/components/font-awesome/css/font-awesome.min.css"
+$('#font-awesome')?.setAttribute 'href', require.resolve('font-awesome/css/font-awesome.css')
 
 
 require './views'
