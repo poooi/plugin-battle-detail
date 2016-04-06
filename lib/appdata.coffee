@@ -44,8 +44,8 @@ class AppData
     @packetList.push(timestamp)
 
   loadPacket: (timestamp, callback) ->
+    return unless timestamp? and callback?
     setTimeout =>
-      return unless timestamp? and callback?
       packet = @loadPacketSync timestamp
       callback(packet)
 
