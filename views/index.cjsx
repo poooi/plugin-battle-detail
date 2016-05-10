@@ -50,6 +50,17 @@ updatePacketWithFleetInfo = (packet, isCombined, isCarrier, sortieFleetID, combi
   packet.poi_combined_fleet = combinedFleet
   packet.poi_combined_equipment = combinedEquipment
 
+updatePacketWithAirCorpsInfo = (packet, baseAirCorps) ->
+  return unless packet.api_air_base_attack?
+  for corps in baseAirCorps
+    for plane in corps.api_plane_info
+      item = _slotitems[plane.api_slotid]
+      plane.poi_slot =
+        api_slotitem_id: item.api_slotitem_id
+        api_level: item.api_level
+        api_alv: item.api_alv
+  packet.poi_base_air_corps = corps
+
 updatePacketWithMetadata = (packet, path, timestamp, comment) ->
   return unless packet?
   packet.poi_uri = path
@@ -63,6 +74,7 @@ MainArea = React.createClass
     isCombined: false
     isCarrier: false
     battleComment: ""
+    baseAirCorps: []
     # Battle Packets Management
     packetList: []
     packetListNonce: 0
@@ -104,8 +116,9 @@ MainArea = React.createClass
   handleResponse: (e) ->
     `var path;`   # HACK: Force shadowing an variable `path`;
     {method, path, body, postBody} = e.detail
-    {isCombined, isCarrier, battleComment, packetList, packetListNonce, battleNonce, battlePacket} = @state
+    {isCombined, isCarrier, battleComment, baseAirCorps, packetList, packetListNonce, battleNonce, battlePacket} = @state
     isStateChanged = false
+    timestamp = Date.now()
 
     # Combined Fleet Status
     switch path
@@ -147,6 +160,27 @@ MainArea = React.createClass
         name = body.api_nickname
         level = body.api_level
         battleComment = "#{practice} #{name} (Lv.#{level})"
+
+    # Land Base Air Corps
+    switch path
+      when '/kcsapi/api_get_member/base_air_corps'
+        isStateChanged = true
+        baseAirCorps = body
+        console.log baseAirCorps
+      when '/kcsapi/api_req_air_corps/set_plane'
+        isStateChanged = true
+        corps = baseAirCorps[postBody.api_base_id - 1]
+        corps.api_distance = body.api_distance
+        for newPlane in body.api_plane_info
+          for oldPlane, i in corps.api_plane_info
+            if parseInt(oldPlane.api_squadron_id) == parseInt(newPlane.api_squadron_id)
+              corps.api_plane_info[i] = newPlane
+        console.log baseAirCorps
+      when '/kcsapi/api_req_air_corps/set_action'
+        isStateChanged = true
+        corps = baseAirCorps[postBody.api_base_id - 1]
+        corps.api_action_kind = parseInt(postBody.api_action_kind)
+        console.log baseAirCorps
 
     # Battle Packets Management
     isBattle = false
@@ -219,14 +253,15 @@ MainArea = React.createClass
 
     if isBattle
       isStateChanged = true
-      timestamp = Date.now()
       updatePacketWithFleetInfo body, isCombined, isCarrier, sortieID, combinedID
+      updatePacketWithAirCorpsInfo body, baseAirCorps
       updatePacketWithMetadata body, path, timestamp, battleComment
       packetList.unshift body
       packetListNonce = updateNonce packetListNonce
       while packetList.length > MAX_PACKET_NUMBER
         packetList.pop()
       # Save packet
+      console.log(body)
       appdata.savePacket body
       # Render battle packet
       if @state.shouldAutoShow
@@ -239,6 +274,7 @@ MainArea = React.createClass
         isCombined: isCombined
         isCarrier: isCarrier
         battleComment: battleComment
+        baseAirCorps: baseAirCorps
         packetList: packetList
         packetListNonce: packetListNonce
         battleNonce: battleNonce
