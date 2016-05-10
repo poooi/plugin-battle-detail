@@ -100,7 +100,6 @@ simualtePacket = (packet) ->
       "#{__ 'Torpedo Salvo'}",
       "#{__ 'Night Combat'}"
     ]
-    stageKouku = [packet.api_kouku, packet.api_kouku2]
   # Carrier Task Force
   if isCombined is true and isCarrier is true
     stageFlow = [StageType.AerialCombat, StageType.AerialCombat, StageType.Support, StageType.TorpedoSalvo, StageType.Shelling, StageType.TorpedoSalvo, StageType.Shelling, StageType.Shelling, StageType.Shelling]
@@ -115,7 +114,6 @@ simualtePacket = (packet) ->
       "#{__ 'Shelling'} - #{__ 'Main Fleet'}",
       "#{__ 'Night Combat'}"
     ]
-    stageKouku = [packet.api_kouku, packet.api_kouku2]
   # Surface Task Force
   if isCombined is true and isCarrier is false
     stageFlow = [StageType.AerialCombat, StageType.AerialCombat, StageType.Support, StageType.TorpedoSalvo, StageType.Shelling, StageType.Shelling, StageType.Shelling, StageType.TorpedoSalvo, StageType.Shelling]
@@ -130,18 +128,19 @@ simualtePacket = (packet) ->
       "#{__ 'Torpedo Salvo'}",
       "#{__ 'Night Combat'}"
     ]
-    stageKouku = [packet.api_kouku, packet.api_kouku2]
 
   formedFlow = []
   if stageFlow
     console.assert(stageFlow.length == stageTitle.length, "`stageFlow` and `stageTitle` have different length!")
     try
-      battleFlow = simulator.simulate(packet)
+      [battleFlow, landBaseFlow] = simulator.simulate(packet)
+      for battle in landBaseFlow
+        battle.title = __ "Land Base Air Corps"
+        formedFlow.push battle
       for battle in battleFlow
         if stageFlow.length > 0 and stageFlow[0] == battle.type
           stageFlow.shift()
           battle.title = stageTitle.shift()
-          battle.kouku = stageKouku.shift()   # HACK: Raw api data.
           formedFlow.push battle
     catch err
       console.error(err)

@@ -61,8 +61,7 @@ class AppData
       return null
 
   searchPacket: (start, end) ->
-    return unless start? and end?
-    return unless start <= end
+    return unless start? and end? and start <= end
     @_refreshPacket()
     list = []
     for timestamp, i in @packetList

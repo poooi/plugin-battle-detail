@@ -53,7 +53,7 @@ HitType =
 
 ## class Stage
 class Stage
-  constructor: (@type, @detail) ->
+  constructor: (@type, @detail, @kouku) ->
     # type = enum StageType
     # detail = list of class Attack
 
@@ -253,7 +253,14 @@ simulate = (req) ->
       enemyShip.push new Ship ShipOwner.Enemy, req.api_ship_ke[i + 1], i + 1, null, req.api_nowhps[i + 7], req.api_maxhps[i + 7]
       if isCombined
         combinedShip.push new Ship ShipOwner.Ours, req.poi_combined_fleet[i], i + 1, req.poi_combined_equipment[i], req.api_nowhps_combined[i + 1], req.api_maxhps_combined[i + 1]
+    landBaseProgress = []
     sortieProgress = []
+
+    # Land base air attack
+    if req.api_air_base_attack?
+      for api_data in req.api_air_base_attack
+        tempList = simulateAerialCombat sortieShip, enemyShip, api_data.api_stage3
+        landBaseProgress.push new Stage StageType.LandBaseAerialCombat, tempList, api_data
 
     # Air battle
     tempList = []
@@ -263,7 +270,7 @@ simulate = (req) ->
       if req.api_kouku.api_stage3_combined?
         tempList = tempList.concat simulateAerialCombat combinedShip, enemyShip, req.api_kouku.api_stage3_combined
     tempList = null if tempList.length == 0
-    sortieProgress.push new Stage StageType.AerialCombat, tempList
+    sortieProgress.push new Stage StageType.AerialCombat, tempList, req.api_kouku
 
     # Second air battle
     tempList = []
@@ -273,7 +280,7 @@ simulate = (req) ->
       if req.api_kouku2.api_stage3_combined?
         tempList = tempList.concat simulateAerialCombat combinedShip, enemyShip, req.api_kouku2.api_stage3_combined
     tempList = null if tempList.length == 0
-    sortieProgress.push new Stage StageType.AerialCombat, tempList
+    sortieProgress.push new Stage StageType.AerialCombat, tempList, req.api_kouku2
 
     # Support battle
     tempList = []
@@ -347,7 +354,7 @@ simulate = (req) ->
     tempList = null if tempList.length == 0
     sortieProgress.push new Stage StageType.Shelling, tempList
 
-    sortieProgress
+    return [sortieProgress, landBaseProgress]
 
 
 module.exports = {

@@ -7,7 +7,6 @@ appdata = require '../lib/appdata'
 {React, ReactDOM, ReactBootstrap} = window
 ModalArea = require './modal-area'
 OptionArea = require './option-area'
-BattleInfoArea = require './battle-info-area'
 BattleDetailArea = require './battle-detail-area'
 
 # constant
