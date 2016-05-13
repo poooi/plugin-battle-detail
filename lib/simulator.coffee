@@ -99,6 +99,7 @@ checkRepairItem = (sortieShip) ->
 
 simulateAerialCombat = (sortieShip, enemyShip, kouku) ->
   list = []
+  return list unless kouku?
   if kouku.api_edam?
     for damage, i in kouku.api_edam
       continue if (kouku.api_ebak_flag[i] <= 0 && kouku.api_erai_flag[i] <= 0) || i == 0
