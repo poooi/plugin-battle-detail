@@ -2,7 +2,7 @@
 
 {React, ReactBootstrap} = window
 {Panel, Grid, Row, Col, Button, Input, Modal} = ReactBootstrap
-clipboard = require 'clipboard'
+{clipboard} = require 'electron'
 
 
 getDescription = (packet) ->
