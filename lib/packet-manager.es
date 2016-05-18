@@ -2,8 +2,9 @@
 
 const EventEmitter = require('events');
 
-const NORMAL_SUPPORT_EXPEDITION = [33, 181];
-const BOSS_SUPPORT_EXPEDITION   = [34, 182];
+// Support Expedition
+const NORMAL_SE = [33, 181];
+const BOSS_SE   = [34, 182];
 
 
 class Battle {
@@ -33,23 +34,53 @@ class PacketManager extends EventEmitter {
     this.battle    = null;
     this.fleetType = null;
 
-    this.supportFleet       = null;
-    this.normalSupportFleet = null;
-    this.bossSupportFleet   = null;
+    this.supportFleet = null;
+    this.normalSF     = null;
+    this.bossSF       = null;
 
     window.addEventListener('game.response', this.gameResponse.bind(this));
   }
 
-  dispatch() {
-    console.log('dispatch', this.battle);
-    if (this.battle && this.battle.time) {
-      this.emit('packet', this.battle.time, this.battle);
+  dispatch(battle) {
+    if (!battle) {
+      battle = this.battle;
+    }
+    console.log('dispatch', battle);
+    if (battle && battle.time) {
+      this.emit('packet', battle.time, battle);
     }
   }
 
   gameResponse(e) {
     let req = e.detail;
     let {body, postBody} = req;
+    let timestamp = Date.now();
+
+    // Support fleet
+    // NOTICE: We didn't check support fleet map.
+    if (req.path === '/kcsapi/api_port/port') {
+      let normalSF = null, bossSF = null;
+      for (let deck of body.api_deck_port) {
+        if (NORMAL_SE.includes(deck.api_mission[1])) {
+          normalSF = this.normalSF;
+        }
+        if (BOSS_SE.includes(deck.api_mission[1])) {
+          bossSF = this.bossSF;
+        }
+      }
+      this.normalSF = normalSF;
+      this.bossSF   = bossSF;
+    }
+
+    if (req.path === '/kcsapi/api_req_mission/start') {
+      if (NORMAL_SE.includes(postBody.api_mission_id)) {
+        this.normalSF = this.getFleet(postBody.api_deck_id);
+      }
+      if (BOSS_SE.includes(postBody.api_mission_id)) {
+        this.bossSF = this.getFleet(postBody.api_deck_id);
+      }
+    }
+
 
     // Oh fuck. Someone sorties with No.3/4 fleet when having combined fleet.
     if (req.path === '/kcsapi/api_req_map/start') {
@@ -58,103 +89,99 @@ class PacketManager extends EventEmitter {
       }
     }
 
-    // Support fleet
-    // NOTICE: We didn't check support fleet map.
+
+    // Reset all
     if (req.path === '/kcsapi/api_port/port') {
-      let normal = false, boss = false;
-      for (let deck of body.api_deck_port) {
-        normal = normal || NORMAL_SUPPORT_EXPEDITION.includes(deck.api_mission[1]);
-        boss = boss || BOSS_SUPPORT_EXPEDITION.includes(deck.api_mission[1]);
-      }
+      this.battle = null;
+      this.fleetType = body.api_combined_flag;
       this.supportFleet = null;
-      this.normalSupportFleet = normal ? null : this.normalSupportFleet;
-      this.bossSupportFleet = boss ? null : this.bossSupportFleet;
-    }
-    if (req.path === 'api_req_mission/start') {
-      if (NORMAL_SUPPORT_EXPEDITION.includes(postBody.api_mission_id)) {
-        this.normalSupportFleet = this.getFleet(postBody.api_deck_id);
-      }
-      if (BOSS_SUPPORT_EXPEDITION.includes(postBody.api_mission_id)) {
-        this.bossSupportFleet = this.getFleet(postBody.api_deck_id);
-      }
-    }
-    if (['/kcsapi/api_req_map/start', '/kcsapi/api_req_map/next'].includes(req.path)) {
-      let isBoss = (body.api_event_id === 5);
-      this.supportFleet = isBoss ? this.bossSupportFleet : this.normalSupportFleet;
+      return;
     }
 
-    // Battle
-    if (req.path === '/kcsapi/api_port/port') {
-      this.fleetType = body.api_combined_flag;
-      this.battle = null;
-      return;
-    }
+    // Enter sortie battle
     if (['/kcsapi/api_req_map/start', '/kcsapi/api_req_map/next'].includes(req.path)) {
       let isBoss = (body.api_event_id === 5);
-      let desc = [__("Sortie")];
-      if (isBoss) desc.push("Boss");
+      let desc;
+      if (isBoss)
+        desc = [__("Sortie"), "(Boss)"].join(' ');
+      else
+        desc = __("Sortie");
+
       this.battle = new Battle({
-        map: [body.api_maparea_id, body.api_mapinfo_no, body.api_no],
-        desc: desc.join(' '),
+        map:    [body.api_maparea_id, body.api_mapinfo_no, body.api_no],
+        desc:   desc,
+        time:   null,  // Assign later
+        fleet:  null,  // Assign later
         packet: [],
       });
+      this.supportFleet = isBoss ? this.bossSF : this.normalSF;
       return;
     }
-    if (this.battle && req.path.includes('result')) {
-      this.battle = null;
-      return;
-    }
+
+    // Process packet in battle
     if (this.battle) {
-      if (!this.battle.fleet) {
-        if (this.fleetType === 0) {
-          let deckId = body.api_deck_id || body.api_dock_id;
+      // Battle Result
+      if (req.path.includes('result')) {
+        this.dispatch();
+        this.battle = null
+      } else {
+        // Check for battle packet
+        // We assume that all battle packet include `api_deck_id`.
+        let fleetId = body.api_deck_id || body.api_dock_id;
+        let escortId = this.fleetType != 0 ? 2 : -1;  // HACK: -1 for empty fleet.
+        if (!fleetId) {
+          return;
+        }
+
+        let packet = Object.clone(body);
+        packet.poi_path = req.path;
+        packet.poi_time = timestamp;
+
+        if (!this.battle.time) {
+          this.battle.time = packet.poi_time;
+        }
+        if (!this.battle.fleet) {
           this.battle.fleet = new Fleet({
             type:    this.fleetType,
-            main:    this.getFleet(deckId),
-            escort:  null,
-            support: this.supportFleet,
-          });
-        } else {
-          this.battle.fleet = new Fleet({
-            type:    this.fleetType,
-            main:    this.getFleet(1),
-            escort:  this.getFleet(2),
+            main:    this.getFleet(fleetId),
+            escort:  this.getFleet(escortId),
             support: this.supportFleet,
           });
         }
+        this.battle.packet.push(packet);
+        this.dispatch();
       }
-      let packet = Object.clone(body);
-      packet.poi_path = req.path;
-      packet.poi_time = Date.now();
-      this.battle.packet.push(packet);
-      if (!this.battle.time) {
-        this.battle.time = packet.poi_time;
-      }
-      this.dispatch();
       return;
     }
   }
 
   // deckId in [1, 2, 3, 4]
   getFleet(deckId) {
-    let fleet = [];
-    let deck = window._decks[deckId - 1].api_ship || [];
-    for (let id of deck) {
-      fleet.push(this.getShip(id));
+    let deck = window._decks[deckId - 1] || {};
+    let ships = deck.api_ship;
+    if (ships) {
+      let fleet = [];
+      for (let id of ships) {
+        fleet.push(this.getShip(id));
+      }
+      return fleet;
+    } else {
+      return null;
     }
-    return fleet;
   }
 
   getShip(shipId) {
     let ship = window._ships[shipId] || null;
     if (ship) {
-      ship.poi_slot_ex = this.getItem(ship.api_slot_ex);
       ship.poi_slot = [];
       for (let id of ship.api_slot) {
         ship.poi_slot.push(this.getItem(id));
       }
+      ship.poi_slot_ex = this.getItem(ship.api_slot_ex);
       // Clean up
-      delete ship.api_getmes
+      delete ship.api_getmes;
+      delete ship.api_slot;
+      delete ship.api_slot_ex;
     }
     return ship;
   }
@@ -163,7 +190,7 @@ class PacketManager extends EventEmitter {
     let item = window._slotitems[itemId] || null;
     if (item) {
       // Clean up
-      delete item.api_info
+      delete item.api_info;
     }
     return item;
   }
