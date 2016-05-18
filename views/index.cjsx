@@ -166,7 +166,6 @@ MainArea = React.createClass
       when '/kcsapi/api_get_member/base_air_corps'
         isStateChanged = true
         baseAirCorps = body
-        console.log baseAirCorps
       when '/kcsapi/api_req_air_corps/set_plane'
         isStateChanged = true
         corps = baseAirCorps[postBody.api_base_id - 1]
@@ -175,12 +174,10 @@ MainArea = React.createClass
           for oldPlane, i in corps.api_plane_info
             if parseInt(oldPlane.api_squadron_id) == parseInt(newPlane.api_squadron_id)
               corps.api_plane_info[i] = newPlane
-        console.log baseAirCorps
       when '/kcsapi/api_req_air_corps/set_action'
         isStateChanged = true
         corps = baseAirCorps[postBody.api_base_id - 1]
         corps.api_action_kind = parseInt(postBody.api_action_kind)
-        console.log baseAirCorps
 
     # Battle Packets Management
     isBattle = false
@@ -261,7 +258,6 @@ MainArea = React.createClass
       while packetList.length > MAX_PACKET_NUMBER
         packetList.pop()
       # Save packet
-      console.log(body)
       appdata.savePacket body
       # Render battle packet
       if @state.shouldAutoShow
