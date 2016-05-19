@@ -68,12 +68,17 @@ OptionArea = React.createClass
                <p>{__ "If you see no battle detail, you may have a broken packet."}</p>]
         footer: null
 
+  onClickSave: ->
+    html2canvas document.querySelector('.battle-detail-area'),
+      onrendered: (canvas) ->
+        remote.getCurrentWebContents().downloadURL canvas.toDataURL()
+
   render: ->
     <div className="option-area">
       <Panel header={__ "Options"}>
         <Grid>
           <Row>
-            <Col xs={6}>
+            <Col xs={3}>
             {
               options = []
               selectedIndex = -1  # Default: last battle (-1)
@@ -104,7 +109,10 @@ OptionArea = React.createClass
               <Button bsStyle='primary' style={width: '100%'} onClick={@onClickExport}>{__ "Copy Data"}</Button>
             </Col>
             <Col xs={3}>
-            <Button bsStyle='primary' style={width: '100%'} onClick={@onClickImport}>{__ "Paste Data"}</Button>
+              <Button bsStyle='primary' style={width: '100%'} onClick={@onClickImport}>{__ "Paste Data"}</Button>
+            </Col>
+            <Col xs={3}>
+              <Button bsStyle='primary' style={width: '100%'} onClick={@onClickSave}>{__ "Save as image"}</Button>
             </Col>
           </Row>
         </Grid>
