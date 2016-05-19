@@ -2,10 +2,6 @@
 
 const EventEmitter = require('events');
 
-// Support Expedition
-const NORMAL_SE = [33, 181];
-const BOSS_SE   = [34, 182];
-
 
 class Battle {
   constructor(opts) {
@@ -59,26 +55,31 @@ class PacketManager extends EventEmitter {
     // Support fleet
     // NOTICE: We didn't check support fleet map.
     if (req.path === '/kcsapi/api_port/port') {
-      let normalSF = null, bossSF = null;
+      let {normalSF, bossSF} = this;
+      this.normalSF = this.bossSF = null;
       for (let deck of body.api_deck_port) {
-        if (NORMAL_SE.includes(deck.api_mission[1])) {
-          normalSF = this.normalSF;
+        let mission = window.$missions[deck.api_mission[1]] || {};
+        let missionName = mission.api_name || '';
+        if (missionName.includes("前衛支援任務")) {
+          this.normalSF = normalSF;
         }
-        if (BOSS_SE.includes(deck.api_mission[1])) {
-          bossSF = this.bossSF;
+        if (missionName.includes("決戦支援任務")) {
+          this.bossSF = bossSF;
         }
       }
-      this.normalSF = normalSF;
-      this.bossSF   = bossSF;
     }
 
     if (req.path === '/kcsapi/api_req_mission/start') {
-      if (NORMAL_SE.includes(postBody.api_mission_id)) {
-        this.normalSF = this.getFleet(postBody.api_deck_id);
+      let fleetId = postBody.api_deck_id;
+      let mission = window.$missions[postBody.api_mission_id] || {};
+      let missionName = mission.api_name || '';
+      if (missionName.includes("前衛支援任務")) {
+        this.normalSF = this.getFleet(fleetId);
       }
-      if (BOSS_SE.includes(postBody.api_mission_id)) {
-        this.bossSF = this.getFleet(postBody.api_deck_id);
+      if (missionName.includes("決戦支援任務")) {
+        this.bossSF = this.getFleet(fleetId);
       }
+      console.log('mission/start', postBody.api_deck_id, postBody.api_mission_id, missionName);
     }
 
 
@@ -122,7 +123,6 @@ class PacketManager extends EventEmitter {
     if (this.battle) {
       // Battle Result
       if (req.path.includes('result')) {
-        this.dispatch();
         this.battle = null
       } else {
         // Check for battle packet
@@ -182,6 +182,7 @@ class PacketManager extends EventEmitter {
       delete ship.api_getmes;
       delete ship.api_slot;
       delete ship.api_slot_ex;
+      delete ship.api_yomi;
     }
     return ship;
   }
