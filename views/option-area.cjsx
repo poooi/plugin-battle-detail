@@ -1,7 +1,7 @@
 "use strict"
 
 {React, ReactBootstrap} = window
-{Panel, Grid, Row, Col, Button, Input, Modal} = ReactBootstrap
+{Panel, Grid, Row, Col, Button, ButtonGroup, Input, Modal} = ReactBootstrap
 {clipboard} = require 'electron'
 
 
@@ -69,7 +69,7 @@ OptionArea = React.createClass
         footer: null
 
   onClickSave: ->
-    html2canvas document.querySelector('.battle-detail-area'),
+    html2canvas $('.battle-detail-area'),
       onrendered: (canvas) ->
         remote.getCurrentWebContents().downloadURL canvas.toDataURL()
 
@@ -78,7 +78,7 @@ OptionArea = React.createClass
       <Panel header={__ "Options"}>
         <Grid>
           <Row>
-            <Col xs={3}>
+            <Col xs={6}>
             {
               options = []
               selectedIndex = -1  # Default: last battle (-1)
@@ -105,14 +105,12 @@ OptionArea = React.createClass
               </Input>
             }
             </Col>
-            <Col xs={3}>
-              <Button bsStyle='primary' style={width: '100%'} onClick={@onClickExport}>{__ "Copy Data"}</Button>
-            </Col>
-            <Col xs={3}>
-              <Button bsStyle='primary' style={width: '100%'} onClick={@onClickImport}>{__ "Paste Data"}</Button>
-            </Col>
-            <Col xs={3}>
-              <Button bsStyle='primary' style={width: '100%'} onClick={@onClickSave}>{__ "Save as image"}</Button>
+            <Col xs={6}>
+              <ButtonGroup>
+                <Button bsStyle='primary' style={width: '100%'} onClick={@onClickExport}>{__ "Copy Data"}</Button>
+                <Button bsStyle='primary' style={width: '100%'} onClick={@onClickImport}>{__ "Paste Data"}</Button>
+                <Button bsStyle='primary' style={width: '100%'} onClick={@onClickSave}>{__ "Save as image"}</Button>
+              </ButtonGroup>
             </Col>
           </Row>
         </Grid>
