@@ -250,6 +250,7 @@ MainArea = React.createClass
 
     if isBattle
       isStateChanged = true
+      body = Object.clone body
       updatePacketWithFleetInfo body, isCombined, isCarrier, sortieID, combinedID
       updatePacketWithAirCorpsInfo body, baseAirCorps
       updatePacketWithMetadata body, path, timestamp, battleComment
