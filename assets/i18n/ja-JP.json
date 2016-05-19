@@ -69,6 +69,7 @@
   "Paste Data": "データを贴り付けます",
   "A battle packet was pasted from clipboard.": "戦闘データのクリップボードからの読込みに成功しました",
   "If you see no battle detail, you may have a broken packet.": "戦闘の詳細が正しく表示されていない場合、破損したデータを使用した恐れがあります",
+  "Save as image": "画像として保存",
   "Last Battle": "最後の戦闘",
   "Selected": "選択し",
 
