@@ -2,7 +2,6 @@
 
 const EventEmitter = require('events');
 
-
 class Battle {
   constructor(opts) {
     this.version = "2.0";
