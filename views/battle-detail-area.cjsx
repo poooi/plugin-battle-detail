@@ -3,8 +3,8 @@
 {React, ReactBootstrap} = window
 {Panel, ProgressBar, OverlayTrigger, Overlay, Tooltip} = ReactBootstrap
 
-simulator = require '../lib/simulator'
-{Ship, ShipOwner, Attack, AttackType, HitType, Stage, StageType} = simulator
+Simulator2 = require('../lib/simulator2')
+{Stage, StageType, Attack, AttackType, HitType, Ship, ShipOwner} = require('../lib/models')
 
 
 # Formation name map from api_search[0-1] to name
@@ -80,73 +80,17 @@ getHpStyle = (percent) ->
     'success'
 
 
-simualtePacket = (packet) ->
-  return unless packet?
+simulate = (battle) ->
+  battle = require('./battle')
+  return {} unless battle?
+  console.log(battle)
 
-  isCombined = packet.poi_is_combined
-  isCarrier = packet.poi_is_carrier
+  simulator = new Simulator2(battle.fleet)
+  stages = []
+  for packet in battle.packet
+    stages = stages.concat(simulator.simulate(packet))
 
-  stageFlow = null
-  # Normal Fleet
-  if isCombined is false
-    stageFlow = [StageType.AerialCombat, StageType.AerialCombat, StageType.Support, StageType.TorpedoSalvo, StageType.Shelling, StageType.Shelling, StageType.TorpedoSalvo, StageType.Shelling]
-    stageTitle = [
-      "#{__ "Aerial Combat"}",
-      "#{__ "Aerial Combat"}",
-      "#{__ 'Expedition Supporting Fire'}",
-      "#{__ 'Opening Torpedo Salvo'}",
-      "#{__ 'Shelling'}",
-      "#{__ 'Shelling'}",
-      "#{__ 'Torpedo Salvo'}",
-      "#{__ 'Night Combat'}"
-    ]
-  # Carrier Task Force
-  if isCombined is true and isCarrier is true
-    stageFlow = [StageType.AerialCombat, StageType.AerialCombat, StageType.Support, StageType.TorpedoSalvo, StageType.Shelling, StageType.TorpedoSalvo, StageType.Shelling, StageType.Shelling, StageType.Shelling]
-    stageTitle = [
-      "#{__ "Aerial Combat"}",
-      "#{__ "Aerial Combat"}",
-      "#{__ 'Expedition Supporting Fire'}",
-      "#{__ 'Opening Torpedo Salvo'}",
-      "#{__ 'Shelling'} - #{__ 'Escort Fleet'}",
-      "#{__ 'Torpedo Salvo'}",
-      "#{__ 'Shelling'} - #{__ 'Main Fleet'}",
-      "#{__ 'Shelling'} - #{__ 'Main Fleet'}",
-      "#{__ 'Night Combat'}"
-    ]
-  # Surface Task Force
-  if isCombined is true and isCarrier is false
-    stageFlow = [StageType.AerialCombat, StageType.AerialCombat, StageType.Support, StageType.TorpedoSalvo, StageType.Shelling, StageType.Shelling, StageType.Shelling, StageType.TorpedoSalvo, StageType.Shelling]
-    stageTitle = [
-      "#{__ "Aerial Combat"}",
-      "#{__ "Aerial Combat"}",
-      "#{__ 'Expedition Supporting Fire'}",
-      "#{__ 'Opening Torpedo Salvo'}",
-      "#{__ 'Shelling'} - #{__ 'Main Fleet'}",
-      "#{__ 'Shelling'} - #{__ 'Main Fleet'}",
-      "#{__ 'Shelling'} - #{__ 'Escort Fleet'}",
-      "#{__ 'Torpedo Salvo'}",
-      "#{__ 'Night Combat'}"
-    ]
-
-  formedFlow = []
-  if stageFlow
-    console.assert(stageFlow.length == stageTitle.length, "`stageFlow` and `stageTitle` have different length!")
-    try
-      [battleFlow, landBaseFlow] = simulator.simulate(packet)
-      for battle in landBaseFlow
-        battle.title = __ "Land Base Air Corps"
-        formedFlow.push battle
-      for battle in battleFlow
-        if stageFlow.length > 0 and stageFlow[0] == battle.type
-          stageFlow.shift()
-          battle.title = stageTitle.shift()
-          formedFlow.push battle
-    catch err
-      console.error(err)
-      return
-
-  return formedFlow
+  return {simulator, stages}
 
 
 BattleInfoTable = React.createClass
@@ -186,21 +130,21 @@ PlaneCount = React.createClass
 AntiAirCICell = React.createClass
   render: ->
     {$ships, $slotitems} = window
-    {api, sortieFleet, combinedFleet} = @props
+    {api, mainFleet, escortFleet} = @props
 
     if not api?
       return <span />
 
-    shipId = api.api_idx
-    shipName = null
-    if 0 <= shipId <= 5
-      if $ships[sortieFleet[shipId]]?
-        shipName = __r $ships[sortieFleet[shipId]].api_name
-    else if 6 <= shipId <= 11
-      if $ships[combinedFleet[shipId - 6]]?
-        shipName = __r $ships[combinedFleet[shipId - 6]].api_name
+    idx = api.api_idx
+    if 0 <= idx <= 5
+      shipId = mainFleet[idx]?.id
+    else if 6 <= idx <= 11
+      shipId = escortFleet[idx - 6]?.id
+    else
+      shipId = -1
+    shipName = __r($ships[shipId]?.api_name)
     if not shipName?
-      shipName = "? (#{shipId})"
+      shipName = "#{idx}?"
 
     tooltip = []
     tooltip.push <div key={-1}>{__ 'Anti-air Kind'}: {api.api_kind}</div>
@@ -208,26 +152,26 @@ AntiAirCICell = React.createClass
       tooltip.push <div key={i}>{if $slotitems[itemId]? then __r $slotitems[itemId].api_name}</div>
 
     <OverlayTrigger placement='top' overlay={
-      <Tooltip id="battle-info-anti-air">
+      <Tooltip id="aerial-table-anti-air">
         <div className="anti-air-tooltip">
           {tooltip}
         </div>
       </Tooltip>
     }>
-      <span>{__ "Anti-air Cut-in"}: {shipName}</span>
+      <span>{__ "Anti-air Cut-in"}: {shipName} ({api.api_kind})</span>
     </OverlayTrigger>
 
-AerialInfoTable = React.createClass
+AerialTable = React.createClass
   render: ->
-    {packet, kouku} = @props
+    {simulator, kouku} = @props
     return <div /> unless kouku?
 
-    <div className={"aerial-info-table"}>
+    <div className={"aerial-table"}>
     {
       # Stage 1
       if kouku.api_stage1?
         contact = kouku.api_stage1.api_touch_plane || [-1, -1]
-        <div className={"aerial-info-row"}>
+        <div className={"aerial-row"}>
           <span>
             <PlaneCount count={kouku.api_stage1.api_f_count}
                         lost={kouku.api_stage1.api_f_lostcount} />
@@ -244,7 +188,7 @@ AerialInfoTable = React.createClass
     {
       # Stage 2
       if kouku.api_stage2?
-        <div className={"aerial-info-row"}>
+        <div className={"aerial-row"}>
           <span>
             <PlaneCount count={kouku.api_stage2.api_f_count}
                         lost={kouku.api_stage2.api_f_lostcount} />
@@ -252,8 +196,8 @@ AerialInfoTable = React.createClass
           <span></span>
           <span>
             <AntiAirCICell api={kouku.api_stage2.api_air_fire}
-                           sortieFleet={packet.poi_sortie_fleet}
-                           combinedFleet={packet.poi_combined_fleet}
+                           mainFleet={simulator.mainFleet}
+                           escortFleet={simulator.escortFleet}
                            />
           </span>
           <span></span>
@@ -300,10 +244,10 @@ ShipInfo = React.createClass
     if $ship?
       name = __r $ship.api_name
       name += $ship.api_yomi if $ship.api_yomi in ['elite', 'flagship']
-    position = ship.position
+    pos = ship.pos
     <span>
       <span>{name}</span>
-      <span className="position-indicator">{"(#{position})"}</span>
+      <span className="position-indicator">{"(#{pos})"}</span>
     </span>
 
 DamageInfo = React.createClass
@@ -311,7 +255,7 @@ DamageInfo = React.createClass
     <span>
     {
       elements = []
-      elements.push <span key={-1}>{getAttackTypeName @props.type}</span>
+      elements.push <span key={-1}>{getAttackTypeName(@props.type)}</span>
       elements.push <span key={-2}>{" ("}</span>
       for damage, i in @props.damage
         style = null
@@ -327,13 +271,14 @@ DamageInfo = React.createClass
     }
     </span>
 
-AttackInfoRow = React.createClass
+AttackRow = React.createClass
   render: ->
-    {type, fromShip, toShip, maxHP, fromHP, toHP, damage, hit, useItem} = @props.attack
+    {type, fromShip, toShip, fromHP, toHP, damage, hit, useItem} = @props.attack
+    {maxHP} = toShip
     totalDamage = damage.reduce ((p, x) -> p + x)
     # Is enemy attack?
     if toShip.owner is ShipOwner.Ours
-      <div className={"attack-info-row"}>
+      <div className={"attack-row"}>
         <span><HpBar max={maxHP} from={fromHP} to={toHP} damage={totalDamage} item={useItem} /></span>
         <span><ShipInfo ship={toShip} /></span>
         <span><FontAwesome name='long-arrow-left' /></span>
@@ -343,7 +288,7 @@ AttackInfoRow = React.createClass
         <span></span>
       </div>
     else
-      <div className={"attack-info-row"}>
+      <div className={"attack-row"}>
         <span></span>
         <span><ShipInfo ship={fromShip} /></span>
         <span></span>
@@ -353,29 +298,51 @@ AttackInfoRow = React.createClass
         <span><HpBar max={maxHP} from={fromHP} to={toHP} damage={totalDamage} item={useItem} /></span>
       </div>
 
-AttackInfoTable = React.createClass
+AttackTable = React.createClass
   render: ->
     {attacks} = @props
     return <div /> unless attacks?.length > 0
-    <div className={"attack-info-table"}>
+    <div className={"attack-table"}>
     {
       for attack, i in attacks
-        <AttackInfoRow key={i} attack={attack} />
+        <AttackRow key={i} attack={attack} />
     }
     </div>
 
-StageInfoTable = React.createClass
+StageTable = React.createClass
   render: ->
-    {title, attacks, kouku, packet} = @props
-    return <div /> unless attacks?.length > 0 or kouku?
+    {stage, simulator} = @props
+    return <div /> unless stage?
 
-    <div className={"stage-info-table"}>
+    switch stage.type
+      when StageType.Aerial
+        title = __('Aerial Combat')
+      when StageType.Torpedo
+        title = __('Torpedo Salvo')
+      when StageType.Shelling
+        if stage.isNight
+          title = "#{__('Shelling')} - #{__('Night Combat')}"
+        else if stage.isMain
+          title = "#{__('Shelling')} - #{__('Main Fleet')}"
+        else
+          title = "#{__('Shelling')} - #{__('Escort Fleet')}"
+      when StageType.Support
+        if stage.subtype == StageType.Aerial
+          title = "#{__('Expedition Supporting Fire')} - #{__('Aerial Combat')}"
+        if stage.subtype == StageType.Torpedo
+          title = "#{__('Expedition Supporting Fire')} - #{__('Torpedo Salvo')}"
+        if stage.subtype == StageType.Shelling
+          title = "#{__('Expedition Supporting Fire')} - #{__('Shelling')}"
+      when StageType.LandBase
+        title = "#{__('Land Base Air Corps')} - #{stage.id}"
+
+    <div className={"stage-table"}>
       <div className={"stage-title"}>{title}</div>
       <div>
-        <AerialInfoTable kouku={kouku} packet={packet} />
+        <AerialTable simulator={simulator} kouku={stage.kouku} />
       </div>
       <div>
-        <AttackInfoTable attacks={attacks} />
+        <AttackTable attacks={stage.attacks} />
       </div>
       <hr />
     </div>
@@ -383,18 +350,16 @@ StageInfoTable = React.createClass
 
 BattleDetailArea = React.createClass
   shouldComponentUpdate: (nextProps, nextState) ->
-    return false if @props.battleNonce == nextProps.battleNonce
+    return false if @props.nonce == nextProps.nonce
     return true
 
   render: ->
-    packet = @props.battlePacket
+    {simulator, stages} = simulate(@props.battle)
     tables = []
-
-    if packet?
-      tables.push <BattleInfoTable key={-1} packet={packet} />
-      for stage, i in simualtePacket packet
-        tables.push <StageInfoTable key={i} title={stage.title} attacks={stage.detail}
-                                            kouku={stage.kouku} packet={packet} />
+    if stages?
+      # tables.push <BattleInfoTable key={-1} packet={packet} />
+      for stage, i in stages
+        tables.push <StageTable key={i} stage={stage} simulator={simulator} />
 
     <div className="battle-detail-area">
       <Panel header={__ "Battle Detail"}>

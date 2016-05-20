@@ -50,19 +50,19 @@
 }
 
 /* Battle Detail Area - Battle Info Table */
-.battle-detail-area .battle-info-row {
+.battle-detail-area .battle-row {
   width: 100%;
   height: 30px;
   display: flex;
 }
-.battle-detail-area .battle-info-row > span {
+.battle-detail-area .battle-row > span {
   height: 20px;
   margin: 2px;
   text-align: center;
 }
-.battle-detail-area .battle-info-row > span:nth-child(1),
-.battle-detail-area .battle-info-row > span:nth-child(2),
-.battle-detail-area .battle-info-row > span:nth-child(3) {
+.battle-detail-area .battle-row > span:nth-child(1),
+.battle-detail-area .battle-row > span:nth-child(2),
+.battle-detail-area .battle-row > span:nth-child(3) {
   flex: 3;
 }
 
@@ -72,54 +72,54 @@
 }
 
 /* Battle Detail Area - Aerial Info */
-.battle-detail-area .aerial-info-row {
+.battle-detail-area .aerial-row {
   width: 100%;
   height: 30px;
   display: flex;
 }
-.battle-detail-area .aerial-info-row > span {
+.battle-detail-area .aerial-row > span {
   height: 20px;
   margin: 2px;
   text-align: center;
 }
-.battle-detail-area .aerial-info-row .anti-air-tooltip div {
+.battle-detail-area .aerial-row .anti-air-tooltip div {
   display: block;
   width: 100%;
 }
-.battle-detail-area .aerial-info-row > span:nth-child(1),
-.battle-detail-area .aerial-info-row > span:nth-child(5) {
+.battle-detail-area .aerial-row > span:nth-child(1),
+.battle-detail-area .aerial-row > span:nth-child(5) {
   flex: 6;
 }
-.battle-detail-area .aerial-info-row > span:nth-child(2),
-.battle-detail-area .aerial-info-row > span:nth-child(3),
-.battle-detail-area .aerial-info-row > span:nth-child(4) {
+.battle-detail-area .aerial-row > span:nth-child(2),
+.battle-detail-area .aerial-row > span:nth-child(3),
+.battle-detail-area .aerial-row > span:nth-child(4) {
   flex: 7;
 }
 
 /* Battle Detail Area - Attack Info */
-.battle-detail-area .attack-info-row {
+.battle-detail-area .attack-row {
   width: 100%;
   height: 30px;
   display: flex;
 }
-.battle-detail-area .attack-info-row > span {
+.battle-detail-area .attack-row > span {
   height: 20px;
   margin: 2px;
   text-align: center;
 }
-.battle-detail-area .attack-info-row .position-indicator {
+.battle-detail-area .attack-row .position-indicator {
   font-size: 0.8rem;
 }
-.battle-detail-area .attack-info-row > span:nth-child(1),
-.battle-detail-area .attack-info-row > span:nth-child(4),
-.battle-detail-area .attack-info-row > span:nth-child(7) {
+.battle-detail-area .attack-row > span:nth-child(1),
+.battle-detail-area .attack-row > span:nth-child(4),
+.battle-detail-area .attack-row > span:nth-child(7) {
   flex: 6;
 }
-.battle-detail-area .attack-info-row > span:nth-child(2),
-.battle-detail-area .attack-info-row > span:nth-child(6) {
+.battle-detail-area .attack-row > span:nth-child(2),
+.battle-detail-area .attack-row > span:nth-child(6) {
   flex: 7;
 }
-.battle-detail-area .attack-info-row > span:nth-child(3),
-.battle-detail-area .attack-info-row > span:nth-child(5) {
+.battle-detail-area .attack-row > span:nth-child(3),
+.battle-detail-area .attack-row > span:nth-child(5) {
   flex: 1;
 }

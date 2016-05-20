@@ -7,6 +7,7 @@ class Stage {
 
     this.kouku   = opts.kouku;    // Raw API data `api_kouku`
     this.isMain  = opts.isMain;   // Shelling: Is main fleet?
+    this.isNight = opts.isNight;  // Shelling: Is night combat?
     this.subtype = opts.subtype;  // Support: Suuport type
     this.id      = opts.id;       // LandBase: Corps ID
   }
@@ -29,7 +30,7 @@ class Attack {
     this.damage = opts.damage;  // [int, ...]
     this.hit    = opts.hit;     // [HitType, ...]
     this.fromHP = opts.fromHP;  // HP before attack.
-    this.toHP = opts.toHP;      // HP after attack.
+    this.toHP   = opts.toHP;      // HP after attack.
     this.useItem = opts.useItem;  // int, $slotitem[] OR null
   }
 }
