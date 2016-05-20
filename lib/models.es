@@ -12,7 +12,7 @@ class Stage {
   }
 }
 
-StageType = {
+const StageType = {
   Aerial:   "Aerial",   // Aerial Combat
   Torpedo:  "Torpedo",  // Torpedo Salve
   Shelling: "Shelling", // Shelling
@@ -22,9 +22,9 @@ StageType = {
 
 class Attack {
   constructor(opts) {
-    this.type     = opts.type;  // AttackType
-    this.fromShip = opts.from;  // Ship
-    this.toShip   = opts.to;    // Ship
+    this.type     = opts.type;      // AttackType
+    this.fromShip = opts.fromShip;  // Ship
+    this.toShip   = opts.toShip;    // Ship
 
     this.damage = opts.damage;  // [int, ...]
     this.hit    = opts.hit;     // [HitType, ...]
@@ -34,7 +34,7 @@ class Attack {
   }
 }
 
-AttackType = {
+const AttackType = {
   Normal: "Normal",             // 通常攻撃
   Laser:  "Laser",              // レーザー攻撃
   Double: "Double",             // 連撃
@@ -46,7 +46,7 @@ AttackType = {
   Torpedo_Torpedo_CI:   "TTCI", // カットイン(魚雷/魚雷)
 }
 
-HitType = {
+const HitType = {
   Miss:     0,
   Hit:      1,
   Critical: 2,
@@ -65,7 +65,7 @@ class Ship {
   }
 }
 
-ShipOwner = {
+const ShipOwner = {
   Ours:  "Ours",
   Enemy: "Enemy",
 }

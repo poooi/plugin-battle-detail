@@ -1,3 +1,4 @@
+"use strict";
 
 {Stage, StageType, Attack, AttackType, HitType, Ship, ShipOwner} = require('./models');
 
@@ -64,11 +65,11 @@ simulateAerialAttack = (ships, edam, ebak_flag, erai_flag, ecl_flag) ->
 simulateAerial = (mainFleet, escortFleet, enemyFleet, kouku) ->
   return unless kouku?
   attacks = []
-  if kouku?.api_stage3?
+  if kouku.api_stage3?
     st3 = kouku.api_stage3
     attacks = attacks.concat(simulateAerialAttack(enemyFleet, st3.api_edam, st3.api_ebak_flag, st3.api_erai_flag, st3.api_ecl_flag))
     attacks = attacks.concat(simulateAerialAttack(mainFleet, st3.api_fdam, st3.api_fbak_flag, st3.api_frai_flag, st3.api_fcl_flag))
-  if kouku?.api_stage3_combined?
+  if kouku.api_stage3_combined?
     st3 = kouku.api_stage3_combined
     attacks = attacks.concat(simulateAerialAttack(escortFleet, st3.api_fdam, st3.api_fbak_flag, st3.api_frai_flag, st3.api_fcl_flag))
   return new Stage
@@ -87,7 +88,7 @@ simulateTorpedoAttack = (fleet, targetFleet, api_eydam, api_erai, api_ecl) ->
     fromHP = toShip.nowHP
     toShip.nowHP -= damage
     item = useItem(toShip)
-    toHP = ship.nowHP
+    toHP = toShip.nowHP
     list.push new Attack
       type:   AttackType.Normal
       fromShip: fleet[i - 1]
@@ -218,7 +219,7 @@ class Simulator2
         pos:   i + 1
         maxHP: rawShip.api_maxhp
         nowHP: rawShip.api_nowhp
-        items: slots.map (slot) -> slot.api_slotitem_id
+        items: slots.map (slot) -> slot?.api_slotitem_id
     return fleet
 
   simulate: (packet) ->
