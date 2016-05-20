@@ -3,8 +3,10 @@
 {React, ReactBootstrap} = window
 {Panel, ProgressBar, OverlayTrigger, Overlay, Tooltip} = ReactBootstrap
 
+PacketManager = require('../lib/packet-manager')
 Simulator2 = require('../lib/simulator2')
 {Stage, StageType, Attack, AttackType, HitType, Ship, ShipOwner} = require('../lib/models')
+{Battle} = require('../lib/models')
 
 
 # Formation name map from api_search[0-1] to name
@@ -81,15 +83,23 @@ getHpStyle = (percent) ->
 
 
 simulate = (battle) ->
-  battle = require('./battle')
-  return {} unless battle?
+  try
+    return {} unless battle instanceof Object
 
-  simulator = new Simulator2(battle.fleet)
-  stages = []
-  for packet in battle.packet
-    stages = stages.concat(simulator.simulate(packet))
+    # Keep compatibility for version 1.0
+    if not battle.version?
+      battle = PacketManager.convertV1toV2(battle)
 
-  return {simulator, stages}
+    console.log 'simulate', battle
+    simulator = new Simulator2(battle.fleet)
+    stages = []
+    for packet in battle.packet
+      stages = stages.concat(simulator.simulate(packet))
+    return {simulator, stages}
+
+  catch error
+    console.error error
+    return {}
 
 
 EngagementTable = React.createClass
