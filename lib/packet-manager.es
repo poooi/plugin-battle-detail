@@ -213,7 +213,6 @@ class PacketManager extends EventEmitter {
   }
 
   convertV1toV2(packet) {
-    console.log('convertV1toV2', packet);
     if (packet == null) {
       return null;
     }
@@ -282,7 +281,6 @@ class PacketManager extends EventEmitter {
       fleet: fleet,
       packet: packets,
     });
-    console.log('convertV1toV2', battle);
     return battle;
   }
 }
