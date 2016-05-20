@@ -75,4 +75,25 @@ const ShipOwner = {
 }
 
 
-module.exports = {Stage, StageType, Attack, AttackType, HitType, Ship, ShipOwner};
+class Battle {
+  constructor(opts) {
+    this.version = "2.0";
+    this.map    = opts.map;     // [int, int, int] : 2-3-1
+    this.desc   = opts.desc;    // Description
+    this.time   = opts.time;    // Seconds since epoch time. Must be same as the first packet.
+    this.fleet  = opts.fleet;   // [api_port/port.api_ship[], ...] (Extended)
+    this.packet = opts.packet;  // [Packet, ...] : Order by time
+  }
+}
+
+class Fleet {
+  constructor(opts) {
+    this.type     = opts.type;     // api_port/port.api_combined_flag
+    this.main     = opts.main;     // api_get_member/deck[].api_ship (Extended)
+    this.escort   = opts.escort;   // ^
+    this.support  = opts.support;  // ^
+  }
+}
+
+
+module.exports = {Stage, StageType, Attack, AttackType, HitType, Ship, ShipOwner, Battle, Fleet};

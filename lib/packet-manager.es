@@ -1,26 +1,7 @@
 "use strict";
 
 const EventEmitter = require('events');
-
-class Battle {
-  constructor(opts) {
-    this.version = "2.0";
-    this.map    = opts.map;     // [int, int, int] : 2-3-1
-    this.desc   = opts.desc;    // Description
-    this.time   = opts.time;    // Seconds since epoch time. Must be same as the first packet.
-    this.fleet  = opts.fleet;   // [api_port/port.api_ship[], ...] (Extended)
-    this.packet = opts.packet;  // [Packet, ...] : Order by time
-  }
-}
-
-class Fleet {
-  constructor(opts) {
-    this.type     = opts.type;     // api_port/port.api_combined_flag
-    this.main     = opts.main;     // api_get_member/deck[].api_ship (Extended)
-    this.escort   = opts.escort;   // ^
-    this.support  = opts.support;  // ^
-  }
-}
+const {Battle, Fleet} = require('./models');
 
 class PacketManager extends EventEmitter {
   constructor() {
@@ -230,7 +211,66 @@ class PacketManager extends EventEmitter {
     }
     return desc.join(' ');
   }
-}
 
+  convertV1toV2(packet) {
+    console.log('convertV1toV2', packet);
+    if (packet == null) {
+      return null;
+    }
+    if (packet.version != null) {
+      return packet;
+    }
+    let mainFleet = [], escortFleet = [];
+    for (let i of Array(6).keys()) {
+      let ms = window.$ships[packet.poi_sortie_fleet[i]] || null,
+          es = window.$ships[packet.poi_combined_fleet[i]] || null;
+      if (ms) {
+        ms.api_nowhps = packet.api_nowhps[i + 1];
+        ms.poi_slot = [];
+        ms.poi_slot_ex = null;
+        for (let j of Array(6).keys()) {
+          ms.poi_slot.push(
+            window.$slotitems[packet.poi_sortie_equipment[i][j]] || null);
+        }
+      }
+      if (es) {
+        es.api_nowhps = packet.api_nowhps_combined[i + 1];
+        es.poi_slot = [];
+        es.poi_slot_ex = null;
+        for (let j of Array(6).keys()) {
+          es.poi_slot.push(
+            window.$slotitems[packet.poi_combined_equipment[i][j]] || null);
+        }
+      }
+      mainFleet.push(ms);
+      escortFleet.push(es);
+    }
+    let fleet = new Fleet({
+      type: packet.poi_is_combined ? (packet.poi_is_carrier ? 1: 2) : 0,
+      main: mainFleet,
+      escort: escortFleet,
+      support: null,
+    });
+    let packets = [packet];
+    packet.poi_path = packet.poi_uri;
+    packet.poi_time = packet.poi_timestamp;
+    if (packet.api_hougeki) {
+      packets.push({
+        api_hougeki: packet.api_hougeki,
+        poi_path: '/kcsapi/api_req_battle_midnight/battle',
+      });
+      delete packet.api_hougeki;
+    }
+    let battle = new Battle({
+      map: [],
+      desc: packet.poi_comment,
+      time: packet.poi_timestamp,
+      fleet: fleet,
+      packet: packets,
+    });
+    console.log('convertV1toV2', battle);
+    return battle;
+  }
+}
 
 module.exports = new PacketManager();
