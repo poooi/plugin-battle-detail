@@ -194,6 +194,42 @@ class PacketManager extends EventEmitter {
     }
     return item;
   }
+
+  // Utils
+  getId(packet) {
+    if (packet == null) {
+      return null;
+    }
+    return packet.time || packet.poi_timestamp || null;
+  }
+
+  getTime(packet) {
+    if (packet == null) {
+      return null;
+    }
+    let str = '';
+    let time = packet.time || packet.poi_timestamp;
+    if (time) {
+      let date = new Date(time);
+      date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+      str = date.toISOString().slice(0, 19).replace('T', ' ');
+    }
+    return str;
+  }
+
+  getDesc(packet) {
+    if (packet == null) {
+      return null;
+    }
+    let desc = [];
+    if (packet.version == null) {
+      desc.push(packet.poi_comment);
+    } else {
+      desc.push(packet.desc);
+      desc.push(packet.map.join('-'));
+    }
+    return desc.join(' ');
+  }
 }
 
 

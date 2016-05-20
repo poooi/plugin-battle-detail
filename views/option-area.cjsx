@@ -1,25 +1,23 @@
 "use strict"
 
+{clipboard} = require 'electron'
 {React, ReactBootstrap} = window
 {Panel, Grid, Row, Col, Button, ButtonGroup, Input, Modal} = ReactBootstrap
-{clipboard} = require 'electron'
+
+PacketManager = require('../lib/packet-manager')
 
 
 getDescription = (packet) ->
   desc = []
-  if packet.poi_timestamp
-    date = new Date(packet.poi_timestamp)
-    date.setMinutes(date.getMinutes() - date.getTimezoneOffset())
-    desc.push date.toISOString().slice(0, 19).replace('T', ' ')
-  if packet.poi_comment
-    desc.push packet.poi_comment
-  return desc.join ' '
+  desc.push PacketManager.getTime(packet)
+  desc.push PacketManager.getDesc(packet)
+  return desc.join(' ')
 
 
 OptionArea = React.createClass
   shouldComponentUpdate: (nextProps, nextState) ->
     return not (
-      @props.packetListNonce == nextProps.packetListNonce and
+      @props.battleListNonce == nextProps.battleListNonce and
       @props.battleNonce == nextProps.battleNonce and
       @props.shouldAutoShow == nextProps.shouldAutoShow
     )
@@ -28,18 +26,18 @@ OptionArea = React.createClass
     index = parseInt(@refs.selectedIndex.getValue())
     return if index is NaN
     if index < 0
-      @props.updateBattlePacket null
+      @props.updateBattle null
     else
-      packet = @props.packetList[index]
-      @props.updateBattlePacket packet
+      battle = @props.battleList[index]
+      @props.updateBattle battle
 
   onClickExport: ->
     isSuccessful = false
     try
-      packet = @props.battlePacket
-      if packet isnt null
-        packet = JSON.stringify packet
-        clipboard.writeText(packet)
+      battle = @props.battle
+      if battle isnt null
+        battle = JSON.stringify(battle)
+        clipboard.writeText(battle)
         isSuccessful = true
     catch e
       # do nothing
@@ -58,9 +56,9 @@ OptionArea = React.createClass
 
   onClickImport: ->
     try
-      packet = clipboard.readText(packet)
-      packet = JSON.parse packet
-      @props.updateBattlePacket packet
+      battle = clipboard.readText(battle)
+      battle = JSON.parse(battle)
+      @props.updateBattle battle
     finally
       window.showModal
         title: __ "Paste Data"
@@ -82,18 +80,18 @@ OptionArea = React.createClass
             {
               options = []
               selectedIndex = -1  # Default: last battle (-1)
-              selectedTimestamp = @props.battlePacket?.poi_timestamp
+              selectedId = PacketManager.getId(@props.battle)
 
-              # Is @props.battlePacket in @props.packetList ?
-              for packet, i in @props.packetList
-                if packet.poi_timestamp == selectedTimestamp
+              # Is @props.battle in @props.battleList ?
+              for battle, i in @props.battleList
+                if selectedId == PacketManager.getId(battle)
                   selectedIndex = i
-                options.push <option key={i} value={i}>{getDescription packet}</option>
+                options.push <option key={i} value={i}>{getDescription battle}</option>
 
-              # If @props.battlePacket exists but not in @props.packetList
-              if selectedIndex < 0 and selectedTimestamp?
+              # If @props.battle exists but not in @props.battleList
+              if selectedIndex == -1 and selectedId?
                 selectedIndex = -2
-                options.unshift <option key={-2} value={-2}>{__ "Selected"}: {getDescription @props.battlePacket}</option>
+                options.unshift <option key={-2} value={-2}>{__ "Selected"}: {getDescription @props.battle}</option>
 
               # Default option: last battle
               if @props.shouldAutoShow

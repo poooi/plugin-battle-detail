@@ -319,16 +319,16 @@ MainArea = React.createClass
     <div className="main">
       <ModalArea />
       <OptionArea
-        packetList={@state.packetList}
-        packetListNonce={@state.packetListNonce}
-        battlePacket={@state.battlePacket}
+        battleList={@state.packetList}
+        battleListNonce={@state.packetListNonce}
+        battle={@state.battlePacket}
         battleNonce={@state.battleNonce}
         shouldAutoShow={@state.shouldAutoShow}
-        updateBattlePacket={@updateBattlePacket}
+        updateBattle={@updateBattlePacket}
         />
       <BattleDetailArea
-        battleNonce={@state.battleNonce}
-        battlePacket={@state.battlePacket}
+        battle={@state.battleNonce}
+        nonce={@state.battlePacket}
         />
     </div>
 
