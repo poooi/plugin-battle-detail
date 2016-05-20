@@ -254,7 +254,7 @@ class Simulator2
       stages.push getEngagementStage(packet)
       # Land base air attack
       for api_kouku in packet.api_air_base_attack || []
-        stages.push simulateAerial(@mainFleet, @escortFleet, @enemyFleet, api_kouku)
+        stages.push simulateLandBase(@enemyFleet, api_kouku)
       # Aerial Combat
       stages.push simulateAerial(@mainFleet, @escortFleet, @enemyFleet, packet.api_kouku)
       # Aerial Combat 2nd
