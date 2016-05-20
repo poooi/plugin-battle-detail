@@ -1,10 +1,9 @@
 "use strict"
 
-{remote} = window
-path = require 'path-extra'
-appdata = require '../lib/appdata'
+{remote, React, ReactDOM, ReactBootstrap} = window
 
-{React, ReactDOM, ReactBootstrap} = window
+AppData = require '../lib/appdata'
+PacketManager = require '../lib/packet-manager'
 ModalArea = require './modal-area'
 OptionArea = require './option-area'
 BattleDetailArea = require './battle-detail-area'
@@ -18,276 +17,68 @@ updateNonce = (nonce) ->
   else
     return 1
 
-updatePacketWithFleetInfo = (packet, isCombined, isCarrier, sortieFleetID, combinedFleetID) ->
-  return unless packet?
-  # Obtain fleet information. (Ship id and ship equipment.)
-  # Empty slot is `null`.
-  {_ships, _slotitems, _decks} = window
-  obtainFleetInfo = (id, fleet, equipment) ->
-    return unless typeof id == "number" and id >= 0
-    for ship_id, i in _decks[id].api_ship
-      fleet[i] = null
-      continue unless ship = _ships[ship_id]
-      fleet[i] = ship.api_ship_id
-      equipment[i] = []
-      for equip_id, j in ship.api_slot
-        equipment[i][j] = null
-        continue unless equip = _slotitems[equip_id]
-        equipment[i][j] = equip.api_slotitem_id
-      equipment[i].push if ship.api_slot_ex > 0 then ship.api_slot_ex else null
-    return
-  sortieFleet = []
-  sortieEquipment = []
-  combinedFleet = []
-  combinedEquipment = []
-  obtainFleetInfo sortieFleetID, sortieFleet, sortieEquipment
-  obtainFleetInfo combinedFleetID, combinedFleet, combinedEquipment
-
-  packet.poi_is_combined = isCombined   # 連合艦隊？
-  packet.poi_is_carrier = isCarrier     # 空母機動部隊=true, 水上打撃部隊=false
-  packet.poi_sortie_fleet = sortieFleet
-  packet.poi_sortie_equipment = sortieEquipment
-  packet.poi_combined_fleet = combinedFleet
-  packet.poi_combined_equipment = combinedEquipment
-
-updatePacketWithAirCorpsInfo = (packet, baseAirCorps) ->
-  return unless packet.api_air_base_attack?
-  for corps in baseAirCorps
-    for plane in corps.api_plane_info
-      item = _slotitems[plane.api_slotid]
-      plane.poi_slot =
-        api_slotitem_id: item.api_slotitem_id
-        api_level: item.api_level
-        api_alv: item.api_alv
-  packet.poi_base_air_corps = corps
-
-updatePacketWithMetadata = (packet, path, timestamp, comment) ->
-  return unless packet?
-  packet.poi_uri = path
-  packet.poi_timestamp = timestamp
-  packet.poi_comment = comment
-
-
 MainArea = React.createClass
   getInitialState: ->
-    # Game states
-    isCombined: false
-    isCarrier: false
-    battleComment: ""
-    baseAirCorps: []
-    # Battle Packets Management
-    packetList: []
-    packetListNonce: 0
-    battlePacket: null
+    battle: null
     battleNonce: 0
+    battleList: []
+    battleListNonce: 0
     shouldAutoShow: true
 
   componentDidMount: ->
-    window.addEventListener 'game.response', @handleResponse
-    try
-      ipc.register "BattleDetail",
-        showBattleWithTimestamp: @showBattleWithTimestamp
-    catch error then console.log error
+    PacketManager.addListener('packet', @handlePacket)
+    ipc.register "BattleDetail",
+      showBattleWithTimestamp: @showBattleWithTimestamp
 
     setTimeout =>
-      list = appdata.listPacket()
+      list = AppData.listPacket()
       return unless list?.length > 0
       packets = []
       for fp in list by -1
-        packet = appdata.loadPacketSync fp
+        packet = AppData.loadPacketSync fp
         packets.push(packet) if packet?
         break if packets.length >= MAX_PACKET_NUMBER
 
       # Update state with loaded packets.
-      {packetList, packetListNonce, battlePacket, battleNonce} = @state
-      packetList = packetList.concat(packets).slice(0, MAX_PACKET_NUMBER)
+      {battleList, battleListNonce, battle, battleNonce} = @state
+      battleList = battleList.concat(packets).slice(0, MAX_PACKET_NUMBER)
       @setState
-        packetList: packetList
-        packetListNonce: updateNonce packetListNonce
-        battlePacket: packetList[0]
+        battle: battleList[0]
         battleNonce: updateNonce battleNonce
+        battleList: battleList
+        battleListNonce: updateNonce battleListNonce
 
   componentWillUnmount: ->
-    window.removeEventListener 'game.response', @handleResponse
-    try
-      ipc.unregisterAll "BattleDetail"
-    catch error then console.log error
+    PacketManager.removeListener('packet', @handlePacket)
+    ipc.unregisterAll "BattleDetail"
 
-  handleResponse: (e) ->
-    `var path;`   # HACK: Force shadowing an variable `path`;
-    {method, path, body, postBody} = e.detail
-    {isCombined, isCarrier, battleComment, baseAirCorps, packetList, packetListNonce, battleNonce, battlePacket} = @state
-    isStateChanged = false
-    timestamp = Date.now()
-
-    # Combined Fleet Status
-    switch path
-      when '/kcsapi/api_port/port'
-        switch body.api_combined_flag
-          when 1, 3  # 1=空母機動部隊, 3=輸送護衛部隊
-            isStateChanged = true
-            isCombined = true
-            isCarrier = true
-          when 2  # 2=水上打撃部隊
-            isStateChanged = true
-            isCombined = true
-            isCarrier = false
-          else
-            isStateChanged = true
-            isCombined = false
-            isCarrier = false
-      # Oh fuck. Someone sorties with No.3/4 fleet when having combined fleet.
-      when '/kcsapi/api_req_map/start'
-        if isCombined and parseInt(postBody.api_deck_id) != 1
-          isStateChanged = true
-          isCombined = false
-          isCarrier = false
-
-    # Battle Comment
-    switch path
-      when '/kcsapi/api_req_map/start', '/kcsapi/api_req_map/next'
-        isStateChanged = true
-        sortie = __ "Sortie"
-        mapArea = body.api_maparea_id
-        mapCell = body.api_mapinfo_no
-        mapSpot = body.api_no
-        if body.api_event_id == 5   # 5=ボス戦闘
-          mapSpot += ", boss"
-        battleComment = "#{sortie} #{mapArea}-#{mapCell} (#{mapSpot})"
-      when '/kcsapi/api_req_member/get_practice_enemyinfo'
-        isStateChanged = true
-        practice = __ "Pratice"
-        name = body.api_nickname
-        level = body.api_level
-        battleComment = "#{practice} #{name} (Lv.#{level})"
-
-    # Land Base Air Corps
-    switch path
-      when '/kcsapi/api_get_member/base_air_corps'
-        isStateChanged = true
-        baseAirCorps = body
-      when '/kcsapi/api_req_air_corps/set_plane'
-        isStateChanged = true
-        corps = baseAirCorps[postBody.api_base_id - 1]
-        corps.api_distance = body.api_distance
-        for newPlane in body.api_plane_info
-          for oldPlane, i in corps.api_plane_info
-            if parseInt(oldPlane.api_squadron_id) == parseInt(newPlane.api_squadron_id)
-              corps.api_plane_info[i] = newPlane
-      when '/kcsapi/api_req_air_corps/set_action'
-        isStateChanged = true
-        corps = baseAirCorps[postBody.api_base_id - 1]
-        corps.api_action_kind = parseInt(postBody.api_action_kind)
-
-    # Battle Packets Management
-    isBattle = false
-    switch path
-      # Normal fleet
-      when '/kcsapi/api_req_sortie/battle', '/kcsapi/api_req_practice/battle', '/kcsapi/api_req_sortie/airbattle'
-        isBattle = true
-        isCombined = false
-        sortieID = body.api_dock_id - 1
-        combinedID = null
-      when '/kcsapi/api_req_battle_midnight/battle', '/kcsapi/api_req_practice/midnight_battle'
-        if packetList[0]?.api_midnight_flag
-          oldBody = packetList.shift()
-          oldBody.api_hougeki = body.api_hougeki
-          body = oldBody
-          # Dont update packet metadata
-          path = body.poi_uri
-          timestamp = body.poi_timestamp
-          battleComment = body.poi_comment
-        isBattle = true
-        isCombined = false
-        sortieID = if body.api_dock_id? then body.api_dock_id - 1 else body.api_deck_id - 1
-        combinedID = null
-      when '/kcsapi/api_req_battle_midnight/sp_midnight'
-        isBattle = true
-        isCombined = false
-        sortieID = body.api_deck_id - 1
-        combinedID = null
-      # Carrier Task Force
-      when '/kcsapi/api_req_combined_battle/battle'
-        isBattle = true
-        isCombined = true
-        isCarrier = true
-        sortieID = body.api_deck_id - 1
-        combinedID = 1
-      # Surface Task Force
-      when '/kcsapi/api_req_combined_battle/battle_water'
-        isBattle = true
-        isCombined = true
-        isCarrier = false
-        sortieID = body.api_deck_id - 1
-        combinedID = 1
-      # Combined fleet shared api
-      when '/kcsapi/api_req_combined_battle/airbattle'
-        isBattle = true
-        isCombined = true
-        isCarrier = isCarrier
-        sortieID = body.api_deck_id - 1
-        combinedID = 1
-      when '/kcsapi/api_req_combined_battle/midnight_battle'
-        if packetList[0]?.api_midnight_flag
-          oldBody = packetList.shift()
-          oldBody.api_hougeki = body.api_hougeki
-          body = oldBody
-          # Dont update packet metadata
-          path = body.poi_uri
-          timestamp = body.poi_timestamp
-          battleComment = body.poi_comment
-        isBattle = true
-        isCombined = true
-        isCarrier = isCarrier
-        sortieID = body.api_deck_id - 1
-        combinedID = 1
-      when '/kcsapi/api_req_combined_battle/sp_midnight'
-        isBattle = true
-        isCombined = true
-        isCarrier = isCarrier
-        sortieID = body.api_deck_id - 1
-        combinedID = 1
-
-    if isBattle
-      isStateChanged = true
-      updatePacketWithFleetInfo body, isCombined, isCarrier, sortieID, combinedID
-      updatePacketWithAirCorpsInfo body, baseAirCorps
-      updatePacketWithMetadata body, path, timestamp, battleComment
-      packetList.unshift body
-      packetListNonce = updateNonce packetListNonce
-      while packetList.length > MAX_PACKET_NUMBER
-        packetList.pop()
-      # Save packet
-      appdata.savePacket body
-      # Render battle packet
-      if @state.shouldAutoShow
-        battleNonce = updateNonce battleNonce
-        battlePacket = body
-
-    # Update State
-    if isStateChanged
-      @setState
-        isCombined: isCombined
-        isCarrier: isCarrier
-        battleComment: battleComment
-        baseAirCorps: baseAirCorps
-        packetList: packetList
-        packetListNonce: packetListNonce
-        battleNonce: battleNonce
-        battlePacket: battlePacket
+  handlePacket: (newTime, newBattle) ->
+    {battle, battleNonce, battleList, battleListNonce, shouldAutoShow} = @state
+    if battleList[0].time == newTime
+      battleList[0] = newBattle
+      battleListNonce = updateNonce battleListNonce
+    else
+      battleList.unshift newBattle
+      while battleList.length > MAX_PACKET_NUMBER
+        battleList.pop()
+      battleListNonce = updateNonce battleListNonce
+    if shouldAutoShow
+      battle = newBattle
+      battleNonce = updateNonce battleNonce
+    @setState {battle, battleNonce, battleList, battleListNonce}
 
   # API for IPC
   showBattleWithTimestamp: (timestamp, callback) ->
     if timestamp?
       start = timestamp - 2000
       end = timestamp + 2000
-      list = appdata.searchPacket start, end
+      list = AppData.searchPacket(start, end)
       if not list?
         message = __ "Unknown error"
       else if list.length == 1
         try
-          packet = appdata.loadPacketSync list[0]
-          @updateBattlePacket packet
+          packet = AppData.loadPacketSync list[0]
+          @updateBattle packet
           remote.getCurrentWindow().show()
         catch error
           console.error error
@@ -301,33 +92,33 @@ MainArea = React.createClass
     callback?(message)
 
   # API for Component <OptionArea />
-  #   packet=null: using last battle and set `shouldAutoShow` to true.
-  updateBattlePacket: (packet) ->
-    if packet?
+  #   battle=null: using last battle and set `shouldAutoShow` to true.
+  updateBattle: (battle) ->
+    if battle?
       @setState
         shouldAutoShow: false
-        battlePacket: packet
+        battle: battle
         battleNonce: updateNonce @state.battleNonce
     else
       @setState
         shouldAutoShow: true
-        battlePacket: @state.packetList[0]
+        battle: @state.battleList[0]
         battleNonce: updateNonce @state.battleNonce
 
   render: ->
     <div className="main">
       <ModalArea />
       <OptionArea
-        packetList={@state.packetList}
-        packetListNonce={@state.packetListNonce}
-        battlePacket={@state.battlePacket}
+        battle={@state.battle}
         battleNonce={@state.battleNonce}
+        battleList={@state.battleList}
+        battleListNonce={@state.battleListNonce}
         shouldAutoShow={@state.shouldAutoShow}
-        updateBattlePacket={@updateBattlePacket}
+        updateBattle={@updateBattle}
         />
       <BattleDetailArea
-        battleNonce={@state.battleNonce}
-        battlePacket={@state.battlePacket}
+        battle={@state.battle}
+        nonce={@state.battleNonce}
         />
     </div>
 
