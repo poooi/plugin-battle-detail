@@ -9,7 +9,8 @@ class Stage {
     this.isMain  = opts.isMain;   // Shelling: Is main fleet?
     this.isNight = opts.isNight;  // Shelling: Is night combat?
     this.subtype = opts.subtype;  // Support: Suuport type
-    this.id      = opts.id;       // LandBase: Corps ID
+
+    this.api     = opts.api;      // Engagement: Picked raw data
   }
 }
 
@@ -19,6 +20,8 @@ const StageType = {
   Shelling: "Shelling", // Shelling
   Support:  "Support",  // Support Fleet (Expedition)
   LandBase: "LandBase", // Land Base Aerial Support
+
+  Engagement: "Engagement", // [SP] Engagement Information
 }
 
 class Attack {

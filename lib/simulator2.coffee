@@ -203,6 +203,11 @@ simulateLandBase = (enemyShip, kouku) ->
     attacks: attacks
     kouku: kouku
 
+getEngagementStage = (packet) ->
+  return new Stage
+    type: StageType.Engagement
+    api: _.pick(packet, 'api_search', 'api_formation', 'api_touch_plane', 'api_flare_pos')
+
 class Simulator2
   constructor: (fleet) ->
     @fleetType   = fleet.type
@@ -242,6 +247,8 @@ class Simulator2
     path = packet.poi_path
 
     if path in ['/kcsapi/api_req_sortie/battle', '/kcsapi/api_req_practice/battle', '/kcsapi/api_req_sortie/airbattle', '/kcsapi/api_req_combined_battle/battle', '/kcsapi/api_req_combined_battle/battle_water', '/kcsapi/api_req_combined_battle/airbattle']
+      # Engagement
+      stages.push getEngagementStage(packet)
       # Land base air attack
       for api_kouku in packet.api_air_base_attack || []
         stages.push simulateAerial(@mainFleet, @escortFleet, @enemyFleet, api_kouku)
@@ -291,6 +298,9 @@ class Simulator2
         stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki3, true, false)
 
     if path in ['/kcsapi/api_req_battle_midnight/battle', '/kcsapi/api_req_practice/midnight_battle', '/kcsapi/api_req_battle_midnight/sp_midnight', '/kcsapi/api_req_combined_battle/midnight_battle', '/kcsapi/api_req_combined_battle/sp_midnight']
+      # Engagement
+      stages.push getEngagementStage(packet)
+
       if @fleetType == 0
         stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki, true, true)
       else

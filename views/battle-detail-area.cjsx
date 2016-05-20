@@ -83,7 +83,6 @@ getHpStyle = (percent) ->
 simulate = (battle) ->
   battle = require('./battle')
   return {} unless battle?
-  console.log(battle)
 
   simulator = new Simulator2(battle.fleet)
   stages = []
@@ -93,31 +92,43 @@ simulate = (battle) ->
   return {simulator, stages}
 
 
-BattleInfoTable = React.createClass
+EngagementTable = React.createClass
   render: ->
-    {packet} = @props
-    return <div /> unless packet?
+    {simulator, stage} = @props
+    {api_search, api_formation, api_touch_plane, api_flare_pos} = stage.api
+    rows = []
 
-    <div className={"battle-info-table"}>
+    if api_formation?
+      rows.push <div className={"engagement-row"} key={1}>
+        <span>{FormationNameMap[api_formation[0]]}</span>
+        <span>{EngagementNameMap[api_formation[2]]}</span>
+        <span>{FormationNameMap[api_formation[1]]}</span>
+      </div>
+
+    if api_search?
+      rows.push <div className={"engagement-row"} key={2}>
+        <span>{DetectionNameMap[api_search[0]]}</span>
+        <span></span>
+        <span>{DetectionNameMap[api_search[1]]}</span>
+      </div>
+
+    if api_touch_plane? or api_flare_pos?
+      contact = api_touch_plane
+      fleet = if simulator.fleetType == 0 then simulator.mainFleet else simulator.escortFleet
+      enemy = simulator.enemyFleet
+      star = [fleet[api_flare_pos[0]] || -1, enemy[api_flare_pos[1]] || -1]
+      <div className={"engagement-row"}>
+        <span>{if name = $slotitems[contact[0]]?.api_name then "#{__ 'Night Contact'}: #{__r name}"}</span>
+        <span>{if name = $ships[star[0]]?.api_name then "#{__ 'Star Shell'}: #{__r name}"}</span>
+        <span>{if name = $ships[star[1]]?.api_name then "#{__ 'Star Shell'}: #{__r name}"}</span>
+        <span>{if name = $slotitems[contact[1]]?.api_name then "#{__ 'Night Contact'}: #{__r name}"}</span>
+      </div>
+
+    <div className={"engagement-table"}>
     {
-      # Formation & Engagement
-      if packet.api_formation?
-        <div className={"battle-info-row"}>
-          <span>{FormationNameMap[packet.api_formation[0]]}</span>
-          <span>{EngagementNameMap[packet.api_formation[2]]}</span>
-          <span>{FormationNameMap[packet.api_formation[1]]}</span>
-        </div>
+      if rows.length > 0
+        rows
     }
-    {
-      # Detection
-      if packet.api_search?
-        <div className={"battle-info-row"}>
-          <span>{DetectionNameMap[packet.api_search[0]]}</span>
-          <span></span>
-          <span>{DetectionNameMap[packet.api_search[1]]}</span>
-        </div>
-    }
-      <hr key={9} />
     </div>
 
 
@@ -125,7 +136,10 @@ PlaneCount = React.createClass
   render: ->
     total = @props.count
     now = @props.count - @props.lost
-    <span><FontAwesome name='plane' /> {total} <FontAwesome name='long-arrow-right' /> {now}</span>
+    if total?
+      <span><FontAwesome name='plane' /> {total} <FontAwesome name='long-arrow-right' /> {now}</span>
+    else
+      <span />
 
 AntiAirCICell = React.createClass
   render: ->
@@ -176,9 +190,9 @@ AerialTable = React.createClass
             <PlaneCount count={kouku.api_stage1.api_f_count}
                         lost={kouku.api_stage1.api_f_lostcount} />
           </span>
-          <span>{if name = $slotitems[contact[0]]?.api_name then [__("Contacting"), ": ", __r name].join ''}</span>
+          <span>{if name = $slotitems[contact[0]]?.api_name then "#{__ 'Aerial Contact'}: #{__r name}"}</span>
           <span>{AirControlNameMap[kouku.api_stage1.api_disp_seiku]}</span>
-          <span>{if name = $slotitems[contact[1]]?.api_name then [__("Contacting"), ": ", __r name].join ''}</span>
+          <span>{if name = $slotitems[contact[1]]?.api_name then "#{__ 'Aerial Contact'}: #{__r name}"}</span>
           <span>
             <PlaneCount count={kouku.api_stage1.api_e_count}
                         lost={kouku.api_stage1.api_e_lostcount} />
@@ -258,12 +272,12 @@ DamageInfo = React.createClass
       elements.push <span key={-1}>{getAttackTypeName(@props.type)}</span>
       elements.push <span key={-2}>{" ("}</span>
       for damage, i in @props.damage
-        style = null
         if @props.hit[i] == HitType.Miss
           damage = "miss"
+        cls = ''
         if @props.hit[i] == HitType.Critical
-          style = {color: "#FFFF00"}
-        elements.push <span key={10 * i + 1} style={style}>{damage}</span>
+          cls = 'critical'
+        elements.push <span key={10 * i + 1} className={cls}>{damage}</span>
         elements.push <span key={10 * i + 2}>{", "}</span>
       elements.pop()  # Remove last comma
       elements.push <span key={-3}>{")"}</span>
@@ -313,12 +327,18 @@ StageTable = React.createClass
   render: ->
     {stage, simulator} = @props
     return <div /> unless stage?
+    additions = []
 
     switch stage.type
+      when StageType.Engagement
+        additions.push <EngagementTable key={1} simulator={simulator} stage={stage} />
+
       when StageType.Aerial
         title = __('Aerial Combat')
+
       when StageType.Torpedo
         title = __('Torpedo Salvo')
+
       when StageType.Shelling
         if stage.isNight
           title = "#{__('Shelling')} - #{__('Night Combat')}"
@@ -326,6 +346,7 @@ StageTable = React.createClass
           title = "#{__('Shelling')} - #{__('Main Fleet')}"
         else
           title = "#{__('Shelling')} - #{__('Escort Fleet')}"
+
       when StageType.Support
         if stage.subtype == StageType.Aerial
           title = "#{__('Expedition Supporting Fire')} - #{__('Aerial Combat')}"
@@ -333,17 +354,16 @@ StageTable = React.createClass
           title = "#{__('Expedition Supporting Fire')} - #{__('Torpedo Salvo')}"
         if stage.subtype == StageType.Shelling
           title = "#{__('Expedition Supporting Fire')} - #{__('Shelling')}"
+
       when StageType.LandBase
-        title = "#{__('Land Base Air Corps')} - #{stage.id}"
+        id = stage.kouku?.api_base_id
+        title = "#{__('Land Base Air Corps')} - #{id}"
 
     <div className={"stage-table"}>
       <div className={"stage-title"}>{title}</div>
-      <div>
-        <AerialTable simulator={simulator} kouku={stage.kouku} />
-      </div>
-      <div>
-        <AttackTable attacks={stage.attacks} />
-      </div>
+      {additions}
+      <AerialTable simulator={simulator} kouku={stage.kouku} />
+      <AttackTable attacks={stage.attacks} />
       <hr />
     </div>
 

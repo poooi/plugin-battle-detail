@@ -44,34 +44,39 @@
   overflow: hidden;
 }
 
+/* Damage Info */
+.critical {
+  color: "#FFFF00";
+}
+
 /* Battle Detail Area */
 .battle-detail-area hr {
   margin: 7px 0 7px;
 }
 
-/* Battle Detail Area - Battle Info Table */
-.battle-detail-area .battle-row {
+/* Battle Detail Area - Engagement Table */
+.battle-detail-area .engagement-row {
   width: 100%;
   height: 30px;
   display: flex;
 }
-.battle-detail-area .battle-row > span {
+.battle-detail-area .engagement-row > span {
   height: 20px;
   margin: 2px;
   text-align: center;
 }
-.battle-detail-area .battle-row > span:nth-child(1),
-.battle-detail-area .battle-row > span:nth-child(2),
-.battle-detail-area .battle-row > span:nth-child(3) {
-  flex: 3;
+.battle-detail-area .engagement-row > span:nth-child(1),
+.battle-detail-area .engagement-row > span:nth-child(2),
+.battle-detail-area .engagement-row > span:nth-child(3) {
+  flex: 1;
 }
 
-/* Battle Detail Area - Stage Info Table */
+/* Battle Detail Area - Stage Table */
 .battle-detail-area .stage-title {
   margin: 0 0 8px;
 }
 
-/* Battle Detail Area - Aerial Info */
+/* Battle Detail Area - Aerial Table */
 .battle-detail-area .aerial-row {
   width: 100%;
   height: 30px;
