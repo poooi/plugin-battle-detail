@@ -90,7 +90,6 @@ simulate = (battle) ->
     if not battle.version?
       battle = PacketManager.convertV1toV2(battle)
 
-    console.log 'simulate', battle
     simulator = new Simulator2(battle.fleet)
     stages = []
     for packet in battle.packet

@@ -222,24 +222,38 @@ class PacketManager extends EventEmitter {
     }
     let mainFleet = [], escortFleet = [];
     for (let i of Array(6).keys()) {
-      let ms = window.$ships[packet.poi_sortie_fleet[i]] || null,
-          es = window.$ships[packet.poi_combined_fleet[i]] || null;
+      let msid = packet.poi_sortie_fleet[i];
+      let ms = window.$ships[msid] || null;
       if (ms) {
-        ms.api_nowhps = packet.api_nowhps[i + 1];
+        ms.api_ship_id = msid;
+        ms.api_maxhp = ms.api_taik[1];
+        ms.api_nowhp = packet.api_nowhps[i + 1];
         ms.poi_slot = [];
         ms.poi_slot_ex = null;
         for (let j of Array(6).keys()) {
-          ms.poi_slot.push(
-            window.$slotitems[packet.poi_sortie_equipment[i][j]] || null);
+          let miid = packet.poi_sortie_equipment[i][j];
+          let mi = window.$slotitems[miid] || null;
+          if (mi) {
+            mi.api_slotitem_id = miid;
+          }
+          ms.poi_slot.push(mi);
         }
       }
+      let esid = packet.poi_combined_fleet[i];
+      let es = window.$ships[esid] || null;
       if (es) {
-        es.api_nowhps = packet.api_nowhps_combined[i + 1];
+        es.api_ship_id = esid;
+        es.api_maxhp = es.api_taik[1];
+        es.api_nowhp = packet.api_nowhps_combined[i + 1];
         es.poi_slot = [];
         es.poi_slot_ex = null;
         for (let j of Array(6).keys()) {
-          es.poi_slot.push(
-            window.$slotitems[packet.poi_combined_equipment[i][j]] || null);
+          let eiid = packet.poi_combined_equipment[i][j];
+          let ei = window.$slotitems[eiid] || null;
+          if (ei) {
+            ei.api_slotitem_id = eiid;
+          }
+          es.poi_slot.push(ei);
         }
       }
       mainFleet.push(ms);

@@ -219,14 +219,17 @@ class Simulator2
     return unless rawFleet?
     fleet = []
     for rawShip, i in rawFleet
-      slots = rawShip.poi_slot.concat(rawShip.poi_slot_ex)
-      fleet.push new Ship
-        id:    rawShip.api_ship_id
-        owner: ShipOwner.Ours
-        pos:   i + 1
-        maxHP: rawShip.api_maxhp
-        nowHP: rawShip.api_nowhp
-        items: slots.map (slot) -> slot?.api_slotitem_id
+      if rawShip?
+        slots = rawShip.poi_slot.concat(rawShip.poi_slot_ex)
+        fleet.push new Ship
+          id:    rawShip.api_ship_id
+          owner: ShipOwner.Ours
+          pos:   i + 1
+          maxHP: rawShip.api_maxhp
+          nowHP: rawShip.api_nowhp
+          items: slots.map (slot) -> slot?.api_slotitem_id
+      else
+        fleet.push null
     return fleet
 
   simulate: (packet) ->
