@@ -82,8 +82,12 @@ class PacketManager extends EventEmitter {
       }
     }
     if (req.path === '/kcsapi/api_req_air_corps/set_action') {
-      let corps = this.api_base_air_corps[postBody.api_base_id - 1];
-      corps.api_action_kind = parseInt(postBody.api_action_kind);
+      let baseIds = postBody.api_base_id.split(',');
+      let actionKinds = postBody.api_action_kind.split(',');
+      for (let i = 0; i < baseIds.length; i++) {
+        let corps = this.api_base_air_corps[baseIds[i] - 1];
+        corps.api_action_kind = parseInt(actionKinds[i]);
+      }
     }
 
 
