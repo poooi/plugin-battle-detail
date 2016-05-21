@@ -344,6 +344,7 @@ StageTable = React.createClass
 
       when StageType.Aerial
         title = __('Aerial Combat')
+        additions.push <AerialTable simulator={simulator} kouku={stage.kouku} />
 
       when StageType.Torpedo
         title = __('Torpedo Salvo')
@@ -355,12 +356,14 @@ StageTable = React.createClass
           when StageType.Escort
             title = "#{__('Shelling')} - #{__('Escort Fleet')}"
           when StageType.Night
-            title = "#{__('Shelling')} - #{__('Night Combat')}"
+            title = __('Night Combat')
+            additions.push <EngagementTable key={1} simulator={simulator} stage={stage} />
 
       when StageType.Support
         switch stage.subtype
           when StageType.Aerial
             title = "#{__('Expedition Supporting Fire')} - #{__('Aerial Combat')}"
+            additions.push <AerialTable simulator={simulator} kouku={stage.kouku} />
           when StageType.Torpedo
             title = "#{__('Expedition Supporting Fire')} - #{__('Torpedo Salvo')}"
           when StageType.Shelling
@@ -369,11 +372,11 @@ StageTable = React.createClass
       when StageType.LandBase
         id = stage.kouku?.api_base_id
         title = "#{__('Land Base Air Corps')} - No.#{id}"
+        additions.push <AerialTable simulator={simulator} kouku={stage.kouku} />
 
     <div className={"stage-table"}>
       <div className={"stage-title"}>{title}</div>
       {additions}
-      <AerialTable simulator={simulator} kouku={stage.kouku} />
       <AttackTable attacks={stage.attacks} />
       <hr />
     </div>

@@ -153,6 +153,11 @@ simulateShelling = (fleet, enemyFleet, hougeki, subtype) ->
     attacks: list
     subtype: subtype
 
+simulateNight = (fleet, enemyFleet, hougeki, packet) ->
+  stage = simulateShelling(fleet, enemyFleet, hougeki, StageType.Night)
+  stage.api = _.pick(packet, 'api_touch_plane', 'api_flare_pos')
+  return stage
+
 simulateSupport = (enemyShip, support, flag) ->
   return unless support? and flag?
   if flag == 1
@@ -206,7 +211,7 @@ simulateLandBase = (enemyShip, kouku) ->
 getEngagementStage = (packet) ->
   return new Stage
     type: StageType.Engagement
-    api: _.pick(packet, 'api_search', 'api_formation', 'api_touch_plane', 'api_flare_pos')
+    api: _.pick(packet, 'api_search', 'api_formation')
 
 class Simulator2
   constructor: (fleet) ->
@@ -301,13 +306,10 @@ class Simulator2
         stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki3, StageType.Main)
 
     if path in ['/kcsapi/api_req_battle_midnight/battle', '/kcsapi/api_req_practice/midnight_battle', '/kcsapi/api_req_battle_midnight/sp_midnight', '/kcsapi/api_req_combined_battle/midnight_battle', '/kcsapi/api_req_combined_battle/sp_midnight']
-      # Engagement
-      stages.push getEngagementStage(packet)
-
       if @fleetType == 0
-        stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki, StageType.Night)
+        stages.push simulateNight(@mainFleet, @enemyFleet, packet.api_hougeki, packet)
       else
-        stages.push simulateShelling(@escortFleet, @enemyFleet, packet.api_hougeki, StageType.Night)
+        stages.push simulateNight(@escortFleet, @enemyFleet, packet.api_hougeki, packet)
 
     return stages
 
