@@ -6,8 +6,8 @@
     'map': [2, 3, 1] || null,  # Sortied map no, or `null`.
     'time': 1445252829039,     # Seconds since epoch time. Must be same as the first packet.
     'desc': 'Sortie',          # Description of the battle.
-    'fleet': [
-        {
+    'fleet': {
+        'main': {
             'api_*': *,  # Copy from api_port/port.api_ship[id]
             'poi_slot_ex': {
                 'api_*': *,  # Copy from api_get_member/slot_item[id]
@@ -19,8 +19,16 @@
                 # ... or `null`
             ]
         },
-        # ... or `null`
-    ],
+        'escort': {
+            # ...
+        },
+        'support': {
+            # ...
+        },
+        'LBAC': {
+            # Copy from api_get_member/base_air_corps
+        }
+    },
     'packet': [
         {
             'api_*': *,  # Copy from api_req_sortie/battle or ...

@@ -14,6 +14,9 @@ class PacketManager extends EventEmitter {
     this.normalSF     = null;
     this.bossSF       = null;
 
+    this.landBaseAirCorps   = null; // Prepare for fleet
+    this.api_base_air_corps = null; // Raw api data
+
     window.addEventListener('game.response', this.gameResponse.bind(this));
   }
 
@@ -48,7 +51,6 @@ class PacketManager extends EventEmitter {
         }
       }
     }
-
     if (req.path === '/kcsapi/api_req_mission/start') {
       let fleetId = postBody.api_deck_id;
       let mission = window.$missions[postBody.api_mission_id] || {};
@@ -62,20 +64,42 @@ class PacketManager extends EventEmitter {
       console.log('mission/start', postBody.api_deck_id, postBody.api_mission_id, missionName);
     }
 
+    // Land Base Air Corps
+    if (req.path === '/kcsapi/api_get_member/base_air_corps') {
+      this.api_base_air_corps = Object.clone(body);
+    }
+    if (req.path === '/kcsapi/api_req_air_corps/set_plane') {
+      let corps = this.api_base_air_corps[postBody.api_base_id - 1];
+      corps.api_distance = body.api_distance;
+      for (let newp of body.api_plane_info) {
+        for (let i = 0; i < corps.api_plane_info; i++) {
+          let oldp = corps.api_plane_info[i];
+          // Use `==` to cast type automatically
+          if (newp.api_squadron_id == oldp.api_squadron_id) {
+            corps.api_plane_info[i] = newp;
+          }
+        }
+      }
+    }
+    if (req.path === '/kcsapi/api_req_air_corps/set_action') {
+      let corps = this.api_base_air_corps[postBody.api_base_id - 1];
+      corps.api_action_kind = parseInt(postBody.api_action_kind);
+    }
+
 
     // Oh fuck. Someone sorties with No.3/4 fleet when having combined fleet.
     if (req.path === '/kcsapi/api_req_map/start') {
-      if (this.fleetType != 0 && parseInt(postBody.api_deck_id) != 1) {
+      if (this.fleetType !== 0 && parseInt(postBody.api_deck_id) !== 1) {
         this.fleetType = 0;
       }
     }
-
 
     // Reset all
     if (req.path === '/kcsapi/api_port/port') {
       this.battle = null;
       this.fleetType = body.api_combined_flag;
       this.supportFleet = null;
+      this.landBaseAirCorps = null;
       return;
     }
 
@@ -103,34 +127,39 @@ class PacketManager extends EventEmitter {
     if (this.battle) {
       // Battle Result
       if (req.path.includes('result')) {
-        this.battle = null
-      } else {
-        // Check for battle packet
-        // We assume that all battle packet include `api_deck_id`.
-        let fleetId = body.api_deck_id || body.api_dock_id;
-        let escortId = this.fleetType != 0 ? 2 : -1;  // HACK: -1 for empty fleet.
-        if (!fleetId) {
-          return;
-        }
-
-        let packet = Object.clone(body);
-        packet.poi_path = req.path;
-        packet.poi_time = timestamp;
-
-        if (!this.battle.time) {
-          this.battle.time = packet.poi_time;
-        }
-        if (!this.battle.fleet) {
-          this.battle.fleet = new Fleet({
-            type:    this.fleetType,
-            main:    this.getFleet(fleetId),
-            escort:  this.getFleet(escortId),
-            support: this.supportFleet,
-          });
-        }
-        this.battle.packet.push(packet);
-        this.dispatch();
+        this.battle = null;
+        return;
       }
+      if (req.path === '/kcsapi/api_req_map/start_air_base') {
+        this.landBaseAirCorps = this.getLandBaseAirCorps();
+        return;
+      }
+      // Check for battle packet
+      // We assume that all battle packet include `api_deck_id`.
+      let fleetId = body.api_deck_id || body.api_dock_id;
+      let escortId = (this.fleetType !== 0) ? 2 : -1;  // HACK: -1 for empty fleet.
+      if (!fleetId) {
+        return;
+      }
+
+      let packet = Object.clone(body);
+      packet.poi_path = req.path;
+      packet.poi_time = timestamp;
+
+      if (!this.battle.time) {
+        this.battle.time = packet.poi_time;
+      }
+      if (!this.battle.fleet) {
+        this.battle.fleet = new Fleet({
+          type:    this.fleetType,
+          main:    this.getFleet(fleetId),
+          escort:  this.getFleet(escortId),
+          support: this.supportFleet,
+          LBAC:    this.landBaseAirCorps,
+        });
+      }
+      this.battle.packet.push(packet);
+      this.dispatch();
       return;
     }
   }
@@ -174,6 +203,22 @@ class PacketManager extends EventEmitter {
       delete item.api_info;
     }
     return item;
+  }
+
+  getLandBaseAirCorps() {
+    let landBaseAirCorps = [];
+    for (let corps of this.api_base_air_corps) {
+      if (!(corps.api_action_kind === 1)) {
+        continue;
+      }
+      for (let plane of corps.api_plane_info) {
+        plane.poi_slot = this.getItem(plane.api_slotid);
+        // Clean up
+        delete plane.api_slotid;
+      }
+      landBaseAirCorps.push(corps);
+    }
+    return landBaseAirCorps;
   }
 
   // Utils
@@ -259,10 +304,11 @@ class PacketManager extends EventEmitter {
       escortFleet.push(es);
     }
     let fleet = new Fleet({
-      type: packet.poi_is_combined ? (packet.poi_is_carrier ? 1: 2) : 0,
-      main: mainFleet,
-      escort: escortFleet,
+      type:    packet.poi_is_combined ? (packet.poi_is_carrier ? 1: 2) : 0,
+      main:    mainFleet,
+      escort:  escortFleet,
       support: null,
+      LBAC:    null,
     });
     let packets = [packet];
     packet.poi_path = packet.poi_uri;

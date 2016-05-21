@@ -125,10 +125,11 @@ EngagementTable = React.createClass
       contact = api_touch_plane
       fleet = if simulator.fleetType == 0 then simulator.mainFleet else simulator.escortFleet
       enemy = simulator.enemyFleet
-      star = [fleet[api_flare_pos[0]] || -1, enemy[api_flare_pos[1]] || -1]
-      <div className={"engagement-row"}>
+      star = [fleet[api_flare_pos[0]]?.id, enemy[api_flare_pos[1]]?.id]
+      rows.push <div className={"engagement-row"} key={3}>
         <span>{if name = $slotitems[contact[0]]?.api_name then "#{__ 'Night Contact'}: #{__r name}"}</span>
         <span>{if name = $ships[star[0]]?.api_name then "#{__ 'Star Shell'}: #{__r name}"}</span>
+        <span />
         <span>{if name = $ships[star[1]]?.api_name then "#{__ 'Star Shell'}: #{__r name}"}</span>
         <span>{if name = $slotitems[contact[1]]?.api_name then "#{__ 'Night Contact'}: #{__r name}"}</span>
       </div>
@@ -344,7 +345,7 @@ StageTable = React.createClass
 
       when StageType.Aerial
         title = __('Aerial Combat')
-        additions.push <AerialTable simulator={simulator} kouku={stage.kouku} />
+        additions.push <AerialTable key={1} simulator={simulator} kouku={stage.kouku} />
 
       when StageType.Torpedo
         title = __('Torpedo Salvo')
@@ -363,7 +364,7 @@ StageTable = React.createClass
         switch stage.subtype
           when StageType.Aerial
             title = "#{__('Expedition Supporting Fire')} - #{__('Aerial Combat')}"
-            additions.push <AerialTable simulator={simulator} kouku={stage.kouku} />
+            additions.push <AerialTable key={1} simulator={simulator} kouku={stage.kouku} />
           when StageType.Torpedo
             title = "#{__('Expedition Supporting Fire')} - #{__('Torpedo Salvo')}"
           when StageType.Shelling
@@ -372,7 +373,7 @@ StageTable = React.createClass
       when StageType.LandBase
         id = stage.kouku?.api_base_id
         title = "#{__('Land Base Air Corps')} - No.#{id}"
-        additions.push <AerialTable simulator={simulator} kouku={stage.kouku} />
+        additions.push <AerialTable key={1} simulator={simulator} kouku={stage.kouku} />
 
     <div className={"stage-table"}>
       <div className={"stage-title"}>{title}</div>

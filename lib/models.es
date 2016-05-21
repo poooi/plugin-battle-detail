@@ -94,6 +94,7 @@ class Fleet {
     this.main     = opts.main;     // api_get_member/deck[].api_ship (Extended)
     this.escort   = opts.escort;   // ^
     this.support  = opts.support;  // ^
+    this.LBAC     = opts.LBAC;     // api_get_member/base_air_corps (Extended)
   }
 }
 

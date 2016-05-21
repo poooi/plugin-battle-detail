@@ -2,6 +2,6 @@
 
 A plugin that showing battle detail for Poi.
 
-## Poi Battle Pakcet Standard
+## Battle Pakcet Standard
 
-If you need to exchange battle packet with poi, please read [the document](./docs/packet-standard.md).
+If you want to exchange battle packet with poi, please read [the document](./docs/packet-standard-v2.0.md).

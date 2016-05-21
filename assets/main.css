@@ -65,9 +65,7 @@
   margin: 2px;
   text-align: center;
 }
-.battle-detail-area .engagement-row > span:nth-child(1),
-.battle-detail-area .engagement-row > span:nth-child(2),
-.battle-detail-area .engagement-row > span:nth-child(3) {
+.battle-detail-area .engagement-row > span {
   flex: 1;
 }
 
