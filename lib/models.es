@@ -5,23 +5,25 @@ class Stage {
     this.type    = opts.type;     // StageType
     this.attacks = opts.attacks;  // [Attack, ...]
 
+    this.subtype = opts.subtype;
     this.kouku   = opts.kouku;    // Raw API data `api_kouku`
-    this.isMain  = opts.isMain;   // Shelling: Is main fleet?
-    this.isNight = opts.isNight;  // Shelling: Is night combat?
-    this.subtype = opts.subtype;  // Support: Suuport type
-
     this.api     = opts.api;      // Engagement: Picked raw data
   }
 }
 
 const StageType = {
+  // Primary Type
   Aerial:   "Aerial",   // Aerial Combat
   Torpedo:  "Torpedo",  // Torpedo Salve
   Shelling: "Shelling", // Shelling
   Support:  "Support",  // Support Fleet (Expedition)
   LandBase: "LandBase", // Land Base Aerial Support
-
   Engagement: "Engagement", // [SP] Engagement Information
+
+  // Sub Type
+  Main: "Main",  // Shelling, main fleet
+  Escort: "Escort",  // Shelling, escort fleet
+  Night: "Night",  // Shelling, night combat
 }
 
 class Attack {

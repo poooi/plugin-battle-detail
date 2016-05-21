@@ -18,7 +18,8 @@ fs.ensureDir APPDATA, (error) ->
 
 class AppData
   constructor: ->
-    # timestamp list of packet saved in APPDATA
+    # List of packet saved in APPDATA
+    # Use timestamp as id
     # from oldest to newest
     @packetList = []
     @packetListLastRefresh = 0
@@ -31,28 +32,27 @@ class AppData
       @_refreshPacket()
     return @packetList
 
-  savePacket: (packet) ->
+  savePacket: (id, packet) ->
     setTimeout =>
-      @savePacketSync(packet)
+      @savePacketSync(id, packet)
 
-  savePacketSync: (packet) ->
-    return unless packet? and packet.poi_timestamp?
-    timestamp = packet.poi_timestamp
-    file = path.join(APPDATA, "#{timestamp}.json")
+  savePacketSync: (id, packet) ->
+    return unless id? and packet?
+    file = path.join(APPDATA, "#{id}.json")
     data = JSON.stringify(packet)
     fs.writeFileSync(file, data, FS_RW_OPTIONS)
-    @packetList.push(timestamp)
+    @packetList.push(id)
 
-  loadPacket: (timestamp, callback) ->
-    return unless timestamp? and callback?
+  loadPacket: (id, callback) ->
+    return unless id? and callback?
     setTimeout =>
-      packet = @loadPacketSync timestamp
+      packet = @loadPacketSync id
       callback(packet)
 
-  loadPacketSync: (timestamp) ->
+  loadPacketSync: (id) ->
+    return unless id?
     try
-      return unless timestamp?
-      file = path.join(APPDATA, "#{timestamp}.json")
+      file = path.join(APPDATA, "#{id}.json")
       data = fs.readFileSync(file, FS_RW_OPTIONS)
       packet = JSON.parse(data)
       return packet

@@ -65,6 +65,7 @@ MainArea = React.createClass
     if shouldAutoShow
       battle = newBattle
       battleNonce = updateNonce battleNonce
+    AppData.savePacket(PacketManager.getId(newBattle), newBattle)
     @setState {battle, battleNonce, battleList, battleListNonce}
 
   # API for IPC

@@ -349,24 +349,26 @@ StageTable = React.createClass
         title = __('Torpedo Salvo')
 
       when StageType.Shelling
-        if stage.isNight
-          title = "#{__('Shelling')} - #{__('Night Combat')}"
-        else if stage.isMain
-          title = "#{__('Shelling')} - #{__('Main Fleet')}"
-        else
-          title = "#{__('Shelling')} - #{__('Escort Fleet')}"
+        switch stage.subtype
+          when StageType.Main
+            title = "#{__('Shelling')} - #{__('Main Fleet')}"
+          when StageType.Escort
+            title = "#{__('Shelling')} - #{__('Escort Fleet')}"
+          when StageType.Night
+            title = "#{__('Shelling')} - #{__('Night Combat')}"
 
       when StageType.Support
-        if stage.subtype == StageType.Aerial
-          title = "#{__('Expedition Supporting Fire')} - #{__('Aerial Combat')}"
-        if stage.subtype == StageType.Torpedo
-          title = "#{__('Expedition Supporting Fire')} - #{__('Torpedo Salvo')}"
-        if stage.subtype == StageType.Shelling
-          title = "#{__('Expedition Supporting Fire')} - #{__('Shelling')}"
+        switch stage.subtype
+          when StageType.Aerial
+            title = "#{__('Expedition Supporting Fire')} - #{__('Aerial Combat')}"
+          when StageType.Torpedo
+            title = "#{__('Expedition Supporting Fire')} - #{__('Torpedo Salvo')}"
+          when StageType.Shelling
+            title = "#{__('Expedition Supporting Fire')} - #{__('Shelling')}"
 
       when StageType.LandBase
         id = stage.kouku?.api_base_id
-        title = "#{__('Land Base Air Corps')} - #{id}"
+        title = "#{__('Land Base Air Corps')} - No.#{id}"
 
     <div className={"stage-table"}>
       <div className={"stage-title"}>{title}</div>

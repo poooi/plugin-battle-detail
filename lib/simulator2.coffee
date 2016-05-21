@@ -111,8 +111,9 @@ simulateTorpedo = (fleet, enemyFleet, raigeki) ->
     type: StageType.Torpedo
     attacks: attacks
 
-simulateShelling = (fleet, enemyFleet, hougeki, isMain, isNight) ->
+simulateShelling = (fleet, enemyFleet, hougeki, subtype) ->
   return unless hougeki?
+  isNight = (subtype == StageType.Night)
   list = []
   for from, i in hougeki.api_at_list
     continue if from == -1
@@ -150,8 +151,7 @@ simulateShelling = (fleet, enemyFleet, hougeki, isMain, isNight) ->
   return new Stage
     type: StageType.Shelling
     attacks: list
-    isMain: isMain
-    isNight: isNight
+    subtype: subtype
 
 simulateSupport = (enemyShip, support, flag) ->
   return unless support? and flag?
@@ -267,9 +267,9 @@ class Simulator2
         # Opening Torpedo Salvo
         stages.push simulateTorpedo(@mainFleet, @enemyFleet, packet.api_opening_atack)
         # Shelling (Main), 1st
-        stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki1, true, false)
+        stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki1, StageType.Main)
         # Shelling (Main), 2st
-        stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki2, true, false)
+        stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki2, StageType.Main)
         # Closing Torpedo Salvo
         stages.push simulateTorpedo(@mainFleet, @enemyFleet, packet.api_raigeki)
 
@@ -278,11 +278,11 @@ class Simulator2
         # Opening Torpedo Salvo
         stages.push simulateTorpedo(@escortFleet, @enemyFleet, packet.api_opening_atack)
         # Shelling (Main), 1st
-        stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki1, true, false)
+        stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki1, StageType.Main)
         # Shelling (Main), 2st
-        stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki2, true, false)
+        stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki2, StageType.Main)
         # Shelling (Escort)
-        stages.push simulateShelling(@escortFleet, @enemyFleet, packet.api_hougeki3, false, false)
+        stages.push simulateShelling(@escortFleet, @enemyFleet, packet.api_hougeki3, StageType.Escort)
         # Closing Torpedo Salvo
         stages.push simulateTorpedo(@escortFleet, @enemyFleet, packet.api_raigeki)
 
@@ -292,22 +292,22 @@ class Simulator2
         # Opening Torpedo Salvo
         stages.push simulateTorpedo(@escortFleet, @enemyFleet, packet.api_opening_atack)
         # Shelling (Escort)
-        stages.push simulateShelling(@escortFleet, @enemyFleet, packet.api_hougeki1, false, false)
+        stages.push simulateShelling(@escortFleet, @enemyFleet, packet.api_hougeki1, StageType.Escort)
         # Closing Torpedo Salvo
         stages.push simulateTorpedo(@escortFleet, @enemyFleet, packet.api_raigeki)
         # Shelling (Main), 1st
-        stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki2, true, false)
+        stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki2, StageType.Main)
         # Shelling (Main), 2st
-        stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki3, true, false)
+        stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki3, StageType.Main)
 
     if path in ['/kcsapi/api_req_battle_midnight/battle', '/kcsapi/api_req_practice/midnight_battle', '/kcsapi/api_req_battle_midnight/sp_midnight', '/kcsapi/api_req_combined_battle/midnight_battle', '/kcsapi/api_req_combined_battle/sp_midnight']
       # Engagement
       stages.push getEngagementStage(packet)
 
       if @fleetType == 0
-        stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki, true, true)
+        stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki, StageType.Night)
       else
-        stages.push simulateShelling(@escortFleet, @enemyFleet, packet.api_hougeki, false, true)
+        stages.push simulateShelling(@escortFleet, @enemyFleet, packet.api_hougeki, StageType.Night)
 
     return stages
 
