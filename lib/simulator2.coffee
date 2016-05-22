@@ -211,7 +211,7 @@ simulateLandBase = (enemyShip, kouku) ->
 getEngagementStage = (packet) ->
   return new Stage
     type: StageType.Engagement
-    api: _.pick(packet, 'api_search', 'api_formation')
+    api: _.pick(packet, 'api_search', 'api_formation', 'api_boss_damaged')
 
 class Simulator2
   constructor: (fleet) ->

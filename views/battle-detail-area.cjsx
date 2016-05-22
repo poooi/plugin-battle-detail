@@ -104,7 +104,7 @@ simulate = (battle) ->
 EngagementTable = React.createClass
   render: ->
     {simulator, stage} = @props
-    {api_search, api_formation, api_touch_plane, api_flare_pos} = stage.api
+    {api_search, api_formation, api_boss_damaged, api_touch_plane, api_flare_pos} = stage.api
     rows = []
 
     if api_formation?
@@ -121,12 +121,19 @@ EngagementTable = React.createClass
         <span>{DetectionNameMap[api_search[1]]}</span>
       </div>
 
+    if api_boss_damaged?
+      rows.push <div className={"engagement-row"} key={3}>
+        <span></span>
+        <span>{"api_boss_damaged=#{api_boss_damaged}"}</span>
+        <span></span>
+      </div>
+
     if api_touch_plane? or api_flare_pos?
       contact = api_touch_plane
       fleet = if simulator.fleetType == 0 then simulator.mainFleet else simulator.escortFleet
       enemy = simulator.enemyFleet
-      star = [fleet[api_flare_pos[0]]?.id, enemy[api_flare_pos[1]]?.id]
-      rows.push <div className={"engagement-row"} key={3}>
+      star = [fleet[api_flare_pos[0] - 1]?.id, enemy[api_flare_pos[1] - 1]?.id]
+      rows.push <div className={"engagement-row"} key={11}>
         <span>{if name = $slotitems[contact[0]]?.api_name then "#{__ 'Night Contact'}: #{__r name}"}</span>
         <span>{if name = $ships[star[0]]?.api_name then "#{__ 'Star Shell'}: #{__r name}"}</span>
         <span />
