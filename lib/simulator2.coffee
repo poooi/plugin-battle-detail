@@ -254,7 +254,13 @@ class Simulator2
     stages = []
     path = packet.poi_path
 
-    if path in ['/kcsapi/api_req_sortie/battle', '/kcsapi/api_req_practice/battle', '/kcsapi/api_req_sortie/airbattle', '/kcsapi/api_req_combined_battle/battle', '/kcsapi/api_req_combined_battle/battle_water', '/kcsapi/api_req_combined_battle/airbattle']
+    if path in ['/kcsapi/api_req_sortie/battle',
+                '/kcsapi/api_req_practice/battle',
+                '/kcsapi/api_req_sortie/airbattle',
+                '/kcsapi/api_req_combined_battle/battle',
+                '/kcsapi/api_req_combined_battle/battle_water',
+                '/kcsapi/api_req_combined_battle/airbattle',
+                '/kcsapi/api_req_combined_battle/ld_airbattle',]
       # Engagement
       stages.push getEngagementStage(packet)
       # Land base air attack
@@ -305,7 +311,11 @@ class Simulator2
         # Shelling (Main), 2st
         stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki3, StageType.Main)
 
-    if path in ['/kcsapi/api_req_battle_midnight/battle', '/kcsapi/api_req_practice/midnight_battle', '/kcsapi/api_req_battle_midnight/sp_midnight', '/kcsapi/api_req_combined_battle/midnight_battle', '/kcsapi/api_req_combined_battle/sp_midnight']
+    if path in ['/kcsapi/api_req_battle_midnight/battle',
+                '/kcsapi/api_req_practice/midnight_battle',
+                '/kcsapi/api_req_battle_midnight/sp_midnight',
+                '/kcsapi/api_req_combined_battle/midnight_battle',
+                '/kcsapi/api_req_combined_battle/sp_midnight',]
       if @fleetType == 0
         stages.push simulateNight(@mainFleet, @enemyFleet, packet.api_hougeki, packet)
       else
