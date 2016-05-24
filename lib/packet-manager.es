@@ -72,7 +72,7 @@ class PacketManager extends EventEmitter {
       let corps = this.api_base_air_corps[postBody.api_base_id - 1];
       corps.api_distance = body.api_distance;
       for (let newp of body.api_plane_info) {
-        for (let i = 0; i < corps.api_plane_info; i++) {
+        for (let i = 0; i < corps.api_plane_info.length; i++) {
           let oldp = corps.api_plane_info[i];
           // Use `==` to cast type automatically
           if (newp.api_squadron_id == oldp.api_squadron_id) {
