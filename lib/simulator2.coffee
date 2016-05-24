@@ -103,10 +103,10 @@ simulateTorpedoAttack = (fleet, targetFleet, api_eydam, api_erai, api_ecl) ->
 simulateTorpedo = (fleet, enemyFleet, raigeki) ->
   return unless raigeki?
   attacks = []
-  if raigeki.api_erai?
-    attacks = attacks.concat(simulateTorpedoAttack(enemyFleet, fleet, raigeki.api_eydam, raigeki.api_erai, raigeki.api_ecl))
   if raigeki.api_frai?
     attacks = attacks.concat(simulateTorpedoAttack(fleet, enemyFleet, raigeki.api_fydam, raigeki.api_frai, raigeki.api_fcl))
+  if raigeki.api_erai?
+    attacks = attacks.concat(simulateTorpedoAttack(enemyFleet, fleet, raigeki.api_eydam, raigeki.api_erai, raigeki.api_ecl))
   return new Stage
     type: StageType.Torpedo
     attacks: attacks
