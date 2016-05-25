@@ -2,6 +2,7 @@
 
 {React, ReactBootstrap} = window
 {Panel, ProgressBar, OverlayTrigger, Overlay, Tooltip} = ReactBootstrap
+HpBar = require('./hp-bar')
 
 PacketManager = require('../lib/packet-manager')
 Simulator2 = require('../lib/simulator2')
@@ -241,29 +242,6 @@ AerialTable = React.createClass
     </div>
 
 
-HpBar = React.createClass
-  render: ->
-    {max, from, to, damage, item} = @props
-    to = 0 if to < 0
-    from = max if from > max
-
-    now = 100 * to / max
-    lost = 100 * (from - to) / max
-    labels = []
-    labels.push <span key={0}>{"#{to} / #{max}"}</span>
-    if damage > 0
-      labels.push <span key={10}>{" (-#{damage}"}</span>
-      if item in [42, 43]
-        labels.push <span key={20}>{", "}</span>
-        labels.push <img key={21} className="damage-control"></img>
-      labels.push <span key={11}>{")"}</span>
-    label = <span>{labels}</span>
-
-    <ProgressBar className="hp-bar">
-      <ProgressBar className="hp-bar" bsStyle={getHpStyle now} now={now} label={label} />
-      <ProgressBar className="hp-bar lost" now={lost} />
-    </ProgressBar>
-
 ShipInfo = React.createClass
   render: ->
     {ship} = @props
@@ -340,6 +318,7 @@ AttackTable = React.createClass
     }
     </div>
 
+
 StageTable = React.createClass
   render: ->
     {stage, simulator} = @props
@@ -390,7 +369,7 @@ StageTable = React.createClass
     </div>
 
 
-BattleDetailArea = React.createClass
+DetailArea = React.createClass
   shouldComponentUpdate: (nextProps, nextState) ->
     return false if @props.nonce == nextProps.nonce
     return true
@@ -403,7 +382,7 @@ BattleDetailArea = React.createClass
       for stage, i in stages
         tables.push <StageTable key={i} stage={stage} simulator={simulator} />
 
-    <div className="battle-detail-area">
+    <div className="detail-area">
       <Panel header={__ "Battle Detail"}>
       {
         if tables.length > 0
@@ -414,4 +393,4 @@ BattleDetailArea = React.createClass
       </Panel>
     </div>
 
-module.exports = BattleDetailArea
+module.exports = DetailArea

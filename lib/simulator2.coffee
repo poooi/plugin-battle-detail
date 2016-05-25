@@ -227,6 +227,7 @@ class Simulator2
       if rawShip?
         slots = rawShip.poi_slot.concat(rawShip.poi_slot_ex)
         fleet.push new Ship
+          raw:   rawShip
           id:    rawShip.api_ship_id
           owner: ShipOwner.Ours
           pos:   i + 1
@@ -241,15 +242,19 @@ class Simulator2
     return unless packet?
 
     if (not @enemyFleet?) and packet.api_ship_ke?
-      @enemyFleet = []
+      fleet = []
       for i in [1..6]
-        @enemyFleet.push new Ship
-          id:    packet.api_ship_ke[i]
-          owner: ShipOwner.Enemy
-          pos:   i
-          maxHP: packet.api_maxhps[i + 6]
-          nowHP: packet.api_nowhps[i + 6]
-          items: []  # We dont care
+        fleet.push if packet.api_ship_ke[i]?
+          new Ship
+            id:    packet.api_ship_ke[i]
+            owner: ShipOwner.Enemy
+            pos:   i
+            maxHP: packet.api_maxhps[i + 6]
+            nowHP: packet.api_nowhps[i + 6]
+            items: []  # We dont care
+        else
+          null
+      @enemyFleet = fleet
     
     stages = []
     path = packet.poi_path
