@@ -4,8 +4,6 @@
 {Panel, ProgressBar, OverlayTrigger, Overlay, Tooltip} = ReactBootstrap
 HpBar = require('./hp-bar')
 
-PacketManager = require('../lib/packet-manager')
-Simulator2 = require('../lib/simulator2')
 {Stage, StageType, Attack, AttackType, HitType, Ship, ShipOwner} = require('../lib/models')
 {Battle} = require('../lib/models')
 
@@ -70,36 +68,6 @@ getAttackTypeName = (type) ->
       __ "AT.Torpedo_Torpedo_CI"
     else
       "#{type}?"
-
-
-getHpStyle = (percent) ->
-  if percent <= 25
-    'danger'
-  else if percent <= 50
-    'warning'
-  else if percent <= 75
-    'info'
-  else
-    'success'
-
-
-simulate = (battle) ->
-  try
-    return {} unless battle instanceof Object
-
-    # Keep compatibility for version 1.0
-    if not battle.version?
-      battle = PacketManager.convertV1toV2(battle)
-
-    simulator = new Simulator2(battle.fleet)
-    stages = []
-    for packet in battle.packet
-      stages = stages.concat(simulator.simulate(packet))
-    return {simulator, stages}
-
-  catch error
-    console.error error
-    return {}
 
 
 EngagementTable = React.createClass
@@ -370,12 +338,8 @@ StageTable = React.createClass
 
 
 DetailArea = React.createClass
-  shouldComponentUpdate: (nextProps, nextState) ->
-    return false if @props.nonce == nextProps.nonce
-    return true
-
   render: ->
-    {simulator, stages} = simulate(@props.battle)
+    {simulator, stages} = @props
     tables = []
     if stages?
       # tables.push <BattleInfoTable key={-1} packet={packet} />

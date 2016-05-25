@@ -6,7 +6,7 @@ AppData = require '../lib/appdata'
 PacketManager = require '../lib/packet-manager'
 ModalArea = require './modal-area'
 OptionArea = require './option-area'
-DetailArea = require './detail-area'
+BattleArea = require './battle-area'
 
 # constant
 MAX_PACKET_NUMBER = 64
@@ -117,7 +117,7 @@ MainArea = React.createClass
         shouldAutoShow={@state.shouldAutoShow}
         updateBattle={@updateBattle}
         />
-      <DetailArea
+      <BattleArea
         battle={@state.battle}
         nonce={@state.battleNonce}
         />

@@ -68,6 +68,9 @@ class Ship {
     this.maxHP = opts.maxHP;
     this.nowHP = opts.nowHP;
     this.items = opts.items;
+
+    // Use by render (owner == ShipOwner.Ours)
+    this.raw   = opts.raw
   }
 }
 

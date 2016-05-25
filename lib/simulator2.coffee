@@ -227,13 +227,13 @@ class Simulator2
       if rawShip?
         slots = rawShip.poi_slot.concat(rawShip.poi_slot_ex)
         fleet.push new Ship
-          raw:   rawShip
           id:    rawShip.api_ship_id
           owner: ShipOwner.Ours
           pos:   i + 1
           maxHP: rawShip.api_maxhp
           nowHP: rawShip.api_nowhp
           items: slots.map (slot) -> slot?.api_slotitem_id
+          raw:   rawShip
       else
         fleet.push null
     return fleet

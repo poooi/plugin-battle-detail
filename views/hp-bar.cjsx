@@ -3,6 +3,17 @@
 {React, ReactBootstrap} = window
 {ProgressBar} = ReactBootstrap
 
+
+getHpStyle = (percent) ->
+  if percent <= 25
+    'danger'
+  else if percent <= 50
+    'warning'
+  else if percent <= 75
+    'info'
+  else
+    'success'
+
 HpBar = React.createClass
   render: ->
     {max, from, to, damage, item} = @props
