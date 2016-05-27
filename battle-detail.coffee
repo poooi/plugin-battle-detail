@@ -17,7 +17,7 @@ window.i18n.main.setLocale(window.language)
 window.__ = window.i18n.main.__.bind(window.i18n.main)
 
 try
-  require 'poi-plugin-translator'
+  require('poi-plugin-translator').pluginDidLoad()
 catch error
   console.log error
 window.i18n.resources ?= {}
