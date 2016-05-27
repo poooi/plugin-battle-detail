@@ -5,7 +5,6 @@
 HpBar = require('./hp-bar')
 
 {Stage, StageType, Attack, AttackType, HitType, Ship, ShipOwner} = require('../lib/models')
-{Battle} = require('../lib/models')
 
 
 # Formation name map from api_search[0-1] to name
@@ -97,7 +96,7 @@ EngagementTable = React.createClass
         <span></span>
       </div>
 
-    if api_touch_plane? or api_flare_pos?
+    if Array.prototype.concat(api_touch_plane, api_flare_pos).find((x) => x > 0)
       contact = api_touch_plane
       fleet = if simulator.fleetType == 0 then simulator.mainFleet else simulator.escortFleet
       enemy = simulator.enemyFleet
@@ -302,7 +301,10 @@ StageTable = React.createClass
         additions.push <AerialTable key={1} simulator={simulator} kouku={stage.kouku} />
 
       when StageType.Torpedo
-        title = __('Torpedo Salvo')
+        if stage.subtype == StageType.Opening
+          title = __('Opening Torpedo Salvo')
+        else
+          title = __('Torpedo Salvo')
 
       when StageType.Shelling
         switch stage.subtype

@@ -8,7 +8,7 @@ const HpBar = require('./hp-bar')
 class ShipTable extends React.Component {
   render() {
     const {ship} = this.props
-    if (ship == null) {
+    if (! (ship && ship.id > 0)) {
       return <div />
     }
     const raw = ship.raw || {}

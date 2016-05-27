@@ -100,7 +100,7 @@ simulateTorpedoAttack = (fleet, targetFleet, api_eydam, api_erai, api_ecl) ->
       useItem: item
   return list
 
-simulateTorpedo = (fleet, enemyFleet, raigeki) ->
+simulateTorpedo = (fleet, enemyFleet, raigeki, subtype) ->
   return unless raigeki?
   attacks = []
   if raigeki.api_frai?
@@ -110,6 +110,7 @@ simulateTorpedo = (fleet, enemyFleet, raigeki) ->
   return new Stage
     type: StageType.Torpedo
     attacks: attacks
+    subtype: subtype
 
 simulateShelling = (fleet, enemyFleet, hougeki, subtype) ->
   return unless hougeki?
@@ -281,7 +282,7 @@ class Simulator2
       # Normal Fleet
       if @fleetType == 0
         # Opening Torpedo Salvo
-        stages.push simulateTorpedo(@mainFleet, @enemyFleet, packet.api_opening_atack)
+        stages.push simulateTorpedo(@mainFleet, @enemyFleet, packet.api_opening_atack, StageType.Opening)
         # Shelling (Main), 1st
         stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki1, StageType.Main)
         # Shelling (Main), 2st
@@ -292,7 +293,7 @@ class Simulator2
       # Surface Task Force, 水上打撃部隊
       if @fleetType == 2
         # Opening Torpedo Salvo
-        stages.push simulateTorpedo(@escortFleet, @enemyFleet, packet.api_opening_atack)
+        stages.push simulateTorpedo(@escortFleet, @enemyFleet, packet.api_opening_atack, StageType.Opening)
         # Shelling (Main), 1st
         stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki1, StageType.Main)
         # Shelling (Main), 2st
@@ -306,7 +307,7 @@ class Simulator2
       # Transport Escort, 輸送護衛部隊
       if @fleetType == 1 or @fleetType == 3
         # Opening Torpedo Salvo
-        stages.push simulateTorpedo(@escortFleet, @enemyFleet, packet.api_opening_atack)
+        stages.push simulateTorpedo(@escortFleet, @enemyFleet, packet.api_opening_atack, StageType.Opening)
         # Shelling (Escort)
         stages.push simulateShelling(@escortFleet, @enemyFleet, packet.api_hougeki1, StageType.Escort)
         # Closing Torpedo Salvo

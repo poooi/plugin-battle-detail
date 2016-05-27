@@ -14,16 +14,17 @@ class Stage {
 const StageType = {
   // Primary Type
   Aerial:   "Aerial",   // Aerial Combat
-  Torpedo:  "Torpedo",  // Torpedo Salve
+  Torpedo:  "Torpedo",  // Torpedo Salvo
   Shelling: "Shelling", // Shelling
   Support:  "Support",  // Support Fleet (Expedition)
   LandBase: "LandBase", // Land Base Aerial Support
   Engagement: "Engagement", // [SP] Engagement Information
 
   // Sub Type
-  Main: "Main",  // Shelling, main fleet
-  Escort: "Escort",  // Shelling, escort fleet
-  Night: "Night",  // Shelling, night combat
+  Main:   "Main",   // Shelling, main fleet
+  Escort: "Escort", // Shelling, escort fleet
+  Night:  "Night",  // Shelling, night combat
+  Opening: "Opening", // Torpedo, opening torpedo salvo
 }
 
 class Attack {
