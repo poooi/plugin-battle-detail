@@ -39,7 +39,7 @@ class BattleArea extends React.Component {
     const {simulator, stages} = simulate(this.props.battle) || {}
 
     return (
-      <div className="battle-area">
+      <div id="battle-area">
         <OverviewArea simulator={simulator} stages={stages} />
         <DetailArea simulator={simulator} stages={stages} />
       </div>

@@ -348,7 +348,7 @@ DetailArea = React.createClass
       for stage, i in stages
         tables.push <StageTable key={i} stage={stage} simulator={simulator} />
 
-    <div className="detail-area">
+    <div id="detail-area">
       <Panel header={__ "Battle Detail"}>
       {
         if tables.length > 0

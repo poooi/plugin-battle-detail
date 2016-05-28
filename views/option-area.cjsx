@@ -72,7 +72,7 @@ OptionArea = React.createClass
         remote.getCurrentWebContents().downloadURL canvas.toDataURL()
 
   render: ->
-    <div className="option-area">
+    <div id="option-area">
       <Panel header={__ "Options"}>
         <Grid>
           <Row>

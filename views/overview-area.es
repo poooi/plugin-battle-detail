@@ -53,7 +53,7 @@ class OverviewArea extends React.Component {
     }
 
     return (
-      <div className="overview-area">
+      <div id="overview-area">
         <Panel header={__("Battle Overview")} collapsible defaultExpanded={false}
                onEnter={this.onSelect.bind(this, true)} onExit={this.onSelect.bind(this, false)}>
           <Grid>

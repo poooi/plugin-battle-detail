@@ -107,7 +107,7 @@ MainArea = React.createClass
         battleNonce: updateNonce @state.battleNonce
 
   render: ->
-    <div className="main">
+    <div id="main">
       <ModalArea />
       <OptionArea
         battle={@state.battle}

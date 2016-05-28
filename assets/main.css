@@ -3,7 +3,7 @@
   font-size: 14px;
 }
 
-.main {
+#main {
   padding: 10px;
 }
 .panel {
@@ -50,79 +50,79 @@
 }
 
 /* Battle Detail Area */
-.detail-area hr {
+#detail-area hr {
   margin: 7px 0 7px;
 }
 
 /* Battle Detail Area - Engagement Table */
-.detail-area .engagement-row {
+#detail-area .engagement-row {
   width: 100%;
   height: 30px;
   display: flex;
 }
-.detail-area .engagement-row > span {
+#detail-area .engagement-row > span {
   height: 20px;
   margin: 2px;
   text-align: center;
 }
-.detail-area .engagement-row > span {
+#detail-area .engagement-row > span {
   flex: 1;
 }
 
 /* Battle Detail Area - Stage Table */
-.detail-area .stage-title {
+#detail-area .stage-title {
   margin: 0 0 8px;
 }
 
 /* Battle Detail Area - Aerial Table */
-.detail-area .aerial-row {
+#detail-area .aerial-row {
   width: 100%;
   height: 30px;
   display: flex;
 }
-.detail-area .aerial-row > span {
+#detail-area .aerial-row > span {
   height: 20px;
   margin: 2px;
   text-align: center;
 }
-.detail-area .aerial-row .anti-air-tooltip div {
+#detail-area .aerial-row .anti-air-tooltip div {
   display: block;
   width: 100%;
 }
-.detail-area .aerial-row > span:nth-child(1),
-.detail-area .aerial-row > span:nth-child(5) {
+#detail-area .aerial-row > span:nth-child(1),
+#detail-area .aerial-row > span:nth-child(5) {
   flex: 6;
 }
-.detail-area .aerial-row > span:nth-child(2),
-.detail-area .aerial-row > span:nth-child(3),
-.detail-area .aerial-row > span:nth-child(4) {
+#detail-area .aerial-row > span:nth-child(2),
+#detail-area .aerial-row > span:nth-child(3),
+#detail-area .aerial-row > span:nth-child(4) {
   flex: 7;
 }
 
 /* Battle Detail Area - Attack Info */
-.detail-area .attack-row {
+#detail-area .attack-row {
   width: 100%;
   height: 30px;
   display: flex;
 }
-.detail-area .attack-row > span {
+#detail-area .attack-row > span {
   height: 20px;
   margin: 2px;
   text-align: center;
 }
-.detail-area .attack-row .position-indicator {
+#detail-area .attack-row .position-indicator {
   font-size: 0.8rem;
 }
-.detail-area .attack-row > span:nth-child(1),
-.detail-area .attack-row > span:nth-child(4),
-.detail-area .attack-row > span:nth-child(7) {
+#detail-area .attack-row > span:nth-child(1),
+#detail-area .attack-row > span:nth-child(4),
+#detail-area .attack-row > span:nth-child(7) {
   flex: 6;
 }
-.detail-area .attack-row > span:nth-child(2),
-.detail-area .attack-row > span:nth-child(6) {
+#detail-area .attack-row > span:nth-child(2),
+#detail-area .attack-row > span:nth-child(6) {
   flex: 7;
 }
-.detail-area .attack-row > span:nth-child(3),
-.detail-area .attack-row > span:nth-child(5) {
+#detail-area .attack-row > span:nth-child(3),
+#detail-area .attack-row > span:nth-child(5) {
   flex: 1;
 }

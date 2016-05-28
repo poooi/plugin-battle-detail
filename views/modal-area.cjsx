@@ -28,7 +28,7 @@ ModalArea = React.createClass
       isShow: false
 
   render: ->
-    <div className="modal-area">
+    <div id="modal-area">
       <Modal autoFocus={true} animation={true} show={@state.isShow} onHide={@close}>
         <Modal.Header>
           <Modal.Title>{@state.title}</Modal.Title>
