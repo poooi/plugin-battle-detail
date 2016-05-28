@@ -2,7 +2,7 @@
 
 {clipboard} = require 'electron'
 {React, ReactBootstrap} = window
-{Panel, Grid, Row, Col, Button, ButtonGroup, Input, Modal} = ReactBootstrap
+{Panel, Grid, Row, Col, Button, ButtonGroup, Input} = ReactBootstrap
 
 PacketManager = require('../lib/packet-manager')
 
@@ -22,8 +22,8 @@ OptionArea = React.createClass
       @props.shouldAutoShow == nextProps.shouldAutoShow
     )
 
-  onSelectPacket: ->
-    index = parseInt(@refs.selectedIndex.getValue())
+  onSelectPacket: (e) ->
+    index = parseInt(e.target.value)
     return if index is NaN
     if index < 0
       @props.updateBattle null
@@ -47,12 +47,10 @@ OptionArea = React.createClass
         title: __ "Copy Data"
         body: [<p>{__ "The battle packet was copied to clipboard."}</p>,
                <p>{__ "You can send your friends the packet to share the battle."}</p>]
-        footer: null
     else
       window.showModal
         title: __ "Copy Data"
         body: [<p>{__ "Failed to copy battle packet to clipboard!"}</p>]
-        footer: null
 
   onClickImport: ->
     try
@@ -64,7 +62,6 @@ OptionArea = React.createClass
         title: __ "Paste Data"
         body: [<p>{__ "A battle packet was pasted from clipboard."}</p>,
                <p>{__ "If you see no battle detail, you may have a broken packet."}</p>]
-        footer: null
 
   onClickSave: ->
     html2canvas $('#detail-area'),
@@ -72,36 +69,47 @@ OptionArea = React.createClass
         remote.getCurrentWebContents().downloadURL canvas.toDataURL()
 
   render: ->
+    # Selected Index
+    # -1: last battle (default)
+    # -2: battle not in @props.battleList
+    # 0+: @props.battleList[i]
+    selected = -1
+    options = []
+    selectedId = PacketManager.getId(@props.battle)
+    # Is @props.battle in @props.battleList ?
+    for battle, i in @props.battleList
+      if selectedId == PacketManager.getId(battle)
+        selected = i
+      options.push
+        index: i
+        text: getDescription(battle)
+    # If @props.battle exists but not in @props.battleList
+    if selectedId? and selected == -1
+      selected = -2
+      options.unshift
+        index: -2
+        text: "#{__("Selected")}: #{getDescription(@props.battle)}"
+    # Show last battle if automatically show last
+    if @props.shouldAutoShow
+      selected = -1
+    options.unshift
+      index: -1
+      text: __("Last Battle")
+    # <FormControl componentClass="select" value={selected} onChange={@onSelectPacket}>
+    #   {options.map(({index, text}) => <option key={index} value={index}>{text}</option> )}
+    # </FormControl>
+
     <div id="option-area">
       <Panel header={__ "Options"}>
         <Grid>
           <Row>
             <Col xs={6}>
-            {
-              options = []
-              selectedIndex = -1  # Default: last battle (-1)
-              selectedId = PacketManager.getId(@props.battle)
-
-              # Is @props.battle in @props.battleList ?
-              for battle, i in @props.battleList
-                if selectedId == PacketManager.getId(battle)
-                  selectedIndex = i
-                options.push <option key={i} value={i}>{getDescription battle}</option>
-
-              # If @props.battle exists but not in @props.battleList
-              if selectedIndex == -1 and selectedId?
-                selectedIndex = -2
-                options.unshift <option key={-2} value={-2}>{__ "Selected"}: {getDescription @props.battle}</option>
-
-              # Default option: last battle
-              if @props.shouldAutoShow
-                selectedIndex = -1
-              options.unshift <option key={-1} value={-1}>{__ "Last Battle"}</option>
-
-              <Input type="select" ref="selectedIndex" value={selectedIndex} onChange={@onSelectPacket}>
-                {options}
+              <Input type="select" value={selected} onChange={@onSelectPacket}>
+              {
+                for opt in options
+                  <option key={opt.index} value={opt.index}>{opt.text}</option>
+              }
               </Input>
-            }
             </Col>
             <Col xs={6}>
               <ButtonGroup>

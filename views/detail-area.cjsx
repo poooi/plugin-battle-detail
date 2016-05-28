@@ -1,7 +1,7 @@
 "use strict"
 
 {React, ReactBootstrap} = window
-{Panel, ProgressBar, OverlayTrigger, Overlay, Tooltip} = ReactBootstrap
+{Panel, ProgressBar, OverlayTrigger, Tooltip} = ReactBootstrap
 HpBar = require('./hp-bar')
 
 {Stage, StageType, Attack, AttackType, HitType, Ship, ShipOwner} = require('../lib/models')
