@@ -67,7 +67,7 @@ OptionArea = React.createClass
         footer: null
 
   onClickSave: ->
-    html2canvas $('.battle-detail-area'),
+    html2canvas $('#detail-area'),
       onrendered: (canvas) ->
         remote.getCurrentWebContents().downloadURL canvas.toDataURL()
 
