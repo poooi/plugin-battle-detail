@@ -10,6 +10,8 @@
   "Battle not found": "戦闘記録が見つからない",
   "Multiple battle found": "複数の戦闘記録発見",
 
+  "Battle Overview": "戦闘一覧",
+
   "Battle Detail": "戦闘詳細",
   "Detection": "索敵",
   "Detection Success": "索敵成功",
@@ -69,9 +71,9 @@
   "Paste Data": "データを贴り付けます",
   "A battle packet was pasted from clipboard.": "戦闘データのクリップボードからの読込みに成功しました",
   "If you see no battle detail, you may have a broken packet.": "戦闘の詳細が正しく表示されていない場合、破損したデータを使用した恐れがあります",
-  "Save as image": "画像として保存",
   "Last Battle": "最後の戦闘",
   "Selected": "選択し",
+  "Save as Image": "画像として保存",
 
   "": ""
 }

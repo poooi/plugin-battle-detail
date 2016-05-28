@@ -115,7 +115,7 @@ OptionArea = React.createClass
               <ButtonGroup>
                 <Button bsStyle='primary' style={width: '100%'} onClick={@onClickExport}>{__ "Copy Data"}</Button>
                 <Button bsStyle='primary' style={width: '100%'} onClick={@onClickImport}>{__ "Paste Data"}</Button>
-                <Button bsStyle='primary' style={width: '100%'} onClick={@onClickSave}>{__ "Save as image"}</Button>
+                <Button bsStyle='primary' style={width: '100%'} onClick={@onClickSave}>{__ "Save as Image"}</Button>
               </ButtonGroup>
             </Col>
           </Row>

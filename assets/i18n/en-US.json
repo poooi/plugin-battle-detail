@@ -10,6 +10,8 @@
   "Battle not found": "Battle not found",
   "Multiple battle found": "Multiple battle found",
 
+  "Battle Overview": "Battle Overview",
+
   "Battle Detail": "Battle Detail",
   "Detection": "Detection",
   "Detection Success": "Detection Success",
@@ -71,6 +73,7 @@
   "If you see no battle detail, you may have a broken packet.": "If you see no battle detail, you may have a broken packet.",
   "Last Battle": "Last Battle",
   "Selected": "Selected",
+  "Save as Image": "Save as Image",
 
   "": ""
 }

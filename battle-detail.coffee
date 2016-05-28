@@ -1,7 +1,6 @@
 require 'coffee-react/register'
 require "#{ROOT}/views/env"
 
-
 # i18n
 {join} = require 'path-extra'
 window.i18n = {}
@@ -16,6 +15,7 @@ window.i18n.main = new(require 'i18n-2')
 window.i18n.main.setLocale(window.language)
 window.__ = window.i18n.main.__.bind(window.i18n.main)
 
+# Translator
 try
   require('poi-plugin-translator').pluginDidLoad()
 catch error
@@ -26,9 +26,8 @@ window.i18n.resources.translate ?= (locale, str) -> return str
 window.i18n.resources.setLocale ?= (str) -> return
 window.__r = window.i18n.resources.__.bind(window.i18n.resources)
 
-
+# Render
 document.title = __ 'Battle Detail'
 $('#font-awesome')?.setAttribute 'href', require.resolve('font-awesome/css/font-awesome.css')
-
 
 require './views'

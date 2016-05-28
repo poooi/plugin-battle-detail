@@ -3,15 +3,22 @@
   font-size: 14px;
 }
 
-#main {
-  padding: 10px;
-}
 .panel {
   margin-bottom: 12px;
 }
-
+.panel .container {
+  width: 100%;
+  padding: 0;
+}
+.panel .row {
+  margin: 0;
+}
 .btn-group {
   display: flex;
+}
+
+#main {
+  padding: 10px;
 }
 
 /* HP Bar */
@@ -47,6 +54,19 @@
 /* Damage Info */
 .critical {
   color: #FFFF00;
+}
+
+/* Battle Overview Area - Ship Table */
+.ship-table .ship-info {
+  width: 100%;
+  height: 30px;
+  display: flex;
+}
+.ship-table .ship-info > span:nth-child(1) {
+  flex: 3;
+}
+.ship-table .ship-info > span:nth-child(2) {
+  flex: 4;
 }
 
 /* Battle Detail Area */

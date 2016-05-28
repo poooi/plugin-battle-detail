@@ -10,6 +10,8 @@
   "Battle not found": "无法找到该战斗",
   "Multiple battle found": "找到多场匹配的战斗",
 
+  "Battle Overview": "战斗概览",
+
   "Battle Detail": "战斗详情",
   "Detection": "索敌",
   "Detection Success": "索敌成功",
@@ -69,9 +71,9 @@
   "Paste Data": "粘贴数据",
   "A battle packet was pasted from clipboard.": "已从剪贴板读取战斗数据包。",
   "If you see no battle detail, you may have a broken packet.": "如果您未能看到战斗详情，您可能使用了损坏的数据包。",
-  "Save as image": "保存为图片",
   "Last Battle": "最后一场战斗",
   "Selected": "选择的",
+  "Save as Image": "保存为图片",
 
   "": ""
 }

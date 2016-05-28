@@ -1,7 +1,7 @@
 "use strict"
 
 const {React, ReactBootstrap} = window
-const {Panel, Grid, Col, Row} = ReactBootstrap
+const {Panel, Grid, Row, Col} = ReactBootstrap
 const HpBar = require('./hp-bar')
 
 
@@ -16,16 +16,22 @@ class ShipTable extends React.Component {
     const data = Object.assign(Object.clone(mst), raw)
 
     return (
-      <div>{__r(data.api_name)} - Lv {data.api_lv}</div>
+      <div className="ship-table">
+        <div className="ship-info">
+          <span>{__r(data.api_name)}</span>
+          <span><HpBar max={ship.maxHP} from={ship.nowHP} to={ship.nowHP} damage={null} item={null} /></span>
+        </div>
+      </div>
     )
   }
 }
 
+const DEFAULT_EXPANDED = true
 class OverviewArea extends React.Component {
   constructor() {
     super()
     this.state = {
-      isExpanded: false
+      isExpanded: DEFAULT_EXPANDED
     }
   }
 
@@ -54,22 +60,22 @@ class OverviewArea extends React.Component {
 
     return (
       <div id="overview-area">
-        <Panel header={__("Battle Overview")} collapsible defaultExpanded={false}
+        <Panel header={__("Battle Overview")} collapsible defaultExpanded={DEFAULT_EXPANDED}
                onEnter={this.onSelect.bind(this, true)} onExit={this.onSelect.bind(this, false)}>
           <Grid>
-            {
-              fleets.length > 0 ? (
-                fleets.map((fleet, i) =>
-                  <Col key={i} xs={xs}>
-                    {fleet.map((ship, j) =>
-                      <Row key={j}>
-                        <ShipTable ship={ship} />
-                      </Row>
-                    )}
-                  </Col>
-                )
-              ) : __("No battle")
-            }
+          {
+            fleets.length > 0 ? (
+              fleets.map((fleet, i) =>
+                <Col key={i} xs={xs}>
+                  {fleet.map((ship, j) =>
+                    <Row key={j}>
+                      <ShipTable ship={ship} />
+                    </Row>
+                  )}
+                </Col>
+              )
+            ) : __("No battle")
+          }
           </Grid>
         </Panel>
       </div>
