@@ -9,8 +9,8 @@ const OverviewArea = require('./overview-area')
 
 function simulate(battle) {
   try {
-    if (!(battle instanceof Object)) {
-      throw new Error('Invalid battle packet')
+    if (!battle) {
+      return null
     }
 
     // Keep compatibility for version 1.0
@@ -25,8 +25,8 @@ function simulate(battle) {
     return {simulator, stages}
 
   } catch (error) {
-    console.error(error)
-    return {}
+    console.error(error, battle)
+    return null
   }
 }
 
@@ -36,7 +36,7 @@ class BattleArea extends React.Component {
   }
 
   render() {
-    const {simulator, stages} = simulate(this.props.battle)
+    const {simulator, stages} = simulate(this.props.battle) || {}
 
     return (
       <div className="battle-area">

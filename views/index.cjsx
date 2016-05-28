@@ -54,7 +54,7 @@ MainArea = React.createClass
 
   handlePacket: (newTime, newBattle) ->
     {battle, battleNonce, battleList, battleListNonce, shouldAutoShow} = @state
-    if battleList[0].time == newTime
+    if battleList[0]?.time == newTime
       battleList[0] = newBattle
       battleListNonce = updateNonce battleListNonce
     else
