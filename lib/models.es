@@ -65,12 +65,13 @@ class Ship {
     this.owner = opts.owner;     // ShipOwner
     this.pos   = opts.pos;  // int, Position in fleet
 
-    // Use by simulator2
-    this.maxHP = opts.maxHP;
-    this.nowHP = opts.nowHP;
-    this.items = opts.items;
+    // Use by simulator2 (and some views)
+    this.maxHP  = opts.maxHP;
+    this.nowHP  = opts.nowHP;
+    this.initHP = opts.nowHP;
+    this.items  = opts.items;
 
-    // Use by render (owner == ShipOwner.Ours)
+    // Use by views (owner == ShipOwner.Ours)
     this.raw   = opts.raw
   }
 }

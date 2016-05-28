@@ -19,14 +19,14 @@ class ShipTable extends React.Component {
       <div className="ship-table">
         <div className="ship-info">
           <span>{__r(data.api_name)}</span>
-          <span><HpBar max={ship.maxHP} from={ship.nowHP} to={ship.nowHP} damage={null} item={null} /></span>
+          <span><HpBar max={ship.maxHP} from={ship.initHP} to={ship.nowHP} damage={ship.initHP - ship.nowHP} item={null} /></span>
         </div>
       </div>
     )
   }
 }
 
-const DEFAULT_EXPANDED = true
+const DEFAULT_EXPANDED = false
 class OverviewArea extends React.Component {
   constructor() {
     super()
