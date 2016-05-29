@@ -1,6 +1,5 @@
 *, html, body, h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
   font-family: "Ubuntu", "Helvetica Neue", "Helvetica", "Arial", "Heiti SC", "WenQuanYi Micro Hei", "Microsoft YaHei", "Droid Sans Fallback", sans-serif;
-  font-size: 14px;
 }
 
 .panel {
@@ -54,6 +53,11 @@
 /* Damage Info */
 .critical {
   color: #FFFF00;
+}
+
+/* Option Area */
+#option-area .tip {
+  font-size: 0.8em;
 }
 
 /* Battle Overview Area - Ship Table */
@@ -131,7 +135,7 @@
   text-align: center;
 }
 #detail-area .attack-row .position-indicator {
-  font-size: 0.8rem;
+  font-size: 0.8em;
 }
 #detail-area .attack-row > span:nth-child(1),
 #detail-area .attack-row > span:nth-child(4),

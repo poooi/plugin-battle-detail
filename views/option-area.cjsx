@@ -119,6 +119,14 @@ OptionArea = React.createClass
               </ButtonGroup>
             </Col>
           </Row>
+          <Row>
+            <Col xs={12} className='tip'>
+              <span>{__('Tip') + ': '}</span>
+              <span>{__('Tip.Akashic1.Part1')}</span>
+              <span><FontAwesome name='info-circle' /></span>
+              <span>{__('Tip.Akashic1.Part2')}</span>
+            </Col>
+          </Row>
         </Grid>
       </Panel>
     </div>
