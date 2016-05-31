@@ -5,6 +5,9 @@
 .panel {
   margin-bottom: 12px;
 }
+.panel .panel-title {
+  font-size: inherit;
+}
 .panel .container {
   width: 100%;
   padding: 0;
