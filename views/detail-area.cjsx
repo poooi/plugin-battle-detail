@@ -319,12 +319,12 @@ StageTable = React.createClass
       when StageType.Support
         switch stage.subtype
           when StageType.Aerial
-            title = "#{__('Expedition Supporting Fire')} - #{__('Aerial Combat')}"
+            title = "#{__('Expedition Supporting Fire')} - #{__('Aerial Support')}"
             additions.push <AerialTable key={1} simulator={simulator} kouku={stage.kouku} />
-          when StageType.Torpedo
-            title = "#{__('Expedition Supporting Fire')} - #{__('Torpedo Salvo')}"
           when StageType.Shelling
-            title = "#{__('Expedition Supporting Fire')} - #{__('Shelling')}"
+            title = "#{__('Expedition Supporting Fire')} - #{__('Shelling Support')}"
+          when StageType.Torpedo
+            title = "#{__('Expedition Supporting Fire')} - #{__('Torpedo Support')}"
 
       when StageType.LandBase
         id = stage.kouku?.api_base_id
