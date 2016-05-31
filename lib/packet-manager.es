@@ -31,9 +31,9 @@ class PacketManager extends EventEmitter {
   }
 
   gameResponse(e) {
-    let req = e.detail;
-    let {body, postBody} = req;
-    let timestamp = Date.now();
+    const req = e.detail;
+    const {body, postBody} = req;
+    const timestamp = Date.now();
 
     // Support fleet
     // NOTICE: We didn't check support fleet map.

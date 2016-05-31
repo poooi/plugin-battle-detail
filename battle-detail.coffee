@@ -1,21 +1,19 @@
-require 'coffee-react/register'
 require "#{ROOT}/views/env"
+path = require 'path-extra'
 
 # i18n
-{join} = require 'path-extra'
 window.i18n = {}
 
 window.i18n.main = new(require 'i18n-2')
   locales: ['en-US', 'ja-JP', 'zh-CN', 'zh-TW']
   defaultLocale: 'zh-CN'
-  directory: join(__dirname, 'assets', 'i18n')
+  directory: path.join(__dirname, 'assets', 'i18n')
   extension: '.json'
   updateFiles: false
   devMode: false
 window.i18n.main.setLocale(window.language)
 window.__ = window.i18n.main.__.bind(window.i18n.main)
 
-# Translator
 try
   require('poi-plugin-translator').pluginDidLoad()
 catch error
@@ -29,5 +27,9 @@ window.__r = window.i18n.resources.__.bind(window.i18n.resources)
 # Render
 document.title = __ 'Battle Detail'
 $('#font-awesome')?.setAttribute 'href', require.resolve('font-awesome/css/font-awesome.css')
-
 require './views'
+
+# Debug
+#w = remote.getCurrentWindow()
+#w.show()
+#w.openDevTools({detach: true})
