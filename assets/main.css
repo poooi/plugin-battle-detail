@@ -2,6 +2,13 @@
   font-family: "Ubuntu", "Helvetica Neue", "Helvetica", "Arial", "Heiti SC", "WenQuanYi Micro Hei", "Microsoft YaHei", "Droid Sans Fallback", sans-serif;
 }
 
+img {
+  height: 22px;
+  overflow: hidden;
+}
+.btn-group {
+  display: flex;
+}
 .panel {
   margin-bottom: 12px;
 }
@@ -15,8 +22,19 @@
 .panel .row {
   margin: 0;
 }
-.btn-group {
-  display: flex;
+.panel .col {
+  padding: 0;
+}
+.progress {
+  border-radius: 0px;
+}
+.progress-bar {
+  transition: none;
+}
+.progress-bar > span {
+  position: absolute;
+  width: 100%;
+  display: block;
 }
 
 #main {
@@ -34,9 +52,6 @@
 }
 
 /* HP Bar */
-.progress {
-  border-radius: 0px;
-}
 .hp-bar.progress {
   margin: 0;
   height: 22px;
@@ -45,40 +60,74 @@
   /* background-color: rgba(0, 0, 0, 0.2); */
 }
 .hp-bar.progress-bar {
-  font-size: 13px;
+  font-size: 100%;
   line-height: 22px;
-  transition: none;
 }
 .hp-bar.lost.progress-bar {
   background-color: rgba(255, 255, 255, 0.06);
 }
-.hp-bar.progress-bar > span {
-  position: absolute;
-  width: 100%;
-  display: block;
-}
 .hp-bar .damage-control {
   content: url("./images/damage-control.png");
-  height: 18px;
-  overflow: hidden;
 }
 
 /* Option Area */
 #option-area .tip {
-  font-size: 0.8em;
+  font-size: 80%;
 }
 
 /* Fleet View */
-.fleet-title {
-  margin: 9px 0 8px;
+.fleet-view .col-xs-5,
+.fleet-view .col-xs-6,
+.fleet-view .col-xs-7 {
+  padding: 0;
+}
+.fleet-view img {
+  margin-top: -4px;
 }
 /* Ship View */
-.ship-view {
-  margin: 8px;
+.ship-view.container {
+  padding: 10px;
 }
 .ship-view .row {
-  height: inherit;
-  display: inherit;
+  height: 22px;
+}
+.ship-view .ship-name {
+  font-size: 120%;
+  height: 24px;
+}
+.ship-view .ship-fa {
+  font-size: 90%;
+}
+.ship-view .ship-fa img {
+  height: 16px;
+}
+/* Item View */
+.item-view {
+  overflow: hidden;
+  display: flex;
+}
+.item-view.row {
+  height: 22px;
+}
+.item-view .item-info {
+  flex: 1;
+}
+.item-view .item-attr {
+  display: table;
+  width: 40px;
+}
+.item-view .level {
+  display: inline-block;
+  width: 28px;
+  color: #45A9A5;
+  font-weight: bold;
+}
+.item-view .alv {
+  display: inline-block;
+  width: 12px;
+}
+.item-view .alv img {
+  height: 16px;
 }
 
 /* Stage Table */
@@ -111,7 +160,7 @@
   color: #FFFF00;
 }
 .position-indicator {
-  font-size: 0.8em;
+  font-size: 80%;
 }
 .attack-row > span:nth-child(1),
 .attack-row > span:nth-child(4),
