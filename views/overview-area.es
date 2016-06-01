@@ -6,7 +6,7 @@ const {SlotitemIcon} = require(`${ROOT}/views/components/etc/icon`)
 const {FABar} = require('./bar')
 const HpBar = require('./hp-bar')
 
-const DEFAULT_EXPANDED = true
+const DEFAULT_EXPANDED = false
 class OverviewArea extends React.Component {
   constructor() {
     super()
