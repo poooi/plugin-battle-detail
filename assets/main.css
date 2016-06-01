@@ -22,6 +22,16 @@
 #main {
   padding: 10px;
 }
+#detail-area .row {
+  width: 100%;
+  height: 30px;
+  display: flex;
+}
+#detail-area .panel .row > span {
+  height: 20px;
+  margin: 2px;
+  text-align: center;
+}
 
 /* HP Bar */
 .progress {
@@ -53,103 +63,66 @@
   overflow: hidden;
 }
 
-/* Damage Info */
-.critical {
-  color: #FFFF00;
-}
-
 /* Option Area */
 #option-area .tip {
   font-size: 0.8em;
 }
 
-/* Battle Overview Area - Ship Table */
-.ship-table .ship-info {
-  width: 100%;
-  height: 30px;
-  display: flex;
+/* Fleet View */
+.fleet-title {
+  margin: 9px 0 8px;
 }
-.ship-table .ship-info > span:nth-child(1) {
-  flex: 3;
+/* Ship View */
+.ship-view {
+  margin: 8px;
 }
-.ship-table .ship-info > span:nth-child(2) {
-  flex: 4;
-}
-
-/* Battle Detail Area */
-#detail-area hr {
-  margin: 7px 0 7px;
+.ship-view .row {
+  height: inherit;
+  display: inherit;
 }
 
-/* Battle Detail Area - Engagement Table */
-#detail-area .engagement-row {
-  width: 100%;
-  height: 30px;
-  display: flex;
-}
-#detail-area .engagement-row > span {
-  height: 20px;
-  margin: 2px;
-  text-align: center;
-}
-#detail-area .engagement-row > span {
-  flex: 1;
-}
-
-/* Battle Detail Area - Stage Table */
-#detail-area .stage-title {
+/* Stage Table */
+.stage-title {
   margin: 0 0 8px;
 }
-
-/* Battle Detail Area - Aerial Table */
-#detail-area .aerial-row {
-  width: 100%;
-  height: 30px;
-  display: flex;
+.stage-table hr {
+  margin: 7px 0 7px;
 }
-#detail-area .aerial-row > span {
-  height: 20px;
-  margin: 2px;
-  text-align: center;
+/* Engagement Table */
+.engagement-row > span {
+  flex: 1;
 }
-#detail-area .aerial-row .anti-air-tooltip div {
+/* Aerial Table */
+.aerial-row .anti-air-tooltip div {
   display: block;
   width: 100%;
 }
-#detail-area .aerial-row > span:nth-child(1),
-#detail-area .aerial-row > span:nth-child(5) {
+.aerial-row > span:nth-child(1),
+.aerial-row > span:nth-child(5) {
   flex: 6;
 }
-#detail-area .aerial-row > span:nth-child(2),
-#detail-area .aerial-row > span:nth-child(3),
-#detail-area .aerial-row > span:nth-child(4) {
+.aerial-row > span:nth-child(2),
+.aerial-row > span:nth-child(3),
+.aerial-row > span:nth-child(4) {
   flex: 7;
 }
-
-/* Battle Detail Area - Attack Info */
-#detail-area .attack-row {
-  width: 100%;
-  height: 30px;
-  display: flex;
+/* Attack Info */
+.critical {
+  color: #FFFF00;
 }
-#detail-area .attack-row > span {
-  height: 20px;
-  margin: 2px;
-  text-align: center;
-}
-#detail-area .attack-row .position-indicator {
+.position-indicator {
   font-size: 0.8em;
 }
-#detail-area .attack-row > span:nth-child(1),
-#detail-area .attack-row > span:nth-child(4),
-#detail-area .attack-row > span:nth-child(7) {
+.attack-row > span:nth-child(1),
+.attack-row > span:nth-child(4),
+.attack-row > span:nth-child(7) {
   flex: 6;
 }
-#detail-area .attack-row > span:nth-child(2),
-#detail-area .attack-row > span:nth-child(6) {
+.attack-row > span:nth-child(2),
+.attack-row > span:nth-child(6) {
   flex: 7;
 }
-#detail-area .attack-row > span:nth-child(3),
-#detail-area .attack-row > span:nth-child(5) {
+.attack-row > span:nth-child(3),
+.attack-row > span:nth-child(5) {
   flex: 1;
 }

@@ -1,7 +1,7 @@
 "use strict"
 
 {React, ReactBootstrap} = window
-{Panel, ProgressBar, OverlayTrigger, Tooltip} = ReactBootstrap
+{Panel, ProgressBar, OverlayTrigger, Tooltip, Row} = ReactBootstrap
 HpBar = require('./hp-bar')
 
 {Stage, StageType, Attack, AttackType, HitType, Ship, ShipOwner} = require('../lib/models')
@@ -76,38 +76,38 @@ EngagementTable = React.createClass
     rows = []
 
     if api_formation?
-      rows.push <div className={"engagement-row"} key={1}>
+      rows.push <Row className={"engagement-row"} key={1}>
         <span>{FormationNameMap[api_formation[0]]}</span>
         <span>{EngagementNameMap[api_formation[2]]}</span>
         <span>{FormationNameMap[api_formation[1]]}</span>
-      </div>
+      </Row>
 
     if api_search?
-      rows.push <div className={"engagement-row"} key={2}>
+      rows.push <Row className={"engagement-row"} key={2}>
         <span>{DetectionNameMap[api_search[0]]}</span>
         <span></span>
         <span>{DetectionNameMap[api_search[1]]}</span>
-      </div>
+      </Row>
 
     if api_boss_damaged?
-      rows.push <div className={"engagement-row"} key={3}>
+      rows.push <Row className={"engagement-row"} key={3}>
         <span></span>
         <span>{"api_boss_damaged=#{api_boss_damaged}"}</span>
         <span></span>
-      </div>
+      </Row>
 
     if Array.prototype.concat(api_touch_plane, api_flare_pos).find((x) => x > 0)
       contact = api_touch_plane
       fleet = if simulator.fleetType == 0 then simulator.mainFleet else simulator.escortFleet
       enemy = simulator.enemyFleet
       star = [fleet[api_flare_pos[0] - 1]?.id, enemy[api_flare_pos[1] - 1]?.id]
-      rows.push <div className={"engagement-row"} key={11}>
+      rows.push <Row className={"engagement-row"} key={11}>
         <span>{if name = $slotitems[contact[0]]?.api_name then "#{__ 'Night Contact'}: #{__r name}"}</span>
         <span>{if name = $ships[star[0]]?.api_name then "#{__ 'Star Shell'}: #{__r name}"}</span>
         <span />
         <span>{if name = $ships[star[1]]?.api_name then "#{__ 'Star Shell'}: #{__r name}"}</span>
         <span>{if name = $slotitems[contact[1]]?.api_name then "#{__ 'Night Contact'}: #{__r name}"}</span>
-      </div>
+      </Row>
 
     <div className={"engagement-table"}>
     {
@@ -170,7 +170,7 @@ AerialTable = React.createClass
       # Stage 1
       if kouku.api_stage1?
         contact = kouku.api_stage1.api_touch_plane || [-1, -1]
-        <div className={"aerial-row"}>
+        <Row className={"aerial-row"}>
           <span>
             <PlaneCount count={kouku.api_stage1.api_f_count}
                         lost={kouku.api_stage1.api_f_lostcount} />
@@ -182,12 +182,12 @@ AerialTable = React.createClass
             <PlaneCount count={kouku.api_stage1.api_e_count}
                         lost={kouku.api_stage1.api_e_lostcount} />
           </span>
-        </div>
+        </Row>
     }
     {
       # Stage 2
       if kouku.api_stage2?
-        <div className={"aerial-row"}>
+        <Row className={"aerial-row"}>
           <span>
             <PlaneCount count={kouku.api_stage2.api_f_count}
                         lost={kouku.api_stage2.api_f_lostcount} />
@@ -204,7 +204,7 @@ AerialTable = React.createClass
             <PlaneCount count={kouku.api_stage2.api_e_count}
                         lost={kouku.api_stage2.api_e_lostcount} />
           </span>
-        </div>
+        </Row>
     }
     </div>
 
@@ -254,7 +254,7 @@ AttackRow = React.createClass
     totalDamage = damage.reduce ((p, x) -> p + x)
     # Is enemy attack?
     if toShip.owner is ShipOwner.Ours
-      <div className={"attack-row"}>
+      <Row className={"attack-row"}>
         <span><HpBar max={maxHP} from={fromHP} to={toHP} damage={totalDamage} item={useItem} /></span>
         <span><ShipInfo ship={toShip} /></span>
         <span><FontAwesome name='long-arrow-left' /></span>
@@ -262,9 +262,9 @@ AttackRow = React.createClass
         <span></span>
         <span><ShipInfo ship={fromShip} /></span>
         <span></span>
-      </div>
+      </Row>
     else
-      <div className={"attack-row"}>
+      <Row className={"attack-row"}>
         <span></span>
         <span><ShipInfo ship={fromShip} /></span>
         <span></span>
@@ -272,7 +272,7 @@ AttackRow = React.createClass
         <span><FontAwesome name='long-arrow-right' /></span>
         <span><ShipInfo ship={toShip} /></span>
         <span><HpBar max={maxHP} from={fromHP} to={toHP} damage={totalDamage} item={useItem} /></span>
-      </div>
+      </Row>
 
 AttackTable = React.createClass
   render: ->

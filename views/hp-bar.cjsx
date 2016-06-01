@@ -3,7 +3,6 @@
 {React, ReactBootstrap} = window
 {ProgressBar} = ReactBootstrap
 
-
 getHpStyle = (percent) ->
   if percent <= 25
     'danger'

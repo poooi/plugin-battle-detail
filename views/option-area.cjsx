@@ -64,7 +64,7 @@ OptionArea = React.createClass
                <p>{__ "If you see no battle detail, you may have a broken packet."}</p>]
 
   onClickSave: ->
-    html2canvas $('#detail-area'),
+    html2canvas $('#battle-area'),
       onrendered: (canvas) ->
         remote.getCurrentWebContents().downloadURL canvas.toDataURL()
 

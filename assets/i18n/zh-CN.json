@@ -11,6 +11,11 @@
   "Multiple battle found": "找到多场匹配的战斗",
 
   "Battle Overview": "战斗概览",
+  "Main Fleet": "主力舰队",
+  "Escort Fleet": "伴随舰队",
+  "Support Fleet": "支援舰队",
+  "Enemy Fleet": "敌军舰队",
+  "Land Base Air Corps": "基地航空队",
 
   "Battle Detail": "战斗详情",
   "Detection": "索敌",
@@ -54,13 +59,10 @@
   "Aerial Support": "航空支援",
   "Shelling Support": "炮击支援",
   "Torpedo Support": "雷击支援",
-  "Opening Torpedo Salvo": "开幕雷击",
   "Shelling": "炮击战",
   "Torpedo Salvo": "雷击战",
+  "Opening Torpedo Salvo": "开幕雷击",
   "Night Combat": "夜战",
-  "Land Base Air Corps": "基地航空队",
-  "Main Fleet": "主力舰队",
-  "Escort Fleet": "伴随舰队",
   "No battle": "无战斗",
 
   "Modal": "模态框",

@@ -216,10 +216,11 @@ getEngagementStage = (packet) ->
 
 class Simulator2
   constructor: (fleet) ->
-    @fleetType   = fleet.type
-    @mainFleet   = @initFleet(fleet.main)
-    @escortFleet = @initFleet(fleet.escort)
-    @enemyFleet  = null;  # Assign at first packet
+    @fleetType    = fleet.type
+    @mainFleet    = @initFleet(fleet.main)
+    @escortFleet  = @initFleet(fleet.escort)
+    @supportFleet = @initFleet(fleet.support)
+    @enemyFleet   = null;  # Assign at first packet
 
   initFleet: (rawFleet) ->
     return unless rawFleet?

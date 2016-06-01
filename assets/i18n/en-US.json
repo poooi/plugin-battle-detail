@@ -11,6 +11,11 @@
   "Multiple battle found": "Multiple battle found",
 
   "Battle Overview": "Battle Overview",
+  "Main Fleet": "Main Fleet",
+  "Escort Fleet": "Escort Fleet",
+  "Support Fleet": "Support Fleet",
+  "Enemy Fleet": "Enemy Fleet",
+  "Land Base Air Corps": "Land Base Air Corps",
 
   "Battle Detail": "Battle Detail",
   "Detection": "Detection",
@@ -54,13 +59,10 @@
   "Aerial Support": "Aerial Support",
   "Shelling Support": "Shelling Support",
   "Torpedo Support": "Torpedo Support",
-  "Opening Torpedo Salvo": "Opening Torpedo Salvo",
   "Shelling": "Shelling",
   "Torpedo Salvo": "Torpedo Salvo",
+  "Opening Torpedo Salvo": "Opening Torpedo Salvo",
   "Night Combat": "Night Combat",
-  "Land Base Air Corps": "Land Base Air Corps",
-  "Main Fleet": "Main Fleet",
-  "Escort Fleet": "Escort Fleet",
   "No battle": "No battle",
 
   "Modal": "Modal",
