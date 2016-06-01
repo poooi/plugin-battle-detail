@@ -3,7 +3,7 @@
 }
 
 img {
-  height: 22px;
+  height: 26px;
   overflow: hidden;
 }
 .btn-group {
@@ -76,6 +76,9 @@ img {
 }
 
 /* Fleet View */
+.fleet-title {
+  font-size: 110%;
+}
 .fleet-view .col-xs-5,
 .fleet-view .col-xs-6,
 .fleet-view .col-xs-7 {
@@ -92,9 +95,9 @@ img {
   height: 22px;
 }
 .ship-view .ship-name {
-  font-size: 120%;
-  height: 24px;
+  font-size: 110%;
 }
+.ship-view .ship-info,
 .ship-view .ship-fa {
   font-size: 90%;
 }
@@ -129,9 +132,17 @@ img {
 .item-view .alv img {
   height: 16px;
 }
+.item-view .number {
+  background-color: rgba(33, 33, 33, 0.701961);
+  position: absolute;
+  border-radius: 9px;
+  text-align: center;
+  font-size: 80%;
+}
 
 /* Stage Table */
 .stage-title {
+  font-size: 110%;
   margin: 0 0 8px;
 }
 .stage-table hr {

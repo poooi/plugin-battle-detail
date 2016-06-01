@@ -2,9 +2,9 @@
 
 const {React, ReactBootstrap} = window
 const {Panel, Grid, Row, Col, ProgressBar} = ReactBootstrap
+const {SlotitemIcon} = require(`${ROOT}/views/components/etc/icon`)
 const {FABar} = require('./bar')
 const HpBar = require('./hp-bar')
-const {SlotitemIcon} = require(`${ROOT}/views/components/etc/icon`)
 
 const DEFAULT_EXPANDED = true
 class OverviewArea extends React.Component {
@@ -95,8 +95,8 @@ class ShipView extends React.Component {
             <span className="position-indicator">{`(${ship.pos})`}</span>
           </Row>
           <Row className='ship-info'>
-            <Col xs={6}>{`Lv.${data.api_lv || '?'}`}</Col>
-            <Col xs={6}>{`Cond.${data.api_cond || '?'}`}</Col>
+            <Col xs={6}>{`Lv.${data.api_lv || '-'}`}</Col>
+            <Col xs={6}>{`Cond.${data.api_cond || '-'}`}</Col>
           </Row>
           <Row className='ship-fa'>
             <Col xs={6}><FABar icon={1} max={data.api_fuel_max} now={data.api_fuel} /></Col>
@@ -105,8 +105,9 @@ class ShipView extends React.Component {
           <Row className='ship-hp'><HpBar max={ship.maxHP} from={ship.initHP} to={ship.nowHP} damage={ship.initHP - ship.nowHP} item={null} /></Row>
         </Col>
         <Col xs={7}>
-        {[].concat(raw.poi_slot, raw.poi_slot_ex).map((item, i) =>
-          <ItemView key={i} item={item} />
+        {[].concat(data.poi_slot, data.poi_slot_ex).map((item, i) =>
+          <ItemView key={i} item={item} num={data.api_onslot[i] || '+'}
+            warn={data.api_onslot[i] !== data.api_maxeq[i]} />
         )}
         </Col>
       </Grid>
@@ -116,7 +117,7 @@ class ShipView extends React.Component {
 
 class ItemView extends React.Component {
   render() {
-    const {item} = this.props
+    const {item, num, warn} = this.props
     if (! item) {
       return <div />
     }
@@ -124,15 +125,20 @@ class ItemView extends React.Component {
     const mst = $slotitems[item.api_slotitem_id] || {}
     const data = Object.assign(Object.clone(mst), raw)
 
+//            <span className={`number ${warn ? 'text-warning' : ''}`}>{num}</span>
     return (
       <Row className='item-view'>
         <div className='item-info'>
-          <span className='item-icon'><SlotitemIcon slotitemId={data.api_type[3]} /></span>
-          <span className='item-name'>{`${__r(data.api_name)}`}</span>
+          <span className='item-icon'>
+            <SlotitemIcon slotitemId={data.api_type[3]} />
+          </span>
+          <span className='item-name'>
+            {`${__r(data.api_name)}`}
+          </span>
         </div>
         <div className='item-attr'>
-          <span className="alv">{data.api_alv > 0 ? <img src={`file://${ROOT}/assets/img/airplane/alv${data.api_alv}.png`} /> : null}</span>
-          <span className="level">{data.api_level > 0 ? `★${data.api_level}` : null}</span>
+          <span className="alv">{data.api_alv > 0 ? <img src={`file://${ROOT}/assets/img/airplane/alv${data.api_alv}.png`} /> : ''}</span>
+          <span className="level">{data.api_level > 0 ? `★${data.api_level}` : ''}</span>
         </div>
       </Row>
     )

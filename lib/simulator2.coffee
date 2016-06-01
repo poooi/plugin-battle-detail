@@ -240,23 +240,29 @@ class Simulator2
         fleet.push null
     return fleet
 
+  initEnemy: (packet) ->
+    fleet = []
+    for i in [1..6]
+      break unless packet.api_ship_ke[i]?
+      fleet.push new Ship
+        id:    packet.api_ship_ke[i]
+        owner: ShipOwner.Enemy
+        pos:   i
+        maxHP: packet.api_maxhps[i + 6]
+        nowHP: packet.api_nowhps[i + 6]
+        items: []  # We dont care
+        raw:
+          api_ship_id: packet.api_ship_ke[i]
+          api_lv: packet.api_ship_lv[i]
+          api_onslot: []
+          api_maxeq: []
+          poi_slot: packet.api_eSlot[i - 1].map((id) => $slotitems[id])
+    return fleet
+
   simulate: (packet) ->
     return unless packet?
-
     if (not @enemyFleet?) and packet.api_ship_ke?
-      fleet = []
-      for i in [1..6]
-        fleet.push if packet.api_ship_ke[i]?
-          new Ship
-            id:    packet.api_ship_ke[i]
-            owner: ShipOwner.Enemy
-            pos:   i
-            maxHP: packet.api_maxhps[i + 6]
-            nowHP: packet.api_nowhps[i + 6]
-            items: []  # We dont care
-        else
-          null
-      @enemyFleet = fleet
+      @enemyFleet = @initEnemy(packet)
     
     stages = []
     path = packet.poi_path
