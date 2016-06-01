@@ -101,7 +101,7 @@ class PacketManager extends EventEmitter {
     // Reset all
     if (req.path === '/kcsapi/api_port/port') {
       this.battle = null;
-      this.fleetType = body.api_combined_flag;
+      this.fleetType = body.api_combined_flag || 0;
       this.supportFleet = null;
       this.landBaseAirCorps = null;
       return;
