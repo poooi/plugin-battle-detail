@@ -12,6 +12,11 @@
 <body>
   <main />
   <script>
+    w = remote.getCurrentWindow()
+    w.show()
+    w.openDevTools({detach: true})
+  </script>
+  <script>
     require('babel-register')
     require('coffee-react/register')
     require('./battle-detail')

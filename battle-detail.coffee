@@ -28,8 +28,3 @@ window.__r = window.i18n.resources.__.bind(window.i18n.resources)
 document.title = __ 'Battle Detail'
 $('#font-awesome')?.setAttribute 'href', require.resolve('font-awesome/css/font-awesome.css')
 require './views'
-
-# Debug
-#w = remote.getCurrentWindow()
-#w.show()
-#w.openDevTools({detach: true})
