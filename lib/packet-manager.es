@@ -141,7 +141,7 @@ class PacketManager extends EventEmitter {
       // Check for battle packet
       // We assume that all battle packet include `api_deck_id`.
       let fleetId = body.api_deck_id || body.api_dock_id;
-      let escortId = (this.fleetType !== 0) ? 2 : -1;  // HACK: -1 for empty fleet.
+      let escortId = (this.fleetType > 0) ? 2 : -1;  // HACK: -1 for empty fleet.
       if (!fleetId) {
         return;
       }
