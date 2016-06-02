@@ -87,6 +87,13 @@ class ShipView extends React.Component {
     const mst = $ships[ship.id] || {}
     const data = Object.assign(Object.clone(mst), raw)
 
+    if (! data.api_maxeq) {
+      data.api_maxeq = [0, 0, 0, 0, 0]
+    }
+    if (! data.api_onslot) {
+      data.api_onslot = data.api_maxeq
+    }
+
     return (
       <Grid className="ship-view">
         <Col xs={5}>

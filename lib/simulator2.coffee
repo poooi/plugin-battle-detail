@@ -255,8 +255,6 @@ class Simulator2
         raw:
           api_ship_id: packet.api_ship_ke[i]
           api_lv: packet.api_ship_lv[i]
-          api_onslot: []
-          api_maxeq: []
           poi_slot: packet.api_eSlot[i - 1].map((id) => $slotitems[id])
     return fleet
 

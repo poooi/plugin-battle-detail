@@ -270,45 +270,32 @@ class PacketManager extends EventEmitter {
     if (packet.version != null) {
       return packet;
     }
-    let mainFleet = [], escortFleet = [];
-    for (let i of Array(6).keys()) {
-      let msid = packet.poi_sortie_fleet[i];
-      let ms = window.$ships[msid] || null;
-      if (ms) {
-        ms.api_ship_id = msid;
-        ms.api_maxhp = ms.api_taik[1];
-        ms.api_nowhp = packet.api_nowhps[i + 1];
-        ms.poi_slot = [];
-        ms.poi_slot_ex = null;
-        for (let j of Array(6).keys()) {
-          let miid = packet.poi_sortie_equipment[i][j];
-          let mi = window.$slotitems[miid] || null;
-          if (mi) {
-            mi.api_slotitem_id = miid;
+    function convertFleet(poi_fleet, poi_equipment, api_nowhps) {
+      let fleet = [];
+      for (let i of Array(6).keys()) {
+        let shipId = poi_fleet[i];
+        let ship = window.$ships[shipId] || null;
+        if (ship) {
+          ship.api_ship_id = shipId;
+          ship.api_maxhp = ship.api_taik[1];
+          ship.api_nowhp = api_nowhps[i + 1];
+          ship.poi_slot = [];
+          ship.poi_slot_ex = null;
+          for (let j of Array(6).keys()) {
+            let itemId = poi_equipment[i][j];
+            let item = window.$slotitems[itemId] || null;
+            if (item) {
+              item.api_slotitem_id = itemId;
+            }
+            ship.poi_slot.push(item);
           }
-          ms.poi_slot.push(mi);
         }
+        fleet.push(ship)
       }
-      let esid = packet.poi_combined_fleet[i];
-      let es = window.$ships[esid] || null;
-      if (es) {
-        es.api_ship_id = esid;
-        es.api_maxhp = es.api_taik[1];
-        es.api_nowhp = packet.api_nowhps_combined[i + 1];
-        es.poi_slot = [];
-        es.poi_slot_ex = null;
-        for (let j of Array(6).keys()) {
-          let eiid = packet.poi_combined_equipment[i][j];
-          let ei = window.$slotitems[eiid] || null;
-          if (ei) {
-            ei.api_slotitem_id = eiid;
-          }
-          es.poi_slot.push(ei);
-        }
-      }
-      mainFleet.push(ms);
-      escortFleet.push(es);
+      return fleet;
     }
+    let mainFleet = convertFleet(packet.poi_sortie_fleet, packet.poi_sortie_equipment, packet.api_nowhps)
+    let escortFleet = convertFleet(packet.poi_combined_fleet, packet.poi_combined_equipment, packet.api_nowhps_combined)
     let fleet = new Fleet({
       type:    packet.poi_is_combined ? (packet.poi_is_carrier ? 1: 2) : 0,
       main:    mainFleet,
