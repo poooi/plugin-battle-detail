@@ -220,7 +220,7 @@ class Simulator2
     @mainFleet    = @initFleet(fleet.main)
     @escortFleet  = @initFleet(fleet.escort)
     @supportFleet = @initFleet(fleet.support)
-    @enemyFleet   = null;  # Assign at first packet
+    @enemyFleet   = null  # Assign at first packet
 
   initFleet: (rawFleet) ->
     return unless rawFleet?

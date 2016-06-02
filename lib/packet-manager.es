@@ -17,6 +17,8 @@ class PacketManager extends EventEmitter {
     this.landBaseAirCorps   = null  // Prepare for fleet
     this.api_base_air_corps = null  // Raw api data
 
+    this.praticeEnemy = null
+
     window.addEventListener('game.response', this.gameResponse.bind(this))
   }
 
@@ -90,6 +92,11 @@ class PacketManager extends EventEmitter {
       }
     }
 
+    // Pratice Enemy Information
+    if (req.path === '/kcsapi/api_req_member/get_practice_enemyinfo') {
+      this.praticeEnemy = `${body.api_nickname} (${body.api_level})`
+    }
+
 
     // Oh fuck. Someone sorties with No.3/4 fleet when having combined fleet.
     if (req.path === '/kcsapi/api_req_map/start') {
@@ -103,9 +110,11 @@ class PacketManager extends EventEmitter {
       // `api_combined_flag` is only available during event.
       // We assume it's 0 (normal fleet) because we can't combine fleet at peacetime.
       this.fleetType = body.api_combined_flag || 0
+
       this.battle = null
       this.supportFleet = null
       this.landBaseAirCorps = null
+      this.praticeEnemy = null
       return
     }
 
@@ -127,6 +136,22 @@ class PacketManager extends EventEmitter {
       })
       this.supportFleet = isBoss ? this.bossSF : this.normalSF
       return
+    }
+
+    // Enter pratice battle
+    if (req.path == '/kcsapi/api_req_practice/battle') {
+      this.battle = new Battle({
+        map:    [],
+        desc:   `${__('Pratice')} ${this.praticeEnemy}`,
+        time:   null,  // Assign later
+        fleet:  null,  // Assign later
+        packet: [],
+      })
+      // Reset
+      this.fleetType = 0
+      this.supportFleet = null
+      this.landBaseAirCorps = null
+      // No `return`
     }
 
     // Process packet in battle
@@ -163,6 +188,9 @@ class PacketManager extends EventEmitter {
           support: this.supportFleet,
           LBAC:    this.landBaseAirCorps,
         })
+      }
+      if (!this.battle.packet) {
+        this.battle.packet = []
       }
       this.battle.packet.push(packet)
       this.dispatch()
@@ -258,7 +286,7 @@ class PacketManager extends EventEmitter {
       desc.push(packet.poi_comment)
     } else {
       desc.push(packet.desc)
-      desc.push(packet.map.join('-'))
+      desc.push((packet.map || []).join('-'))
     }
     return desc.join(' ')
   }
