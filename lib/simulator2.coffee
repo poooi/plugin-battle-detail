@@ -216,7 +216,8 @@ getEngagementStage = (packet) ->
 
 class Simulator2
   constructor: (fleet) ->
-    @fleetType    = fleet.type
+    # >> package-manager.es L103
+    @fleetType    = fleet.type || 0
     @mainFleet    = @initFleet(fleet.main)
     @escortFleet  = @initFleet(fleet.escort)
     @supportFleet = @initFleet(fleet.support)

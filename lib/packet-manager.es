@@ -100,8 +100,10 @@ class PacketManager extends EventEmitter {
 
     // Reset all
     if (req.path === '/kcsapi/api_port/port') {
-      this.battle = null;
+      // `api_combined_flag` is only available during event.
+      // We assume it's 0 (normal fleet) because we can't combine fleet at peacetime.
       this.fleetType = body.api_combined_flag || 0;
+      this.battle = null;
       this.supportFleet = null;
       this.landBaseAirCorps = null;
       return;
@@ -335,4 +337,4 @@ class PacketManager extends EventEmitter {
   }
 }
 
-module.exports = new PacketManager();
+export default new PacketManager();
