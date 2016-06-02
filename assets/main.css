@@ -4,6 +4,7 @@
 
 img {
   height: 26px;
+  margin-top: -4px;
   overflow: hidden;
 }
 .btn-group {
@@ -83,9 +84,6 @@ img {
 .fleet-view .col-xs-6,
 .fleet-view .col-xs-7 {
   padding: 0;
-}
-.fleet-view img {
-  margin-top: -4px;
 }
 /* Ship View */
 .ship-view.container {
