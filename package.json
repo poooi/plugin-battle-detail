@@ -1,6 +1,6 @@
 {
   "name": "poi-plugin-battle-detail",
-  "version": "2.2.0",
+  "version": "2.3.",
   "description": "A plugin which shows battle detail for poi.",
   "main": "index.cjsx",
   "dependencies": {
