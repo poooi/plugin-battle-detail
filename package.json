@@ -1,6 +1,6 @@
 {
   "name": "poi-plugin-battle-detail",
-  "version": "2.3.",
+  "version": "2.4.0-beta.0",
   "description": "A plugin which shows battle detail for poi.",
   "main": "index.cjsx",
   "dependencies": {
@@ -8,6 +8,7 @@
   "devDependencies": {
     "babel-core": "^6.9.0",
     "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-plugin-transform-async-to-module-method": "^6.8.0",
     "babel-preset-es2015-node4": "^2.1.0",
     "babel-preset-react": "^6.5.0"
   },

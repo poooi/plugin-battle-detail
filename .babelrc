@@ -1,6 +1,10 @@
 {
   presets: ["es2015-node4", "react"],
   plugins: [
-    "add-module-exports"
-  ],
+    "add-module-exports",
+    ["transform-async-to-module-method", {
+      module: "bluebird",
+      method: "coroutine"
+    }]
+  ]
 }
