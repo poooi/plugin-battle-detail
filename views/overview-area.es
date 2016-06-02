@@ -109,7 +109,7 @@ class ShipView extends React.Component {
             <Col xs={6}><FABar icon={1} max={data.api_fuel_max} now={data.api_fuel} /></Col>
             <Col xs={6}><FABar icon={2} max={data.api_bull_max} now={data.api_bull} /></Col>
           </Row>
-          <Row className='ship-hp'><HpBar max={ship.maxHP} from={ship.initHP} to={ship.nowHP} damage={ship.initHP - ship.nowHP} item={null} /></Row>
+          <Row className='ship-hp'><HpBar max={ship.maxHP} from={ship.initHP} to={ship.nowHP} damage={ship.lostHP} item={ship.useItem} /></Row>
         </Col>
         <Col xs={7}>
         {[].concat(data.poi_slot, data.poi_slot_ex).map((item, i) =>

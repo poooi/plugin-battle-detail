@@ -39,6 +39,17 @@ useItem = (ship) ->
         return itemId;
   return null;
 
+damageShip = (ship, damage) ->
+  return unless ship?
+  fromHP = ship.nowHP
+  ship.nowHP -= damage
+  ship.lostHP += damage
+  item = useItem(ship)
+  ship.useItem = item
+  toHP = ship.nowHP
+  # `ship.*` is updated in place
+  return {fromHP, toHP, item}
+
 simulateAerialAttack = (ships, edam, ebak_flag, erai_flag, ecl_flag) ->
   list = []
   return list unless ships? and edam?
@@ -48,10 +59,7 @@ simulateAerialAttack = (ships, edam, ebak_flag, erai_flag, ecl_flag) ->
     toShip = ships[i - 1]
     damage = Math.floor(damage)
     hit = if ecl_flag[i] == 1 then HitType.Critical else if damage > 0 then HitType.Hit else HitType.Miss
-    fromHP = toShip.nowHP
-    toShip.nowHP -= damage
-    item = useItem(toShip)
-    toHP = toShip.nowHP
+    {fromHP, toHP, item} = damageShip(toShip, damage)
     list.push new Attack
       type:   AttackType.Normal
       toShip: toShip
@@ -85,10 +93,7 @@ simulateTorpedoAttack = (fleet, targetFleet, api_eydam, api_erai, api_ecl) ->
     toShip = targetFleet[target - 1]
     damage = Math.floor(api_eydam[i])
     hit = if api_ecl[i] == 2 then HitType.Critical else if api_ecl[i] == 1 then HitType.Hit else HitType.Miss
-    fromHP = toShip.nowHP
-    toShip.nowHP -= damage
-    item = useItem(toShip)
-    toHP = toShip.nowHP
+    {fromHP, toHP, item} = damageShip(toShip, damage)
     list.push new Attack
       type:   AttackType.Normal
       fromShip: fleet[i - 1]
@@ -136,10 +141,7 @@ simulateShelling = (fleet, enemyFleet, hougeki, subtype) ->
     else
       fromShip = fleet[from]
       toShip = enemyFleet[target - 6]
-    fromHP = toShip.nowHP
-    toShip.nowHP -= damageTotal
-    item = useItem(toShip)
-    toHP = toShip.nowHP
+    {fromHP, toHP, item} = damageShip(toShip, damageTotal)
     list.push new Attack
       type:   attackType
       fromShip: fromShip
@@ -181,10 +183,7 @@ simulateSupport = (enemyShip, support, flag) ->
       cl = hourai.api_cl_list[i]
       hit = if cl == 2 then HitType.Critical else if cl == 1 then HitType.Hit else HitType.Miss
       toShip = enemyShip[i - 1]
-      fromHP = toShip.nowHP
-      toShip.nowHP -= damage
-      # item = useItem(toShip)
-      toHP = toShip.nowHP
+      {fromHP, toHP, item} = damageShip(toShip, damage)
       attacks.push new Attack
         type:   AttackType.Normal
         toShip: toShip
@@ -192,7 +191,7 @@ simulateSupport = (enemyShip, support, flag) ->
         hit:    [hit]
         fromHP: fromHP
         toHP:   toHP
-      #  useItem: item
+        useItem: item
     return new Stage
       type: StageType.Support
       attacks: attacks
