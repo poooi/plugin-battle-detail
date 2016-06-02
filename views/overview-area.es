@@ -77,6 +77,20 @@ class FleetView extends React.Component {
 }
 
 class ShipView extends React.Component {
+  getCondClass(cond) {
+    if (cond == null) {
+      return ''
+    } else if (cond >= 50) {
+      return 'poi-ship-cond-50'
+    } else if (cond >= 30) {
+      return 'poi-ship-cond-30'
+    } else if (cond >= 20) {
+      return 'poi-ship-cond-20'
+    } else {
+      return 'poi-ship-cond-0'
+    }
+  }
+
   render() {
     const {ship} = this.props
     if (! (ship && ship.id > 0)) {
@@ -101,14 +115,22 @@ class ShipView extends React.Component {
             <span className="position-indicator">{`(${ship.pos})`}</span>
           </Row>
           <Row className='ship-info'>
-            <Col xs={6}>{`Lv.${data.api_lv || '-'}`}</Col>
-            <Col xs={6}>{`Cond.${data.api_cond || '-'}`}</Col>
+            <Col xs={6}>
+              <span>Lv.</span>
+              <span>{data.api_lv || '-'}</span>
+            </Col>
+            <Col xs={6}>
+              <span>Cond.</span>
+              <span className={this.getCondClass(data.api_cond)}>{data.api_cond || '-'}</span>
+            </Col>
           </Row>
           <Row className='ship-fa'>
             <Col xs={6}><FABar icon={1} max={data.api_fuel_max} now={data.api_fuel} /></Col>
             <Col xs={6}><FABar icon={2} max={data.api_bull_max} now={data.api_bull} /></Col>
           </Row>
-          <Row className='ship-hp'><HPBar max={ship.maxHP} from={ship.initHP} to={ship.nowHP} damage={ship.lostHP} item={ship.useItem} /></Row>
+          <Row className='ship-hp'>
+            <HPBar max={ship.maxHP} from={ship.initHP} to={ship.nowHP} damage={ship.lostHP} item={ship.useItem} />
+          </Row>
         </Col>
         <Col xs={7}>
         {[].concat(data.poi_slot, data.poi_slot_ex).map((item, i) =>

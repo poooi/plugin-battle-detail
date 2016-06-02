@@ -52,6 +52,20 @@ img {
   text-align: center;
 }
 
+.poi-ship-cond-0 {  /* cond 0~19  */
+  color: #DD514C;
+  font-weight: bold;
+}
+.poi-ship-cond-20 { /* cond 20~29 */
+  color: #F37B1D;
+}
+.poi-ship-cond-30 { /* cond 30~49 */
+  color: #FFC880;
+}
+.poi-ship-cond-50 { /* cond 50~100 */
+  color: #FFFF40;
+}
+
 /* HP Bar */
 .hp-bar.progress {
   margin: 0;
@@ -98,6 +112,7 @@ img {
 .ship-view .ship-info,
 .ship-view .ship-fa {
   font-size: 90%;
+  opacity: 0.8;
 }
 .ship-view .ship-fa img {
   height: 16px;
