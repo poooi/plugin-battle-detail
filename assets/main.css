@@ -126,6 +126,7 @@ img {
   height: 22px;
 }
 .item-view .item-info {
+  position: relative;
   flex: 1;
 }
 .item-view .item-attr {
@@ -151,6 +152,10 @@ img {
   border-radius: 9px;
   text-align: center;
   font-size: 80%;
+  bottom: 0;
+  left: 0;
+  height: 16px;
+  width: 16px;
 }
 
 /* Stage Table */

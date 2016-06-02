@@ -5,7 +5,7 @@ const {Panel, Grid, Row, Col, ProgressBar} = ReactBootstrap
 const {SlotitemIcon} = require(`${ROOT}/views/components/etc/icon`)
 const {FABar, HPBar} = require('./bar')
 
-const DEFAULT_EXPANDED = false
+const DEFAULT_EXPANDED = true
 class OverviewArea extends React.Component {
   constructor() {
     super()
@@ -92,16 +92,16 @@ class ShipView extends React.Component {
   }
 
   render() {
-    const {ship} = this.props
+    let {ship} = this.props
     if (! (ship && ship.id > 0)) {
       return <div />
     }
-    const raw = ship.raw || {}
-    const mst = $ships[ship.id] || {}
-    const data = Object.assign(Object.clone(mst), raw)
+    let raw = ship.raw || {}
+    let mst = $ships[ship.id] || {}
+    let data = Object.assign(Object.clone(mst), raw)
 
     if (! data.api_maxeq) {
-      data.api_maxeq = [0, 0, 0, 0, 0]
+      data.api_maxeq = []
     }
     if (! data.api_onslot) {
       data.api_onslot = data.api_maxeq
@@ -133,10 +133,11 @@ class ShipView extends React.Component {
           </Row>
         </Col>
         <Col xs={7}>
-        {[].concat(data.poi_slot, data.poi_slot_ex).map((item, i) =>
-          <ItemView key={i} item={item} num={data.api_onslot[i] || '+'}
+        {(data.poi_slot || []).map((item, i) =>
+          <ItemView key={i} item={item} extra={false} label={data.api_onslot[i]}
             warn={data.api_onslot[i] !== data.api_maxeq[i]} />
         )}
+          <ItemView item={data.poi_slot_ex} extra={true} label={'+'} warn={false} />
         </Col>
       </Grid>
     )
@@ -145,20 +146,22 @@ class ShipView extends React.Component {
 
 class ItemView extends React.Component {
   render() {
-    const {item, num, warn} = this.props
+    let {item, extra, label, warn} = this.props
     if (! item) {
       return <div />
     }
-    const raw = item
-    const mst = $slotitems[item.api_slotitem_id] || {}
-    const data = Object.assign(Object.clone(mst), raw)
+    let raw = item
+    let mst = $slotitems[item.api_slotitem_id] || {}
+    let data = Object.assign(Object.clone(mst), raw)
 
-//            <span className={`number ${warn ? 'text-warning' : ''}`}>{num}</span>
     return (
       <Row className='item-view'>
         <div className='item-info'>
           <span className='item-icon'>
             <SlotitemIcon slotitemId={data.api_type[3]} />
+            {(label != null && (extra || [6, 7, 8, 9, 10, 21, 22, 33, 37, 38].includes(data.api_type[3]))) ? (
+              <span className={`number ${warn ? 'text-warning' : ''}`}>{label}</span>
+            ) : null}
           </span>
           <span className='item-name'>
             {`${__r(data.api_name)}`}
