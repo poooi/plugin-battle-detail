@@ -2,7 +2,7 @@
 
 {React, ReactBootstrap} = window
 {Panel, ProgressBar, OverlayTrigger, Tooltip, Row} = ReactBootstrap
-HpBar = require('./hp-bar')
+{HPBar} = require('./bar')
 
 {Stage, StageType, Attack, AttackType, HitType, Ship, ShipOwner} = require('../lib/models')
 
@@ -255,7 +255,7 @@ AttackRow = React.createClass
     # Is enemy attack?
     if toShip.owner is ShipOwner.Ours
       <Row className={"attack-row"}>
-        <span><HpBar max={maxHP} from={fromHP} to={toHP} damage={totalDamage} item={useItem} /></span>
+        <span><HPBar max={maxHP} from={fromHP} to={toHP} damage={totalDamage} item={useItem} /></span>
         <span><ShipInfo ship={toShip} /></span>
         <span><FontAwesome name='long-arrow-left' /></span>
         <span><DamageInfo type={type} damage={damage} hit={hit} /></span>
@@ -271,7 +271,7 @@ AttackRow = React.createClass
         <span><DamageInfo type={type} damage={damage} hit={hit} /></span>
         <span><FontAwesome name='long-arrow-right' /></span>
         <span><ShipInfo ship={toShip} /></span>
-        <span><HpBar max={maxHP} from={fromHP} to={toHP} damage={totalDamage} item={useItem} /></span>
+        <span><HPBar max={maxHP} from={fromHP} to={toHP} damage={totalDamage} item={useItem} /></span>
       </Row>
 
 AttackTable = React.createClass

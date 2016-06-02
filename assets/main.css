@@ -65,10 +65,10 @@ img {
   line-height: 22px;
 }
 .hp-bar.lost.progress-bar {
-  background-color: rgba(255, 255, 255, 0.06);
+  background-color: rgba(255, 255, 255, 0.1);
 }
-.hp-bar .damage-control {
-  content: url("./images/damage-control.png");
+.hp-bar img {
+  margin: -4px -4px 0 -4px;
 }
 
 /* Option Area */
