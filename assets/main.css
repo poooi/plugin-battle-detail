@@ -2,11 +2,6 @@
   font-family: "Ubuntu", "Helvetica Neue", "Helvetica", "Arial", "Heiti SC", "WenQuanYi Micro Hei", "Microsoft YaHei", "Droid Sans Fallback", sans-serif;
 }
 
-img {
-  height: 26px;
-  margin-top: -4px;
-  overflow: hidden;
-}
 .btn-group {
   display: flex;
 }
@@ -38,20 +33,6 @@ img {
   display: block;
 }
 
-#main {
-  padding: 10px;
-}
-#detail-area .row {
-  width: 100%;
-  height: 30px;
-  display: flex;
-}
-#detail-area .panel .row > span {
-  height: 20px;
-  margin: 2px;
-  text-align: center;
-}
-
 .poi-ship-cond-0 {  /* cond 0~19  */
   color: #DD514C;
   font-weight: bold;
@@ -64,6 +45,28 @@ img {
 }
 .poi-ship-cond-50 { /* cond 50~100 */
   color: #FFFF40;
+}
+img.png {
+  height: 16px;
+  margin-top: -4px;
+}
+img.svg {
+  height: 16px;
+  margin-top: -4px;
+}
+
+#main {
+  padding: 10px;
+}
+#detail-area .row {
+  width: 100%;
+  height: 30px;
+  display: flex;
+}
+#detail-area .panel .row > span {
+  height: 20px;
+  margin: 2px;
+  text-align: center;
 }
 
 /* HP Bar */
@@ -82,7 +85,8 @@ img {
   background-color: rgba(255, 255, 255, 0.1);
 }
 .hp-bar img {
-  margin: -4px -4px 0 -4px;
+  margin-left: -4px;
+  margin-right: -4px;
 }
 
 /* Option Area */
@@ -123,9 +127,6 @@ img {
   font-size: 90%;
   opacity: 0.8;
 }
-.ship-view .ship-fa img {
-  height: 16px;
-}
 /* LBAC View */
 .lbac-view.container {
   padding: 10px;
@@ -161,6 +162,12 @@ img {
 }
 .item-view .alv img {
   height: 16px;
+}
+.item-view .item-icon img.png {
+  height: 26px;
+}
+.item-view .item-icon img.svg {
+  height: 18px;
 }
 .item-view .number {
   background-color: rgba(33, 33, 33, 0.701961);

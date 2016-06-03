@@ -2,7 +2,7 @@
 
 const {React, ReactBootstrap} = window
 const {ProgressBar} = ReactBootstrap
-const {SlotitemIcon} = require(`${ROOT}/views/components/etc/icon`)
+const {MaterialIcon, SlotitemIcon} = require(`${ROOT}/views/components/etc/icon`)
 
 export class FABar extends React.Component {
   render() {
@@ -13,9 +13,8 @@ export class FABar extends React.Component {
       pcnt = 100
     }
     return (
-      // <ProgressBar className="fa-bar" style={{'background-color': 'rgba(0,0,0,1)'}} now={pcnt} label={`${now}/${max} (${pcnt}%)`} />
       <span className='fa-bar'>
-        <img src={`file://${ROOT}/assets/img/material/0${icon}.png`} />
+        <MaterialIcon materialId={icon} />
         {`${pcnt}%`}
       </span>
     )
