@@ -94,9 +94,18 @@ img {
 .fleet-title {
   font-size: 110%;
 }
+.fleet-view .col-xs-1,
+.fleet-view .col-xs-2,
+.fleet-view .col-xs-3,
+.fleet-view .col-xs-4,
 .fleet-view .col-xs-5,
 .fleet-view .col-xs-6,
-.fleet-view .col-xs-7 {
+.fleet-view .col-xs-7,
+.fleet-view .col-xs-8,
+.fleet-view .col-xs-9,
+.fleet-view .col-xs-10,
+.fleet-view .col-xs-11,
+.fleet-view .col-xs-12 {
   padding: 0;
 }
 /* Ship View */
