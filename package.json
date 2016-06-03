@@ -1,6 +1,6 @@
 {
   "name": "poi-plugin-battle-detail",
-  "version": "2.5.1",
+  "version": "2.5.2",
   "description": "A plugin which shows battle detail for poi.",
   "main": "index.cjsx",
   "dependencies": {
@@ -13,7 +13,7 @@
     "babel-preset-react": "^6.5.0"
   },
   "scripts": {
-    "compile": "cjsx -cb .",
+    "compile": "cjsx -cb ."
   },
   "repository": {
     "type": "git",
