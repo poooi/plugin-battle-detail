@@ -112,7 +112,7 @@ class ShipView extends React.Component {
         <Col xs={5}>
           <Row className='ship-name'>
             <span>{__r(data.api_name)}</span>
-            <span className="position-indicator">{`(${ship.pos})`}</span>
+            <span className="position-indicator">{`(${ship.id})`}</span>
           </Row>
           <Row className='ship-info'>
             <Col xs={6}>
