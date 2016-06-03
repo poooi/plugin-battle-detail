@@ -117,6 +117,13 @@ img {
 .ship-view .ship-fa img {
   height: 16px;
 }
+/* LBAC View */
+.lbac-view.container {
+  padding: 10px;
+}
+.lbac-view .row {
+  height: 22px;
+}
 /* Item View */
 .item-view {
   overflow: hidden;

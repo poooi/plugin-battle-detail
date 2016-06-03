@@ -221,6 +221,7 @@ class Simulator2
     @escortFleet  = @initFleet(fleet.escort)
     @supportFleet = @initFleet(fleet.support)
     @enemyFleet   = null  # Assign at first packet
+    @landBaseAirCorps = fleet.LBAC
 
   initFleet: (rawFleet) ->
     return unless rawFleet?

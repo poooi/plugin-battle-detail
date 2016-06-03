@@ -36,6 +36,7 @@ class OverviewArea extends React.Component {
               <FleetView fleet={simulator.mainFleet} title={__('Main Fleet')} />
               <FleetView fleet={simulator.escortFleet} title={__('Escort Fleet')} />
               <FleetView fleet={simulator.supportFleet} title={__('Support Fleet')} />
+              <FleetView fleet={simulator.landBaseAirCorps} title={__('Land Base Air Corps')} View={LBACView} />
               <FleetView fleet={simulator.enemyFleet} title={__('Enemy Fleet')} />
             </div>
           ) : __("No battle")
@@ -48,9 +49,12 @@ class OverviewArea extends React.Component {
 
 class FleetView extends React.Component {
   render() {
-    const {fleet, title} = this.props
-    if (! fleet) {
+    let {fleet, title, View} = this.props
+    if (! (fleet && fleet.length > 0)) {
       return <div />
+    }
+    if (View == null) {
+      View = ShipView
     }
     let rows = []
     for (let i of Array(Math.ceil(fleet.length / 2)).keys()) {
@@ -63,10 +67,10 @@ class FleetView extends React.Component {
         {rows.map(([a, b], i) =>
           <Row key={i}>
             <Col xs={6}>
-              <ShipView ship={a} />
+              <View child={a} />
             </Col>
             <Col xs={6}>
-              <ShipView ship={b} />
+              <View child={b} />
             </Col>
           </Row>
         )}
@@ -92,7 +96,7 @@ class ShipView extends React.Component {
   }
 
   render() {
-    let {ship} = this.props
+    let {child: ship} = this.props
     if (! (ship && ship.id > 0)) {
       return <div />
     }
@@ -138,6 +142,31 @@ class ShipView extends React.Component {
             warn={data.api_onslot[i] !== data.api_maxeq[i]} />
         )}
           <ItemView item={data.poi_slot_ex} extra={true} label={'+'} warn={false} />
+        </Col>
+      </Grid>
+    )
+  }
+}
+
+class LBACView extends React.Component {
+  render() {
+    let {child: corps} = this.props
+    if (! (corps && corps.api_plane_info)) {
+      return <div />
+    }
+    return (
+      <Grid className="lbac-view">
+        <Col xs={5}>
+          <Row className='lbac-name'>
+            <span>{__r(corps.api_name)}</span>
+            <span className="position-indicator">{`(No.${corps.api_rid})`}</span>
+          </Row>
+        </Col>
+        <Col xs={7}>
+        {corps.api_plane_info.map((plane, i) =>
+          <ItemView item={plane.poi_slot} extra={false} label={plane.api_count}
+            warn={plane.api_count !== plane.api_max_count} />
+        )}
         </Col>
       </Grid>
     )
