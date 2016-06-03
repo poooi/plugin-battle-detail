@@ -5,7 +5,7 @@ const {Panel, Grid, Row, Col, ProgressBar} = ReactBootstrap
 const {SlotitemIcon} = require(`${ROOT}/views/components/etc/icon`)
 const {FABar, HPBar} = require('./bar')
 
-const DEFAULT_EXPANDED = true
+const DEFAULT_EXPANDED = false
 class OverviewArea extends React.Component {
   constructor() {
     super()
