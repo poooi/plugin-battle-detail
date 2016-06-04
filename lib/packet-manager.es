@@ -94,7 +94,7 @@ class PacketManager extends EventEmitter {
 
     // Pratice Enemy Information
     if (req.path === '/kcsapi/api_req_member/get_practice_enemyinfo') {
-      this.praticeEnemy = `${body.api_nickname} (${body.api_level})`
+      this.praticeEnemy = `${body.api_nickname} (Lv.${body.api_level})`
     }
 
 

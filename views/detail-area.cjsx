@@ -102,11 +102,11 @@ EngagementTable = React.createClass
       enemy = simulator.enemyFleet
       star = [fleet[api_flare_pos[0] - 1]?.id, enemy[api_flare_pos[1] - 1]?.id]
       rows.push <Row className={"engagement-row"} key={11}>
-        <span>{if name = $slotitems[contact[0]]?.api_name then "#{__ 'Night Contact'}: #{__r name}"}</span>
+        <span>{if name = $slotitems[contact[0]]?.api_name then "#{__ 'Contact'}: #{__r name}"}</span>
         <span>{if name = $ships[star[0]]?.api_name then "#{__ 'Star Shell'}: #{__r name}"}</span>
         <span />
         <span>{if name = $ships[star[1]]?.api_name then "#{__ 'Star Shell'}: #{__r name}"}</span>
-        <span>{if name = $slotitems[contact[1]]?.api_name then "#{__ 'Night Contact'}: #{__r name}"}</span>
+        <span>{if name = $slotitems[contact[1]]?.api_name then "#{__ 'Contact'}: #{__r name}"}</span>
       </Row>
 
     <div className={"engagement-table"}>
@@ -175,9 +175,9 @@ AerialTable = React.createClass
             <PlaneCount count={kouku.api_stage1.api_f_count}
                         lost={kouku.api_stage1.api_f_lostcount} />
           </span>
-          <span>{if name = $slotitems[contact[0]]?.api_name then "#{__ 'Aerial Contact'}: #{__r name}"}</span>
+          <span>{if name = $slotitems[contact[0]]?.api_name then "#{__ 'Contact'}: #{__r name}"}</span>
           <span>{AirControlNameMap[kouku.api_stage1.api_disp_seiku]}</span>
-          <span>{if name = $slotitems[contact[1]]?.api_name then "#{__ 'Aerial Contact'}: #{__r name}"}</span>
+          <span>{if name = $slotitems[contact[1]]?.api_name then "#{__ 'Contact'}: #{__r name}"}</span>
           <span>
             <PlaneCount count={kouku.api_stage1.api_e_count}
                         lost={kouku.api_stage1.api_e_lostcount} />
