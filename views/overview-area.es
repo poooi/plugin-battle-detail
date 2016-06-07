@@ -164,7 +164,7 @@ class LBACView extends React.Component {
         </Col>
         <Col xs={7}>
         {corps.api_plane_info.map((plane, i) =>
-          <ItemView item={plane.poi_slot} extra={false} label={plane.api_count}
+          <ItemView key={i} item={plane.poi_slot} extra={false} label={plane.api_count}
             warn={plane.api_count !== plane.api_max_count} />
         )}
         </Col>
