@@ -63,7 +63,6 @@ class PacketManager extends EventEmitter {
       if (missionName.includes("決戦支援任務")) {
         this.bossSF = this.getFleet(fleetId)
       }
-      console.log('mission/start', postBody.api_deck_id, postBody.api_mission_id, missionName)
     }
 
     // Land Base Air Corps
