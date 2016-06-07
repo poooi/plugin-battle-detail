@@ -255,6 +255,7 @@ class PacketManager extends EventEmitter {
     return landBaseAirCorps
   }
 
+
   // Utils
   getId(packet) {
     if (packet == null) {
@@ -299,6 +300,9 @@ class PacketManager extends EventEmitter {
       return packet
     }
     function convertFleet(poi_fleet, poi_equipment, api_nowhps) {
+      if (! (poi_fleet && poi_fleet.length > 0 )) {
+        return null
+      }
       let fleet = []
       for (let i of Array(6).keys()) {
         let shipId = poi_fleet[i]
