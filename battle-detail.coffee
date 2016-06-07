@@ -27,4 +27,7 @@ window.__r = window.i18n.resources.__.bind(window.i18n.resources)
 # Render
 document.title = __ 'Battle Detail'
 $('#font-awesome')?.setAttribute 'href', require.resolve('font-awesome/css/font-awesome.css')
-require './views'
+
+MainArea = require('./views')
+ReactDOM.render <MainArea />, $('main')
+
