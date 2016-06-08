@@ -27,15 +27,12 @@ class MainArea extends React.Component {
       battleListNonce: 0,
       shouldAutoShow: true,
     }
-    this.handlePacketBinded = this.handlePacket.bind(this)
-    this.showBattleWithTimestampBinded = this.showBattleWithTimestamp.bind(this)
-    this.updateBattleBinded = this.updateBattle.bind(this)
   }
 
   componentDidMount() {
-    PacketManager.addListener('packet', this.handlePacketBinded)
+    PacketManager.addListener('packet', this.handlePacket)
     ipc.register("BattleDetail", {
-      showBattleWithTimestamp: this.showBattleWithTimestampBinded
+      showBattleWithTimestamp: this.showBattleWithTimestamp
     })
 
     setTimeout(async () => {
@@ -65,11 +62,11 @@ class MainArea extends React.Component {
   }
 
   componentWillUnmount() {
-    PacketManager.removeListener('packet', this.handlePacketBinded)
+    PacketManager.removeListener('packet', this.handlePacket)
     ipc.unregisterAll("BattleDetail")
   }
 
-  async handlePacket(newTime, newBattle) {
+  handlePacket = async (newTime, newBattle) => {
     let {battle, battleNonce, battleList, battleListNonce, shouldAutoShow} = this.state
     if ((battleList[0] || {}).time == newTime) {
       battleList[0] = newBattle
@@ -90,7 +87,7 @@ class MainArea extends React.Component {
   }
 
   // API for IPC
-  async showBattleWithTimestamp(timestamp, callback) {
+  showBattleWithTimestamp = async (timestamp, callback) => {
     let message = null
     if (typeof timestamp == "number") {
       let start = timestamp - 2000
@@ -122,7 +119,7 @@ class MainArea extends React.Component {
 
   // API for Component <OptionArea />
   //   battle=null: using last battle and set `shouldAutoShow` to true.
-  updateBattle(battle) {
+  updateBattle = (battle) => {
     if (battle != null) {
       this.setState({
         shouldAutoShow: false,
@@ -148,7 +145,7 @@ class MainArea extends React.Component {
           battleList={this.state.battleList}
           battleListNonce={this.state.battleListNonce}
           shouldAutoShow={this.state.shouldAutoShow}
-          updateBattle={this.updateBattleBinded}
+          updateBattle={this.updateBattle}
           />
         <BattleArea
           battle={this.state.battle}
