@@ -5,6 +5,6 @@ module.exports = {
     width: 850,
     height: 650,
   },
-  windowURL: "file://" + __dirname + "/battle-detail.html",
+  windowURL: "file://" + __dirname + "/window.html",
   useEnv: true,
 }
