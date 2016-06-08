@@ -6,7 +6,6 @@
   "dependencies": {},
   "devDependencies": {
     "babel-plugin-add-module-exports": "^0.2.1",
-    "babel-plugin-transform-es2015-modules-commonjs": "^6.8.0",
     "babel-preset-es2015-node6": "^0.2.0",
     "babel-preset-react": "^6.5.0",
     "babel-preset-stage-0": "^6.5.0"
