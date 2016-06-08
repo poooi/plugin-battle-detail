@@ -12,7 +12,6 @@ const globAsync = promisify(glob)
 const gzipAsync = promisify(zlib.gzip)
 const unzipAsync = promisify(zlib.unzip)
 
-// window.APPDATA_PATH
 const APPDATA = path.join(window.APPDATA_PATH, 'battle-detail')
 const REFRESH_INTERVAL = 60000
 fs.ensureDir(APPDATA, (err) => {
