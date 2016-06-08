@@ -1,29 +1,32 @@
 {
   "name": "poi-plugin-battle-detail",
-  "version": "2.5.2",
+  "version": "2.5.3",
   "description": "A plugin which shows battle detail for poi.",
   "main": "index.cjsx",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "babel-core": "^6.9.0",
-    "babel-plugin-add-module-exports": "^0.2.1",
-    "babel-plugin-transform-async-to-module-method": "^6.8.0",
-    "babel-preset-es2015-node4": "^2.1.0",
-    "babel-preset-react": "^6.5.0"
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.8.0",
+    "babel-preset-es2015-node6": "^0.2.0",
+    "babel-preset-react": "^6.5.0",
+    "babel-preset-stage-0": "^6.5.0"
   },
   "scripts": {
-    "compile": "cjsx -cb ."
+    "compile": "npm run compile-es; npm run compile-cs",
+    "compile-es": "babel --only='views/**.es,lib/**.es' . -d .",
+    "compile-cs": "cjsx -cb ."
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/poooi/plugin-battle-detail.git"
   },
   "author": {
-    "name":"Dazzy Ding",
+    "name": "Dazzy Ding",
     "link": "https://github.com/yukixz"
   },
-  "contributors": ["Chiba"],
+  "contributors": [
+    "Chiba"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/poooi/plugin-battle-detail/issues"
