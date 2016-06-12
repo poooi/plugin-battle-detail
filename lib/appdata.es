@@ -27,6 +27,78 @@ class AppData {
     this.packetListLastRefresh = 0
   }
 
+  async saveFile(name, data) {
+    if (! (name && data))
+      return
+    try {
+      let fpath = path.join(APPDATA, name)
+      await writeFileAsync(fpath, data)
+    }
+    catch (err) {
+      console.error(err)
+    }
+  }
+
+  async loadFile(name) {
+    if (! (name))
+      return
+    try {
+      let fpath = path.join(APPDATA, name)
+      let data = await readFileAsync(fpath)
+      return data
+    }
+    catch (err) {
+      console.error(err)
+    }
+  }
+
+  async savePacket(id, packet) {
+    if (! (id && packet))
+      return
+    try {
+      let name = `${id}.json.gz`
+      let data = await gzipAsync(JSON.stringify(packet))
+      await this.saveFile(name, data)
+
+      this.packetList.push(id)
+      this.packetFile[id] = {
+        name: name,
+        packet: packet,
+      }
+    }
+    catch (err) {
+      console.error(err)
+    }
+  }
+
+  async loadPacket(id) {
+    if (id == null) {
+      return null
+    }
+    try {
+      let file = this.packetFile[id]
+      if (file == null) {
+        return null
+      }
+      if (file.packet != null) {
+        return file.packet
+      }
+
+      let data = await this.loadFile(file.name)
+      if (path.parse(file.name).ext == '.gz') {
+        data = await unzipAsync(data)
+        data = data.toString()
+      }
+      let packet = JSON.parse(data)
+      file.packet = packet
+      return packet
+    }
+    catch (err) {
+      console.error(err)
+      return null
+    }
+  }
+
   async listPacket() {
     if (this.packetList.length <= 0){
       await this._refreshPacket()
@@ -62,55 +134,6 @@ class AppData {
     }
     catch (err) {
       console.error(err)
-    }
-  }
-
-  async savePacket(id, packet) {
-    if (! (id && packet))
-      return
-    try {
-      let name = `${id}.json.gz`
-      let fpath = path.join(APPDATA, name)
-      let data = await gzipAsync(JSON.stringify(packet))
-      await writeFileAsync(fpath, data)
-
-      this.packetList.push(id)
-      this.packetFile[id] = {
-        name: name,
-        packet: packet,
-      }
-    }
-    catch (err) {
-      console.error(err)
-    }
-  }
-
-  async loadPacket(id) {
-    if (id == null) {
-      return null
-    }
-    try {
-      let file = this.packetFile[id]
-      if (file == null) {
-        return null
-      }
-      if (file.packet != null) {
-        return file.packet
-      }
-
-      let fpath = path.join(APPDATA, file.name)
-      let data = await readFileAsync(fpath)
-      if (path.parse(file.name).ext == '.gz') {
-        data = await unzipAsync(data)
-        data = data.toString()
-      }
-      let packet = JSON.parse(data)
-      file.packet = packet
-      return packet
-    }
-    catch (err) {
-      console.error(err)
-      return null
     }
   }
 
