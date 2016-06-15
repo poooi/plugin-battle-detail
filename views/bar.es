@@ -35,8 +35,10 @@ export class HPBar extends React.Component {
 
   render() {
     let {max, from, to, damage, item} = this.props
+    if (from < 0) from = 0
     if (from > max) from = max
     if (to < 0) to = 0
+    if (to > max) to = max
 
     let now = 100 * to / max
     let lost = 100 * (from - to) / max
