@@ -1,6 +1,6 @@
 "use strict"
 
-const {React, ReactBootstrap} = window
+const {React, ReactBootstrap, ROOT, $slotitems} = window
 const {ProgressBar} = ReactBootstrap
 const {MaterialIcon, SlotitemIcon} = require(`${ROOT}/views/components/etc/icon`)
 

@@ -1,5 +1,6 @@
 "use strict"
 
+const {__} = window
 const EventEmitter = require('events')
 const {Battle, Fleet} = require('./models')
 
@@ -26,7 +27,7 @@ class PacketManager extends EventEmitter {
     if (!battle) {
       battle = this.battle
     }
-    console.log('dispatch', battle)
+    // console.log('dispatch', battle)
     if (battle && battle.time) {
       this.emit('packet', battle.time, battle)
     }

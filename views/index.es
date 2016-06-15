@@ -1,6 +1,6 @@
 "use strict"
 
-const {remote, React, ReactBootstrap} = window
+const {React, remote, ipc, __} = window
 
 const AppData = require('../lib/appdata')
 const PacketManager = require('../lib/packet-manager')
@@ -32,7 +32,7 @@ class MainArea extends React.Component {
   componentDidMount() {
     PacketManager.addListener('packet', this.handlePacket)
     ipc.register("BattleDetail", {
-      showBattleWithTimestamp: this.showBattleWithTimestamp
+      showBattleWithTimestamp: this.showBattleWithTimestamp,
     })
 
     setTimeout(async () => {
@@ -50,7 +50,7 @@ class MainArea extends React.Component {
         }
       }
       // Update state with loaded packets.
-      let {battleList, battleListNonce, battle, battleNonce} = this.state
+      let {battleList, battleListNonce, battleNonce} = this.state
       battleList = battleList.concat(packets).slice(0, MAX_PACKET_NUMBER)
       this.setState({
         battle: battleList[0],

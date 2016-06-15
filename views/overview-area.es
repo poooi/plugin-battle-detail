@@ -1,7 +1,7 @@
 "use strict"
 
-const {React, ReactBootstrap} = window
-const {Panel, Grid, Row, Col, ProgressBar} = ReactBootstrap
+const {React, ReactBootstrap, ROOT, $ships, $slotitems, __, __r} = window
+const {Panel, Grid, Row, Col} = ReactBootstrap
 const {SlotitemIcon} = require(`${ROOT}/views/components/etc/icon`)
 const {FABar, HPBar} = require('./bar')
 
@@ -10,7 +10,7 @@ class OverviewArea extends React.Component {
   constructor() {
     super()
     this.state = {
-      isExpanded: DEFAULT_EXPANDED
+      isExpanded: DEFAULT_EXPANDED,
     }
   }
 
