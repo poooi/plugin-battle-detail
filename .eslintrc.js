@@ -1,7 +1,7 @@
 module.exports = {
   'env': {
+    'es6': true,
     'browser': true,
-    'commonjs': true,
     'node': true,
   },
   'extends': [
@@ -27,7 +27,7 @@ module.exports = {
     'linebreak-style': ['error', 'unix'],
     'no-console': ['warn', {'allow': ['warn', 'error']}],
     'no-var': 'error',
-    'no-unused-vars': ['error', {'args': 'none'}],
+    'no-unused-vars': ['warn', {'args': 'none'}],
     'semi': ['error', 'never'],
     'sort-vars': 'warn',
     'unicode-bom': 'error',
