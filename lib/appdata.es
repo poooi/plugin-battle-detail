@@ -5,6 +5,7 @@ const glob = require('glob')
 const path = require('path-extra')
 const zlib = require('zlib')
 const {promisify} = require('bluebird')
+const PacketManager = require('./packet-manager')
 
 const readFileAsync = promisify(fs.readFile)
 const writeFileAsync = promisify(fs.writeFile)
@@ -77,12 +78,10 @@ class AppData {
     }
     try {
       let file = this.packetFile[id]
-      if (file == null) {
+      if (file == null)
         return null
-      }
-      if (file.packet != null) {
+      if (file.packet != null)
         return file.packet
-      }
 
       let data = await this.loadFile(file.name)
       if (path.parse(file.name).ext == '.gz') {
@@ -90,6 +89,9 @@ class AppData {
         data = data.toString()
       }
       let packet = JSON.parse(data)
+
+      // Convert packet on load for compatibility.
+      packet = PacketManager.convertV1toV2(packet)
       file.packet = packet
       return packet
     }

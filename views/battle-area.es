@@ -1,7 +1,6 @@
 "use strict"
 
 const {React} = window
-const PacketManager = require('../lib/packet-manager')
 const Simulator2 = require('../lib/simulator2')
 const DetailArea = require('./detail-area')
 const OverviewArea = require('./overview-area')
@@ -11,11 +10,6 @@ function simulate(battle) {
   try {
     if (!battle) {
       return null
-    }
-
-    // Keep compatibility for version 1.0
-    if (battle.version === undefined) {
-      battle = PacketManager.convertV1toV2(battle)
     }
 
     let simulator = new Simulator2(battle.fleet)
