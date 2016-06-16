@@ -37,18 +37,17 @@ class MainArea extends React.Component {
 
     setTimeout(async () => {
       let list = await AppData.listPacket()
-      if (!(list && list.length > 0))
+      if (! (list && list.length > 0))
         return
       let packets = []
-      for (let i = list.length - 1; i >= 0; i--) {
-        let packet = await AppData.loadPacket(list[i])
-        if (packet != null) {
-          packets.push(packet)
+      await Promise.all(list.slice(0, MAX_PACKET_NUMBER).map(
+        async (id) => {
+          let packet = await AppData.loadPacket(id)
+          if (packet != null) {
+            packets.push(packet)
+          }
         }
-        if (packets.length >= MAX_PACKET_NUMBER) {
-          break
-        }
-      }
+      ))
       // Update state with loaded packets.
       let {battleList, battleListNonce, battleNonce} = this.state
       battleList = battleList.concat(packets).slice(0, MAX_PACKET_NUMBER)
@@ -58,7 +57,7 @@ class MainArea extends React.Component {
         battleList: battleList,
         battleListNonce: updateNonce(battleListNonce),
       })
-    })
+    }, 1000)
   }
 
   componentWillUnmount() {
