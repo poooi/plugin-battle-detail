@@ -39,15 +39,15 @@ class MainArea extends React.Component {
       let list = await AppData.listPacket()
       if (! (list && list.length > 0))
         return
-      let packets = []
-      await Promise.all(list.slice(0, MAX_PACKET_NUMBER).map(
+      let packets = await Promise.all(list.slice(0, MAX_PACKET_NUMBER).map(
         async (id) => {
           let packet = await AppData.loadPacket(id)
           if (packet != null) {
-            packets.push(packet)
+            return packet
           }
         }
       ))
+      packets.sort((a, b) => PacketManager.getId(a) > PacketManager.getId(b))
       // Update state with loaded packets.
       let {battleList, battleListNonce, battleNonce} = this.state
       battleList = battleList.concat(packets).slice(0, MAX_PACKET_NUMBER)
