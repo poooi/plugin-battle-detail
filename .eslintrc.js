@@ -7,6 +7,8 @@ module.exports = {
   'extends': [
     'eslint:recommended',
     'plugin:react/recommended',
+    'plugin:import/errors',
+    'plugin:import/warnings',
   ],
   'installedESLint': true,
   'parserOptions': {
@@ -18,6 +20,7 @@ module.exports = {
     'sourceType': 'module',
   },
   'plugins': [
+    'import',
     'react',
   ],
   'parser': 'babel-eslint',
