@@ -3,7 +3,9 @@
   "__COMMENT_002__": "Sort phrase block of modules by module name.",
   "__COMMENT_003__": "Sort phrase by first exist line number inside a block.",
 
-  "Show battle detail": "显示战斗详情",
+  "Battle Records": "战斗记录",
+  "Save detailed battle log": "保存详细的战斗日志",
+
   "Sortie": "出击",
   "Pratice": "演习",
   "Unknown error": "未知错误",

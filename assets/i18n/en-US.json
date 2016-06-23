@@ -3,7 +3,9 @@
   "__COMMENT_002__": "Sort phrase block of modules by module name.",
   "__COMMENT_003__": "Sort phrase by first exist line number inside a block.",
 
-  "Show battle detail": "Show battle detail",
+  "Battle Records": "Battle Records",
+  "Save detailed battle log": "Save detailed battle log",
+
   "Sortie": "Sortie",
   "Pratice": "Pratice",
   "Unknown error": "Unknown error",

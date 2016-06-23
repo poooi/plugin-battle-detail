@@ -3,7 +3,9 @@
   "__COMMENT_002__": "Sort phrase block of modules by module name.",
   "__COMMENT_003__": "Sort phrase by first exist line number inside a block.",
 
-  "Show battle detail": "戦闘情報を表示します",
+  "Battle Records": "戦闘記録",
+  "Save detailed battle log": "戦闘の詳細ログをセーブする",
+
   "Sortie": "出撃",
   "Pratice": "演習",
   "Unknown error": "不明エラー",

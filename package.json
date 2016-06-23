@@ -36,8 +36,8 @@
   },
   "homepage": "https://github.com/poooi/plugin-battle-detail",
   "poiPlugin": {
-    "title": "Battle Detail",
-    "description": "Show battle detail",
+    "title": "Battle Records",
+    "description": "Save detailed battle log",
     "icon": "fa/info-circle",
     "priority": 11
   }
