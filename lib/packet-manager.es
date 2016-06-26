@@ -214,7 +214,7 @@ class PacketManager extends EventEmitter {
   }
 
   getShip(shipId) {
-    let ship = window._ships[shipId] || null
+    let ship = Object.clone(window._ships[shipId] || null)
     if (ship) {
       ship.poi_slot = []
       for (let id of ship.api_slot) {
@@ -231,7 +231,7 @@ class PacketManager extends EventEmitter {
   }
 
   getItem(itemId) {
-    let item = window._slotitems[itemId] || null
+    let item = Object.clone(window._slotitems[itemId] || null)
     if (item) {
       // Clean up
       delete item.api_info
@@ -245,6 +245,7 @@ class PacketManager extends EventEmitter {
       if (!(corps.api_action_kind === 1)) {
         continue
       }
+      corps = Object.clone(corps)
       for (let plane of corps.api_plane_info) {
         plane.poi_slot = this.getItem(plane.api_slotid)
         // Clean up
