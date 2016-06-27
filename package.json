@@ -1,6 +1,6 @@
 {
   "name": "poi-plugin-battle-detail",
-  "version": "2.6.2",
+  "version": "2.6.3",
   "description": "A plugin which shows battle detail for poi.",
   "main": "index.js",
   "dependencies": {},
@@ -16,8 +16,8 @@
   },
   "scripts": {
     "compile": "npm run compile-es; npm run compile-cs",
-    "compile-es": "babel --only='views/**.es,lib/**.es' . -d .",
-    "compile-cs": "cjsx -cb ."
+    "compile-es": "babel --only='lib/**.es,views/**.es' . -d .",
+    "compile-cs": "cjsx -cb lib/ views/"
   },
   "repository": {
     "type": "git",
