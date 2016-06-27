@@ -48,7 +48,7 @@ class MainArea extends React.Component {
           }
         }
       ))
-      packets.sort((a, b) => PacketManager.getId(a) > PacketManager.getId(b))
+      packets.sort((a, b) => PacketManager.getId(b) - PacketManager.getId(a))
       // Update state with loaded packets.
       let {battleList, battleListNonce, battleNonce} = this.state
       battleList = battleList.concat(packets).slice(0, MAX_PACKET_NUMBER)
