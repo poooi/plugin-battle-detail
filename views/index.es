@@ -39,7 +39,8 @@ class MainArea extends React.Component {
       let list = await AppData.listPacket()
       if (! (list && list.length > 0))
         return
-      let packets = await Promise.all(list.slice(0, MAX_PACKET_NUMBER).map(
+      let plist = list.slice(list.length - MAX_PACKET_NUMBER, list.length)
+      let packets = await Promise.all(plist.map(
         async (id) => {
           let packet = await AppData.loadPacket(id)
           if (packet != null) {
