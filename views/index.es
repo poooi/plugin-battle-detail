@@ -68,6 +68,7 @@ class MainArea extends React.Component {
 
   handlePacket = async (newTime, newBattle) => {
     let {battle, battleNonce, battleList, battleListNonce, shouldAutoShow} = this.state
+    // MARK: hardcode
     if ((battleList[0] || {}).time == newTime) {
       battleList[0] = newBattle
       battleListNonce = updateNonce(battleListNonce)
