@@ -25,6 +25,7 @@ const StageType = {
   Escort: "Escort", // Shelling, escort fleet
   Night:  "Night",  // Shelling, night combat
   Opening: "Opening", // Torpedo, opening torpedo salvo
+                      // Shelling, opening anti-sub
 }
 
 class Attack {

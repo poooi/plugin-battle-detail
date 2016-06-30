@@ -62,8 +62,9 @@
   "Torpedo Support": "雷击支援",
   "Shelling": "炮击战",
   "Torpedo Salvo": "雷击战",
-  "Opening Torpedo Salvo": "开幕雷击",
   "Night Combat": "夜战",
+  "Opening Anti-Sub": "开幕对潜",
+  "Opening Torpedo Salvo": "开幕雷击",
   "No battle": "无战斗",
 
   "Modal": "模态框",

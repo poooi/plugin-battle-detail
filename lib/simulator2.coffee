@@ -287,6 +287,8 @@ class Simulator2
 
       # Normal Fleet
       if @fleetType == 0
+        # Opening Anti-Sub
+        stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_opening_taisen, StageType.Opening)
         # Opening Torpedo Salvo
         stages.push simulateTorpedo(@mainFleet, @enemyFleet, packet.api_opening_atack, StageType.Opening)
         # Shelling (Main), 1st
@@ -298,6 +300,8 @@ class Simulator2
 
       # Surface Task Force, 水上打撃部隊
       if @fleetType == 2
+        # Opening Anti-Sub
+        stages.push simulateShelling(@escortFleet, @enemyFleet, packet.api_opening_taisen, StageType.Opening)
         # Opening Torpedo Salvo
         stages.push simulateTorpedo(@escortFleet, @enemyFleet, packet.api_opening_atack, StageType.Opening)
         # Shelling (Main), 1st
@@ -312,6 +316,8 @@ class Simulator2
       # Carrier Task Force, 空母機動部隊
       # Transport Escort, 輸送護衛部隊
       if @fleetType == 1 or @fleetType == 3
+        # Opening Anti-Sub
+        stages.push simulateShelling(@escortFleet, @enemyFleet, packet.api_opening_taisen, StageType.Opening)
         # Opening Torpedo Salvo
         stages.push simulateTorpedo(@escortFleet, @enemyFleet, packet.api_opening_atack, StageType.Opening)
         # Shelling (Escort)
