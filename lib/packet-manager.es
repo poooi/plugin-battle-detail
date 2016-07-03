@@ -24,12 +24,12 @@ class PacketManager extends EventEmitter {
   }
 
   dispatch(battle) {
-    if (!battle) {
-      battle = this.battle
+    if (battle == null) {
+      battle = Object.clone(this.battle)
     }
-    // console.log('dispatch', battle)
-    if (battle && battle.time) {
-      this.emit('packet', battle.time, battle)
+    let id = this.getId(battle)
+    if (id && battle) {
+      this.emit('packet', id, battle)
     }
   }
 

@@ -21,11 +21,10 @@ fs.ensureDir(APPDATA, (err) => {
 
 class AppData {
   constructor() {
-    // List of packet saved in APPDATA
-    // Use timestamp as id, Sort from oldest to newest
-    this.packetList = []
-    this.packetFile = {}
-    this.packetListLastRefresh = 0
+    // List of battle's id saved in APPDATA. Sort from oldest to newest
+    this.battleList = []
+    this.battleListLastRefresh = 0
+    this.battleFile = {}
   }
 
   async saveFile(name, data) {
@@ -53,7 +52,7 @@ class AppData {
     }
   }
 
-  async savePacket(id, packet) {
+  async saveBattle(id, packet) {
     if (! (id && packet))
       return
     try {
@@ -61,8 +60,11 @@ class AppData {
       let data = await gzipAsync(JSON.stringify(packet))
       await this.saveFile(name, data)
 
-      this.packetList.push(id)
-      this.packetFile[id] = {
+      if (! this.battleList.includes(id)) {
+        this.battleList.push(id)
+        this.battleList.sort()
+      }
+      this.battleFile[id] = {
         name: name,
         packet: packet,
       }
@@ -72,12 +74,11 @@ class AppData {
     }
   }
 
-  async loadPacket(id) {
-    if (id == null) {
+  async loadBattle(id) {
+    if (id == null)
       return null
-    }
     try {
-      let file = this.packetFile[id]
+      let file = this.battleFile[id]
       if (file == null)
         return null
       if (file.packet != null)
@@ -92,6 +93,7 @@ class AppData {
 
       // Convert packet on load for compatibility.
       packet = PacketManager.convertV1toV2(packet)
+
       file.packet = packet
       return packet
     }
@@ -101,17 +103,17 @@ class AppData {
     }
   }
 
-  async listPacket() {
-    if (this.packetList.length <= 0){
-      await this._refreshPacket()
+  async listBattle() {
+    if (this.battleList.length <= 0){
+      await this._refreshBattle()
     } else {
-      this._refreshPacket()
+      this._refreshBattle()
     }
-    return this.packetList
+    return this.battleList
   }
 
-  async _refreshPacket() {
-    if ((Date.now() - this.packetListLastRefresh) < REFRESH_INTERVAL) {
+  async _refreshBattle() {
+    if ((Date.now() - this.battleListLastRefresh) < REFRESH_INTERVAL) {
       return
     }
     try {
@@ -122,8 +124,8 @@ class AppData {
         let pp = path.parse(p)
         let name = pp.base
         let id = parseInt(name.slice(0, name.indexOf('.')))
-        if (! this.packetFile[id]) {
-          this.packetFile[id] = {
+        if (! this.battleFile[id]) {
+          this.battleFile[id] = {
             name: name,
             packet: null,
           }
@@ -131,21 +133,21 @@ class AppData {
         return id
       })
       list.sort()
-      this.packetList = list
-      this.packetListLastRefresh = Date.now()
+      this.battleList = list
+      this.battleListLastRefresh = Date.now()
     }
     catch (err) {
       console.error(err)
     }
   }
 
-  async searchPacket(start, end) {
+  async searchBattle(start, end) {
     if (! (start != null && end != null && start <= end)) {
       return
     }
-    this._refreshPacket()
+    this._refreshBattle()
     let list = []
-    for (let id of this.packetList) {
+    for (let id of this.battleList) {
       if (id < start)
         continue
       if (id > end)

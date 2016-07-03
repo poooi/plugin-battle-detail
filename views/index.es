@@ -36,13 +36,13 @@ class MainArea extends React.Component {
     })
 
     setTimeout(async () => {
-      let list = await AppData.listPacket()
+      let list = await AppData.listBattle()
       if (! (list && list.length > 0))
         return
       let plist = list.slice(list.length - MAX_PACKET_NUMBER, list.length)
       let packets = await Promise.all(plist.map(
         async (id) => {
-          let packet = await AppData.loadPacket(id)
+          let packet = await AppData.loadBattle(id)
           if (packet != null) {
             return packet
           }
@@ -66,10 +66,10 @@ class MainArea extends React.Component {
     ipc.unregisterAll("BattleDetail")
   }
 
-  handlePacket = async (newTime, newBattle) => {
+  handlePacket = async (newId, newBattle) => {
+    AppData.saveBattle(newId, newBattle)
     let {battle, battleNonce, battleList, battleListNonce, shouldAutoShow} = this.state
-    // MARK: hardcode
-    if ((battleList[0] || {}).time == newTime) {
+    if (PacketManager.getId(battleList[0]) == newId) {
       battleList[0] = newBattle
       battleListNonce = updateNonce(battleListNonce)
     } else {
@@ -83,7 +83,6 @@ class MainArea extends React.Component {
       battle = newBattle
       battleNonce = updateNonce(battleNonce)
     }
-    AppData.savePacket(PacketManager.getId(newBattle), newBattle)
     this.setState({battle, battleNonce, battleList, battleListNonce})
   }
 
@@ -93,12 +92,12 @@ class MainArea extends React.Component {
     if (typeof timestamp == "number") {
       let start = timestamp - 2000
       let end = timestamp + 2000
-      let list = await AppData.searchPacket(start, end)
+      let list = await AppData.searchBattle(start, end)
       if (list == null) {
         message = __("Unknown error")
       } else if (list.length == 1) {
         try {
-          let packet = await AppData.loadPacket(list[0])
+          let packet = await AppData.loadBattle(list[0])
           this.updateBattle(packet)
           remote.getCurrentWindow().show()
         } catch (err) {

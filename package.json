@@ -17,7 +17,8 @@
   "scripts": {
     "compile": "npm run compile-es; npm run compile-cs",
     "compile-es": "babel --only='lib/**.es,views/**.es' . -d .",
-    "compile-cs": "cjsx -cb lib/ views/"
+    "compile-cs": "cjsx -cb lib/ views/",
+    "postpublish": "cnpm sync poi-plugin-battle-detail"
   },
   "repository": {
     "type": "git",

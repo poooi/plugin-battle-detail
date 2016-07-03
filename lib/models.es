@@ -13,50 +13,50 @@ class Stage {
 
 const StageType = {
   // Primary Type
-  Aerial:   "Aerial",   // Aerial Combat
-  Torpedo:  "Torpedo",  // Torpedo Salvo
-  Shelling: "Shelling", // Shelling
-  Support:  "Support",  // Support Fleet (Expedition)
-  LandBase: "LandBase", // Land Base Aerial Support
+  Aerial    : "Aerial",     // Aerial Combat
+  Torpedo   : "Torpedo",    // Torpedo Salvo
+  Shelling  : "Shelling",   // Shelling
+  Support   : "Support",    // Support Fleet (Expedition)
+  LandBase  : "LandBase",   // Land Base Aerial Support
   Engagement: "Engagement", // [SP] Engagement Information
 
   // Sub Type
-  Main:   "Main",   // Shelling, main fleet
-  Escort: "Escort", // Shelling, escort fleet
-  Night:  "Night",  // Shelling, night combat
+  Main   : "Main",    // Shelling, main fleet
+  Escort : "Escort",  // Shelling, escort fleet
+  Night  : "Night",   // Shelling, night combat
   Opening: "Opening", // Torpedo, opening torpedo salvo
                       // Shelling, opening anti-sub
 }
 
 class Attack {
   constructor(opts) {
-    this.type     = opts.type       // AttackType
-    this.fromShip = opts.fromShip   // Ship
-    this.toShip   = opts.toShip     // Ship
+    this.type     = opts.type      // AttackType
+    this.fromShip = opts.fromShip  // Ship
+    this.toShip   = opts.toShip    // Ship
 
     this.damage = opts.damage   // [int, ...]
     this.hit    = opts.hit      // [HitType, ...]
     this.fromHP = opts.fromHP   // HP before attack.
-    this.toHP   = opts.toHP       // HP after attack.
-    this.useItem = opts.useItem   // int, $slotitem[] OR null
+    this.toHP   = opts.toHP     // HP after attack.
+    this.useItem = opts.useItem  // int, $slotitem[] OR null
   }
 }
 
 const AttackType = {
   Normal: "Normal",             // 通常攻撃
-  Laser:  "Laser",              // レーザー攻撃
+  Laser : "Laser",              // レーザー攻撃
   Double: "Double",             // 連撃
   Primary_Secondary_CI: "PSCI", // カットイン(主砲/副砲)
-  Primary_Radar_CI:     "PRCI", // カットイン(主砲/電探)
-  Primary_AP_CI:        "PACI", // カットイン(主砲/徹甲)
-  Primary_Primary_CI:   "PrCI", // カットイン(主砲/主砲)
-  Primary_Torpedo_CI:   "PTCI", // カットイン(主砲/魚雷)
-  Torpedo_Torpedo_CI:   "TTCI", // カットイン(魚雷/魚雷)
+  Primary_Radar_CI    : "PRCI", // カットイン(主砲/電探)
+  Primary_AP_CI       : "PACI", // カットイン(主砲/徹甲)
+  Primary_Primary_CI  : "PrCI", // カットイン(主砲/主砲)
+  Primary_Torpedo_CI  : "PTCI", // カットイン(主砲/魚雷)
+  Torpedo_Torpedo_CI  : "TTCI", // カットイン(魚雷/魚雷)
 }
 
 const HitType = {
-  Miss:     0,
-  Hit:      1,
+  Miss    : 0,
+  Hit     : 1,
   Critical: 2,
 }
 
@@ -73,12 +73,12 @@ class Ship {
     this.lostHP = opts.lostHP || 0
     this.useItem = opts.useItem || null
 
-    this.raw   = opts.raw
+    this.raw = opts.raw
   }
 }
 
 const ShipOwner = {
-  Ours:  "Ours",
+  Ours : "Ours",
   Enemy: "Enemy",
 }
 
@@ -103,6 +103,5 @@ class Fleet {
     this.LBAC     = opts.LBAC      // api_get_member/base_air_corps (Extended)
   }
 }
-
 
 module.exports = {Stage, StageType, Attack, AttackType, HitType, Ship, ShipOwner, Battle, Fleet}
