@@ -1,6 +1,6 @@
 "use strict"
 
-const {React, ReactBootstrap, ROOT, $ships, $slotitems, __, __r} = window
+const {React, ReactBootstrap, FontAwesome, ROOT, $ships, $slotitems, __, __r} = window
 const {Panel, Grid, Row, Col} = ReactBootstrap
 const {SlotitemIcon} = require(`${ROOT}/views/components/etc/icon`)
 const {FABar, HPBar} = require('./bar')
@@ -28,8 +28,9 @@ class OverviewArea extends React.Component {
     const {simulator} = this.props
     return (
       <div id="overview-area">
-        <Panel header={__("Battle Overview")} collapsible defaultExpanded={DEFAULT_EXPANDED}
-               onEnter={this.onSelect.bind(this, true)} onExit={this.onSelect.bind(this, false)}>
+        <Panel collapsible defaultExpanded={DEFAULT_EXPANDED}
+               onEnter={this.onSelect.bind(this, true)} onExit={this.onSelect.bind(this, false)}
+               header={<span>{__("Battle Overview")} <FontAwesome name='caret-down' /></span>} >
         {
           simulator ? (
             <div>
