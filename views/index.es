@@ -69,7 +69,7 @@ class MainArea extends React.Component {
   handlePacket = async (newId, newBattle) => {
     AppData.saveBattle(newId, newBattle)
     let {battle, battleNonce, battleList, battleListNonce, shouldAutoShow} = this.state
-    if (PacketManager.getId(battleList[0]) == newId) {
+    if (PacketManager.getId(battleList[0]) === newId) {
       battleList[0] = newBattle
       battleListNonce = updateNonce(battleListNonce)
     } else {
