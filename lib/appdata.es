@@ -12,9 +12,11 @@ const writeFileAsync = promisify(fs.writeFile)
 const globAsync = promisify(glob)
 const gzipAsync = promisify(zlib.gzip)
 const unzipAsync = promisify(zlib.unzip)
+const GZIP_EXT = '.gz'
 
 const APPDATA = path.join(window.APPDATA_PATH, 'battle-detail')
 const REFRESH_INTERVAL = 60000
+
 fs.ensureDir(APPDATA, (err) => {
   if (err) console.error(err)
 })  
@@ -27,12 +29,17 @@ class AppData {
     this.battleFile = {}
   }
 
-  async saveFile(name, data) {
+  async saveFile(name, data, gzip=false) {
     if (! (name && data))
       return
     try {
+      if (gzip) {
+        name += GZIP_EXT
+        data = await gzipAsync(data)
+      }
       let fpath = path.join(APPDATA, name)
       await writeFileAsync(fpath, data)
+      return name
     }
     catch (err) {
       console.error(err)
@@ -45,6 +52,10 @@ class AppData {
     try {
       let fpath = path.join(APPDATA, name)
       let data = await readFileAsync(fpath)
+      if (path.parse(name).ext === GZIP_EXT) {
+        data = await unzipAsync(data)
+        data = data.toString()
+      }
       return data
     }
     catch (err) {
@@ -56,9 +67,9 @@ class AppData {
     if (! (id && packet))
       return
     try {
-      let name = `${id}.json.gz`
-      let data = await gzipAsync(JSON.stringify(packet))
-      await this.saveFile(name, data)
+      let name = `${id}.json`
+      let data = JSON.stringify(packet)
+      name = await this.saveFile(name, data, true)
 
       if (! this.battleList.includes(id)) {
         this.battleList.push(id)
@@ -85,10 +96,6 @@ class AppData {
         return file.packet
 
       let data = await this.loadFile(file.name)
-      if (path.parse(file.name).ext == '.gz') {
-        data = await unzipAsync(data)
-        data = data.toString()
-      }
       let packet = JSON.parse(data)
 
       // Convert packet on load for compatibility.
@@ -99,7 +106,6 @@ class AppData {
     }
     catch (err) {
       console.error(err)
-      return null
     }
   }
 
