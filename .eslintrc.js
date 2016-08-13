@@ -37,4 +37,25 @@ module.exports = {
 
     'react/prop-types': 'off',
   },
+  'settings': {
+    'import/resolver': {
+      'node': {
+        'extensions': ['.js', '.jsx', '.es', '.coffee', '.cjsx'],
+        'paths': [__dirname],
+      },
+    },
+    'import/core-modules': [
+      'electron',
+      'react',
+      'react-redux',
+      'redux-observers',
+      'reselect',
+      'react-bootstrap',
+      'react-fontawesome',
+      'path-extra',
+      'fs-extra',
+      'lodash',
+      'cson',
+    ],
+  },
 }
