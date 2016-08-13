@@ -1,6 +1,8 @@
 "use strict"
 
-const {React, ReactBootstrap, FontAwesome, ROOT, $ships, $slotitems, __, __r} = window
+import {getShipName, getItemName} from 'views/utils'
+
+const {React, ReactBootstrap, FontAwesome, ROOT, $ships, $slotitems, __} = window
 const {Panel, Grid, Row, Col} = ReactBootstrap
 const {SlotitemIcon} = require(`${ROOT}/views/components/etc/icon`)
 const {FABar, HPBar} = require('./bar')
@@ -116,7 +118,7 @@ class ShipView extends React.Component {
       <Grid className="ship-view">
         <Col xs={5}>
           <Row className='ship-name'>
-            <span>{__r(data.api_name)}</span>
+            <span>{getShipName(data)}</span>
             <span className="position-indicator">{`(${ship.id})`}</span>
           </Row>
           <Row className='ship-info'>
@@ -159,7 +161,7 @@ class LBACView extends React.Component {
       <Grid className="lbac-view">
         <Col xs={5}>
           <Row className='lbac-name'>
-            <span>{__r(corps.api_name)}</span>
+            <span>{getItemName(corps)}</span>
             <span className="position-indicator">{`(No.${corps.api_rid})`}</span>
           </Row>
         </Col>
@@ -194,7 +196,7 @@ class ItemView extends React.Component {
             ) : null}
           </span>
           <span className='item-name'>
-            {`${__r(data.api_name)}`}
+            {`${getShipName(data)}`}
           </span>
         </div>
         <div className='item-attr'>
