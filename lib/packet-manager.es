@@ -338,7 +338,7 @@ class PacketManager extends EventEmitter {
     let map = null, desc = packet.poi_comment
     let match = packet.poi_comment.match(/^(.+?) (\d+)-(\d+) \((\d+)(, boss)?\)$/)
     if (match) {
-      desc = match[1]
+      desc = match[5] ? [match[1], '(Boss)'].join(' ') : match[1]
       map = [match[2], match[3], match[4]]
     }
     let battle = new Battle({
