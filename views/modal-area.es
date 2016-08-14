@@ -7,10 +7,10 @@ class ModalArea extends React.Component {
   constructor() {
     super()
     this.state = {
-      isShow: false,
-      title:  null,
-      body:   null,
-      footer: null,
+      isShow  : false,
+      title   : null,
+      body    : null,
+      footer  : null,
       closable: false,
     }
   }
@@ -26,19 +26,15 @@ class ModalArea extends React.Component {
   showModal = (options) => {
     if (options instanceof Object) {
       this.setState({
-        isShow: true,
-        title:  options.title,
-        body:   options.body,
-        footer: options.footer,
-        closable: options.footer || true,
+        isShow  : true,
+        title   : options.title,
+        body    : options.body,
+        footer  : options.footer,
+        closable: options.closable || true,
       })
     }
   }
   hideModal = () => {
-    this.onHide()
-  }
-
-  onHide = () => {
     this.setState({
       isShow: false,
     })
@@ -47,11 +43,11 @@ class ModalArea extends React.Component {
   render() {
     let {isShow, title, body, footer, closable} = this.state
     if (body instanceof Array) {
-      body = body.map((body, i) => <div key={i}>{body}</div> )
+      body = body.map((body, i) => <p key={i}>{body}</p> )
     }
     return (
       <div id="modal-area">
-        <Modal autoFocus={true} animation={true} show={isShow} onHide={closable ? this.onHide : null}>
+        <Modal autoFocus={true} animation={true} show={isShow} onHide={closable ? this.hideModal : null}>
           <Modal.Header>
             <Modal.Title>{title}</Modal.Title>
           </Modal.Header>
@@ -60,7 +56,7 @@ class ModalArea extends React.Component {
           </Modal.Body>
           <Modal.Footer>
             {footer}
-            {closable ? <Button onClick={this.onHide}>{__("Close")}</Button> : null}
+            {closable ? <Button onClick={this.hideModal}>{__("Close")}</Button> : null}
           </Modal.Footer>
         </Modal>
       </div>

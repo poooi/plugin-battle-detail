@@ -21,3 +21,9 @@ export function getItemName(item) {
   let name = __r(item.api_name)
   return name
 }
+
+export async function sleep(ms) {
+  await new Promise((resolve, reject) => {
+    setTimeout(() => resolve(), ms)
+  })
+}

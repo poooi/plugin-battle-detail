@@ -259,16 +259,12 @@ class PacketManager extends EventEmitter {
 
   // Utils
   getId(packet) {
-    if (packet == null) {
-      return null
-    }
+    if (packet == null) return
     return packet.time || packet.poi_timestamp || null
   }
 
   getTime(packet) {
-    if (packet == null) {
-      return null
-    }
+    if (packet == null) return
     let str = ''
     let time = packet.time || packet.poi_timestamp
     if (time) {
@@ -279,10 +275,16 @@ class PacketManager extends EventEmitter {
     return str
   }
 
-  getDesc(packet) {
-    if (packet == null) {
-      return null
+  getMap(packet) {
+    if (packet == null) return
+    if (packet.map instanceof Array) {
+      let m = packet.map
+      return `${m[0]}-${m[1]} (${m[2]})`
     }
+  }
+
+  getDesc(packet) {
+    if (packet == null) return
     let desc = []
     if (packet.version == null) {
       desc.push(packet.poi_comment)

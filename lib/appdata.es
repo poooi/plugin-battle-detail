@@ -1,166 +1,110 @@
 "use strict"
 
 const fs = require('fs-extra')
-const glob = require('glob')
 const path = require('path-extra')
 const zlib = require('zlib')
 const {promisify} = require('bluebird')
+const CSV = require('./csv')
 const PacketManager = require('./packet-manager')
 
+const existsAsync = promisify(fs.exists)
+const readDirAsync = promisify(fs.readdir)
 const readFileAsync = promisify(fs.readFile)
 const writeFileAsync = promisify(fs.writeFile)
-const globAsync = promisify(glob)
 const gzipAsync = promisify(zlib.gzip)
 const unzipAsync = promisify(zlib.unzip)
 const GZIP_EXT = '.gz'
 
 const APPDATA = path.join(window.APPDATA_PATH, 'battle-detail')
-const REFRESH_INTERVAL = 60000
-
-fs.ensureDir(APPDATA, (err) => {
-  if (err) console.error(err)
-})  
+const MANIFEST = path.join(APPDATA, 'manifest.csv' + GZIP_EXT)
+const MANIFEST_CSV_OPTIONS = {
+  columns: ['id', 'time', 'map', 'desc'],
+}
 
 class AppData {
   constructor() {
-    // List of battle's id saved in APPDATA. Sort from oldest to newest
-    this.battleList = []
-    this.battleListLastRefresh = 0
-    this.battleFile = {}
+    fs.ensureDir(APPDATA, (err) => {
+      if (err) console.error(err)
+    })
   }
 
-  async saveFile(name, data, gzip=false) {
-    if (! (name && data))
+  async saveFile(name, data) {
+    if (!(name && data))
       return
-    try {
-      if (gzip) {
-        name += GZIP_EXT
-        data = await gzipAsync(data)
-      }
-      let fpath = path.join(APPDATA, name)
-      await writeFileAsync(fpath, data)
-      return name
+    if (path.parse(name).ext === GZIP_EXT) {
+      data = await gzipAsync(data)
     }
-    catch (err) {
-      console.error(err)
-    }
+    let fpath = path.join(APPDATA, name)
+    await writeFileAsync(fpath, data)
   }
 
   async loadFile(name) {
-    if (! (name))
+    if (!(name))
       return
-    try {
-      let fpath = path.join(APPDATA, name)
-      let data = await readFileAsync(fpath)
-      if (path.parse(name).ext === GZIP_EXT) {
-        data = await unzipAsync(data)
-        data = data.toString()
-      }
-      return data
+    let fpath = path.join(APPDATA, name)
+    let data = await readFileAsync(fpath)
+    if (path.parse(name).ext === GZIP_EXT) {
+      data = await unzipAsync(data)
+      data = data.toString()
     }
-    catch (err) {
-      console.error(err)
+    return data
+  }
+
+  async saveManifest(manifest) {
+    let data = CSV.stringify(manifest, MANIFEST_CSV_OPTIONS)
+    await this.saveFile(MANIFEST, data)
+  }
+
+  async loadManifest() {
+    if (await existsAsync(MANIFEST)) {
+      let data = await this.loadFile(MANIFEST)
+      return CSV.parse(data, MANIFEST_CSV_OPTIONS)
     }
   }
 
   async saveBattle(id, packet) {
-    if (! (id && packet))
+    if (!(id && packet))
       return
-    try {
-      let name = `${id}.json`
-      let data = JSON.stringify(packet)
-      name = await this.saveFile(name, data, true)
-
-      if (! this.battleList.includes(id)) {
-        this.battleList.push(id)
-        this.battleList.sort()
-      }
-      this.battleFile[id] = {
-        name: name,
-        packet: packet,
-      }
-    }
-    catch (err) {
-      console.error(err)
-    }
+    let name = `${id}.json` + GZIP_EXT
+    let data = JSON.stringify(packet)
+    await this.saveFile(name, data)
   }
 
   async loadBattle(id) {
-    if (id == null)
-      return null
-    try {
-      let file = this.battleFile[id]
-      if (file == null)
-        return null
-      if (file.packet != null)
-        return file.packet
+    if (!(id))
+      return
 
-      let data = await this.loadFile(file.name)
-      let packet = JSON.parse(data)
-
-      // Convert packet on load for compatibility.
-      packet = PacketManager.convertV1toV2(packet)
-
-      file.packet = packet
-      return packet
+    // Compatibility: Read 123456.json.gz & 123456.json
+    let data = null
+    for (let name of [`${id}.json` + GZIP_EXT, `${id}.json`]) {
+      try {
+        data = await this.loadFile(name)
+      }
+      catch (err) {
+        if (err.code === 'ENOENT')
+          continue
+      }
     }
-    catch (err) {
-      console.error(err)
-    }
+    if (data == null)
+      return
+
+    let packet = JSON.parse(data)
+    // Compatibility: Battle packet format
+    packet = PacketManager.convertV1toV2(packet)
+    return packet
   }
 
   async listBattle() {
-    if (this.battleList.length <= 0){
-      await this._refreshBattle()
-    } else {
-      this._refreshBattle()
-    }
-    return this.battleList
-  }
-
-  async _refreshBattle() {
-    if ((Date.now() - this.battleListLastRefresh) < REFRESH_INTERVAL) {
-      return
-    }
-    try {
-      let list = []
-      list = list.concat(await globAsync(path.join(APPDATA, "*.json")))
-      list = list.concat(await globAsync(path.join(APPDATA, "*.json.gz")))
-      list = list.map((p) => {
-        let pp = path.parse(p)
-        let name = pp.base
-        let id = parseInt(name.slice(0, name.indexOf('.')))
-        if (! this.battleFile[id]) {
-          this.battleFile[id] = {
-            name: name,
-            packet: null,
-          }
-        }
-        return id
-      })
-      list.sort()
-      this.battleList = list
-      this.battleListLastRefresh = Date.now()
-    }
-    catch (err) {
-      console.error(err)
-    }
-  }
-
-  async searchBattle(start, end) {
-    if (! (start != null && end != null && start <= end)) {
-      return
-    }
-    this._refreshBattle()
-    let list = []
-    for (let id of this.battleList) {
-      if (id < start)
-        continue
-      if (id > end)
-        break
-      list.push(id)
-    }
-    return list
+    const BATTLE_REGEXP = /^(\d+)\.json/
+    let ids = []
+    let files = await readDirAsync(APPDATA)
+    files.map((file, i) => {
+      let match = file.match(BATTLE_REGEXP)
+      if (match && match[1]) {
+        ids.push(parseInt(match[1]))
+      }
+    })
+    return ids
   }
 }
 

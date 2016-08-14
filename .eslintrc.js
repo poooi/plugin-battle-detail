@@ -11,19 +11,14 @@ module.exports = {
     'plugin:import/warnings',
   ],
   'installedESLint': true,
-  'parserOptions': {
-    'ecmaVersion': 7,
-    'ecmaFeatures': {
-      'experimentalObjectRestSpread': true,
-      'jsx': true,
-    },
-    'sourceType': 'module',
-  },
+  'parser': 'babel-eslint',
   'plugins': [
     'import',
     'react',
   ],
-  'parser': 'babel-eslint',
+  'globals': {
+    'html2canvas': false,
+  },
   'rules': {
     'comma-dangle': ['error', 'always-multiline'],
     'indent': ['warn', 2],
@@ -34,7 +29,6 @@ module.exports = {
     'semi': ['error', 'never'],
     'sort-vars': 'warn',
     'unicode-bom': 'error',
-
     'react/prop-types': 'off',
   },
   'settings': {
