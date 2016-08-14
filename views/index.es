@@ -154,7 +154,7 @@ class MainArea extends React.Component {
       <div id="main">
         <ModalArea />
         <Tabs id="main-tabs" activeKey={this.state.activeTab} onSelect={this.onSelectTab}>
-          <Tab eventKey={0} title="Battle">
+          <Tab eventKey={0} title={__("Battle")}>
             <OptionArea
               battle={this.state.battle}
               updateBattle={this.updateBattle}
@@ -163,7 +163,7 @@ class MainArea extends React.Component {
               battle={this.state.battle}
               />
           </Tab>
-          <Tab eventKey={1} title="Browse">
+          <Tab eventKey={1} title={__("Browse")}>
             <BrowseArea
               manifest={this.state.manifest}
               updateBattle={this.updateBattle}

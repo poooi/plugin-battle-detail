@@ -57,16 +57,16 @@ class BrowseArea extends React.Component {
             <thead>
               <tr>
                 <th>#</th>
-                <th>Time</th>
-                <th>Map</th>
-                <th>Description</th>
+                <th>{__("Time")}</th>
+                <th>{__("Map")}</th>
+                <th>{__("Description")}</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
             {items.map((item, i) =>
               <tr key={i}>
-                <td>{i}</td>
+                <td>{i + 1}</td>
                 <td>{item.time}</td>
                 <td>{item.map}</td>
                 <td>{item.desc}</td>
