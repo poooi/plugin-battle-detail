@@ -276,7 +276,7 @@ class PacketManager extends EventEmitter {
 
   getMap(packet) {
     if (packet == null) return
-    if (packet.map instanceof Array) {
+    if (packet.map instanceof Array && packet.map.length > 0) {
       let m = packet.map
       return `${m[0]}-${m[1]} (${m[2]})`
     }
@@ -336,7 +336,7 @@ class PacketManager extends EventEmitter {
       delete packet.api_hougeki
     }
     let battle = new Battle({
-      map: [],
+      map: null,
       desc: packet.poi_comment,
       time: packet.poi_timestamp,
       fleet: fleet,

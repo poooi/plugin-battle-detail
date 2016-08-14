@@ -7,7 +7,6 @@ const {promisify} = require('bluebird')
 const CSV = require('./csv')
 const PacketManager = require('./packet-manager')
 
-const existsAsync = promisify(fs.exists)
 const readDirAsync = promisify(fs.readdir)
 const readFileAsync = promisify(fs.readFile)
 const writeFileAsync = promisify(fs.writeFile)

@@ -66,9 +66,9 @@ export class OptionArea extends React.Component {
     const {battle} = this.props
     let title = ''
     if (battle != null) {
-      let time = PacketManager.getTime(battle)
-      let map = PacketManager.getMap(battle)
-      let desc = battle.desc
+      let time = PacketManager.getTime(battle) || ''
+      let map = PacketManager.getMap(battle) || ''
+      let desc = battle.desc || ''
       title = `${time} ${desc} ${map}`
     }
     return (
