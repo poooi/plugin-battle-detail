@@ -335,9 +335,15 @@ class PacketManager extends EventEmitter {
       })
       delete packet.api_hougeki
     }
+    let map = null, desc = packet.poi_comment
+    let match = packet.poi_comment.match(/^(.+?) (\d+)-(\d+) \((\d+)(, boss)?\)$/)
+    if (match) {
+      desc = match[1]
+      map = [match[2], match[3], match[4]]
+    }
     let battle = new Battle({
-      map: null,
-      desc: packet.poi_comment,
+      map: map,
+      desc: desc,
       time: packet.poi_timestamp,
       fleet: fleet,
       packet: packets,
