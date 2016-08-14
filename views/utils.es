@@ -24,6 +24,6 @@ export function getItemName(item) {
 
 export async function sleep(ms) {
   await new Promise((resolve, reject) => {
-    setTimeout(() => resolve(), ms)
+    setTimeout(() => resolve(), ms > 0 ? ms : 0)
   })
 }

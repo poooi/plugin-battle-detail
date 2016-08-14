@@ -1,9 +1,9 @@
 "use strict"
 
-const {React, ReactBootstrap, _, __} = window
-const {Button, ButtonGroup, Table, Pagination} = ReactBootstrap
+const {React, ReactBootstrap, FontAwesome, __} = window
+const {Panel, Grid, Row, Col, Table, Pagination} = ReactBootstrap
 
-const PAGE_ITEM_AMOUNT = 50
+const PAGE_ITEM_AMOUNT = 20
 
 class BrowseArea extends React.Component {
   constructor() {
@@ -26,7 +26,7 @@ class BrowseArea extends React.Component {
     })
   }
 
-  onClickShow = (id) => {
+  onClickView = (id) => {
     this.props.updateBattle(id)
   }
 
@@ -40,37 +40,60 @@ class BrowseArea extends React.Component {
     }
     return (
       <div id="browse-area">
-        <Table striped bordered condensed hover>
-          <thead>
-            <tr>
-              <th>Time</th>
-              <th>Map</th>
-              <th>Description</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-          {items.map((item, i) =>
-            <tr key={i}>
-              <td>{item.time}</td>
-              <td>{item.map}</td>
-              <td>{item.desc}</td>
-              <td>
-                <Button onClick={() => this.onClickShow(item.id)}>{__("View")}</Button>
-              </td>
-            </tr>
-          )}
-          </tbody>
-        </Table>
+        <Panel>
+          <Grid>
+            <Row>
+              <Col xs={12} className='tip'>
+                <span>{__('Tip') + ': '}</span>
+                <span>{__('Tip.Akashic1.Part1')}</span>
+                <span><FontAwesome name='info-circle' /></span>
+                <span>{__('Tip.Akashic1.Part2')}</span>
+              </Col>
+            </Row>
+          </Grid>
+        </Panel>
+        <Panel header={__("Browse")}>
+          <Table striped bordered condensed hover fill>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Time</th>
+                <th>Map</th>
+                <th>Description</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+            {items.map((item, i) =>
+              <tr key={i}>
+                <td>{i}</td>
+                <td>{item.time}</td>
+                <td>{item.map}</td>
+                <td>{item.desc}</td>
+                <td><ViewButton onClick={() => this.onClickView(item.id)} /></td>
+              </tr>
+            )}
+            </tbody>
+          </Table>
+          <Pagination
+            ellipsis
+            boundaryLinks
+            items={pageAmount}
+            maxButtons={7}
+            activePage={pageNo}
+            onSelect={this.onSelectPage}
+            />
+        </Panel>
+      </div>
+    )
+  }
+}
 
-        <Pagination
-          ellipsis
-          boundaryLinks
-          items={pageAmount}
-          maxButtons={7}
-          activePage={pageNo}
-          onSelect={this.onSelectPage}
-          />
+class ViewButton extends React.Component {
+  render() {
+    return (
+      <div className={'cbtn'} onClick={this.props.onClick}>
+        {<FontAwesome name='info-circle' />}{__("View")}
       </div>
     )
   }

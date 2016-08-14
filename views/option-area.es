@@ -71,9 +71,10 @@ export class OptionArea extends React.Component {
       let desc = battle.desc || ''
       title = `${time} ${desc} ${map}`
     }
+    // header={__("Options")}
     return (
       <div id="option-area">
-        <Panel header={__("Options")}>
+        <Panel>
           <Grid>
             <Row>
               <Col xs={6}>
@@ -85,14 +86,6 @@ export class OptionArea extends React.Component {
                   <Button bsStyle='primary' style={{width: '100%'}} onClick={this.onClickImport}>{__("Paste Data")}</Button>
                   <Button bsStyle='primary' style={{width: '100%'}} onClick={this.onClickSave}>{__("Save as Image")}</Button>
                 </ButtonGroup>
-              </Col>
-            </Row>
-            <Row>
-              <Col xs={12} className='tip'>
-                <span>{__('Tip') + ': '}</span>
-                <span>{__('Tip.Akashic1.Part1')}</span>
-                <span><FontAwesome name='info-circle' /></span>
-                <span>{__('Tip.Akashic1.Part2')}</span>
               </Col>
             </Row>
           </Grid>

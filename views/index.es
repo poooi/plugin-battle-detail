@@ -66,6 +66,7 @@ class MainArea extends React.Component {
     // Update manifest
     manifest = [...manifest]  // Make a copy
     while (diff.length > 0) {
+      let _st = Date.now()
       let ids = diff.splice(0, MANIFEST_LOAD_NUMBER)
       await Promise.all(
         ids.map(async (id) => {
@@ -80,7 +81,7 @@ class MainArea extends React.Component {
           }
         }
       ))
-      await sleep(MANIFEST_LOAD_INTERVAL)
+      await sleep(MANIFEST_LOAD_INTERVAL + _st - Date.now())
     }
     manifest.sort((x, y) => y.id - x.id)  // Sort from newer to older
     AppData.saveManifest(manifest)

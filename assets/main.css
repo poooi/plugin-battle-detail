@@ -5,6 +5,9 @@
 .btn-group {
   display: flex;
 }
+.cbtn {
+  cursor: pointer;
+}
 .panel {
   margin-bottom: 12px;
 }
@@ -20,6 +23,11 @@
 }
 .panel .col {
   padding: 0;
+}
+.pagination {
+  display: flex;
+  margin: auto;
+  width: fit-content;
 }
 .progress {
   border-radius: 0px;
@@ -86,11 +94,6 @@ img.svg {
 .hp-bar img {
   margin-left: -4px;
   margin-right: -4px;
-}
-
-/* Option Area */
-#option-area .tip {
-  font-size: 80%;
 }
 
 /* Fleet View */
@@ -225,4 +228,9 @@ img.svg {
 .attack-row > span:nth-child(3),
 .attack-row > span:nth-child(5) {
   flex: 1;
+}
+
+/* Browse Area */
+#browse-area .tip {
+  font-size: 80%;
 }
