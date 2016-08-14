@@ -63,13 +63,21 @@ export class OptionArea extends React.Component {
   }
 
   render() {
+    const {battle} = this.props
+    let title = ''
+    if (battle != null) {
+      let time = PacketManager.getTime(battle)
+      let map = PacketManager.getMap(battle)
+      let desc = battle.desc
+      title = `${time} ${desc} ${map}`
+    }
     return (
       <div id="option-area">
         <Panel header={__("Options")}>
           <Grid>
             <Row>
               <Col xs={6}>
-                <Input type="select"></Input>
+                <Input type="text" disabled value={title}></Input>
               </Col>
               <Col xs={6}>
                 <ButtonGroup>

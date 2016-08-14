@@ -10,8 +10,8 @@ const OptionArea = require('./option-area')
 const BattleArea = require('./battle-area')
 
 const {React, remote, ipc, __} = window
-const MANIFEST_LOAD_INTERVAL = 100
-const MANIFEST_LOAD_NUMBER = 10
+const MANIFEST_LOAD_INTERVAL = 1000
+const MANIFEST_LOAD_NUMBER = 1000
 
 class MainArea extends React.Component {
   constructor() {
@@ -37,30 +37,37 @@ class MainArea extends React.Component {
   }
 
   init = async () => {
+    // Load manifest from disk
     let manifest = await AppData.loadManifest() || []
     for (let line of manifest) {
       line.id = parseInt(line.id)
     }
-    this.setState({manifest})
+    await this.updateManifest(manifest)
 
-    let mlist = manifest.map((x) => x.id)
-    let flist = await AppData.listBattle()
-    let list = _.difference(flist, mlist)
-    while (list.length > 0) {
-      let ids = list.splice(0, MANIFEST_LOAD_NUMBER)
+    // Should update manifest?
+    let diff = _.difference(
+      await AppData.listBattle(),
+      manifest.map((x) => x.id),
+    )
+    if (diff.length === 0) {
+      return
+    }
+
+    // Update manifest
+    manifest = [...manifest]  // Make a copy
+    while (diff.length > 0) {
+      let ids = diff.splice(0, MANIFEST_LOAD_NUMBER)
+      console.log('Loading manifest...', ids.length)
       await Promise.all(
         ids.map(async (id) => {
           let packet = await AppData.loadBattle(id)
           if (packet != null) {
-            manifest = [
-              {
-                id  : id,
-                time: PacketManager.getTime(packet),
-                map : PacketManager.getMap(packet),
-                desc: PacketManager.getDesc(packet),
-              },
-              ...manifest,
-            ]
+            manifest.push({
+              id  : id,
+              time: PacketManager.getTime(packet),
+              map : PacketManager.getMap(packet),
+              desc: packet.desc,
+            })
           }
         }
       ))
@@ -68,7 +75,7 @@ class MainArea extends React.Component {
     }
     manifest.sort((x, y) => y.id - x.id)  // Sort from newer to older
     AppData.saveManifest(manifest)
-    this.setState({manifest})
+    await this.updateManifest(manifest)
   }
 
   handlePacket = async (newId, newBattle) => {
@@ -84,7 +91,7 @@ class MainArea extends React.Component {
         id:   newId,
         time: PacketManager.getTime(newBattle),
         map:  PacketManager.getMap(newBattle),
-        desc: PacketManager.getDesc(newBattle),
+        desc: newBattle.desc,
       },
       ...manifest,
     ]
@@ -94,55 +101,23 @@ class MainArea extends React.Component {
     this.setState({battle, manifest})
   }
 
-  // API for IPC
-  showBattleWithTimestamp = async (timestamp, callback) => {
-    let message = null
-    while (0) {  // eslint-disable-line no-constant-condition
-      if (typeof timestamp != "number") {
-        message = __("Unknown error")
-        break
-      }
-      let start = timestamp - 2000
-      let end = timestamp + 2000
-      let list = []
-      for (let {id} of this.state.manifest) {
-        if (id < start)
-          continue
-        if (id > end)
-          break
-        list.push(id)
-      }
-      if (list == null) {
-        message = __("Unknown error")
-        break
-      }
-      if (list.length <= 0) {
-        message = __("Battle not found")
-        break
-      }
-      if (list.length >= 2) {
-        message = __("Multiple battle found")
-        break
-      }
-      try {
-        let packet = await AppData.loadBattle(list[0])
-        remote.getCurrentWindow().show()
-        this.updateBattle(packet)
-      } catch (err) {
-        message = __("Unknown error")
-        console.error(err)
-      }
-    }
-    if (callback instanceof Function) {
-      callback(message)
-    }
-  }
-
   updateBattle = (battle) => {
     this.setState({
       battle  : battle,
       showLast: false,
     })
+  }
+
+  updateManifest = async (manifest) => {
+    let {battle, showLast} = this.state
+    if (manifest == null) {
+      manifest = []
+    }
+    if (showLast) {
+      let last = manifest[0] || {}
+      battle = await AppData.loadBattle(last.id)
+    }
+    this.setState({battle, manifest})
   }
 
   updateShowLast = (showLast) => {
@@ -166,6 +141,49 @@ class MainArea extends React.Component {
           />
       </div>
     )
+  }
+
+  showBattleWithTimestamp = async (timestamp, callback) => {
+    let message = null
+    do {  // eslint-disable-line no-constant-condition
+      if (typeof timestamp != "number") {
+        message = __("Unknown error")
+        break
+      }
+      let start = timestamp - 2000
+      let end = timestamp + 2000
+      let list = []
+      for (let {id} of this.state.manifest) {
+        if (id > end)
+          continue
+        if (id < start)
+          break
+        list.push(id)
+      }
+      if (list == null) {
+        message = __("Unknown error")
+        break
+      }
+      if (list.length <= 0) {
+        message = __("Battle not found")
+        break
+      }
+      if (list.length >= 2) {
+        message = __("Multiple battle found")
+        break
+      }
+      try {
+        let packet = await AppData.loadBattle(list[0])
+        remote.getCurrentWindow().show()
+        this.updateBattle(packet)
+      } catch (err) {
+        message = __("Unknown error")
+        console.error(err)
+      }
+    } while (0)
+    if (typeof callback === 'function') {
+      callback(message)
+    }
   }
 }
 

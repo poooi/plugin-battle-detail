@@ -16,7 +16,7 @@ const unzipAsync = promisify(zlib.unzip)
 const GZIP_EXT = '.gz'
 
 const APPDATA = path.join(window.APPDATA_PATH, 'battle-detail')
-const MANIFEST = path.join(APPDATA, 'manifest.csv' + GZIP_EXT)
+const MANIFEST = 'manifest.1.csv' + GZIP_EXT
 const MANIFEST_CSV_OPTIONS = {
   columns: ['id', 'time', 'map', 'desc'],
 }
@@ -29,8 +29,7 @@ class AppData {
   }
 
   async saveFile(name, data) {
-    if (!(name && data))
-      return
+    if (!(name && data)) return
     if (path.parse(name).ext === GZIP_EXT) {
       data = await gzipAsync(data)
     }
@@ -39,8 +38,7 @@ class AppData {
   }
 
   async loadFile(name) {
-    if (!(name))
-      return
+    if (!(name)) return
     let fpath = path.join(APPDATA, name)
     let data = await readFileAsync(fpath)
     if (path.parse(name).ext === GZIP_EXT) {
@@ -56,9 +54,13 @@ class AppData {
   }
 
   async loadManifest() {
-    if (await existsAsync(MANIFEST)) {
+    try {
       let data = await this.loadFile(MANIFEST)
       return CSV.parse(data, MANIFEST_CSV_OPTIONS)
+    }
+    catch (err) {
+      if (err.code !== 'ENOENT')
+        throw err
     }
   }
 
@@ -81,8 +83,8 @@ class AppData {
         data = await this.loadFile(name)
       }
       catch (err) {
-        if (err.code === 'ENOENT')
-          continue
+        if (err.code !== 'ENOENT')
+          throw err
       }
     }
     if (data == null)

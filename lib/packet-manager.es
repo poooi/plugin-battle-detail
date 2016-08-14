@@ -266,9 +266,8 @@ class PacketManager extends EventEmitter {
   getTime(packet) {
     if (packet == null) return
     let str = ''
-    let time = packet.time || packet.poi_timestamp
-    if (time) {
-      let date = new Date(time)
+    if (packet.time) {
+      let date = new Date(packet.time)
       date.setMinutes(date.getMinutes() - date.getTimezoneOffset())
       str = date.toISOString().slice(0, 19).replace('T', ' ')
     }
@@ -281,18 +280,6 @@ class PacketManager extends EventEmitter {
       let m = packet.map
       return `${m[0]}-${m[1]} (${m[2]})`
     }
-  }
-
-  getDesc(packet) {
-    if (packet == null) return
-    let desc = []
-    if (packet.version == null) {
-      desc.push(packet.poi_comment)
-    } else {
-      desc.push(packet.desc)
-      desc.push((packet.map || []).join('-'))
-    }
-    return desc.join(' ')
   }
 
   convertV1toV2(packet) {

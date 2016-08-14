@@ -26,7 +26,7 @@ function simulate(battle) {
 
 class BattleArea extends React.Component {
   shouldComponentUpdate(nextProps, nextState) {
-    return !(this.props.nonce === nextProps.nonce)
+    return !(this.props.battle === nextProps.battle)
   }
 
   render() {
