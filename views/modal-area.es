@@ -25,12 +25,14 @@ class ModalArea extends React.Component {
 
   showModal = (options) => {
     if (options instanceof Object) {
+      if (options.closable == null)
+        options.closable = true
       this.setState({
         isShow  : true,
         title   : options.title,
         body    : options.body,
         footer  : options.footer,
-        closable: options.closable || true,
+        closable: options.closable,
       })
     }
   }

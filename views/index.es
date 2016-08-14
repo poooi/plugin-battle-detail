@@ -2,14 +2,15 @@
 
 import {sleep} from 'views/utils'
 
-const _ = require('lodash')
 const AppData = require('../lib/appdata')
 const PacketManager = require('../lib/packet-manager')
 const ModalArea = require('./modal-area')
 const OptionArea = require('./option-area')
 const BattleArea = require('./battle-area')
+const BrowseArea = require('./browse-area')
 
-const {React, remote, ipc, __} = window
+const {React, ReactBootstrap, remote, ipc, _, __} = window
+const {Tab, Tabs} = ReactBootstrap
 const MANIFEST_LOAD_INTERVAL = 1000
 const MANIFEST_LOAD_NUMBER = 1000
 
@@ -17,6 +18,7 @@ class MainArea extends React.Component {
   constructor() {
     super()
     this.state = {
+      activeTab: 0,
       battle: null,
       manifest: [],
       showLast: true,
@@ -53,11 +55,18 @@ class MainArea extends React.Component {
       return
     }
 
+    // Update notification
+    let eta = new Date(Date.now() + diff.length / MANIFEST_LOAD_NUMBER * MANIFEST_LOAD_INTERVAL)
+    window.showModal({
+      title: "Indexing",
+      body : `Indexing battle. ETA: ${eta.toLocaleTimeString()}`,
+      closable: false,
+    })
+
     // Update manifest
     manifest = [...manifest]  // Make a copy
     while (diff.length > 0) {
       let ids = diff.splice(0, MANIFEST_LOAD_NUMBER)
-      console.log('Loading manifest...', ids.length)
       await Promise.all(
         ids.map(async (id) => {
           let packet = await AppData.loadBattle(id)
@@ -76,6 +85,9 @@ class MainArea extends React.Component {
     manifest.sort((x, y) => y.id - x.id)  // Sort from newer to older
     AppData.saveManifest(manifest)
     await this.updateManifest(manifest)
+
+    // Update notification
+    window.hideModal()
   }
 
   handlePacket = async (newId, newBattle) => {
@@ -101,10 +113,14 @@ class MainArea extends React.Component {
     this.setState({battle, manifest})
   }
 
-  updateBattle = (battle) => {
+  updateBattle = async (battle) => {
+    if (typeof battle === 'number') {
+      battle = await AppData.loadBattle(battle)
+    }
     this.setState({
-      battle  : battle,
-      showLast: false,
+      activeTab: 0,
+      battle   : battle,
+      showLast : true,  // TODO: false
     })
   }
 
@@ -122,8 +138,13 @@ class MainArea extends React.Component {
 
   updateShowLast = (showLast) => {
     this.setState({
-      battle  : null,
-      showLast: false,
+      showLast: showLast,
+    })
+  }
+
+  onSelectTab = (key) => {
+    this.setState({
+      activeTab: key,
     })
   }
 
@@ -131,14 +152,23 @@ class MainArea extends React.Component {
     return (
       <div id="main">
         <ModalArea />
-        <OptionArea
-          battle={this.state.battle}
-          updateBattle={this.updateBattle}
-          updateShowLast={this.updateShowLast}
-          />
-        <BattleArea
-          battle={this.state.battle}
-          />
+        <Tabs id="main-tabs" activeKey={this.state.activeTab} onSelect={this.onSelectTab}>
+          <Tab eventKey={0} title="Battle">
+            <OptionArea
+              battle={this.state.battle}
+              updateBattle={this.updateBattle}
+              />
+            <BattleArea
+              battle={this.state.battle}
+              />
+          </Tab>
+          <Tab eventKey={1} title="Browse">
+            <BrowseArea
+              manifest={this.state.manifest}
+              updateBattle={this.updateBattle}
+              />
+          </Tab>
+        </Tabs>
       </div>
     )
   }

@@ -276,9 +276,9 @@ class PacketManager extends EventEmitter {
 
   getMap(packet) {
     if (packet == null) return
-    if (packet.map instanceof Array && packet.map.length > 0) {
-      let m = packet.map
-      return `${m[0]}-${m[1]} (${m[2]})`
+    let map = packet.map
+    if (map instanceof Array && map.length > 0) {
+      return `${map[0]}-${map[1]} (${map[2]})`
     }
   }
 
