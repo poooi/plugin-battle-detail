@@ -12,7 +12,7 @@ const BrowseArea = require('./browse-area')
 const {React, ReactBootstrap, remote, ipc, _, __} = window
 const {Tab, Tabs} = ReactBootstrap
 const MANIFEST_LOAD_INTERVAL = 1000
-const MANIFEST_LOAD_NUMBER = 1000
+const MANIFEST_LOAD_NUMBER = 500
 
 class MainArea extends React.Component {
   constructor() {
@@ -30,7 +30,7 @@ class MainArea extends React.Component {
       showBattleWithTimestamp: this.showBattleWithTimestamp,
     })
     PacketManager.addListener('packet', this.handlePacket)
-    setTimeout(this.init, 1000)
+    setTimeout(this.init, 100)
   }
 
   componentWillUnmount() {
