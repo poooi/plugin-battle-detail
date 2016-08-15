@@ -85,10 +85,10 @@ class MainArea extends React.Component {
       ))
       await sleep(MANIFEST_LOAD_INTERVAL + _st - Date.now())
     }
-    manifest = manifest.concat(this.state.manifest)
+    manifest = manifest.concat(this.state.manifest || [])
     manifest.sort((x, y) => y.id - x.id)  // Sort from newer to older
     AppData.saveManifest(manifest)
-    await this.updateManifest(manifest)
+    this.updateManifest(manifest)
 
     // Update notification
     window.hideModal()
@@ -115,6 +115,7 @@ class MainArea extends React.Component {
       battle = newBattle
     }
     this.setState({battle, manifest})
+    AppData.saveManifest(manifest)
   }
 
   updateBattle = async (battle) => {
