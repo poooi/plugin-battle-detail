@@ -3,7 +3,7 @@ module.exports = {
     x: config.get('poi.window.x', 0),
     y: config.get('poi.window.y', 0),
     width: 850,
-    height: 650,
+    height: 735,
   },
   windowURL: "file://" + __dirname + "/window.html",
   useEnv: true,
