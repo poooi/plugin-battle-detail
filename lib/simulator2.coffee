@@ -269,6 +269,7 @@ class Simulator2
     if path in ['/kcsapi/api_req_sortie/battle',
                 '/kcsapi/api_req_practice/battle',
                 '/kcsapi/api_req_sortie/airbattle',
+                '/kcsapi/api_req_sortie/ld_airbattle',
                 '/kcsapi/api_req_combined_battle/battle',
                 '/kcsapi/api_req_combined_battle/battle_water',
                 '/kcsapi/api_req_combined_battle/airbattle',
