@@ -1,6 +1,6 @@
 "use strict"
 
-const {React, ReactBootstrap, FontAwesome, __} = window
+const {React, ReactBootstrap, FontAwesome, _, __} = window
 const {Panel, Grid, Row, Col, Table, Pagination} = ReactBootstrap
 
 const PAGE_ITEM_AMOUNT = 20
@@ -33,10 +33,10 @@ class BrowseArea extends React.Component {
   render() {
     const {manifest} = this.props
     const {pageNo} = this.state
-    let pageAmount = 1, items = []
+    let pageAmount = 1, range = []
     if (manifest && manifest.length > 0) {
       pageAmount = Math.ceil(manifest.length / PAGE_ITEM_AMOUNT)
-      items = manifest.slice((pageNo - 1) * PAGE_ITEM_AMOUNT, pageNo * PAGE_ITEM_AMOUNT)
+      range = _.range((pageNo - 1) * PAGE_ITEM_AMOUNT, pageNo * PAGE_ITEM_AMOUNT)
     }
     return (
       <div id="browse-area">
@@ -56,23 +56,26 @@ class BrowseArea extends React.Component {
           <Table striped bordered condensed hover fill>
             <thead>
               <tr>
-                <th>#</th>
-                <th>{__("Time")}</th>
-                <th>{__("Map")}</th>
-                <th>{__("Description")}</th>
-                <th></th>
+                <th style={{width: '10%'}}>#</th>
+                <th style={{width: '30%'}}>{__("Time")}</th>
+                <th style={{width: '20%'}}>{__("Map")}</th>
+                <th style={{width: '25%'}}>{__("Description")}</th>
+                <th style={{width: '15%'}}></th>
               </tr>
             </thead>
             <tbody>
-            {items.map((item, i) =>
-              <tr key={i}>
-                <td>{i + 1}</td>
-                <td>{item.time}</td>
-                <td>{item.map}</td>
-                <td>{item.desc}</td>
-                <td><ViewButton onClick={() => this.onClickView(item.id)} /></td>
-              </tr>
-            )}
+            {range.map(i => {
+              let item = manifest[i]
+              return (item == null) ? void 0 : (
+                <tr key={i}>
+                  <td>{i + 1}</td>
+                  <td>{item.time}</td>
+                  <td>{item.map}</td>
+                  <td>{item.desc}</td>
+                  <td><ViewButton onClick={() => this.onClickView(item.id)} /></td>
+                </tr>
+              )
+            })}
             </tbody>
           </Table>
           <Pagination
