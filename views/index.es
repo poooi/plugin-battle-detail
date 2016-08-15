@@ -59,12 +59,13 @@ class MainArea extends React.Component {
     let eta = new Date(Date.now() + diff.length / MANIFEST_LOAD_NUMBER * MANIFEST_LOAD_INTERVAL)
     window.showModal({
       title: "Indexing",
-      body : `Indexing battle. ETA: ${eta.toLocaleTimeString()}`,
+      body : ["Indexing battle from disk. Please wait...",
+              `ETA: ${eta.toLocaleTimeString()}`],
       closable: false,
     })
 
     // Update manifest
-    manifest = [...manifest]  // Make a copy
+    manifest = []
     while (diff.length > 0) {
       let _st = Date.now()
       let ids = diff.splice(0, MANIFEST_LOAD_NUMBER)
@@ -83,6 +84,7 @@ class MainArea extends React.Component {
       ))
       await sleep(MANIFEST_LOAD_INTERVAL + _st - Date.now())
     }
+    manifest = manifest.concat(this.state.manifest)
     manifest.sort((x, y) => y.id - x.id)  // Sort from newer to older
     AppData.saveManifest(manifest)
     await this.updateManifest(manifest)
