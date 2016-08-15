@@ -13,7 +13,7 @@ export class OptionArea extends React.Component {
     )
   }
 
-  onClickExport() {
+  onClickExport = () => {
     let isSuccessful = false
     try {
       const {battle} = this.props
@@ -40,7 +40,7 @@ export class OptionArea extends React.Component {
     }
   }
 
-  onClickImport() {
+  onClickImport = () => {
     try {
       const data = clipboard.readText()
       let battle = JSON.parse(data)
@@ -55,7 +55,7 @@ export class OptionArea extends React.Component {
     }
   }
 
-  onClickSave() {
+  onClickSave = () => {
     html2canvas($('#battle-area'), {
       onrendered: (canvas) =>
         remote.getCurrentWebContents().downloadURL(canvas.toDataURL()) ,
