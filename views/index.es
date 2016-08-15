@@ -68,6 +68,7 @@ class MainArea extends React.Component {
     manifest = []
     while (diff.length > 0) {
       let _st = Date.now()
+      console.log(`Updating manifest... ${diff.length} remain at ${_st}.`)
       let ids = diff.splice(0, MANIFEST_LOAD_NUMBER)
       await Promise.all(
         ids.map(async (id) => {
