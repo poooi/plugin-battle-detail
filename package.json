@@ -1,6 +1,6 @@
 {
   "name": "poi-plugin-battle-detail",
-  "version": "3.0.0",
+  "version": "3.0.2",
   "description": "A plugin which shows battle detail for poi.",
   "main": "index.js",
   "dependencies": {},
@@ -15,9 +15,7 @@
     "eslint-plugin-react": "^5.1.1"
   },
   "scripts": {
-    "compile": "npm run compile-es; npm run compile-cs",
-    "compile-es": "babel --only='lib/**.es,views/**.es' . -d .",
-    "compile-cs": "cjsx -cb lib/ views/",
+    "compile": "babel --only='lib/**.es,views/**.es' . -d .",
     "postpublish": "cnpm sync poi-plugin-battle-detail"
   },
   "repository": {
