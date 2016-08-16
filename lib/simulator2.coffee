@@ -247,6 +247,7 @@ class Simulator2
     fleet = []
     for i in [1..6]
       break unless packet.api_ship_ke[i]?
+      slots = packet.api_eSlot[i - 1] || []
       fleet.push new Ship
         id:    packet.api_ship_ke[i]
         owner: ShipOwner.Enemy
@@ -257,7 +258,7 @@ class Simulator2
         raw:
           api_ship_id: packet.api_ship_ke[i]
           api_lv: packet.api_ship_lv[i]
-          poi_slot: packet.api_eSlot[i - 1].map((id) => $slotitems[id])
+          poi_slot: slots.map((id) => $slotitems[id])
     return fleet
 
   simulate: (packet) ->
