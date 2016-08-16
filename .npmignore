@@ -1,4 +1,5 @@
 docs/
 tests/
+
 .babelrc
-*.es
+.eslintrc.js

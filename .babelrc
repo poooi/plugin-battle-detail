@@ -3,9 +3,5 @@
   plugins: [
     "add-module-exports",
   ],
-  only: [
-    "lib/**.es",
-    "views/**.es",
-  ],
   compact: false,
 }

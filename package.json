@@ -15,7 +15,7 @@
     "eslint-plugin-react": "^5.1.1"
   },
   "scripts": {
-    "compile": "babel --only='lib/**.es,views/**.es' . -d .",
+    "compile": "babel --only='lib/*.es,views/*.es' . -d .",
     "postpublish": "cnpm sync poi-plugin-battle-detail"
   },
   "repository": {
