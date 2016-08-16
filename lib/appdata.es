@@ -38,28 +38,33 @@ class AppData {
 
   async loadFile(name) {
     if (!(name)) return
-    let fpath = path.join(APPDATA, name)
-    let data = await readFileAsync(fpath)
-    if (path.parse(name).ext === GZIP_EXT) {
-      data = await unzipAsync(data)
-      data = data.toString()
-    }
-    return data
-  }
-
-  async saveManifest(manifest) {
-    let data = CSV.stringify(manifest, MANIFEST_CSV_OPTIONS)
-    await this.saveFile(MANIFEST, data)
-  }
-
-  async loadManifest() {
     try {
-      let data = await this.loadFile(MANIFEST)
-      return CSV.parse(data, MANIFEST_CSV_OPTIONS)
+      let fpath = path.join(APPDATA, name)
+      let data = await readFileAsync(fpath)
+      if (path.parse(name).ext === GZIP_EXT) {
+        data = await unzipAsync(data)
+        data = data.toString()
+      }
+      return data
     }
     catch (err) {
       if (err.code !== 'ENOENT')
-        throw err
+        console.error(err)
+      return null
+    }
+  }
+
+  async saveManifest(manifest) {
+    if (manifest != null) {
+      let data = CSV.stringify(manifest, MANIFEST_CSV_OPTIONS)
+      await this.saveFile(MANIFEST, data)
+    }
+  }
+
+  async loadManifest() {
+    let data = await this.loadFile(MANIFEST)
+    if (data != null) {
+      return CSV.parse(data, MANIFEST_CSV_OPTIONS)
     }
   }
 
@@ -78,12 +83,9 @@ class AppData {
     // Compatibility: Read 123456.json.gz & 123456.json
     let data = null
     for (let name of [`${id}.json` + GZIP_EXT, `${id}.json`]) {
-      try {
-        data = await this.loadFile(name)
-      }
-      catch (err) {
-        if (err.code !== 'ENOENT')
-          throw err
+      data = await this.loadFile(name)
+      if (data != null) {
+        break
       }
     }
     if (data == null)
