@@ -129,6 +129,7 @@ simulateShelling = (fleet, enemyFleet, hougeki, subtype) ->
     damageTotal = 0
     for dmg in hougeki.api_damage[i]
       dmg = Math.floor(dmg)
+      dmg = 0 if dmg < 0
       damage.push dmg
       damageTotal += dmg
     hit = []
