@@ -20,9 +20,13 @@ class BrowseArea extends React.Component {
     )
   }
 
-  onSelectPage = (eventKey) => {
+  onSelectPage = (key, key2) => {
+    // Compatibility: React Bootstrap v0.28
+    if (typeof key2 === 'object') {
+      key = key2.eventKey
+    }
     this.setState({
-      pageNo: eventKey,
+      pageNo: key,
     })
   }
 
