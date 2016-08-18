@@ -22,7 +22,7 @@ class BrowseArea extends React.Component {
 
   onSelectPage = (key, key2) => {
     // Compatibility: React Bootstrap v0.28
-    if (typeof key2 === 'object') {
+    if (key2.eventKey != null) {
       key = key2.eventKey
     }
     this.setState({
