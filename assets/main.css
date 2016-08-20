@@ -82,6 +82,7 @@ img.svg {
   height: 20px;
   margin: 2px;
   text-align: center;
+  overflow: hidden;
 }
 
 /* HP Bar */
