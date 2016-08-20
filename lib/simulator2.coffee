@@ -210,11 +210,11 @@ simulateLandBase = (enemyShip, kouku) ->
     kouku: kouku
 
 getEngagementStage = (packet) ->
+  picks = _.pick(packet, 'api_search', 'api_formation')
+  picks.gimmick = [packet.api_boss_damaged, packet.api_xal01].find((x) -> x?)
   return new Stage
     type: StageType.Engagement
-    api: _.pick(packet,
-                'api_search', 'api_formation',
-                'api_boss_damaged', 'api_xal01')
+    api: picks
 
 class Simulator2
   constructor: (fleet) ->

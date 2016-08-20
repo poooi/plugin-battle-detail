@@ -72,7 +72,7 @@ getAttackTypeName = (type) ->
 EngagementTable = React.createClass
   render: ->
     {simulator, stage} = @props
-    {api_search, api_formation, api_boss_damaged, api_xal01, api_touch_plane, api_flare_pos} = stage.api
+    {api_search, api_formation, api_touch_plane, api_flare_pos, gimmick} = stage.api
     rows = []
 
     if api_formation?
@@ -89,10 +89,10 @@ EngagementTable = React.createClass
         <span>{DetectionNameMap[api_search[1]]}</span>
       </Row>
 
-    if (boss_damaged = api_boss_damaged || api_xal01)?
+    if gimmick?
       rows.push <Row className={"engagement-row"} key={3}>
         <span></span>
-        <span>{"Boss Damaged: #{boss_damaged}"}</span>
+        <span>{"#{__ 'Gimmick'}: #{gimmick}"}</span>
         <span></span>
       </Row>
 
