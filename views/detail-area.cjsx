@@ -317,6 +317,8 @@ StageTable = React.createClass
             additions.push <EngagementTable key={1} simulator={simulator} stage={stage} />
           when StageType.Opening
             title = __('Opening Anti-Sub')
+          else
+            title = __('Shelling')
 
       when StageType.Support
         switch stage.subtype

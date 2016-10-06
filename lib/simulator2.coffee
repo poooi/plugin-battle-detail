@@ -121,23 +121,27 @@ simulateTorpedo = (fleet, enemyFleet, enemyEscort, raigeki, subtype) ->
     attacks: attacks
     subtype: subtype
 
-simulateShelling = (fleet, enemyFleet, hougeki, subtype) ->
+simulateShelling = (fleet, enemyFleet, enemyEscort, hougeki, subtype) ->
   return unless hougeki?
+  console.log(hougeki)
   isNight = (subtype == StageType.Night)
   list = []
   for at, i in hougeki.api_at_list
     continue if at == -1
     at -= 1                             # Attacker
     df = hougeki.api_df_list[i][0] - 1  # Defender
-    fromEnemy = if hougeki.api_at_eflag? then hougeki.api_at_eflag[i] == 1 else 0 <= df <= 5
-    if at >= 6 then at -= 6
-    if df >= 6 then df -= 6
+    if hougeki.api_at_eflag?
+      fromEnemy = hougeki.api_at_eflag[i] == 1
+    else
+      fromEnemy = df < 6
+      if at >= 6 then at -= 6
+      if df >= 6 then df -= 6
     if fromEnemy
       fromShip = enemyFleet[at]
       toShip = fleet[df]
     else
       fromShip = fleet[at]
-      toShip = enemyFleet[df]
+      toShip = if df < 6 then enemyFleet[df] else enemyEscort[df - 6]
 
     attackType = if isNight then NightAttackTypeMap[hougeki.api_sp_list[i]] else DayAttackTypeMap[hougeki.api_at_type[i]]
     damage = []
@@ -166,7 +170,7 @@ simulateShelling = (fleet, enemyFleet, hougeki, subtype) ->
     subtype: subtype
 
 simulateNight = (fleet, enemyFleet, hougeki, packet) ->
-  stage = simulateShelling(fleet, enemyFleet, hougeki, StageType.Night)
+  stage = simulateShelling(fleet, enemyFleet, null, hougeki, StageType.Night)
   stage.api = _.pick(packet, 'api_touch_plane', 'api_flare_pos')
   return stage
 
@@ -222,14 +226,14 @@ class Simulator2
   constructor: (fleet) ->
     # >> package-manager.es L103
     @fleetType    = fleet.type || 0
-    @mainFleet    = @initFleet(fleet.main)
-    @escortFleet  = @initFleet(fleet.escort)
+    @mainFleet    = @initFleet(fleet.main, 0)
+    @escortFleet  = @initFleet(fleet.escort, 6)
     @supportFleet = @initFleet(fleet.support)
     @enemyFleet   = null  # Assign at first packet
     @enemyEscort  = null  # ^
     @landBaseAirCorps = fleet.LBAC
 
-  initFleet: (rawFleet) ->
+  initFleet: (rawFleet, intl=0) ->
     return unless rawFleet?
     fleet = []
     for rawShip, i in rawFleet
@@ -257,7 +261,7 @@ class Simulator2
         main.push new Ship
           id:    packet.api_ship_ke[i]
           owner: ShipOwner.Enemy
-          pos:   i
+          pos:   i  # [1..6]
           maxHP: packet.api_maxhps[i + 6]
           nowHP: packet.api_nowhps[i + 6]
           items: []  # We dont care
@@ -274,7 +278,7 @@ class Simulator2
         escort.push new Ship
           id:    packet.api_ship_ke_combined[i]
           owner: ShipOwner.Enemy
-          pos:   i
+          pos:   i + 6  # [7..12]
           maxHP: packet.api_maxhps_combined[i + 6]
           nowHP: packet.api_nowhps_combined[i + 6]
           items: []  # We dont care
@@ -322,41 +326,41 @@ class Simulator2
       if @fleetType == 0
         if enemyType == 0
           # Opening Anti-Sub
-          stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_opening_taisen, StageType.Opening)
+          stages.push simulateShelling(@mainFleet, @enemyFleet, null, packet.api_opening_taisen, StageType.Opening)
           # Opening Torpedo Salvo
           stages.push simulateTorpedo(@mainFleet, @enemyFleet, null, packet.api_opening_atack, StageType.Opening)
           # Shelling (Main), 1st
-          stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki1, StageType.Main)
+          stages.push simulateShelling(@mainFleet, @enemyFleet, null, packet.api_hougeki1, null)
           # Shelling (Main), 2nd
-          stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki2, StageType.Main)
+          stages.push simulateShelling(@mainFleet, @enemyFleet, null, packet.api_hougeki2, null)
           # Closing Torpedo Salvo
           stages.push simulateTorpedo(@mainFleet, @enemyFleet, null, packet.api_raigeki)
         if enemyType == 1
           # Opening Anti-Sub
-          #stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_opening_taisen, StageType.Opening)
+          #stages.push simulateShelling(@mainFleet, @enemyFleet, null, packet.api_opening_taisen, StageType.Opening)
           # Opening Torpedo Salvo
           stages.push simulateTorpedo(@mainFleet, @enemyFleet, @enemyEscort, packet.api_opening_atack, StageType.Opening)
           # Shelling (Escort)
-          stages.push simulateShelling(@mainFleet, @enemyEscort, packet.api_hougeki1, StageType.Escort)
+          stages.push simulateShelling(@mainFleet, @enemyFleet, @enemyEscort, packet.api_hougeki1, null)
           # Closing Torpedo Salvo
           stages.push simulateTorpedo(@mainFleet, @enemyFleet, @enemyEscort, packet.api_raigeki)
-          # Shelling (Main), 1st
-          stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki2, StageType.Main)
-          # Shelling (Main), 2nd
-          stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki3, StageType.Main)
+          # Shelling (Any), 1st
+          stages.push simulateShelling(@mainFleet, @enemyFleet, @enemyEscort, packet.api_hougeki2, null)
+          # Shelling (Any), 2nd
+          stages.push simulateShelling(@mainFleet, @enemyFleet, @enemyEscort, packet.api_hougeki3, null)
 
       # Surface Task Force, 水上打撃部隊
       if @fleetType == 2
         # Opening Anti-Sub
-        stages.push simulateShelling(@escortFleet, @enemyFleet, packet.api_opening_taisen, StageType.Opening)
+        stages.push simulateShelling(@escortFleet, @enemyFleet, null, packet.api_opening_taisen, StageType.Opening)
         # Opening Torpedo Salvo
         stages.push simulateTorpedo(@escortFleet, @enemyFleet, null, packet.api_opening_atack, StageType.Opening)
         # Shelling (Main), 1st
-        stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki1, StageType.Main)
+        stages.push simulateShelling(@mainFleet, @enemyFleet, null, packet.api_hougeki1, StageType.Main)
         # Shelling (Main), 2nd
-        stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki2, StageType.Main)
+        stages.push simulateShelling(@mainFleet, @enemyFleet, null, packet.api_hougeki2, StageType.Main)
         # Shelling (Escort)
-        stages.push simulateShelling(@escortFleet, @enemyFleet, packet.api_hougeki3, StageType.Escort)
+        stages.push simulateShelling(@escortFleet, @enemyFleet, null, packet.api_hougeki3, StageType.Escort)
         # Closing Torpedo Salvo
         stages.push simulateTorpedo(@escortFleet, @enemyFleet, null, packet.api_raigeki)
 
@@ -364,17 +368,17 @@ class Simulator2
       # Transport Escort, 輸送護衛部隊
       if @fleetType == 1 or @fleetType == 3
         # Opening Anti-Sub
-        stages.push simulateShelling(@escortFleet, @enemyFleet, packet.api_opening_taisen, StageType.Opening)
+        stages.push simulateShelling(@escortFleet, @enemyFleet, null, packet.api_opening_taisen, StageType.Opening)
         # Opening Torpedo Salvo
         stages.push simulateTorpedo(@escortFleet, @enemyFleet, null, packet.api_opening_atack, StageType.Opening)
         # Shelling (Escort)
-        stages.push simulateShelling(@escortFleet, @enemyFleet, packet.api_hougeki1, StageType.Escort)
+        stages.push simulateShelling(@escortFleet, @enemyFleet, null, packet.api_hougeki1, StageType.Escort)
         # Closing Torpedo Salvo
         stages.push simulateTorpedo(@escortFleet, @enemyFleet, null, packet.api_raigeki)
         # Shelling (Main), 1st
-        stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki2, StageType.Main)
+        stages.push simulateShelling(@mainFleet, @enemyFleet, null, packet.api_hougeki2, StageType.Main)
         # Shelling (Main), 2nd
-        stages.push simulateShelling(@mainFleet, @enemyFleet, packet.api_hougeki3, StageType.Main)
+        stages.push simulateShelling(@mainFleet, @enemyFleet, null, packet.api_hougeki3, StageType.Main)
 
     if path in ['/kcsapi/api_req_battle_midnight/battle',
                 '/kcsapi/api_req_practice/midnight_battle',
