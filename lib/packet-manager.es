@@ -168,13 +168,6 @@ class PacketManager extends EventEmitter {
         this.landBaseAirCorps = this.getLandBaseAirCorps()
         return
       }
-      // Check for battle packet
-      // We assume that all battle packet include `api_deck_id`.
-      let fleetId = body.api_deck_id || body.api_dock_id
-      let escortId = (this.fleetType > 0) ? 2 : -1   // HACK: -1 for empty fleet.
-      if (!fleetId) {
-        return
-      }
 
       let packet = Object.clone(body)
       packet.poi_path = req.path
@@ -184,6 +177,8 @@ class PacketManager extends EventEmitter {
         this.battle.time = packet.poi_time
       }
       if (!this.battle.fleet) {
+        let fleetId = [body.api_deck_id, body.api_dock_id].find((x) => x != null)
+        let escortId = (this.fleetType > 0) ? 2 : -1   // HACK: -1 for empty fleet.
         this.battle.fleet = new Fleet({
           type:    this.fleetType,
           main:    this.getFleet(fleetId),
