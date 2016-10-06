@@ -336,7 +336,7 @@ class Simulator2
           stages.push simulateTorpedo(@mainFleet, @enemyFleet, null, packet.api_raigeki)
         if enemyType == 1
           # Opening Anti-Sub
-          #stages.push simulateShelling(@mainFleet, @enemyFleet, null, packet.api_opening_taisen, StageType.Opening)
+          stages.push simulateShelling(@mainFleet, @enemyFleet, @enemyEscort, packet.api_opening_taisen, StageType.Opening)
           # Opening Torpedo Salvo
           stages.push simulateTorpedo(@mainFleet, @enemyFleet, @enemyEscort, packet.api_opening_atack, StageType.Opening)
           # Shelling (Escort)
