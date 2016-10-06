@@ -16,7 +16,7 @@ class PacketManager extends EventEmitter {
     this.bossSF       = null
 
     this.landBaseAirCorps   = null  // Prepare for fleet
-    this.api_base_air_corps = null  // Raw api data
+    this.api_base_corps     = null  // Raw api data
 
     this.praticeEnemy = null
 
@@ -67,18 +67,21 @@ class PacketManager extends EventEmitter {
     }
 
     // Land Base Air Corps
-    if (req.path === '/kcsapi/api_get_member/base_air_corps') {
-      this.api_base_air_corps = Object.clone(body)
+    // if (req.path === '/kcsapi/api_get_member/base_air_corps') {
+    //   this.api_base_corps = Object.clone(body)
+    // }
+    if (req.path === '/kcsapi/api_get_member/mapinfo') {
+      this.api_base_corps = Object.clone(body.api_air_base)
     }
-    if (req.path === '/kcsapi/api_req_air_corps/set_plane') {
-      let corps = this.api_base_air_corps[postBody.api_base_id - 1]
+    if (['/kcsapi/api_req_air_corps/supply', '/kcsapi/api_req_air_corps/set_plane'].includes(req.path)) {
+      let corps = this.api_base_corps[postBody.api_base_id - 1]
       corps.api_distance = body.api_distance
       for (let newp of body.api_plane_info) {
         for (let i = 0; i < corps.api_plane_info.length; i++) {
           let oldp = corps.api_plane_info[i]
           // Use `==` to cast type automatically
           if (newp.api_squadron_id == oldp.api_squadron_id) {
-            corps.api_plane_info[i] = newp
+            corps.api_plane_info[i] = Object.clone(newp)
           }
         }
       }
@@ -87,7 +90,7 @@ class PacketManager extends EventEmitter {
       let baseIds = postBody.api_base_id.split(',')
       let actionKinds = postBody.api_action_kind.split(',')
       for (let i = 0; i < baseIds.length; i++) {
-        let corps = this.api_base_air_corps[baseIds[i] - 1]
+        let corps = this.api_base_corps[baseIds[i] - 1]
         corps.api_action_kind = parseInt(actionKinds[i])
       }
     }
@@ -241,7 +244,7 @@ class PacketManager extends EventEmitter {
 
   getLandBaseAirCorps() {
     let landBaseAirCorps = []
-    for (let corps of this.api_base_air_corps) {
+    for (let corps of this.api_base_corps) {
       if (!(corps.api_action_kind === 1)) {
         continue
       }
