@@ -123,7 +123,6 @@ simulateTorpedo = (fleet, enemyFleet, enemyEscort, raigeki, subtype) ->
 
 simulateShelling = (fleet, enemyFleet, enemyEscort, hougeki, subtype) ->
   return unless hougeki?
-  console.log(hougeki)
   isNight = (subtype == StageType.Night)
   list = []
   for at, i in hougeki.api_at_list
