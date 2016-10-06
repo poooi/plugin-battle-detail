@@ -206,16 +206,10 @@ simulateSupport = (enemyShip, support, flag) ->
       attacks: attacks
       subtype: SupportTypeMap[flag]
 
-simulateLandBase = (enemyShip, kouku) ->
-  return unless kouku?
-  attacks = []
-  if kouku.api_stage3?
-    st3 = kouku.api_stage3
-    attacks = attacks.concat(simulateAerialAttack(enemyShip, st3.api_edam, st3.api_ebak_flag, st3.api_erai_flag, st3.api_ecl_flag))
-  return new Stage
-    type: StageType.LandBase
-    attacks: attacks
-    kouku: kouku
+simulateLandBase = (enemyFleet, enemyEscort, kouku) ->
+  stage = simulateAerial(null, null, enemyFleet, enemyEscort, kouku)
+  stage.type = StageType.LandBase
+  return stage
 
 getEngagementStage = (packet) ->
   picks = _.pick(packet, 'api_search', 'api_formation')
@@ -316,7 +310,7 @@ class Simulator2
       stages.push getEngagementStage(packet)
       # Land base air attack
       for api_kouku in packet.api_air_base_attack || []
-        stages.push simulateLandBase(@enemyFleet, api_kouku)
+        stages.push simulateLandBase(@enemyFleet, @enemyEscort, api_kouku)
       # Aerial Combat
       stages.push simulateAerial(@mainFleet, @escortFleet, @enemyFleet, @enemyEscort, packet.api_kouku)
       # Aerial Combat 2nd
