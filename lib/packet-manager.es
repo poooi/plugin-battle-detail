@@ -71,7 +71,7 @@ class PacketManager extends EventEmitter {
     //   this.api_base_corps = Object.clone(body)
     // }
     if (req.path === '/kcsapi/api_get_member/mapinfo') {
-      this.api_base_corps = Object.clone(body.api_air_base)
+      this.api_base_corps = Object.clone(body.api_air_base || [])
     }
     if (['/kcsapi/api_req_air_corps/supply', '/kcsapi/api_req_air_corps/set_plane'].includes(req.path)) {
       let corps = this.api_base_corps[postBody.api_base_id - 1]
