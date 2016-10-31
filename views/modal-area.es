@@ -48,7 +48,7 @@ class ModalArea extends React.Component {
     }
     return (
       <div id="modal-area">
-        <Modal autoFocus={true} animation={true} show={isShow} onHide={closable ? this.hideModal : null}>
+        <Modal autoFocus={true} animation={true} show={isShow} onHide={closable ? this.hideModal : void(0)}>
           <Modal.Header>
             <Modal.Title>{title}</Modal.Title>
           </Modal.Header>
