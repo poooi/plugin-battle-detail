@@ -1,4 +1,3 @@
-"use strict"
 
 const {React, ReactBootstrap, FontAwesome, _, __} = window
 const {Panel, Grid, Row, Col, Table, Pagination} = ReactBootstrap
@@ -15,7 +14,7 @@ class BrowseArea extends React.Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     return !(
-      this.props.manifest === nextProps.manifest &&
+      this.props.indexes === nextProps.indexes &&
       this.state.pageNo === nextState.pageNo
     )
   }
@@ -35,11 +34,11 @@ class BrowseArea extends React.Component {
   }
 
   render() {
-    const {manifest} = this.props
+    const {indexes} = this.props
     const {pageNo} = this.state
     let pageAmount = 1, range = []
-    if (manifest && manifest.length > 0) {
-      pageAmount = Math.ceil(manifest.length / PAGE_ITEM_AMOUNT)
+    if (indexes && indexes.length > 0) {
+      pageAmount = Math.ceil(indexes.length / PAGE_ITEM_AMOUNT)
       range = _.range((pageNo - 1) * PAGE_ITEM_AMOUNT, pageNo * PAGE_ITEM_AMOUNT)
     }
     return (
@@ -69,7 +68,7 @@ class BrowseArea extends React.Component {
             </thead>
             <tbody>
             {range.map(i => {
-              let item = manifest[i]
+              let item = indexes[i]
               return (item == null) ? void 0 : (
                 <tr key={i}>
                   <td>{i + 1}</td>

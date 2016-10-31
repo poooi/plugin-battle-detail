@@ -1,10 +1,8 @@
-"use strict"
 
-const {React} = window
-const Simulator2 = require('../lib/simulator2')
 const DetailArea = require('./detail-area')
-const OverviewArea = require('./overview-area')
-
+import OverviewArea from './overview-area'
+import { Simulator } from 'lib/battle'
+const {React} = window
 
 function simulate(battle) {
   try {
@@ -12,7 +10,7 @@ function simulate(battle) {
       return null
     }
 
-    let simulator = new Simulator2(battle.fleet)
+    let simulator = new Simulator(battle.fleet)
     let stages = []
     for (let packet of battle.packet)
       stages = stages.concat(simulator.simulate(packet))

@@ -4,7 +4,8 @@
 {Panel, ProgressBar, OverlayTrigger, Tooltip, Row} = ReactBootstrap
 {HPBar} = require('./bar')
 
-{Stage, StageType, Attack, AttackType, HitType, Ship, ShipOwner} = require('../lib/models')
+{Models} = require('lib/battle')
+{Stage, StageType, Attack, AttackType, HitType, Ship, ShipOwner} = Models
 
 
 # Formation name map from api_search[0-1] to name

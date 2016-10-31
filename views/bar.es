@@ -1,4 +1,3 @@
-"use strict"
 
 const {React, ReactBootstrap, ROOT, $slotitems} = window
 const {ProgressBar} = ReactBootstrap

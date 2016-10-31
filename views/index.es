@@ -1,13 +1,12 @@
-"use strict"
-
 import {sleep} from 'views/utils'
 
-const AppData = require('../lib/appdata')
-const PacketManager = require('../lib/packet-manager')
-const ModalArea = require('./modal-area')
-const OptionArea = require('./option-area')
-const BattleArea = require('./battle-area')
-const BrowseArea = require('./browse-area')
+import ModalArea from './modal-area'
+import OptionArea from './option-area'
+import BattleArea from './battle-area'
+import BrowseArea from './browse-area'
+import AppData from 'lib/appdata'
+import { PacketCompat } from 'lib/compat'
+import { PacketManager } from 'lib/battle'
 
 const {React, ReactBootstrap, remote, ipc, _, __} = window
 const {Tab, Tabs} = ReactBootstrap
@@ -20,8 +19,9 @@ class MainArea extends React.Component {
     this.state = {
       activeTab: 0,
       battle: null,
-      manifest: [],
+      indexes: [],
       showLast: true,
+      disableBrowser: false,
     }
   }
 
@@ -29,93 +29,112 @@ class MainArea extends React.Component {
     ipc.register("BattleDetail", {
       showBattleWithTimestamp: this.showBattleWithTimestamp,
     })
-    PacketManager.addListener('packet', this.handlePacket)
+    this.pm = new PacketManager()
+    this.pm.addListener('battle', this.handlePacket)
+    this.pm.addListener('result', this.handlePacket)
+
     setTimeout(this.init, 100)
   }
 
   componentWillUnmount() {
     ipc.unregisterAll("BattleDetail")
-    PacketManager.removeListener('packet', this.handlePacket)
+    this.pm.removeListener('battle', this.handlePacket)
+    this.pm.removeListener('result', this.handlePacket)
   }
 
   init = async () => {
-    // Load manifest from disk
-    let manifest = await AppData.loadManifest() || []
-    for (let line of manifest) {
+    // Load index from disk
+    let indexes = await AppData.loadIndex() || []
+    for (let line of indexes) {
       line.id = parseInt(line.id)
     }
-    await this.updateManifest(manifest)
+    await this.updateIndex(indexes)
 
-    // Should update manifest?
-    let diff = _.difference(
-      await AppData.listBattle(),
-      manifest.map((x) => x.id),
-    )
-    if (diff.length === 0) {
-      return
+    // Update index
+    try {
+      let diff = _.difference(
+        await AppData.listBattle(),
+        indexes.map((x) => x.id),
+      )
+      if (diff.length === 0) {
+        return
+      }
+      let newIndex = await this.createIndex(diff)
+      indexes = newIndex.concat(this.state.indexes || [])
+      indexes.sort((x, y) => y.id - x.id)  // Sort from newer to older
+      AppData.saveIndex(indexes)
+      this.updateIndex(indexes)
     }
+    catch (err) {
+      this.setState({
+        disableBrowser: true,
+      })
+      window.showModal({
+        title: __("Indexing"),
+        body : [__("An error occurred while indexing battle on disk."),
+                __("Battle browsor is disabled."),
+                __("Please contact the developers.")],
+      })
+      console.error(err)
+    }
+  }
 
-    // Update notification
-    let eta = new Date(Date.now() + diff.length / MANIFEST_LOAD_NUMBER * MANIFEST_LOAD_INTERVAL)
+  createIndex = async (list) => {
+    let eta = new Date(Date.now() + list.length / MANIFEST_LOAD_NUMBER * MANIFEST_LOAD_INTERVAL)
     window.showModal({
-      title: "Indexing",
-      body : ["Indexing battle from disk. Please wait...",
-              `ETA: ${eta.toLocaleTimeString()}`],
+      title: __("Indexing"),
+      body : [__("Indexing battle from disk. Please wait..."),
+              __("ETA:") + eta.toLocaleTimeString()],
       closable: false,
     })
 
-    // Update manifest
-    manifest = []
-    while (diff.length > 0) {
+    let indexes = []
+    while (list.length > 0) {
       let _st = Date.now()
-      console.log(`Updating manifest... ${diff.length} remain at ${_st}.`)
-      let ids = diff.splice(0, MANIFEST_LOAD_NUMBER)
+      console.log(`Indexing... ${list.length} remains at ${_st}.`)
+      let ids = list.splice(0, MANIFEST_LOAD_NUMBER)
       await Promise.all(
         ids.map(async (id) => {
           let packet = await AppData.loadBattle(id)
           if (packet != null) {
-            manifest.push({
+            indexes.push({
               id  : id,
-              time: PacketManager.getTime(packet),
-              map : PacketManager.getMap(packet),
-              desc: packet.desc,
+              time: PacketCompat.getTime(packet),
+              map : PacketCompat.getMap(packet),
+              desc: PacketCompat.getDesc(packet),
             })
           }
         }
       ))
       await sleep(MANIFEST_LOAD_INTERVAL + _st - Date.now())
     }
-    manifest = manifest.concat(this.state.manifest || [])
-    manifest.sort((x, y) => y.id - x.id)  // Sort from newer to older
-    AppData.saveManifest(manifest)
-    this.updateManifest(manifest)
 
-    // Update notification
     window.hideModal()
+    return indexes
   }
 
   handlePacket = async (newId, newBattle) => {
     // Save new battle immediately
     AppData.saveBattle(newId, newBattle)
 
-    let {battle, manifest, showLast} = this.state
-    if (newId === (manifest[0] || {}).id) {
-      manifest.shift()
+    let {battle, indexes, showLast} = this.state
+    if (newId === (indexes[0] || {}).id) {
+      indexes.shift()
     }
-    manifest = [
+    indexes = [
       {
         id:   newId,
-        time: PacketManager.getTime(newBattle),
-        map:  PacketManager.getMap(newBattle),
-        desc: newBattle.desc,
+        time: PacketCompat.getTime(newBattle),
+        map:  PacketCompat.getMap(newBattle),
+        desc: PacketCompat.getDesc(packet),
       },
-      ...manifest,
+      ...indexes,
     ]
     if (showLast) {
       battle = newBattle
     }
-    this.setState({battle, manifest})
-    AppData.saveManifest(manifest)
+    this.setState({battle, indexes})
+    AppData.saveIndex(indexes)
   }
 
   updateBattle = async (battle) => {
@@ -129,16 +148,16 @@ class MainArea extends React.Component {
     })
   }
 
-  updateManifest = async (manifest) => {
+  updateIndex = async (indexes) => {
     let {battle, showLast} = this.state
-    if (manifest == null) {
-      manifest = []
+    if (indexes == null) {
+      indexes = []
     }
     if (showLast) {
-      let last = manifest[0] || {}
+      let last = indexes[0] || {}
       battle = await AppData.loadBattle(last.id)
     }
-    this.setState({battle, manifest})
+    this.setState({battle, indexes})
   }
 
   updateShowLast = (showLast) => {
@@ -167,9 +186,9 @@ class MainArea extends React.Component {
               battle={this.state.battle}
               />
           </Tab>
-          <Tab eventKey={1} title={__("Browse")}>
+          <Tab eventKey={1} title={__("Browse")} disabled={this.state.disableBrowser}>
             <BrowseArea
-              manifest={this.state.manifest}
+              indexes={this.state.indexes}
               updateBattle={this.updateBattle}
               />
           </Tab>
@@ -188,7 +207,7 @@ class MainArea extends React.Component {
       let start = timestamp - 2000
       let end = timestamp + 2000
       let list = []
-      for (let {id} of this.state.manifest) {
+      for (let {id} of this.state.indexes) {
         if (id > end)
           continue
         if (id < start)

@@ -1,12 +1,11 @@
-"use strict"
+
+import { PacketCompat } from 'lib/compat'
 
 const {clipboard} = require('electron')
-const PacketManager = require('lib/packet-manager')
-
-const {React, ReactBootstrap, FontAwesome, remote, $, __} = window
+const {React, ReactBootstrap, remote, $, __} = window
 const {Panel, Grid, Row, Col, Button, ButtonGroup, Input} = ReactBootstrap
 
-export class OptionArea extends React.Component {
+class OptionArea extends React.Component {
   shouldComponentUpdate(nextProps, nextState) {
     return !(
       this.props.battle === nextProps.battle
@@ -66,9 +65,9 @@ export class OptionArea extends React.Component {
     const {battle} = this.props
     let title = ''
     if (battle != null) {
-      let time = PacketManager.getTime(battle) || ''
-      let map = PacketManager.getMap(battle) || ''
-      let desc = battle.desc || ''
+      let time = PacketCompat.getTime(battle) || ''
+      let map = PacketCompat.getMap(battle) || ''
+      let desc = PacketCompat.getDesc(battle) || ''
       title = `${time} ${desc} ${map}`
     }
     // header={__("Options")}
@@ -95,4 +94,4 @@ export class OptionArea extends React.Component {
   }
 }
 
-module.exports = OptionArea
+export default OptionArea
