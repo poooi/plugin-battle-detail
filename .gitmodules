@@ -1,0 +1,3 @@
+[submodule "lib/battle"]
+	path = lib/battle
+	url = git@github.com:poooi/lib-battle.git
