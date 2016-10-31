@@ -38,6 +38,7 @@ module.exports = {
       },
     },
     'import/core-modules': [
+      'bluebird',
       'electron',
       'react',
       'react-redux',
