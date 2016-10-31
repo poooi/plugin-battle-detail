@@ -1,11 +1,10 @@
-"use strict"
 
-const fs = require('fs-extra')
-const path = require('path-extra')
-const zlib = require('zlib')
-const {promisify} = require('bluebird')
-const CSV = require('./csv')
-const PacketManager = require('./packet-manager')
+import fs from 'fs-extra'
+import path from 'path-extra'
+import zlib from 'zlib'
+import { promisify } from 'bluebird'
+import CSV from 'lib/csv'
+import { IndexCompat, PacketCompat } from 'lib/compat'
 
 const readDirAsync = promisify(fs.readdir)
 const readFileAsync = promisify(fs.readFile)
@@ -15,8 +14,8 @@ const unzipAsync = promisify(zlib.unzip)
 const GZIP_EXT = '.gz'
 
 const APPDATA = path.join(window.APPDATA_PATH, 'battle-detail')
-const MANIFEST = 'manifest.1.csv' + GZIP_EXT
-const MANIFEST_CSV_OPTIONS = {
+const INDEX = 'index10.csv' + GZIP_EXT
+const INDEX_CSV_OPTIONS = {
   columns: ['id', 'time', 'map', 'desc'],
 }
 
@@ -25,6 +24,8 @@ class AppData {
     fs.ensureDir(APPDATA, (err) => {
       if (err) console.error(err)
     })
+
+    IndexCompat.moveDB(APPDATA)
   }
 
   async saveFile(name, data) {
@@ -54,17 +55,17 @@ class AppData {
     }
   }
 
-  async saveManifest(manifest) {
-    if (manifest != null) {
-      let data = CSV.stringify(manifest, MANIFEST_CSV_OPTIONS)
-      await this.saveFile(MANIFEST, data)
+  async saveIndex(index) {
+    if (index != null) {
+      let data = CSV.stringify(index, INDEX_CSV_OPTIONS)
+      await this.saveFile(INDEX, data)
     }
   }
 
-  async loadManifest() {
-    let data = await this.loadFile(MANIFEST)
+  async loadIndex() {
+    let data = await this.loadFile(INDEX)
     if (data != null) {
-      return CSV.parse(data, MANIFEST_CSV_OPTIONS)
+      return CSV.parse(data, INDEX_CSV_OPTIONS)
     }
   }
 
@@ -93,7 +94,8 @@ class AppData {
 
     let packet = JSON.parse(data)
     // Compatibility: Battle packet format
-    packet = PacketManager.convertV1toV2(packet)
+    packet = PacketCompat.v10tov21(packet)
+    packet = PacketCompat.v20tov21(packet)
     return packet
   }
 
