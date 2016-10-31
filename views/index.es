@@ -126,7 +126,7 @@ class MainArea extends React.Component {
         id:   newId,
         time: PacketCompat.getTime(newBattle),
         map:  PacketCompat.getMap(newBattle),
-        desc: PacketCompat.getDesc(packet),
+        desc: PacketCompat.getDesc(newBattle),
       },
       ...indexes,
     ]
