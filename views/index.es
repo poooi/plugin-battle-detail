@@ -95,13 +95,13 @@ class MainArea extends React.Component {
       let ids = list.splice(0, MANIFEST_LOAD_NUMBER)
       await Promise.all(
         ids.map(async (id) => {
-          let packet = await AppData.loadBattle(id)
-          if (packet != null) {
+          let battle = await AppData.loadBattle(id)
+          if (battle != null) {
             indexes.push({
               id  : id,
-              time: PacketCompat.getTime(packet),
-              map : PacketCompat.getMap(packet),
-              desc: PacketCompat.getDesc(packet),
+              time: PacketCompat.getTime(battle),
+              map : PacketCompat.getMap(battle),
+              desc: PacketCompat.getDesc(battle),
             })
           }
         }
@@ -113,8 +113,9 @@ class MainArea extends React.Component {
     return indexes
   }
 
-  handlePacket = async (newId, newBattle) => {
+  handlePacket = async (newBattle, curPacket) => {
     // Save new battle immediately
+    const newId = PacketCompat.getId(newBattle)
     AppData.saveBattle(newId, newBattle)
 
     let {battle, indexes, showLast} = this.state
@@ -227,9 +228,9 @@ class MainArea extends React.Component {
         break
       }
       try {
-        let packet = await AppData.loadBattle(list[0])
+        let battle = await AppData.loadBattle(list[0])
         remote.getCurrentWindow().show()
-        this.updateBattle(packet)
+        this.updateBattle(battle)
       } catch (err) {
         message = __("Unknown error")
         console.error(err)

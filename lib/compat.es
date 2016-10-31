@@ -7,40 +7,40 @@ const { Battle, BattleType, Fleet } = Models
 const { __ } = window
 
 export class PacketCompat {
-  static getId(packet) {
-    if (packet == null) return
-    return packet.time || packet.poi_timestamp || null
+  static getId(battle) {
+    if (battle == null) return
+    return battle.time || battle.poi_timestamp || null
   }
 
-  static getTime(packet) {
-    if (packet == null) return
+  static getTime(battle) {
+    if (battle == null) return
     let str = ''
-    if (packet.time) {
-      let date = new Date(packet.time)
+    if (battle.time) {
+      let date = new Date(battle.time)
       date.setMinutes(date.getMinutes() - date.getTimezoneOffset())
       str = date.toISOString().slice(0, 19).replace('T', ' ')
     }
     return str
   }
 
-  static getMap(packet) {
-    if (packet == null) return
-    let map = packet.map
+  static getMap(battle) {
+    if (battle == null) return
+    let map = battle.map
     if (map instanceof Array && map.length > 0) {
       return `${map[0]}-${map[1]} (${map[2]})`
     }
   }
 
-  static getDesc(packet) {
-    if (packet == null) return
-    if (packet.type === BattleType.Normal) {
+  static getDesc(battle) {
+    if (battle == null) return
+    if (battle.type === BattleType.Normal) {
       return `${__("Sortie")}`
     }
-    if (packet.type === BattleType.Boss) {
+    if (battle.type === BattleType.Boss) {
       return `${__("Sortie")} (Boss)`
     }
-    if (packet.type === BattleType.Pratice) {
-      return `${__("Pratice")} ${packet.desc}`
+    if (battle.type === BattleType.Pratice) {
+      return `${__("Pratice")} ${battle.desc}`
     }
   }
 

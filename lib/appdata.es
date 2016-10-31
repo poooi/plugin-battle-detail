@@ -69,11 +69,11 @@ class AppData {
     }
   }
 
-  async saveBattle(id, packet) {
-    if (!(id && packet))
+  async saveBattle(id, battle) {
+    if (!(id && battle))
       return
     let name = `${id}.json` + GZIP_EXT
-    let data = JSON.stringify(packet)
+    let data = JSON.stringify(battle)
     await this.saveFile(name, data)
   }
 
@@ -92,11 +92,11 @@ class AppData {
     if (data == null)
       return
 
-    let packet = JSON.parse(data)
+    let battle = JSON.parse(data)
     // Compatibility: Battle packet format
-    packet = PacketCompat.v10tov21(packet)
-    packet = PacketCompat.v20tov21(packet)
-    return packet
+    battle = PacketCompat.v10tov21(battle)
+    battle = PacketCompat.v20tov21(battle)
+    return battle
   }
 
   async listBattle() {
