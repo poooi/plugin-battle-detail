@@ -1,6 +1,6 @@
 {
-  "__COMMENT_001__": "Please organize i18n text by modules (.cjsx).",
-  "__COMMENT_002__": "Sort phrase block of modules by module name.",
+  "__COMMENT_001__": "Please organize i18n text by file.",
+  "__COMMENT_002__": "Sort phrase block of files by file name.",
   "__COMMENT_003__": "Sort phrase by first exist line number inside a block.",
 
   "Battle Records": "Battle Records",
@@ -13,6 +13,12 @@
   "Unknown error": "Unknown error",
   "Battle not found": "Battle not found",
   "Multiple battle found": "Multiple battle found",
+  "Indexing": "Indexing",
+  "Indexing battle from disk. Please wait...": "Indexing battle from disk. Please wait...",
+  "ETA:": "ETA:",
+  "An error occurred while indexing battle on disk.": "An error occurred while indexing battle on disk.",
+  "Battle browsor is disabled.": "Battle browsor is disabled.",
+  "Please contact the developers.": "Please contact the developers.",
 
   "Modal": "Modal",
   "Close": "Close",

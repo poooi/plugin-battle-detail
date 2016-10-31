@@ -1,6 +1,6 @@
 {
-  "__COMMENT_001__": "Please organize i18n text by modules (.cjsx).",
-  "__COMMENT_002__": "Sort phrase block of modules by module name.",
+  "__COMMENT_001__": "Please organize i18n text by file.",
+  "__COMMENT_002__": "Sort phrase block of files by file name.",
   "__COMMENT_003__": "Sort phrase by first exist line number inside a block.",
 
   "Battle Records": "战斗记录",
@@ -13,6 +13,12 @@
   "Unknown error": "未知错误",
   "Battle not found": "无法找到该战斗",
   "Multiple battle found": "找到多场匹配的战斗",
+  "Indexing": "索引中",
+  "Indexing battle from disk. Please wait...": "正在建立战斗索引，请稍等……",
+  "ETA:": "预计完成时间：",
+  "An error occurred while indexing battle on disk.": "建立战斗索引时发生错误。",
+  "Battle browsor is disabled.": "战斗浏览器已禁用。",
+  "Please contact the developers.": "请联系开发者。",
 
   "Modal": "模态框",
   "Close": "关闭",
