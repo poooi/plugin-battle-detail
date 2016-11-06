@@ -10,7 +10,7 @@ function simulate(battle) {
       return null
     }
 
-    let simulator = new Simulator(battle.fleet)
+    let simulator = new Simulator(battle.fleet, {usePoiAPI: true})
     let stages = []
     for (let packet of battle.packet)
       stages = stages.concat(simulator.simulate(packet))
