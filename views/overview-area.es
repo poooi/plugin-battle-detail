@@ -1,8 +1,9 @@
 "use strict"
 
 import {getShipName, getItemName} from 'views/utils'
+import FontAwesome from 'react-fontawesome'
 
-const {React, ReactBootstrap, FontAwesome, ROOT, $ships, $slotitems, __} = window
+const {React, ReactBootstrap, ROOT, $ships, $slotitems, __} = window
 const {Panel, Grid, Row, Col} = ReactBootstrap
 const {SlotitemIcon} = require(`${ROOT}/views/components/etc/icon`)
 const {FABar, HPBar} = require('./bar')

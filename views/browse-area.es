@@ -1,5 +1,6 @@
 
-const {React, ReactBootstrap, FontAwesome, _, __} = window
+import FontAwesome from 'react-fontawesome'
+const {React, ReactBootstrap, _, __} = window
 const {Panel, Grid, Row, Col, Table, Pagination} = ReactBootstrap
 
 const PAGE_ITEM_AMOUNT = 20
