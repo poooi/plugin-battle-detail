@@ -30,7 +30,7 @@ window.i18n.resources = {
 try {
   require('poi-plugin-translator').pluginDidLoad()
 } catch (error) {
-  console.log(error)
+  // Do nothing
 }
 window.__r = window.i18n.resources.__.bind(window.i18n.resources)
 
