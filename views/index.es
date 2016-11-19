@@ -44,7 +44,7 @@ class MainArea extends React.Component {
 
   init = async () => {
     // Load index from disk
-    let indexes = await AppData.loadIndex() || []
+    let indexes = await AppData.loadIndex()
     for (let line of indexes) {
       line.id = parseInt(line.id)
     }
@@ -91,7 +91,7 @@ class MainArea extends React.Component {
     let indexes = []
     while (list.length > 0) {
       let _st = Date.now()
-      console.log(`Indexing... ${list.length} remains at ${_st}.`)
+      console.log(`Indexing... ${list.length} remains at ${_st}.`)  // eslint-disable-line no-console
       let ids = list.splice(0, MANIFEST_LOAD_NUMBER)
       await Promise.all(
         ids.map(async (id) => {
@@ -228,9 +228,9 @@ class MainArea extends React.Component {
         break
       }
       try {
-        let battle = await AppData.loadBattle(list[0])
+        let id = list[0]
+        this.updateBattle(id)
         remote.getCurrentWindow().show()
-        this.updateBattle(battle)
       } catch (err) {
         message = __("Unknown error")
         console.error(err.stack)
