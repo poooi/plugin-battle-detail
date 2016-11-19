@@ -75,7 +75,7 @@ class MainArea extends React.Component {
                 __("Battle browsor is disabled."),
                 __("Please contact the developers.")],
       })
-      console.error(err)
+      console.error(err.stack)
     }
   }
 
@@ -233,7 +233,7 @@ class MainArea extends React.Component {
         this.updateBattle(battle)
       } catch (err) {
         message = __("Unknown error")
-        console.error(err)
+        console.error(err.stack)
       }
     } while (0)
     if (typeof callback === 'function') {

@@ -17,7 +17,7 @@ function simulate(battle) {
     return {simulator, stages}
 
   } catch (error) {
-    console.error(error, battle)
+    console.error(battle, error.stack)
     return null
   }
 }

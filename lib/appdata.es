@@ -14,6 +14,7 @@ const unzipAsync = promisify(zlib.unzip)
 const GZIP_EXT = '.gz'
 
 const APPDATA = path.join(window.APPDATA_PATH, 'battle-detail')
+const BROKEN = path.join(APPDATA, 'broken')
 const INDEX = 'index10.csv' + GZIP_EXT
 const INDEX_CSV_OPTIONS = {
   columns: ['id', 'time', 'map', 'desc'],
@@ -22,7 +23,10 @@ const INDEX_CSV_OPTIONS = {
 class AppData {
   constructor() {
     fs.ensureDir(APPDATA, (err) => {
-      if (err) console.error(err)
+      if (err) console.error(err.stack)
+    })
+    fs.ensureDir(BROKEN, (err) => {
+      if (err) console.error(err.stack)
     })
 
     IndexCompat.moveDB(APPDATA)
@@ -50,7 +54,7 @@ class AppData {
     }
     catch (err) {
       if (err.code !== 'ENOENT')
-        console.error(err)
+        console.error(err.stack)
       return null
     }
   }
