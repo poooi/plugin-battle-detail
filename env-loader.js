@@ -1,15 +1,19 @@
 window.remote = require('electron').remote;
 
-window.ROOT = remote.getGlobal('ROOT');
-
-window.APPDATA_PATH = remote.getGlobal('APPDATA_PATH');
-
 window.POI_VERSION = remote.getGlobal('POI_VERSION');
 
-window.SERVER_HOSTNAME = remote.getGlobal('SERVER_HOSTNAME');
-
+window.ROOT = remote.getGlobal('ROOT');
 window.MODULE_PATH = remote.getGlobal('MODULE_PATH');
+window.APPDATA_PATH = remote.getGlobal('APPDATA_PATH');
 
 require('module').globalPaths.push(MODULE_PATH);
-
 require('module').globalPaths.push(ROOT);
+
+require('babel-register')
+require('coffee-react/register')
+
+;(() => {
+  // var w = remote.getCurrentWindow()
+  // w.show()
+  // w.openDevTools({detach: true})
+})()
