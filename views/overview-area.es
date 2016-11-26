@@ -3,7 +3,7 @@
 import {getShipName, getItemName} from 'views/utils'
 import FontAwesome from 'react-fontawesome'
 
-const {React, ReactBootstrap, ROOT, $ships, $slotitems, __} = window
+const {React, ReactBootstrap, ROOT, __} = window
 const {Panel, Grid, Row, Col} = ReactBootstrap
 const {SlotitemIcon} = require(`${ROOT}/views/components/etc/icon`)
 const {FABar, HPBar} = require('./bar')
@@ -106,7 +106,7 @@ class ShipView extends React.Component {
       return <div />
     }
     let raw = ship.raw || {}
-    let mst = $ships[ship.id] || {}
+    let mst = window.$ships[ship.id] || {}
     let data = Object.assign(Object.clone(mst), raw)
 
     if (! data.api_maxeq) {
@@ -185,7 +185,7 @@ class ItemView extends React.Component {
       return <div />
     }
     let raw = item
-    let mst = $slotitems[item.api_slotitem_id] || {}
+    let mst = window.$slotitems[item.api_slotitem_id] || {}
     let data = Object.assign(Object.clone(mst), raw)
 
     return (
