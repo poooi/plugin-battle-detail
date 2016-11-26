@@ -11,9 +11,9 @@ function simulate(battle) {
     }
 
     let simulator = new Simulator(battle.fleet, {usePoiAPI: true})
-    let stages = []
     for (let packet of battle.packet)
-      stages = stages.concat(simulator.simulate(packet))
+      simulator.simulate(packet)
+    let {stages} = simulator
     return {simulator, stages}
 
   } catch (error) {
