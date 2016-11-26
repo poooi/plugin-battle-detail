@@ -16,9 +16,6 @@ module.exports = {
     'import',
     'react',
   ],
-  'globals': {
-    'html2canvas': false,
-  },
   'rules': {
     'comma-dangle': ['error', 'always-multiline'],
     'indent': ['warn', 2],
