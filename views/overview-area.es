@@ -1,4 +1,3 @@
-"use strict"
 
 import {getShipName, getItemName} from 'views/utils'
 import FontAwesome from 'react-fontawesome'
