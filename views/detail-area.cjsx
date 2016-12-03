@@ -4,110 +4,149 @@
 {Panel, ProgressBar, OverlayTrigger, Tooltip, Row} = ReactBootstrap
 {HPBar} = require('./bar')
 
-{Models} = require('lib/battle')
+{Models, Simulator} = require('lib/battle')
 {Stage, StageType, Attack, AttackType, HitType, Ship, ShipOwner} = Models
+{AirControl, Engagement, Formation, Detection} = Models
 
+### Hack for poor coffeescript
+AirControlName = {
+  [AirControl.Parity      ]: __("Air Parity"),
+  [AirControl.Supremacy   ]: __("Air Supremacy"),
+  [AirControl.Superiority ]: __("Air Superiority"),
+  [AirControl.Incapability]: __("Air Incapability"),
+  [AirControl.Denial      ]: __("Air Denial"),
+}
 
-# Formation name map from api_search[0-1] to name
-# 1=成功, 2=成功(未帰還機あり), 3=未帰還, 4=失敗, 5=成功(艦載機使用せず), 6=失敗(艦載機使用せず)
-DetectionNameMap =
-  1: __('Detection Success')
-  2: __('Detection Success') + ' (' + __('not return') + ')'
-  3: __('Detection Failure') + ' (' + __('not return') + ')'
-  4: __('Detection Failure')
-  5: __('Detection Success') + ' (' + __('without plane') + ')'
-  6: __('Detection Failure') + ' (' + __('without plane') + ')'
+EngagementName = {
+  [Engagement.Parallel     ]: __("Parallel Engagement"),
+  [Engagement.Headon       ]: __("Head-on Engagement"),
+  [Engagement.TAdvantage   ]: __("Crossing the T (Advantage)"),
+  [Engagement.TDisadvantage]: __("Crossing the T (Disadvantage)"),
+}
 
-# Formation name map from api_formation[0-1] to name
-# 1=単縦陣, 2=複縦陣, 3=輪形陣, 4=梯形陣, 5=単横陣, 11-14=第n警戒航行序列
-FormationNameMap =
-  1: __ 'Line Ahead'
-  2: __ 'Double Line'
-  3: __ 'Diamond'
-  4: __ 'Echelon'
-  5: __ 'Line Abreast'
-  11: __ 'Cruising Formation 1 (anti-sub)'
-  12: __ 'Cruising Formation 2 (forward)'
-  13: __ 'Cruising Formation 3 (ring)'
-  14: __ 'Cruising Formation 4 (battle)'
+FormationName = {
+  [Formation.Ahead  ]: __("Line Ahead"),
+  [Formation.Double ]: __("Double Line"),
+  [Formation.Diamond]: __("Diamond"),
+  [Formation.Echelon]: __("Echelon"),
+  [Formation.Abreast]: __("Line Abreast"),
+  [Formation.CruisingAntiSub]: __("Cruising Formation 1 (anti-sub)"),
+  [Formation.CruisingForward]: __("Cruising Formation 2 (forward)"),
+  [Formation.CruisingDiamond]: __("Cruising Formation 3 (ring)"),
+  [Formation.CruisingBattle ]: __("Cruising Formation 4 (battle)"),
+}
 
-# Engagement name map from api_formation[2] to name
-# 1=同航戦, 2=反航戦, 3=T字戦有利, 4=T字戦不利
-EngagementNameMap =
-  1: __ 'Parallel Engagement'
-  2: __ 'Head-on Engagement'
-  3: __ 'Crossing the T (Advantage)'
-  4: __ 'Crossing the T (Disadvantage)'
+DetectionName = {
+  [Detection.Success  ]: __('Detection Success'),
+  [Detection.SuccessNR]: __('Detection Success') + ' (' + __('not return') + ')',
+  [Detection.SuccessNP]: __('Detection Success') + ' (' + __('without plane') + ')',
+  [Detection.Failure  ]: __('Detection Failure'),
+  [Detection.FailureNR]: __('Detection Failure') + ' (' + __('not return') + ')',
+  [Detection.FailureNP]: __('Detection Failure') + ' (' + __('without plane') + ')',
+}
+###
+AirControlName = {}
+AirControlName[AirControl.Parity      ] = __("Air Parity")
+AirControlName[AirControl.Supremacy   ] = __("Air Supremacy")
+AirControlName[AirControl.Superiority ] = __("Air Superiority")
+AirControlName[AirControl.Incapability] = __("Air Incapability")
+AirControlName[AirControl.Denial      ] = __("Air Denial")
 
-# Air Control name map from api_kouku.api_stage1.api_disp_seiku to name
-# 0=制空均衡, 1=制空権確保, 2=航空優勢, 3=航空劣勢, 4=制空権喪失
-AirControlNameMap =
-  0: __ 'Air Parity'
-  1: __ 'Air Supremacy'
-  2: __ 'Air Superiority'
-  3: __ 'Air Incapability'
-  4: __ 'Air Denial'
+EngagementName = {}
+EngagementName[Engagement.Parallel     ] = __("Parallel Engagement")
+EngagementName[Engagement.Headon       ] = __("Head-on Engagement")
+EngagementName[Engagement.TAdvantage   ] = __("Crossing the T (Advantage)")
+EngagementName[Engagement.TDisadvantage] = __("Crossing the T (Disadvantage)")
+
+FormationName = {}
+FormationName[Formation.Ahead  ] = __("Line Ahead")
+FormationName[Formation.Double ] = __("Double Line")
+FormationName[Formation.Diamond] = __("Diamond")
+FormationName[Formation.Echelon] = __("Echelon")
+FormationName[Formation.Abreast] = __("Line Abreast")
+FormationName[Formation.CruisingAntiSub] = __("Cruising Formation 1 (anti-sub)")
+FormationName[Formation.CruisingForward] = __("Cruising Formation 2 (forward)")
+FormationName[Formation.CruisingDiamond] = __("Cruising Formation 3 (ring)")
+FormationName[Formation.CruisingBattle ] = __("Cruising Formation 4 (battle)")
+
+DetectionName = {}
+DetectionName[Detection.Success  ] = __('Detection Success')
+DetectionName[Detection.SuccessNR] = __('Detection Success') + ' (' + __('not return') + ')'
+DetectionName[Detection.SuccessNP] = __('Detection Success') + ' (' + __('without plane') + ')'
+DetectionName[Detection.Failure  ] = __('Detection Failure')
+DetectionName[Detection.FailureNR] = __('Detection Failure') + ' (' + __('not return') + ')'
+DetectionName[Detection.FailureNP] = __('Detection Failure') + ' (' + __('without plane') + ')'
+
 
 getAttackTypeName = (type) ->
   switch type
     when AttackType.Normal    # 通常攻撃
-      __ "AT.Normal"
+      __("AT.Normal")
     when AttackType.Double    # 連撃
-      __ "AT.Double"
+      __("AT.Double")
     when AttackType.Primary_Secondary_CI  # カットイン(主砲/副砲)
-      __ "AT.Primary_Secondary_CI"
+      __("AT.Primary_Secondary_CI")
     when AttackType.Primary_Radar_CI    # カットイン(主砲/電探)
-      __ "AT.Primary_Radar_CI"
+      __("AT.Primary_Radar_CI")
     when AttackType.Primary_AP_CI       # カットイン(主砲/徹甲)
-      __ "AT.Primary_AP_CI"
+      __("AT.Primary_AP_CI")
     when AttackType.Primary_Primary_CI  # カットイン(主砲/主砲)
-      __ "AT.Primary_Primary_CI"
+      __("AT.Primary_Primary_CI")
     when AttackType.Primary_Torpedo_CI  # カットイン(主砲/魚雷)
-      __ "AT.Primary_Torpedo_CI"
+      __("AT.Primary_Torpedo_CI")
     when AttackType.Torpedo_Torpedo_CI  # カットイン(魚雷/魚雷)
-      __ "AT.Torpedo_Torpedo_CI"
+      __("AT.Torpedo_Torpedo_CI")
     else
       "#{type}?"
+
+getShipName = (id) ->
+  return '' unless id?
+  return __r($ships[id]?.api_name)
+
+getItemName = (id) ->
+  return '' unless id?
+  return __r($slotitems[id]?.api_name)
 
 
 EngagementTable = React.createClass
   render: ->
-    {simulator, stage} = @props
-    {api_search, api_formation, api_touch_plane, api_flare_pos, gimmick} = stage.api
+    console.log('EngagementTable', @props.engagement)
+    e = @props.engagement
     rows = []
 
-    if api_formation?
+    if e.engagement or e.fFormation or e.eFormation
       rows.push <Row className={"engagement-row"} key={1}>
-        <span>{FormationNameMap[api_formation[0]]}</span>
-        <span>{EngagementNameMap[api_formation[2]]}</span>
-        <span>{FormationNameMap[api_formation[1]]}</span>
+        <span>{FormationName[e.fFormation]}</span>
+        <span>{EngagementName[e.engagement]}</span>
+        <span>{FormationName[e.eFormation]}</span>
       </Row>
 
-    if api_search?
+    if e.fDetection or e.eDetection
       rows.push <Row className={"engagement-row"} key={2}>
-        <span>{DetectionNameMap[api_search[0]]}</span>
+        <span>{DetectionName[e.fDetection]}</span>
         <span></span>
-        <span>{DetectionNameMap[api_search[1]]}</span>
+        <span>{DetectionName[e.eDetection]}</span>
       </Row>
 
-    if gimmick?
+    if e.weakened
       rows.push <Row className={"engagement-row"} key={3}>
         <span></span>
-        <span>{"#{__ 'Gimmick'}: #{gimmick}"}</span>
+        <span>{"#{__("Gimmick")}: #{e.weakened}"}</span>
         <span></span>
       </Row>
 
-    if Array.prototype.concat(api_touch_plane, api_flare_pos).find((x) => x > 0)
-      contact = api_touch_plane
-      fleet = if simulator.fleetType == 0 then simulator.mainFleet else simulator.escortFleet
-      enemy = simulator.enemyFleet
-      star = [fleet[api_flare_pos[0] - 1]?.id, enemy[api_flare_pos[1] - 1]?.id]
-      rows.push <Row className={"engagement-row"} key={11}>
-        <span>{if name = $slotitems[contact[0]]?.api_name then "#{__ 'Contact'}: #{__r name}"}</span>
-        <span>{if name = $ships[star[0]]?.api_name then "#{__ 'Star Shell'}: #{__r name}"}</span>
-        <span />
-        <span>{if name = $ships[star[1]]?.api_name then "#{__ 'Star Shell'}: #{__r name}"}</span>
-        <span>{if name = $slotitems[contact[1]]?.api_name then "#{__ 'Contact'}: #{__r name}"}</span>
+    if e.fContact or e.eContact
+      rows.push <Row className={"engagement-row"} key={4}>
+        <span>{if id = e.fContact then "#{__("Contact")}: #{getItemName(id)}"}</span>
+        <span></span>
+        <span>{if id = e.eContact then "#{__("Contact")}: #{getItemName(id)}"}</span>
+      </Row>
+
+    if e.fFlare or e.eFlare
+      rows.push <Row className={"engagement-row"} key={5}>
+        <span>{if ship = e.fFlare then "#{__("Star Shell")}: #{getShipName(ship.id)}"}</span>
+        <span></span>
+        <span>{if ship = e.eFlare then "#{__("Star Shell")}: #{getShipName(ship.id)}"}</span>
       </Row>
 
     <div className={"engagement-table"}>
@@ -120,36 +159,21 @@ EngagementTable = React.createClass
 
 PlaneCount = React.createClass
   render: ->
-    total = @props.count
-    now = @props.count - @props.lost
-    if total?
-      <span><FontAwesome name='plane' /> {total} <FontAwesome name='long-arrow-right' /> {now}</span>
+    {init, now} = @props
+    if init?
+      <span><FontAwesome name='plane' /> {init} <FontAwesome name='long-arrow-right' /> {now}</span>
     else
       <span />
 
 AntiAirCICell = React.createClass
   render: ->
-    {$ships, $slotitems} = window
-    {api, mainFleet, escortFleet} = @props
-
-    if not api?
-      return <span />
-
-    idx = api.api_idx
-    if 0 <= idx <= 5
-      shipId = mainFleet[idx]?.id
-    else if 6 <= idx <= 11
-      shipId = escortFleet[idx - 6]?.id
-    else
-      shipId = -1
-    shipName = __r($ships[shipId]?.api_name)
-    if not shipName?
-      shipName = "#{idx}?"
+    {aaciKind, aaciShip, aaciItems} = @props.aerial
+    return <span /> unless aaciKind?
 
     tooltip = []
-    tooltip.push <div key={-1}>{__ 'Anti-air Kind'}: {api.api_kind}</div>
-    for itemId, i in api.api_use_items
-      tooltip.push <div key={i}>{if $slotitems[itemId]? then __r $slotitems[itemId].api_name}</div>
+    tooltip.push <div key={-1}>{__ 'Anti-air Kind'}: {aaciKind}</div>
+    for id, i in aaciItems
+      tooltip.push <div key={i}>{getItemName(id)}</div>
 
     <OverlayTrigger placement='top' overlay={
       <Tooltip id="aerial-table-anti-air">
@@ -158,55 +182,38 @@ AntiAirCICell = React.createClass
         </div>
       </Tooltip>
     }>
-      <span>{__ "Anti-air Cut-in"}: {shipName} ({api.api_kind})</span>
+      <span>{__("Anti-air Cut-in")}: {getShipName(aaciShip?.id)} ({aaciKind})</span>
     </OverlayTrigger>
 
 AerialTable = React.createClass
   render: ->
-    {simulator, kouku} = @props
-    return <div /> unless kouku?
+    console.log('AerialTable', @props.aerial)
+    {aerial} = @props
+    return <div /> unless aerial?
 
     <div className={"aerial-table"}>
-    {
-      # Stage 1
-      if kouku.api_stage1?
-        contact = kouku.api_stage1.api_touch_plane || [-1, -1]
-        <Row className={"aerial-row"}>
-          <span>
-            <PlaneCount count={kouku.api_stage1.api_f_count}
-                        lost={kouku.api_stage1.api_f_lostcount} />
-          </span>
-          <span>{if name = $slotitems[contact[0]]?.api_name then "#{__ 'Contact'}: #{__r name}"}</span>
-          <span>{AirControlNameMap[kouku.api_stage1.api_disp_seiku]}</span>
-          <span>{if name = $slotitems[contact[1]]?.api_name then "#{__ 'Contact'}: #{__r name}"}</span>
-          <span>
-            <PlaneCount count={kouku.api_stage1.api_e_count}
-                        lost={kouku.api_stage1.api_e_lostcount} />
-          </span>
-        </Row>
-    }
-    {
-      # Stage 2
-      if kouku.api_stage2?
-        <Row className={"aerial-row"}>
-          <span>
-            <PlaneCount count={kouku.api_stage2.api_f_count}
-                        lost={kouku.api_stage2.api_f_lostcount} />
-          </span>
-          <span></span>
-          <span>
-            <AntiAirCICell api={kouku.api_stage2.api_air_fire}
-                           mainFleet={simulator.mainFleet}
-                           escortFleet={simulator.escortFleet}
-                           />
-          </span>
-          <span></span>
-          <span>
-            <PlaneCount count={kouku.api_stage2.api_e_count}
-                        lost={kouku.api_stage2.api_e_lostcount} />
-          </span>
-        </Row>
-    }
+      <Row className={"aerial-row"}>
+        <span>
+          <PlaneCount init={aerial.fPlaneInit1} now={aerial.fPlaneNow1} />
+        </span>
+        <span>{if id = aerial.fContact then "#{__("Contact")}: #{getItemName(id)}"}</span>
+        <span>{AirControlName[aerial.control]}</span>
+        <span>{if id = aerial.eContact then "#{__("Contact")}: #{getItemName(id)}"}</span>
+        <span>
+          <PlaneCount init={aerial.ePlaneInit1} now={aerial.ePlaneNow1} />
+        </span>
+      </Row>
+      <Row className={"aerial-row"}>
+        <span>
+          <PlaneCount init={aerial.fPlaneInit2} now={aerial.fPlaneNow2} />
+        </span>
+        <span></span>
+        <span><AntiAirCICell aerial={aerial} /></span>
+        <span></span>
+        <span>
+          <PlaneCount init={aerial.ePlaneInit2} now={aerial.ePlaneNow2} />
+        </span>
+      </Row>
     </div>
 
 
@@ -291,15 +298,14 @@ StageTable = React.createClass
   render: ->
     {stage, simulator} = @props
     return <div /> unless stage?
-    additions = []
+    tables = []
 
     switch stage.type
       when StageType.Engagement
-        additions.push <EngagementTable key={1} simulator={simulator} stage={stage} />
+        title = null
 
       when StageType.Aerial
         title = __('Aerial Combat')
-        additions.push <AerialTable key={1} simulator={simulator} kouku={stage.kouku} />
 
       when StageType.Torpedo
         if stage.subtype == StageType.Opening
@@ -315,7 +321,6 @@ StageTable = React.createClass
             title = "#{__('Shelling')} - #{__('Escort Fleet')}"
           when StageType.Night
             title = __('Night Combat')
-            additions.push <EngagementTable key={1} simulator={simulator} stage={stage} />
           when StageType.Opening
             title = __('Opening Anti-Sub')
           else
@@ -325,7 +330,6 @@ StageTable = React.createClass
         switch stage.subtype
           when StageType.Aerial
             title = "#{__('Expedition Supporting Fire')} - #{__('Aerial Support')}"
-            additions.push <AerialTable key={1} simulator={simulator} kouku={stage.kouku} />
           when StageType.Shelling
             title = "#{__('Expedition Supporting Fire')} - #{__('Shelling Support')}"
           when StageType.Torpedo
@@ -334,12 +338,17 @@ StageTable = React.createClass
       when StageType.LandBase
         id = stage.kouku?.api_base_id
         title = "#{__('Land Base Air Corps')} - No.#{id}"
-        additions.push <AerialTable key={1} simulator={simulator} kouku={stage.kouku} />
+
+    if stage.engagement?
+      tables.push <EngagementTable key={2} engagement={stage.engagement} />
+    if stage.aerial?
+      tables.push <AerialTable key={1} aerial={stage.aerial} />
+    if stage.attacks?
+      tables.push <AttackTable key={0} attacks={stage.attacks} />
 
     <div className={"stage-table"}>
       <div className={"stage-title"}>{title}</div>
-      {additions}
-      <AttackTable attacks={stage.attacks} />
+      {tables}
       <hr />
     </div>
 
@@ -354,12 +363,12 @@ DetailArea = React.createClass
         tables.push <StageTable key={i} stage={stage} simulator={simulator} />
 
     <div id="detail-area">
-      <Panel header={__ "Battle Detail"}>
+      <Panel header={__("Battle Detail")}>
       {
         if tables.length > 0
           tables
         else
-          __ "No battle"
+          __("No battle")
       }
       </Panel>
     </div>
