@@ -1,10 +1,29 @@
 'use strict'
 
-// To import module from root.
-// HACK: We translate es import to commonjs require
-require('module').globalPaths.push(__dirname)
+window.remote = require('electron').remote
+window.POI_VERSION = remote.getGlobal('POI_VERSION')
+window.ROOT = remote.getGlobal('ROOT')
+window.MODULE_PATH = remote.getGlobal('MODULE_PATH')
+window.APPDATA_PATH = remote.getGlobal('APPDATA_PATH')
+require('module').globalPaths.push(MODULE_PATH)
+require('module').globalPaths.push(ROOT)
 
+require('module').globalPaths.push(__dirname)  // Import module from root.
+
+
+// DEBUG
+;(() => {
+  // var w = remote.getCurrentWindow()
+  // w.show()
+  // w.openDevTools({detach: true})
+})()
+
+
+// Init environment
+require('babel-register')
+// require('coffee-react/register')
 require(`${ROOT}/views/env`)
+
 
 // i18n
 const path = require('path-extra')
@@ -33,6 +52,7 @@ try {
   // Do nothing
 }
 window.__r = window.i18n.resources.__.bind(window.i18n.resources)
+
 
 // Render
 document.title = __('Battle Records')
