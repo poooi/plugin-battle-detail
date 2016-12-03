@@ -1,8 +1,10 @@
-"use strict"
 
 const {__r} = window
 
 export function getShipName(ship) {
+  if (Number.isInteger(ship)) {
+    ship = window.$ships[ship]
+  }
   if (ship == null) {
     return null
   }
@@ -15,10 +17,16 @@ export function getShipName(ship) {
 }
 
 export function getItemName(item) {
+  console.log(0, item)
+  if (Number.isInteger(item)) {
+    item = window.$slotitems[item]
+  }
+  console.log(1, item)
   if (item == null) {
     return null
   }
   let name = __r(item.api_name)
+  console.log(2, name)
   return name
 }
 
