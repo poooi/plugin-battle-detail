@@ -271,7 +271,10 @@ class StageTable extends React.Component {
     case StageType.Engagement:
       break
     case StageType.Aerial:
-      title = __('Aerial Combat')
+      if (stage.subtype === StageType.Assault)
+        title = `${__('Aerial Combat')} - ${__('Jet Air Assault')}`
+      else
+        title = `${__('Aerial Combat')}`
       break
     case StageType.Torpedo:
       if (stage.subtype == StageType.Opening)
@@ -311,7 +314,10 @@ class StageTable extends React.Component {
       }
       break
     case StageType.LandBase:
-      title = `${__('Land Base Air Corps')} - No.${stage.kouku.api_base_id}`
+      if (stage.subtype === StageType.Assault)
+        title = `${__('Land Base Air Corps')} - ${__('Jet Air Assault')}`
+      else
+        title = `${__('Land Base Air Corps')} - No.${stage.kouku.api_base_id}`
       break
     }
 
