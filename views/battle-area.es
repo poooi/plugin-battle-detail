@@ -6,20 +6,11 @@ const {React} = window
 
 function simulate(battle) {
   try {
-    if (!battle) {
-      return null
-    }
-
-    let simulator = new Simulator(battle.fleet, {usePoiAPI: true})
-    for (let packet of battle.packet)
-      simulator.simulate(packet)
-    let {stages} = simulator
-    return {simulator, stages}
-
+    return Simulator.auto(battle, {usePoiAPI: true})
   } catch (error) {
     console.error(battle, error.stack)
-    return null
   }
+  return new Object()
 }
 
 class BattleArea extends React.Component {
@@ -28,7 +19,8 @@ class BattleArea extends React.Component {
   }
 
   render() {
-    const {simulator, stages} = simulate(this.props.battle) || {}
+    const simulator = simulate(this.props.battle)
+    const {stages} = simulator
 
     return (
       <div id="battle-area">
