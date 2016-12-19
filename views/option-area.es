@@ -3,7 +3,7 @@ import { PacketCompat } from 'lib/compat'
 
 const {clipboard} = require('electron')
 const {React, ReactBootstrap, remote, __, html2canvas, $} = window
-const {Panel, Grid, Row, Col, Button, ButtonGroup, Input} = ReactBootstrap
+const {Panel, Grid, Row, Col, Button, ButtonGroup, FormControl} = ReactBootstrap
 
 class OptionArea extends React.Component {
   shouldComponentUpdate(nextProps, nextState) {
@@ -70,14 +70,13 @@ class OptionArea extends React.Component {
       let desc = PacketCompat.getDesc(battle) || ''
       title = `${time} ${desc} ${map}`
     }
-    // header={__("Options")}
     return (
       <div id="option-area">
         <Panel>
           <Grid>
             <Row>
               <Col xs={6}>
-                <Input type="text" disabled value={title}></Input>
+                <FormControl disabled value={title}></FormControl>
               </Col>
               <Col xs={6}>
                 <ButtonGroup>
