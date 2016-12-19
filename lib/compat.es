@@ -110,6 +110,7 @@ export class PacketCompat {
       }
     }
     return new Battle({
+      version: "1.0",
       type: type,
       map:  map,
       desc: desc,
@@ -137,6 +138,7 @@ export class PacketCompat {
       type = BattleType.Normal
     }
     return new Battle({
+      version: battle.version,
       type: type,
       map:  battle.map,
       desc: desc,
