@@ -5,12 +5,13 @@ import { Simulator } from 'lib/battle'
 const {React} = window
 
 function simulate(battle) {
+  let simulator
   try {
-    return Simulator.auto(battle, {usePoiAPI: true})
+    simulator = Simulator.auto(battle, {usePoiAPI: true})
   } catch (error) {
     console.error(battle, error.stack)
   }
-  return new Object()
+  return simulator ? simulator : new Object()
 }
 
 class BattleArea extends React.Component {
