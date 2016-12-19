@@ -2,7 +2,7 @@
 import { PacketCompat } from 'lib/compat'
 
 const {clipboard} = require('electron')
-const {React, ReactBootstrap, remote, $, __} = window
+const {React, ReactBootstrap, remote, __, html2canvas, $} = window
 const {Panel, Grid, Row, Col, Button, ButtonGroup, Input} = ReactBootstrap
 
 class OptionArea extends React.Component {
