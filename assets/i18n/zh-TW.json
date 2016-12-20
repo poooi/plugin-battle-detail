@@ -93,6 +93,11 @@
   "Opening Torpedo Salvo": "開幕雷擊",
   "No battle": "無戰鬥",
 
+  "Filter": "過濾",
+  "Usage": "使用說明",
+  "Click \"Filter\" or press Enter to apply filter.": "點擊「過濾」或按Enter鍵從而應用過濾條件。",
+  "Right click \"Filter\" to clear filter.": "右鍵點擊「過濾」從而清空過濾條件。",
+  "Multi-value filter are separated by commas.": "多值過濾以半形逗號分隔。",
   "Time": "時間",
   "Map": "海域",
   "Description": "説明",

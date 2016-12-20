@@ -93,6 +93,11 @@
   "Opening Torpedo Salvo": "Opening Torpedo Salvo",
   "No battle": "No battle",
 
+  "Filter": "Filter",
+  "Usage": "Usage",
+  "Click \"Filter\" or press Enter to apply filter.": "Click \"Filter\" or press Enter to apply filter.",
+  "Right click \"Filter\" to clear filter.": "Right click \"Filter\" to clear filter.",
+  "Multi-value filter are separated by commas.": "Multi-value filter are separated by commas.",
   "Time": "Time",
   "Map": "Map",
   "Description": "Description",

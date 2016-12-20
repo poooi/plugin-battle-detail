@@ -2,7 +2,8 @@
 import _ from 'lodash'
 import FontAwesome from 'react-fontawesome'
 const {React, ReactBootstrap, __} = window
-const {Panel, Grid, Row, Col, Table, Pagination, FormControl, Button} = ReactBootstrap
+const {Panel, Grid, Row, Col, Table, Pagination} = ReactBootstrap
+const {FormControl, Button, OverlayTrigger, Popover} = ReactBootstrap
 
 const PAGE_ITEM_AMOUNT = 20
 
@@ -106,6 +107,13 @@ class BrowseArea extends React.Component {
         <Panel header={__("Browse")}>
           <form onSubmit={this.onClickFilter}>
             <Table className="browse-table" striped bordered condensed hover fill>
+              <OverlayTrigger placement='top' overlay={
+                <Popover id="browse-filter-usage" title={__("Usage")}>
+                  <div>{`1. ${__('Click "Filter" or press Enter to apply filter.')}`}</div>
+                  <div>{`2. ${__('Right click "Filter" to clear filter.')}`}</div>
+                  <div>{`3. ${__('Multi-value filter are separated by commas.')}`}</div>
+                </Popover>
+              }>
               <thead>
                 <tr>
                   <th>#</th>
@@ -115,6 +123,7 @@ class BrowseArea extends React.Component {
                   <th><Button type="submit" bsStyle='primary' onClick={this.onClickFilter} onContextMenu={this.onRightClickFilter}>{__("Filter")}</Button></th>
                 </tr>
               </thead>
+              </OverlayTrigger>
               <tbody>
               {range.map(i => {
                 let item = indexes[i]

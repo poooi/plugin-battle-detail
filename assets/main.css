@@ -251,6 +251,9 @@ table .form-control {
   height: 20px;
   padding: 0 4px;
 }
+#browse-filter-usage {
+  max-width: 600px;
+}
 .browse-table tr > th:nth-child(1) {
   width: 10%;
 }
