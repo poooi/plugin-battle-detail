@@ -1,7 +1,8 @@
 
+import _ from 'lodash'
 import FontAwesome from 'react-fontawesome'
-const {React, ReactBootstrap, _, __} = window
-const {Panel, Grid, Row, Col, Table, Pagination} = ReactBootstrap
+const {React, ReactBootstrap, __} = window
+const {Panel, Grid, Row, Col, Table, Pagination, FormControl, Button} = ReactBootstrap
 
 const PAGE_ITEM_AMOUNT = 20
 
@@ -10,14 +11,65 @@ class BrowseArea extends React.Component {
     super()
     this.state = {
       pageNo: 1,
+      indexes: [],
+      filters: {
+        time: [''],
+        map : [''],
+        desc: [''],
+      },
     }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.indexes === nextProps.indexes)
+      return
+    this.setState({
+      indexes: this.applyFilters(nextProps.indexes, this.state.filters),
+    })
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     return !(
-      this.props.indexes === nextProps.indexes &&
+      this.state.indexes === nextState.indexes &&
       this.state.pageNo === nextState.pageNo
     )
+  }
+
+  applyFilters = (indexes, filters) => {
+    return indexes.filter((index, i) => (
+      filters.time.findIndex(keyword => index.time.includes(keyword)) > -1 &&
+      filters.map .findIndex(keyword => index.map .includes(keyword)) > -1 &&
+      filters.desc.findIndex(keyword => index.desc.includes(keyword)) > -1 &&
+      true
+    ))
+  }
+
+  onClickFilter = () => {
+    const SEPARATOR = ','
+    const time = this.iTime.value
+    const map  = this.iMap .value
+    const desc = this.iDesc.value
+    const filters = {
+      time: time.length > 0 ? time.split(SEPARATOR) : [''],
+      map : map .length > 0 ? map .split(SEPARATOR) : [''],
+      desc: desc.length > 0 ? desc.split(SEPARATOR) : [''],
+    }
+    if (_.isEqual(this.state.filters, filters))
+      return
+    this.setState({
+      indexes: this.applyFilters(this.props.indexes, filters),
+      filters: filters,
+    })
+  }
+
+  onRightClickFilter = () => {
+    this.iTime.value = ''
+    this.iMap .value = ''
+    this.iDesc.value = ''
+  }
+
+  onClickView = (id) => {
+    this.props.updateBattle(id)
   }
 
   onSelectPage = (key, key2) => {
@@ -30,13 +82,8 @@ class BrowseArea extends React.Component {
     })
   }
 
-  onClickView = (id) => {
-    this.props.updateBattle(id)
-  }
-
   render() {
-    const {indexes} = this.props
-    const {pageNo} = this.state
+    const {indexes, pageNo} = this.state
     let pageAmount = 1, range = []
     if (indexes && indexes.length > 0) {
       pageAmount = Math.ceil(indexes.length / PAGE_ITEM_AMOUNT)
@@ -57,31 +104,33 @@ class BrowseArea extends React.Component {
           </Grid>
         </Panel>
         <Panel header={__("Browse")}>
-          <Table striped bordered condensed hover fill>
-            <thead>
-              <tr>
-                <th style={{width: '10%'}}>#</th>
-                <th style={{width: '30%'}}>{__("Time")}</th>
-                <th style={{width: '20%'}}>{__("Map")}</th>
-                <th style={{width: '25%'}}>{__("Description")}</th>
-                <th style={{width: '15%'}}></th>
-              </tr>
-            </thead>
-            <tbody>
-            {range.map(i => {
-              let item = indexes[i]
-              return (item == null) ? void 0 : (
-                <tr key={i}>
-                  <td>{i + 1}</td>
-                  <td>{item.time}</td>
-                  <td>{item.map}</td>
-                  <td>{item.desc}</td>
-                  <td><ViewButton onClick={() => this.onClickView(item.id)} /></td>
+          <form onSubmit={this.onClickFilter}>
+            <Table className="browse-table" striped bordered condensed hover fill>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th><FormControl inputRef={ref => this.iTime = ref} placeholder={__("Time")} /></th>
+                  <th><FormControl inputRef={ref => this.iMap  = ref} placeholder={__("Map")} /></th>
+                  <th><FormControl inputRef={ref => this.iDesc = ref} placeholder={__("Description")} /></th>
+                  <th><Button type="submit" bsStyle='primary' onClick={this.onClickFilter} onContextMenu={this.onRightClickFilter}>{__("Filter")}</Button></th>
                 </tr>
-              )
-            })}
-            </tbody>
-          </Table>
+              </thead>
+              <tbody>
+              {range.map(i => {
+                let item = indexes[i]
+                return (item == null) ? void 0 : (
+                  <tr key={i}>
+                    <td>{i + 1}</td>
+                    <td>{item.time}</td>
+                    <td>{item.map}</td>
+                    <td>{item.desc}</td>
+                    <td><ViewButton onClick={() => this.onClickView(item.id)} /></td>
+                  </tr>
+                )
+              })}
+              </tbody>
+            </Table>
+          </form>
           <Pagination
             ellipsis
             boundaryLinks

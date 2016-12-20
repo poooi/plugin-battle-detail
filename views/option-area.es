@@ -80,9 +80,9 @@ class OptionArea extends React.Component {
               </Col>
               <Col xs={6}>
                 <ButtonGroup>
-                  <Button bsStyle='primary' style={{width: '100%'}} onClick={this.onClickExport}>{__("Copy Data")}</Button>
-                  <Button bsStyle='primary' style={{width: '100%'}} onClick={this.onClickImport}>{__("Paste Data")}</Button>
-                  <Button bsStyle='primary' style={{width: '100%'}} onClick={this.onClickSave}>{__("Save as Image")}</Button>
+                  <Button bsStyle='primary' onClick={this.onClickExport}>{__("Copy Data")}</Button>
+                  <Button bsStyle='primary' onClick={this.onClickImport}>{__("Paste Data")}</Button>
+                  <Button bsStyle='primary' onClick={this.onClickSave}>{__("Save as Image")}</Button>
                 </ButtonGroup>
               </Col>
             </Row>

@@ -5,6 +5,9 @@
 .btn-group {
   display: flex;
 }
+.btn {
+  width: 100%;
+}
 .cbtn {
   cursor: pointer;
 }
@@ -242,4 +245,24 @@ img.svg {
 /* Browse Area */
 #browse-area .tip {
   font-size: 80%;
+}
+table .btn,
+table .form-control {
+  height: 20px;
+  padding: 0 4px;
+}
+.browse-table tr > th:nth-child(1) {
+  width: 10%;
+}
+.browse-table tr > th:nth-child(2) {
+  width: 30%;
+}
+.browse-table tr > th:nth-child(3) {
+  width: 20%;
+}
+.browse-table tr > th:nth-child(4) {
+  width: 25%;
+}
+.browse-table tr > th:nth-child(5) {
+  width: 15%;
 }
