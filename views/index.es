@@ -18,10 +18,10 @@ class MainArea extends React.Component {
     super()
     this.state = {
       activeTab: 0,
+      disableBrowser: false,
       battle: null,
       indexes: [],
       showLast: true,
-      disableBrowser: false,
     }
   }
 
@@ -126,7 +126,7 @@ class MainArea extends React.Component {
       {
         id:   newId,
         time: PacketCompat.getTime(newBattle),
-        map:  PacketCompat.getMap(newBattle),
+        map : PacketCompat.getMap(newBattle),
         desc: PacketCompat.getDesc(newBattle),
       },
       ...indexes,
