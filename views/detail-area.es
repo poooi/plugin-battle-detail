@@ -15,8 +15,8 @@ const AirControlName = {
   [AirControl.Parity      ]: __("Air Parity"),
   [AirControl.Supremacy   ]: __("Air Supremacy"),
   [AirControl.Superiority ]: __("Air Superiority"),
-  [AirControl.Incapability]: __("Air Incapability"),
   [AirControl.Denial      ]: __("Air Denial"),
+  [AirControl.Incapability]: __("Air Incapability"),
 }
 
 const EngagementName = {
