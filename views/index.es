@@ -2,11 +2,12 @@ import {sleep} from 'views/utils'
 
 import ModalArea from './modal-area'
 import OptionArea from './option-area'
-import BattleArea from './battle-area'
+import OverviewArea from './overview-area'
+import DetailArea from './detail-area'
 import BrowseArea from './browse-area'
 import AppData from 'lib/appdata'
-import { PacketCompat } from 'lib/compat'
-import { PacketManager } from 'lib/battle'
+import { PacketCompat, IndexCompat } from 'lib/compat'
+import { PacketManager, Simulator } from 'lib/battle'
 
 const {React, ReactBootstrap, remote, ipc, _, __} = window
 const {Tab, Tabs} = ReactBootstrap
@@ -71,9 +72,11 @@ class MainArea extends React.Component {
       })
       window.showModal({
         title: __("Indexing"),
-        body : [__("An error occurred while indexing battle on disk."),
-                __("Battle browsor is disabled."),
-                __("Please contact the developers.")],
+        body : [
+          __("An error occurred while indexing battle on disk."),
+          __("Battle browsor is disabled."),
+          __("Please contact the developers."),
+        ],
       })
       console.error(err.stack)
     }
@@ -83,8 +86,10 @@ class MainArea extends React.Component {
     let eta = new Date(Date.now() + list.length / MANIFEST_LOAD_NUMBER * MANIFEST_LOAD_INTERVAL)
     window.showModal({
       title: __("Indexing"),
-      body : [__("Indexing battle from disk. Please wait..."),
-              __("ETA:") + eta.toLocaleTimeString()],
+      body : [
+        __("Indexing battle from disk. Please wait..."),
+        __("ETA:") + eta.toLocaleTimeString(),
+      ],
       closable: false,
     })
 
@@ -97,12 +102,7 @@ class MainArea extends React.Component {
         ids.map(async (id) => {
           let battle = await AppData.loadBattle(id)
           if (battle != null) {
-            indexes.push({
-              id  : id,
-              time: PacketCompat.getTime(battle),
-              map : PacketCompat.getMap(battle),
-              desc: PacketCompat.getDesc(battle),
-            })
+            indexes.push(IndexCompat.getIndex(battle, id))
           }
         }
       ))
@@ -123,12 +123,7 @@ class MainArea extends React.Component {
       indexes.shift()
     }
     indexes = [
-      {
-        id:   newId,
-        time: PacketCompat.getTime(newBattle),
-        map : PacketCompat.getMap(newBattle),
-        desc: PacketCompat.getDesc(newBattle),
-      },
+      IndexCompat.getIndex(newBattle, newId),
       ...indexes,
     ]
     if (showLast) {
@@ -174,6 +169,16 @@ class MainArea extends React.Component {
   }
 
   render() {
+    const {battle} = this.state
+    let simulator = {}, stages = []
+    try {
+      simulator = Simulator.auto(battle) || {}
+      stages = simulator.stages || []
+    }
+    catch (err) {
+      console.error(battle, err.stack)
+    }
+
     return (
       <div id="main">
         <ModalArea />
@@ -183,9 +188,10 @@ class MainArea extends React.Component {
               battle={this.state.battle}
               updateBattle={this.updateBattle}
               />
-            <BattleArea
-              battle={this.state.battle}
-              />
+            <div id="battle-area">
+              <OverviewArea simulator={simulator} stages={stages} />
+              <DetailArea simulator={simulator} stages={stages} />
+            </div>
           </Tab>
           <Tab eventKey={1} title={__("Browse")} disabled={this.state.disableBrowser}>
             <BrowseArea

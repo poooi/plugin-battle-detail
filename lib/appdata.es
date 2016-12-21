@@ -16,9 +16,11 @@ const GZIP_EXT = '.gz'
 
 const APPDATA = path.join(window.APPDATA_PATH, 'battle-detail')
 const TRASH = path.join(APPDATA, 'trash')
-const INDEX = 'index10.csv' + GZIP_EXT
+const INDEX = 'index11.csv' + GZIP_EXT
 const INDEX_CSV_OPTIONS = {
-  columns: ['id', 'time', 'map', 'desc'],
+  // See compat.es/PacketCompact
+  columns: ['id', 'time_', 'map', 'route_', 'desc', 'rank'],
+  auto_parse: true,
 }
 
 class AppData {
@@ -72,6 +74,7 @@ class AppData {
       let data = await this.loadFile(INDEX)
       if (data != null) {
         return CSV.parse(data, INDEX_CSV_OPTIONS)
+          .map(i => IndexCompat.fmtIndex(i))
       }
     }
     catch (err) {

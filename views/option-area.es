@@ -63,13 +63,7 @@ class OptionArea extends React.Component {
 
   render() {
     const {battle} = this.props
-    let title = ''
-    if (battle != null) {
-      let time = PacketCompat.getTime(battle) || ''
-      let map = PacketCompat.getMap(battle) || ''
-      let desc = PacketCompat.getDesc(battle) || ''
-      title = `${time} ${desc} ${map}`
-    }
+    let title = battle == null ? '' : PacketCompat.fmtTitle(battle)
     return (
       <div id="option-area">
         <Panel>

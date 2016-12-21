@@ -2,33 +2,15 @@
 import fs from 'fs-extra'
 import path from 'path-extra'
 
-import { Models } from 'lib/battle'
+import { Simulator, Models } from 'lib/battle'
 const { Battle, BattleType, Fleet } = Models
-const { __ } = window
+const { Rank } = Models
+const { __, getStore } = window
 
 export class PacketCompat {
   static getId(battle) {
     if (battle == null) return
     return battle.time || battle.poi_timestamp || null
-  }
-
-  static getTime(battle) {
-    if (battle == null) return
-    let str = ''
-    if (battle.time) {
-      let date = new Date(battle.time)
-      date.setMinutes(date.getMinutes() - date.getTimezoneOffset())
-      str = date.toISOString().slice(0, 19).replace('T', ' ')
-    }
-    return str
-  }
-
-  static getMap(battle) {
-    if (battle == null) return
-    let map = battle.map
-    if (map instanceof Array && map.length > 0) {
-      return `${map[0]}-${map[1]} (${map[2]})`
-    }
   }
 
   static getDesc(battle) {
@@ -37,11 +19,34 @@ export class PacketCompat {
       return `${__("Sortie")}`
     }
     if (battle.type === BattleType.Boss) {
-      return `${__("Sortie")} (Boss)`
+      return `${__("Sortie")} (boss)`
     }
     if (battle.type === BattleType.Pratice) {
       return `${__("Pratice")} ${battle.desc}`
     }
+  }
+
+  static fmtTitle(battle) {
+    if (battle == null) return
+    if (battle.map == null) battle.map = []
+    const time   = PacketCompat.fmtTime(battle.time)
+    const map    = battle.map.slice(0, 2).join('-')
+    const route_ = battle.map[2]
+    const routeA = getStore(`fcd.map.${map}.route.${route_}`) || []  // temp array
+    const route  = `${routeA.join('-')} (${route_})`
+    const desc   = PacketCompat.getDesc(battle)
+    return `${time} ${map} ${route} ${desc}`
+  }
+
+  // Format timestamp to time string
+  static fmtTime(timestamp) {
+    let str = ''
+    if (timestamp != null) {
+      let date = new Date(timestamp)
+      date.setMinutes(date.getMinutes() - date.getTimezoneOffset())
+      str = date.toISOString().slice(0, 19).replace('T', ' ')
+    }
+    return str
   }
 
   static v10tov21(packet) {
@@ -80,6 +85,9 @@ export class PacketCompat {
     }
     let mainFleet = convertFleet(packet.poi_sortie_fleet, packet.poi_sortie_equipment, packet.api_nowhps)
     let escortFleet = convertFleet(packet.poi_combined_fleet, packet.poi_combined_equipment, packet.api_nowhps_combined)
+    if (mainFleet == null && (packet.api_fParam || []).length > 0) {
+      throw new Error('Broken packet data')
+    }
     let fleet = new Fleet({
       type:    packet.poi_is_combined ? (packet.poi_is_carrier ? 1: 2) : 0,
       main:    mainFleet,
@@ -90,10 +98,10 @@ export class PacketCompat {
     let packets = [packet]
     packet.poi_path = packet.poi_uri
     packet.poi_time = packet.poi_timestamp
-    if (packet.api_hougeki) {
+    if (packet.api_hougeki && !packet.poi_uri.includes('sp_midnight')) {
       packets.push({
         api_hougeki: packet.api_hougeki,
-        poi_path: '/kcsapi/api_req_battle_midnight/battle',
+        poi_path: '!COMPAT/midnight_battle',
       })
       delete packet.api_hougeki
     }
@@ -156,5 +164,41 @@ export class IndexCompat {
     if (fs.existsSync(manifest)) {
       fs.unlinkSync(manifest)
     }
+  }
+
+  static RankMap = {
+    [Rank.SS]: 'SS',
+    [Rank.S ]: 'S',
+    [Rank.A ]: 'A',
+    [Rank.B ]: 'B',
+    [Rank.C ]: 'C',
+    [Rank.D ]: 'D',
+    [Rank.E ]: 'E',
+  }
+
+  static getIndex(battle, id, simulator) {
+    if (battle == null) return
+    if (battle.map == null) battle.map = []
+    if (id == null) id = PacketCompat.getId(battle)
+    if (simulator == null) simulator = Simulator.auto(battle)
+    const time_  = battle.time
+    const time   = PacketCompat.fmtTime(time_)
+    const map    = battle.map.slice(0, 2).join('-')
+    const route_ = battle.map[2]
+    const routeA = getStore(`fcd.map.${map}.route.${route_}`) || []  // temp array
+    const route  = `${routeA.join('-')} (${route_})`
+    const desc   = PacketCompat.getDesc(battle)
+    const rank   = IndexCompat.RankMap[simulator.result.rank]
+    return {id, time_, time, map, route_, route, desc, rank}
+  }
+
+  // Format index from CSV in-place
+  static fmtIndex(index) {
+    if (index == null) return
+    const {map, route_} = index
+    index.time  = PacketCompat.fmtTime(index.time_)
+    const routeA = getStore(`fcd.map.${map}.route.${route_}`)
+    index.route = routeA ? routeA.join('-') : ''
+    return index
   }
 }
