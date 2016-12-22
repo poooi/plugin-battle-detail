@@ -1,4 +1,5 @@
 
+import _ from 'lodash'
 import fs from 'fs-extra'
 import path from 'path-extra'
 
@@ -32,8 +33,7 @@ export class PacketCompat {
     const time   = PacketCompat.fmtTime(battle.time)
     const map    = battle.map.slice(0, 2).join('-')
     const route_ = battle.map[2]
-    const routeA = getStore(`fcd.map.${map}.route.${route_}`) || []  // temp array
-    const route  = `${routeA.join('-')} (${route_})`
+    const route  = IndexCompat.getRoute(map, route_)
     const desc   = PacketCompat.getDesc(battle)
     return `${time} ${map} ${route} ${desc}`
   }
@@ -176,6 +176,11 @@ export class IndexCompat {
     [Rank.E ]: 'E',
   }
 
+  static getRoute(map, rid) {
+    const a = _.get(getStore(), `fcd.map.${map}.route.${rid}`, [])
+    return `${a.join('-')} (${rid})`
+  }
+
   static getIndex(battle, id, simulator) {
     if (battle == null) return
     if (battle.map == null) battle.map = []
@@ -185,8 +190,7 @@ export class IndexCompat {
     const time   = PacketCompat.fmtTime(time_)
     const map    = battle.map.slice(0, 2).join('-')
     const route_ = battle.map[2]
-    const routeA = getStore(`fcd.map.${map}.route.${route_}`) || []  // temp array
-    const route  = `${routeA.join('-')} (${route_})`
+    const route  = IndexCompat.getRoute(map, route_)
     const desc   = PacketCompat.getDesc(battle)
     const rank   = IndexCompat.RankMap[simulator.result.rank]
     return {id, time_, time, map, route_, route, desc, rank}
@@ -197,8 +201,7 @@ export class IndexCompat {
     if (index == null) return
     const {map, route_} = index
     index.time  = PacketCompat.fmtTime(index.time_)
-    const routeA = getStore(`fcd.map.${map}.route.${route_}`)
-    index.route = routeA ? routeA.join('-') : ''
+    index.route = IndexCompat.getRoute(map, route_)
     return index
   }
 }
