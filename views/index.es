@@ -1,15 +1,17 @@
-import {sleep} from 'views/utils'
 
+import _ from 'lodash'
 import ModalArea from './modal-area'
 import OptionArea from './option-area'
 import OverviewArea from './overview-area'
 import DetailArea from './detail-area'
 import BrowseArea from './browse-area'
 import AppData from 'lib/appdata'
+import PacketManager from 'lib/packetmanager'
+import { Simulator } from 'lib/battle'
 import { PacketCompat, IndexCompat } from 'lib/compat'
-import { PacketManager, Simulator } from 'lib/battle'
+import { sleep } from 'views/utils'
 
-const {React, ReactBootstrap, remote, ipc, _, __} = window
+const {React, ReactBootstrap, remote, ipc, __} = window
 const {Tab, Tabs} = ReactBootstrap
 const INDEXES_LOAD_INTERVAL = 500
 const INDEXES_LOAD_NUMBER = 500

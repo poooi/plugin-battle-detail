@@ -6,9 +6,10 @@ const { Panel, OverlayTrigger, Tooltip, Row } = ReactBootstrap
 import { HPBar } from './bar'
 import { getShipName, getItemName } from './utils'
 
-import { Models } from 'lib/battle'
-const { StageType, AttackType, HitType, ShipOwner } = Models
-const { AirControl, Engagement, Formation, Detection } = Models
+import {
+  StageType, AttackType, HitType, ShipOwner,
+  AirControl, Engagement, Formation, Detection,
+} from 'lib/battle'
 
 
 const AirControlName = {
