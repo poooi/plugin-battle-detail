@@ -258,7 +258,7 @@ table .form-control {
   width: 5%;
 }
 .browse-table tr > th:nth-child(2) {
-  width: 30%;
+  width: 25%;
 }
 .browse-table tr > th:nth-child(3) {
   width: 10%;
@@ -267,10 +267,10 @@ table .form-control {
   width: 10%;
 }
 .browse-table tr > th:nth-child(5) {
-  width: 15%;
+  width: 10%;
 }
 .browse-table tr > th:nth-child(6) {
-  width: 15%;
+  width: 25%;
 }
 .browse-table tr > th:nth-child(7) {
   width: 10%;

@@ -130,8 +130,8 @@ class BrowseArea extends React.Component {
                   <th><FormControl inputRef={ref => this.iTime = ref} placeholder={__("Time")} /></th>
                   <th><FormControl inputRef={ref => this.iMap  = ref} placeholder={__("Map")} /></th>
                   <th><FormControl inputRef={ref => this.iRoute= ref} placeholder={__("Route")} /></th>
-                  <th><FormControl inputRef={ref => this.iDesc = ref} placeholder={__("Description")} /></th>
                   <th><FormControl inputRef={ref => this.iRank = ref} placeholder={__("Rank")} /></th>
+                  <th><FormControl inputRef={ref => this.iDesc = ref} placeholder={__("Description")} /></th>
                   <th><Button type="submit" bsStyle='primary' onClick={this.onClickFilter} onContextMenu={this.onRightClickFilter}>{__("Filter")}</Button></th>
                 </tr>
               </thead>
@@ -145,8 +145,8 @@ class BrowseArea extends React.Component {
                     <td>{item.time}</td>
                     <td>{item.map}</td>
                     <td>{item.route}</td>
-                    <td>{item.desc}</td>
                     <td>{item.rank}</td>
+                    <td>{item.desc}</td>
                     <td><ViewButton onClick={() => this.onClickView(item.id)} /></td>
                   </tr>
                 )

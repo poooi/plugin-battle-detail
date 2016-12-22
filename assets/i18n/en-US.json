@@ -100,6 +100,8 @@
   "Multi-value filter are separated by commas.": "Multi-value filter are separated by commas.",
   "Time": "Time",
   "Map": "Map",
+  "Route": "Route",
+  "Rank": "Rank",
   "Description": "Description",
   "View": "View",
   "Tip": "Tip",
