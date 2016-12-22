@@ -15,9 +15,9 @@ class BrowseArea extends React.Component {
       indexes: [],
       filters: {
         time : [''],
+        desc : [''],
         map  : [''],
         route: [''],
-        desc : [''],
         rank : [''],
       },
     }
@@ -41,9 +41,9 @@ class BrowseArea extends React.Component {
   applyFilters = (indexes, filters) => {
     return indexes.filter((index, i) => (
       filters.time .findIndex(keyword => index.time .includes(keyword)) > -1 &&
+      filters.desc .findIndex(keyword => index.desc .includes(keyword)) > -1 &&
       filters.map  .findIndex(keyword => index.map  .includes(keyword)) > -1 &&
       filters.route.findIndex(keyword => index.route.includes(keyword)) > -1 &&
-      filters.desc .findIndex(keyword => index.desc .includes(keyword)) > -1 &&
       filters.rank .findIndex(keyword => index.rank .includes(keyword)) > -1 &&
       true
     ))
@@ -52,15 +52,15 @@ class BrowseArea extends React.Component {
   onClickFilter = () => {
     const SEPARATOR = ','
     const time  = this.iTime.value
+    const desc  = this.iDesc.value
     const map   = this.iMap .value
     const route = this.iRoute.value
-    const desc  = this.iDesc.value
     const rank  = this.iRank.value
     const filters = {
       time : time .split(SEPARATOR),
+      desc : desc .split(SEPARATOR),
       map  : map  .split(SEPARATOR),
       route: route.split(SEPARATOR),
-      desc : desc .split(SEPARATOR),
       rank : rank .split(SEPARATOR),
     }
     if (_.isEqual(this.state.filters, filters))
@@ -73,9 +73,9 @@ class BrowseArea extends React.Component {
 
   onRightClickFilter = () => {
     this.iTime .value = ''
+    this.iDesc .value = ''
     this.iMap  .value = ''
     this.iRoute.value = ''
-    this.iDesc .value = ''
     this.iRank .value = ''
   }
 
@@ -128,10 +128,10 @@ class BrowseArea extends React.Component {
                 <tr>
                   <th>#</th>
                   <th><FormControl inputRef={ref => this.iTime = ref} placeholder={__("Time")} /></th>
+                  <th><FormControl inputRef={ref => this.iDesc = ref} placeholder={__("Description")} /></th>
                   <th><FormControl inputRef={ref => this.iMap  = ref} placeholder={__("Map")} /></th>
                   <th><FormControl inputRef={ref => this.iRoute= ref} placeholder={__("Route")} /></th>
                   <th><FormControl inputRef={ref => this.iRank = ref} placeholder={__("Rank")} /></th>
-                  <th><FormControl inputRef={ref => this.iDesc = ref} placeholder={__("Description")} /></th>
                   <th><Button type="submit" bsStyle='primary' onClick={this.onClickFilter} onContextMenu={this.onRightClickFilter}>{__("Filter")}</Button></th>
                 </tr>
               </thead>
@@ -143,10 +143,10 @@ class BrowseArea extends React.Component {
                   <tr key={i}>
                     <td>{i + 1}</td>
                     <td>{item.time}</td>
+                    <td>{item.desc}</td>
                     <td>{item.map}</td>
                     <td>{item.route}</td>
                     <td>{item.rank}</td>
-                    <td>{item.desc}</td>
                     <td><ViewButton onClick={() => this.onClickView(item.id)} /></td>
                   </tr>
                 )

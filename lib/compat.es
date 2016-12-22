@@ -177,6 +177,7 @@ export class IndexCompat {
   }
 
   static getRoute(map, rid) {
+    if (rid == null || rid == '') return ''
     const a = _.get(getStore(), `fcd.map.${map}.route.${rid}`, [])
     return `${a.join('-')} (${rid})`
   }
