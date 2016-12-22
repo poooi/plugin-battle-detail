@@ -11,8 +11,8 @@ import { PacketManager, Simulator } from 'lib/battle'
 
 const {React, ReactBootstrap, remote, ipc, _, __} = window
 const {Tab, Tabs} = ReactBootstrap
-const MANIFEST_LOAD_INTERVAL = 1000
-const MANIFEST_LOAD_NUMBER = 500
+const INDEXES_LOAD_INTERVAL = 500
+const INDEXES_LOAD_NUMBER = 500
 
 class MainArea extends React.Component {
   constructor() {
@@ -83,7 +83,7 @@ class MainArea extends React.Component {
   }
 
   createIndex = async (list) => {
-    let eta = new Date(Date.now() + list.length / MANIFEST_LOAD_NUMBER * MANIFEST_LOAD_INTERVAL)
+    let eta = new Date(Date.now() + list.length / INDEXES_LOAD_NUMBER * INDEXES_LOAD_INTERVAL)
     window.showModal({
       title: __("Indexing"),
       body : [
@@ -97,7 +97,7 @@ class MainArea extends React.Component {
     while (list.length > 0) {
       let _st = Date.now()
       console.log(`Indexing... ${list.length} remains at ${_st}.`)  // eslint-disable-line no-console
-      let ids = list.splice(0, MANIFEST_LOAD_NUMBER)
+      let ids = list.splice(0, INDEXES_LOAD_NUMBER)
       await Promise.all(
         ids.map(async (id) => {
           let battle = await AppData.loadBattle(id)
@@ -106,7 +106,7 @@ class MainArea extends React.Component {
           }
         }
       ))
-      await sleep(MANIFEST_LOAD_INTERVAL + _st - Date.now())
+      await sleep(INDEXES_LOAD_INTERVAL + _st - Date.now())
     }
 
     window.hideModal()

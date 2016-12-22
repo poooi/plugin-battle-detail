@@ -57,7 +57,7 @@ class ModalArea extends React.Component {
           </Modal.Body>
           <Modal.Footer>
             {footer}
-            {closable ? <Button onClick={this.hideModal}>{__("Close")}</Button> : null}
+            {closable ? <Button bsStyle='primary' onClick={this.hideModal}>{__("Close")}</Button> : null}
           </Modal.Footer>
         </Modal>
       </div>
