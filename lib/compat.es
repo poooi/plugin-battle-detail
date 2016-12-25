@@ -22,8 +22,8 @@ export class PacketCompat {
     if (battle.type === BattleType.Boss) {
       return `${__("Sortie")} (boss)`
     }
-    if (battle.type === BattleType.Pratice) {
-      return `${__("Pratice")} ${battle.desc}`
+    if (battle.type === BattleType.Practice) {
+      return `${__("Practice")} ${battle.desc}`
     }
   }
 
@@ -108,7 +108,7 @@ export class PacketCompat {
     let type = null, map = null, desc = null
     let pm = packet.poi_comment.match(/(Pratice|演習|演习|演習) (.+)/)
     if (pm) {
-      type = BattleType.Pratice
+      type = BattleType.Practice
       desc = pm[2]
     } else {
       let match = packet.poi_comment.match(/^(.+?) (\d+)-(\d+) \((\d+)(, boss)?\)$/)
@@ -138,7 +138,7 @@ export class PacketCompat {
     let type = null, desc = null
     let pm = battle.desc.match(/(Pratice|演習|演习|演習) (.+)/)
     if (pm) {
-      type = BattleType.Pratice
+      type = BattleType.Practice
       desc = pm[2]
     } else if (battle.desc.includes("(Boss)")) {
       type = BattleType.Boss
