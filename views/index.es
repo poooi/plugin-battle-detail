@@ -15,6 +15,7 @@ const {React, ReactBootstrap, remote, ipc, __} = window
 const {Tab, Tabs} = ReactBootstrap
 const INDEXES_LOAD_INTERVAL = 500
 const INDEXES_LOAD_NUMBER = 500
+const LOAD_INDEXES_BATTLE_ERROR = "LOAD_INDEXES_BATTLE_ERROR"
 
 class MainArea extends React.Component {
   constructor() {
@@ -59,16 +60,16 @@ class MainArea extends React.Component {
         await AppData.listBattle(),
         indexes.map((x) => x.id),
       )
-      if (diff.length === 0) {
-        return
-      }
-      let newIndex = await this.createIndex(diff)
+      if (diff.length === 0) return
+      const newIndex = await this.createIndex(diff)
       indexes = newIndex.concat(this.state.indexes || [])
       indexes.sort((x, y) => y.id - x.id)  // Sort from newer to older
       AppData.saveIndex(indexes)
       this.updateIndex(indexes)
     }
     catch (err) {
+      if (err.message !== LOAD_INDEXES_BATTLE_ERROR)
+        console.error(err.stack)
       this.setState({
         disableBrowser: true,
       })
@@ -80,7 +81,6 @@ class MainArea extends React.Component {
           __("Please contact the developers."),
         ],
       })
-      console.error(err.stack)
     }
   }
 
@@ -102,9 +102,15 @@ class MainArea extends React.Component {
       let ids = list.splice(0, INDEXES_LOAD_NUMBER)
       await Promise.all(
         ids.map(async (id) => {
-          let battle = await AppData.loadBattle(id)
-          if (battle != null) {
-            indexes.push(IndexCompat.getIndex(battle, id))
+          let battle
+          try {
+            battle = await AppData.loadBattle(id)
+            if (battle != null)
+              indexes.push(IndexCompat.getIndex(battle, id))
+          }
+          catch (err) {
+            console.error(battle, '\n', err.stack)
+            throw new Error(LOAD_INDEXES_BATTLE_ERROR)
           }
         }
       ))
