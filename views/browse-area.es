@@ -77,6 +77,7 @@ class BrowseArea extends React.Component {
     this.iMap  .value = ''
     this.iRoute.value = ''
     this.iRank .value = ''
+    this.onClickFilter()
   }
 
   onClickView = (id) => {
