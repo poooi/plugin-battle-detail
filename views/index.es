@@ -15,7 +15,6 @@ const {React, ReactBootstrap, remote, ipc, __} = window
 const {Tab, Tabs} = ReactBootstrap
 const INDEXES_LOAD_INTERVAL = 500
 const INDEXES_LOAD_NUMBER = 500
-const LOAD_INDEXES_BATTLE_ERROR = "LOAD_INDEXES_BATTLE_ERROR"
 
 class MainArea extends React.Component {
   constructor() {
@@ -68,8 +67,7 @@ class MainArea extends React.Component {
       this.updateIndex(indexes)
     }
     catch (err) {
-      if (err.message !== LOAD_INDEXES_BATTLE_ERROR)
-        console.error(err.stack)
+      console.error(err.stack)
       this.setState({
         disableBrowser: true,
       })
@@ -109,8 +107,8 @@ class MainArea extends React.Component {
               indexes.push(IndexCompat.getIndex(battle, id))
           }
           catch (err) {
-            console.error(battle, '\n', err.stack)
-            throw new Error(LOAD_INDEXES_BATTLE_ERROR)
+            console.error(`Failed to index battle ${id}. Moving it to trash.`, '\n', err.stack)
+            await AppData.trashBattle(id)
           }
         }
       ))
