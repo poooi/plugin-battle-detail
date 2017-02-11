@@ -178,7 +178,7 @@ class MainArea extends React.Component {
     const {battle} = this.state
     let simulator = {}, stages = []
     try {
-      simulator = Simulator.auto(battle) || {}
+      simulator = Simulator.auto(battle, { usePoiAPI: true }) || {}
       stages = simulator.stages || []
     }
     catch (err) {
@@ -255,3 +255,4 @@ class MainArea extends React.Component {
 }
 
 export default MainArea
+// module.exports = MainArea
