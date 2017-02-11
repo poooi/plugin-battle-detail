@@ -358,4 +358,4 @@ class DetailArea extends React.Component {
   }
 }
 
-module.exports = DetailArea
+export default DetailArea
