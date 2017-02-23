@@ -35,7 +35,7 @@ export class PacketCompat {
     const route_ = battle.map[2]
     const route  = IndexCompat.getRoute(map, route_)
     const desc   = PacketCompat.getDesc(battle)
-    return `${time} ${map} ${route} ${desc}`
+    return `${time} ${desc} ${map} ${route}`
   }
 
   // Format timestamp to time string
