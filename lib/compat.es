@@ -155,6 +155,20 @@ export class PacketCompat {
       packet: battle.packet,
     })
   }
+
+  // Ship index change on maintenance on 2017-04-05.
+  // 1491372000000: 2017-04-05 06:00:00 UTC
+  static fix20170405(battle) {
+    if (battle.time >= 1491372000000)
+      return battle
+    for (const packet of battle.packets) {
+      for (const k of ['api_ship_ke', 'api_ship_ke_combined']) {
+        if (packet[k] != null)
+          packet[k] = packet[k].map(n => n > 500 ? n + 1000 : n)
+      }
+    }
+    return battle
+  }
 }
 
 export class IndexCompat {
