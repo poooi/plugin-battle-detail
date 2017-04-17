@@ -161,7 +161,7 @@ export class PacketCompat {
   static fix20170405(battle) {
     if (battle.time >= 1491372000000)
       return battle
-    for (const packet of battle.packets) {
+    for (const packet of battle.packet) {
       for (const k of ['api_ship_ke', 'api_ship_ke_combined']) {
         if (packet[k] != null)
           packet[k] = packet[k].map(n => n > 500 ? n + 1000 : n)
