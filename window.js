@@ -20,7 +20,7 @@ require('module').globalPaths.push(__dirname)  // Import module from root.
 
 
 // Init environment
-require('babel-register')
+// require('babel-register')
 // require('coffee-react/register')
 require(`${ROOT}/views/env`)
 
