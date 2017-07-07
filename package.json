@@ -3,6 +3,11 @@
   "version": "3.6.4",
   "description": "A plugin which shows battle detail for poi.",
   "main": "index.js",
+  "scripts": {
+    "reset": "git clean -f && git checkout . && git submodule foreach git checkout . && git submodule foreach git clean -f",
+    "prepack": "poi-util-transpile --sm --replace",
+    "postpublish": "npm run reset"
+  },
   "dependencies": {},
   "devDependencies": {
     "babel-eslint": "^6.0.4",
@@ -11,7 +16,8 @@
     "babel-preset-stage-0": "^6.5.0",
     "eslint": "^2.12.0",
     "eslint-plugin-import": "^1.8.1",
-    "eslint-plugin-react": "^5.1.1"
+    "eslint-plugin-react": "^5.1.1",
+    "poi-util-transpile": "^7.6.1"
   },
   "repository": {
     "type": "git",
@@ -35,7 +41,8 @@
     "icon": "fa/info-circle",
     "priority": 11,
     "apiVer": {
-      "7.2.1": "3.5.0"
+      "7.2.1": "3.5.0",
+      "7.5.99": "3.6.4"
     }
   }
 }
