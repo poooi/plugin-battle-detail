@@ -1,6 +1,7 @@
 
 import {getShipName, getItemName} from 'views/utils'
 import FontAwesome from 'react-fontawesome'
+import { equipIsAircraft } from 'views/utils/game-utils'
 
 const {React, ReactBootstrap, ROOT, __} = window
 const {Panel, Grid, Row, Col} = ReactBootstrap
@@ -192,7 +193,7 @@ class ItemView extends React.Component {
         <div className='item-info'>
           <span className='item-icon'>
             <SlotitemIcon slotitemId={data.api_type[3]} />
-            {(label != null && (extra || [6, 7, 8, 9, 10, 21, 22, 33, 37, 38].includes(data.api_type[3]))) ? (
+            {(label != null && (extra || equipIsAircraft(data.api_type[3]))) ? (
               <span className={`number ${warn ? 'text-warning' : ''}`}>{label}</span>
             ) : null}
           </span>
