@@ -56,8 +56,9 @@ class OptionArea extends React.Component {
 
   onClickSave = () => {
     html2canvas($('#battle-area'), {
-      onrendered: (canvas) =>
-        remote.getCurrentWebContents().downloadURL(canvas.toDataURL()) ,
+      background: window.isVibrant ? "rgba(38,38,38,0.8)" : undefined,
+      onrendered: (canvas) => {
+        remote.getCurrentWebContents().downloadURL(canvas.toDataURL("image/png"))} ,
     })
   }
 
