@@ -115,7 +115,17 @@ class BrowseArea extends React.Component {
             </Row>
           </Grid>
         </Panel>
-        <Panel header={__("Browse")}>
+        <Panel
+          header={
+            <div style={{display: 'flex', alignItems: 'center'}}>
+              <div style={{flex: 1}}>
+                {__("Browse")}
+              </div>
+              <Button style={{margin: 0, width: 'initial'}}>
+                Nodes
+              </Button>
+            </div>
+          }>
           <form onSubmit={this.onClickFilter}>
             <Table className="browse-table" striped bordered condensed hover fill>
               <OverlayTrigger placement='top' overlay={
