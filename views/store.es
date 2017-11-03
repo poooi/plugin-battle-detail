@@ -1,11 +1,14 @@
 import _ from 'lodash'
 import { bindActionCreators } from 'redux'
+import {
+  modifyObject,
+  unionSorted,
+} from 'subtender'
 
 import AppData from 'lib/appdata'
 import { IndexCompat } from 'lib/compat'
 import { sleep } from 'views/utils'
 import { store, extendReducer } from 'views/create-store'
-import { modifyObject } from 'subtender'
 
 const initState = {
   // INVARIANT: indexes must be sorted in descending order
@@ -18,12 +21,31 @@ const initState = {
 
 const ACTION_TYPES = {
   indexesReplace: '@poi-plugin-battle-detail@indexesReplace',
+  indexesMerge: '@poi-plugin-battle-detail@indexesMerge',
 }
+
+/*
+   mergeIndexes(<Array of index>, <Array of index>) : <Array of index>
+
+   - merges two Arrays of indexes together
+   - both input Array must be sorted in descending order of "id" property
+   - two input Array must not have any element in common
+   - output Array preserves the descending order
+ */
+const mergeIndexes = unionSorted((x,y) => y.id - x.id)
 
 const reducer = (state = initState, action) => {
   if (action.type === ACTION_TYPES.indexesReplace) {
     const {indexes} = action
     return modifyObject('indexes', () => indexes)(state)
+  }
+
+  if (action.type === ACTION_TYPES.indexesMerge) {
+    const {newIndexes} = action
+    return modifyObject(
+      'indexes',
+      indexes => mergeIndexes(indexes, newIndexes),
+    )(state)
   }
 
   return state
@@ -33,6 +55,10 @@ const actionCreators = {
   indexesReplace: indexes => ({
     type: ACTION_TYPES.indexesReplace,
     indexes,
+  }),
+  indexesMerge: newIndexes => ({
+    type: ACTION_TYPES.indexesMerge,
+    newIndexes,
   }),
 }
 
@@ -78,18 +104,17 @@ const init = () => {
       // making sure "id" is int
       const indexes = rawIndexes.map(modifyObject('id', Number))
       bac.indexesReplace(indexes)
-
+      // TODO: tell observer init is done
+      // rest of the code handles battles that haven't been indexed
       try {
         const diff = _.difference(
           await AppData.listBattle(),
           indexes.map(x => x.id),
         )
         if (diff.length > 0) {
-          const newIndex = await createIndex(diff)
-          // TODO can merge instead of sorting
-          const newIndexes = newIndex.concat(this.state.indexes || [])
-          newIndexes.sort((x, y) => y.id - x.id)  // Sort from newer to older
-          AppData.saveIndex(newIndexes)
+          const newIndexes = await createIndex(diff)
+          bac.indexesMerge(newIndexes)
+          // TODO: saving mechanism
         }
       } catch (err) {
         console.error(err.stack)
