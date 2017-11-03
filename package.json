@@ -9,7 +9,9 @@
     "lint": "eslint 'views/*.es'",
     "postpublish": "npm run reset"
   },
-  "dependencies": {},
+  "dependencies": {
+    "subtender": "^0.12.2"
+  },
   "devDependencies": {
     "babel-eslint": "^8.0.1",
     "babel-preset-es2017-node7": "^0.5.2",

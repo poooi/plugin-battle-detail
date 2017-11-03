@@ -34,7 +34,14 @@ module.exports = {
     'unicode-bom': 'error',
     'react/prop-types': 'off',
     'no-irregular-whitespace': ['error', {'skipStrings': true, 'skipTemplates': true}],
-    'import/no-unresolved': [2, { 'ignore': ['views/utils/game-utils', 'reselect', 'react-*', 'prop-types'] }],
+    'import/no-unresolved':
+      [2, { 'ignore':
+            [
+              'redux',
+              'views/utils/game-utils',
+              'views/create-store',
+              'reselect', 'react-*', 'prop-types',
+            ] }],
   },
   'settings': {
     'import/resolver': {
