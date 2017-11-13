@@ -6,7 +6,7 @@
   "scripts": {
     "reset": "git clean -f && git checkout . && git submodule foreach git checkout . && git submodule foreach git clean -f",
     "prepack": "poi-util-transpile --sm --replace",
-    "lint": "eslint 'views/*.es'",
+    "lint": "eslint 'views/*.es' || true",
     "postpublish": "npm run reset"
   },
   "dependencies": {
