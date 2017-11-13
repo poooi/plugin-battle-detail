@@ -8,6 +8,7 @@ const {FormControl, Button, OverlayTrigger, Popover} = ReactBootstrap
 import { SortieViewer } from './sortie-viewer'
 
 const PAGE_ITEM_AMOUNT = 20
+const SORTIE_VIEWER_WIP = false
 
 class BrowseArea extends React.Component {
   constructor() {
@@ -136,15 +137,22 @@ class BrowseArea extends React.Component {
               <div style={{flex: 1}}>
                 {__("Browse")}
               </div>
-              <Button
-                onClick={this.handleViewModeRotate}
-                        style={{margin: 0, width: 'initial'}}>
-                {
-                  viewMode === 'nodes' ? 'Nodes' :
-                  viewMode === 'sorties' ? 'Sorties' :
-                  '???'
-                }
-              </Button>
+              {
+                SORTIE_VIEWER_WIP && (
+                  <Button
+                    onClick={this.handleViewModeRotate}
+                    style={{margin: 0, width: 'initial'}}
+                  >
+                    {
+                      /* eslint-disable indent */
+                      viewMode === 'nodes' ? 'Nodes' :
+                      viewMode === 'sorties' ? 'Sorties' :
+                      '???'
+                      /* eslint-enable indent */
+                    }
+                  </Button>
+                )
+              }
             </div>
           }>
           <div style={viewMode === 'nodes' ? {} : {display: 'none'}}>

@@ -18,7 +18,7 @@ const {Tab, Tabs} = ReactBootstrap
 const INDEXES_LOAD_INTERVAL = 500
 const INDEXES_LOAD_NUMBER = 500
 
-storeInit()
+// storeInit()
 
 class MainArea extends React.Component {
   constructor() {
