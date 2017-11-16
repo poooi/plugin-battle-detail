@@ -10,8 +10,15 @@ module.exports = {
     'plugin:import/errors',
     'plugin:import/warnings',
   ],
-  'installedESLint': true,
   'parser': 'babel-eslint',
+  'parserOptions': {
+    'ecmaVersion': 7,
+    'ecmaFeatures': {
+      'experimentalObjectRestSpread': true,
+      'jsx': true,
+    },
+    'sourceType': 'module',
+  },
   'plugins': [
     'import',
     'react',
@@ -26,6 +33,15 @@ module.exports = {
     'semi': ['error', 'never'],
     'unicode-bom': 'error',
     'react/prop-types': 'off',
+    'no-irregular-whitespace': ['error', {'skipStrings': true, 'skipTemplates': true}],
+    'import/no-unresolved':
+      [2, { 'ignore':
+            [
+              'redux',
+              'views/utils/game-utils',
+              'views/create-store',
+              'reselect', 'react-*', 'prop-types',
+            ] }],
   },
   'settings': {
     'import/resolver': {

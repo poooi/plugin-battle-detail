@@ -6,17 +6,20 @@
   "scripts": {
     "reset": "git clean -f && git checkout . && git submodule foreach git checkout . && git submodule foreach git clean -f",
     "prepack": "poi-util-transpile --sm --replace",
+    "lint": "eslint 'views/*.es' || true",
     "postpublish": "npm run reset"
   },
-  "dependencies": {},
+  "dependencies": {
+    "subtender": "^0.12.2"
+  },
   "devDependencies": {
-    "babel-eslint": "^6.0.4",
+    "babel-eslint": "^8.0.1",
     "babel-preset-es2017-node7": "^0.5.2",
     "babel-preset-react": "^6.5.0",
     "babel-preset-stage-0": "^6.5.0",
-    "eslint": "^2.12.0",
-    "eslint-plugin-import": "^1.8.1",
-    "eslint-plugin-react": "^5.1.1",
+    "eslint": "^4.10.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-react": "^7.4.0",
     "poi-util-transpile": "^7.6.1"
   },
   "repository": {

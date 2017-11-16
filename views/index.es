@@ -10,11 +10,15 @@ import PacketManager from 'lib/packetmanager'
 import { Simulator } from 'lib/battle'
 import { PacketCompat, IndexCompat } from 'lib/compat'
 import { sleep } from 'views/utils'
+import { init as storeInit } from './store'
 
 const {React, ReactBootstrap, remote, ipc, __} = window
+
 const {Tab, Tabs} = ReactBootstrap
 const INDEXES_LOAD_INTERVAL = 500
 const INDEXES_LOAD_NUMBER = 500
+
+// storeInit()
 
 class MainArea extends React.Component {
   constructor() {
