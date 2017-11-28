@@ -1,5 +1,6 @@
 
 import FontAwesome from 'react-fontawesome'
+import { get } from 'lodash'
 const { React, ReactBootstrap, __ } = window
 const { Panel, OverlayTrigger, Tooltip, Row } = ReactBootstrap
 
@@ -104,9 +105,9 @@ class EngagementTable extends React.Component {
     if (e.fFlare || e.eFlare)
       rows.push(
         <Row className={"engagement-row"} key={5}>
-          <span>{e.fFlare ? `${__("Star Shell")}: ${getShipName(e.fFlare.id)}` : ''}</span>
+          <span>{e.fFlare ? `${__("Star Shell")}: ${getShipName(get(e, 'fFlare.id'))}` : ''}</span>
           <span />
-          <span>{e.eFlare ? `${__("Star Shell")}: ${getShipName(e.fFlare.id)}` : ''}</span>
+          <span>{e.eFlare ? `${__("Star Shell")}: ${getShipName(get(e, 'eFlare.id'))}` : ''}</span>
         </Row>
       )
 
