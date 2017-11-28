@@ -285,7 +285,7 @@ export class PacketCompat {
       'api_kouku2'            : kouku,
       'api_injection_kouku'   : kouku,
       'api_air_base_injection': kouku,
-      'api_air_base_attack': [kouku, kouku, kouku, kouku, kouku, kouku],
+      'api_air_base_attack': Array(6).fill(kouku),
       'api_support_info': {
         'api_support_airatack': kouku,
         'api_support_hourai': hougeki,
@@ -302,25 +302,20 @@ export class PacketCompat {
   static fix20171117(battle) {
     if (battle.time >= 1510898400000)
       return battle
-    console.log(_.clone(battle))
     for (const packet of battle.packet) {
       for (const path of this.fix20171117_shift_pathes) {
         const cur = _.get(packet, path)
         if (cur != null) {
-          console.log(path, cur.slice())
           cur.shift()
-          console.log(path, cur.slice())
         }
       }
       for (const path of this.fix20171117_index_pathes) {
         const cur = _.get(packet, path)
         if (cur != null) {
-          console.log(path, cur.slice())
           // cur.forEach((v, i, a) => a[i] = v - 1)
           for (let i = 0; i < cur.length; i++) {
             cur[i] = cur[i] - 1
           }
-          console.log(path, cur.slice())
         }
       }
       for (const [dst, src] of Object.entries(this.fix20171117_splice_pairs)) {
