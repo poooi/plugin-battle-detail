@@ -1,6 +1,6 @@
 {
   "name": "poi-plugin-battle-detail",
-  "version": "3.7.5",
+  "version": "3.7.6",
   "description": "A plugin which shows battle detail for poi.",
   "main": "index.js",
   "scripts": {
