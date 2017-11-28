@@ -109,6 +109,7 @@ class AppData {
         battle = PacketCompat.v10tov21(battle)
         battle = PacketCompat.v20tov21(battle)
         battle = PacketCompat.fix20170405(battle)
+        battle = PacketCompat.fix20171117(battle)
         return battle
       }
     }

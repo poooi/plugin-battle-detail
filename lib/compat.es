@@ -8,6 +8,29 @@ const { Battle, BattleType, Fleet } = Models
 const { Rank } = Models
 const { __, getStore } = window
 
+function tree2path(tree) {
+  const pathes = []
+  const queue = [{
+    path: [],
+    node: tree,
+  }]
+  let cur = null
+  while((cur = queue.shift()) != null) {
+    const { path, node } = cur
+    if (node instanceof Object) {
+      for (const [key, val] of Object.entries(node))
+        queue.push({
+          path: [].concat(path, key),
+          node: val,
+        })
+    }
+    else {
+      pathes.push(path)
+    }
+  }
+  return pathes
+}
+
 export class PacketCompat {
   static getId(battle) {
     if (battle == null) return
@@ -156,8 +179,8 @@ export class PacketCompat {
     })
   }
 
-  // Ship index change on maintenance on 2017-04-05.
-  // 1491372000000: 2017-04-05 06:00:00 UTC
+  // Ship id change from 500+ to 1000+ on 2017-04-05.
+  // 1491372000000: 2017-04-05T06:00:00.000Z
   static fix20170405(battle) {
     if (battle.time >= 1491372000000)
       return battle
@@ -165,6 +188,144 @@ export class PacketCompat {
       for (const k of ['api_ship_ke', 'api_ship_ke_combined']) {
         if (packet[k] != null)
           packet[k] = packet[k].map(n => n > 500 ? n + 1000 : n)
+      }
+    }
+    return battle
+  }
+
+  // Ship index change starting from 1 to 0 on 2017-11-17.
+  // 1510898400000: 2017-11-17T06:00:00.000Z
+  static fix20171117_shift_pathes = (() => {
+    const hougeki = {
+      'api_at_list': 1,
+      'api_at_type': 1,
+      'api_df_list': 1,
+      'api_si_list': 1,
+      'api_cl_list': 1,
+      'api_damage' : 1,
+    }
+    const raigeki = {
+      'api_frai' : 1,
+      'api_erai' : 1,
+      'api_fdam' : 1,
+      'api_edam' : 1,
+      'api_fydam': 1,
+      'api_eydam': 1,
+      'api_fcl'  : 1,
+      'api_ecl'  : 1,
+    }
+    const kouku_stage3 = {
+      'api_frai_flag': 1,
+      'api_erai_flag': 1,
+      'api_fbak_flag': 1,
+      'api_ebak_flag': 1,
+      'api_fcl_flag' : 1,
+      'api_ecl_flag' : 1,
+      'api_fdam'     : 1,
+      'api_edam'     : 1,
+    }
+    const kouku = {
+      'api_stage3'         : kouku_stage3,
+      'api_stage3_combined': kouku_stage3,
+    }
+    const tree = {
+      'api_ship_ke': 1,
+      'api_ship_lv': 1,
+      'api_nowhps' : 1,
+      'api_maxhps' : 1,
+      'api_nowhps_combined': 1,
+      'api_maxhps_combined': 1,
+      'api_hougeki'       : hougeki,
+      'api_hougeki1'      : hougeki,
+      'api_hougeki2'      : hougeki,
+      'api_hougeki3'      : hougeki,
+      'api_opening_taisen': hougeki,
+      'api_raigeki'      : raigeki,
+      'api_opening_atack': raigeki,
+      'api_kouku'             : kouku,
+      'api_kouku2'            : kouku,
+      'api_injection_kouku'   : kouku,
+      'api_air_base_injection': kouku,
+      'api_air_base_attack': Array(6).fill(kouku),
+      'api_support_info': {
+        'api_support_airatack': kouku,
+        'api_support_hourai': hougeki,
+      },
+    }
+    return tree2path(tree)
+  })()
+  static fix20171117_index_pathes = (() => {
+    const hougeki = {
+      'api_at_list': 1,
+      'api_df_list': Array(12).fill(1),
+    }
+    const raigeki = {
+      'api_frai' : 1,
+      'api_erai' : 1,
+    }
+    const kouku_stage3 = {
+      'api_frai_flag': 1,
+      'api_erai_flag': 1,
+      'api_fbak_flag': 1,
+      'api_ebak_flag': 1,
+    }
+    const kouku = {
+      'api_stage3'         : kouku_stage3,
+      'api_stage3_combined': kouku_stage3,
+    }
+    const tree = {
+      'api_hougeki'       : hougeki,
+      'api_hougeki1'      : hougeki,
+      'api_hougeki2'      : hougeki,
+      'api_hougeki3'      : hougeki,
+      'api_opening_taisen': hougeki,
+      'api_raigeki'      : raigeki,
+      'api_opening_atack': raigeki,
+      'api_kouku'             : kouku,
+      'api_kouku2'            : kouku,
+      'api_injection_kouku'   : kouku,
+      'api_air_base_injection': kouku,
+      'api_air_base_attack': [kouku, kouku, kouku, kouku, kouku, kouku],
+      'api_support_info': {
+        'api_support_airatack': kouku,
+        'api_support_hourai': hougeki,
+      },
+    }
+    return tree2path(tree)
+  })()
+  static fix20171117_splice_pairs = {
+    'api_e_nowhps': 'api_nowhps',
+    'api_e_maxhps': 'api_maxhps',
+    'api_e_nowhps_combined': 'api_nowhps_combined',
+    'api_e_maxhps_combined': 'api_maxhps_combined',
+  }
+  static fix20171117(battle) {
+    if (battle.time >= 1510898400000)
+      return battle
+    console.log(_.clone(battle))
+    for (const packet of battle.packet) {
+      for (const path of this.fix20171117_shift_pathes) {
+        const cur = _.get(packet, path)
+        if (cur != null) {
+          console.log(path, cur.slice())
+          cur.shift()
+          console.log(path, cur.slice())
+        }
+      }
+      for (const path of this.fix20171117_index_pathes) {
+        const cur = _.get(packet, path)
+        if (cur != null) {
+          console.log(path, cur.slice())
+          // cur.forEach((v, i, a) => a[i] = v - 1)
+          for (let i = 0; i < cur.length; i++) {
+            cur[i] = cur[i] - 1
+          }
+          console.log(path, cur.slice())
+        }
+      }
+      for (const [dst, src] of Object.entries(this.fix20171117_splice_pairs)) {
+        if (packet[src] != null)
+          packet[dst] = packet[src].splice(6)
       }
     }
     return battle
