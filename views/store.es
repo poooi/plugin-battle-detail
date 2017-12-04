@@ -16,19 +16,13 @@ const initState = {
   indexes: [],
   ui: {
     battle: null,
-    /*
-       value `null` indicates that there is no modal dialog to show
-
-       non-null structure:
-
-       - isShow: <bool>
-       - title: <string> or <null>
-       - body: <string> or <null>
-       - footer: <string> or <null>
-       - closable: <bool>
-
-     */
-    modal: null,
+    modal: {
+      isShow: false,
+      title: null,
+      body: null,
+      footer: null,
+      closable: false,
+    },
   },
 }
 
