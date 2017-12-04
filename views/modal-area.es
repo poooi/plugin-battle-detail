@@ -4,47 +4,20 @@ import { Modal, Button } from 'react-bootstrap'
 import { modifyObject } from 'subtender'
 
 import { PTyp } from './ptyp'
-import { actionCreators } from './store'
+import { withBoundActionCreators } from './store'
 import { modalSelector } from './selectors'
 
 const {__} = window
 
-class ModalAreaImpl extends React.Component {
-  static propTypes = {
-    isShow: PTyp.bool,
-    title: PTyp.node,
-    body: PTyp.node,
-    footer: PTyp.node,
-    closable: PTyp.bool,
-    uiModify: PTyp.func.isRequired,
-  }
+withBoundActionCreators(bac => {
+  const modifyModal = modifier =>
+    bac.uiModify(modifyObject('modal', modifier))
 
-  static defaultProps = {
-    isShow: false,
-    title: null,
-    body: null,
-    footer: null,
-    closable: false,
-  }
-
-  componentDidMount() {
-    window.showModal = this.showModal
-    window.hideModal = this.hideModal
-  }
-
-  componentWillUnmount() {
-    window.showModal = null
-    window.hideModal = null
-  }
-
-  modifyModal = modifier =>
-    this.props.uiModify(modifyObject('modal', modifier))
-
-  showModal = options => {
+  const showModal = options => {
     if (options instanceof Object) {
       if (options.closable == null)
         options.closable = true
-      this.modifyModal(() => ({
+      modifyModal(() => ({
         isShow: true,
         title: options.title,
         body: options.body,
@@ -54,8 +27,29 @@ class ModalAreaImpl extends React.Component {
     }
   }
 
-  hideModal = () =>
-    this.modifyModal(modifyObject('isShow', () => false))
+  const hideModal = () =>
+    modifyModal(modifyObject('isShow', () => false))
+
+  window.showModal = showModal
+  window.hideModal = hideModal
+})
+
+class ModalAreaImpl extends React.Component {
+  static propTypes = {
+    isShow: PTyp.bool,
+    title: PTyp.node,
+    body: PTyp.node,
+    footer: PTyp.node,
+    closable: PTyp.bool,
+  }
+
+  static defaultProps = {
+    isShow: false,
+    title: null,
+    body: null,
+    footer: null,
+    closable: false,
+  }
 
   render() {
     const {isShow, title, body, footer, closable} = this.props
@@ -78,7 +72,7 @@ class ModalAreaImpl extends React.Component {
           </Modal.Body>
           <Modal.Footer>
             {footer}
-            {closable ? <Button bsStyle='primary' onClick={this.hideModal}>{__("Close")}</Button> : null}
+            {closable ? <Button bsStyle='primary' onClick={window.hideModal}>{__("Close")}</Button> : null}
           </Modal.Footer>
         </Modal>
       </div>
@@ -88,7 +82,6 @@ class ModalAreaImpl extends React.Component {
 
 const ModalArea = connect(
   modalSelector,
-  actionCreators,
 )(ModalAreaImpl)
 
 export default ModalArea
