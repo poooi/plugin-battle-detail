@@ -39,6 +39,7 @@ module.exports = {
             [
               'redux',
               'views/utils/game-utils',
+              'views/utils/selectors',
               'views/create-store',
               'reselect', 'react-*', 'prop-types',
             ] }],

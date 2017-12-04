@@ -1,5 +1,7 @@
-
 import _ from 'lodash'
+import { Provider } from 'react-redux'
+import { store } from 'views/create-store'
+
 import ModalArea from './modal-area'
 import OptionArea from './option-area'
 import OverviewArea from './overview-area'
@@ -7,18 +9,18 @@ import DetailArea from './detail-area'
 import BrowseArea from './browse-area'
 import AppData from 'lib/appdata'
 import PacketManager from 'lib/packetmanager'
+
 import { Simulator } from 'lib/battle'
 import { PacketCompat, IndexCompat } from 'lib/compat'
 import { sleep } from 'views/utils'
 import { init as storeInit } from './store'
-
 const {React, ReactBootstrap, remote, ipc, __} = window
 
 const {Tab, Tabs} = ReactBootstrap
 const INDEXES_LOAD_INTERVAL = 500
 const INDEXES_LOAD_NUMBER = 500
 
-// storeInit()
+storeInit()
 
 class MainArea extends React.Component {
   constructor() {
@@ -190,27 +192,29 @@ class MainArea extends React.Component {
     }
 
     return (
-      <div id="main">
-        <ModalArea />
-        <Tabs id="main-tabs" activeKey={this.state.activeTab} onSelect={this.onSelectTab}>
-          <Tab eventKey={0} title={__("Battle")}>
-            <OptionArea
-              battle={this.state.battle}
-              updateBattle={this.updateBattle}
+      <Provider store={store}>
+        <div id="main">
+          <ModalArea />
+          <Tabs id="main-tabs" activeKey={this.state.activeTab} onSelect={this.onSelectTab}>
+            <Tab eventKey={0} title={__("Battle")}>
+              <OptionArea
+                battle={this.state.battle}
+                updateBattle={this.updateBattle}
               />
-            <div id="battle-area">
-              <OverviewArea simulator={simulator} stages={stages} />
-              <DetailArea simulator={simulator} stages={stages} />
-            </div>
-          </Tab>
-          <Tab eventKey={1} title={__("Browse")} disabled={this.state.disableBrowser}>
-            <BrowseArea
-              indexes={this.state.indexes}
-              updateBattle={this.updateBattle}
+              <div id="battle-area">
+                <OverviewArea simulator={simulator} stages={stages} />
+                <DetailArea simulator={simulator} stages={stages} />
+              </div>
+            </Tab>
+            <Tab eventKey={1} title={__("Browse")} disabled={this.state.disableBrowser}>
+              <BrowseArea
+                indexes={this.state.indexes}
+                updateBattle={this.updateBattle}
               />
-          </Tab>
-        </Tabs>
-      </div>
+            </Tab>
+          </Tabs>
+        </div>
+      </Provider>
     )
   }
 
@@ -259,4 +263,3 @@ class MainArea extends React.Component {
 }
 
 export default MainArea
-// module.exports = MainArea

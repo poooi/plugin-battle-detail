@@ -16,12 +16,26 @@ const initState = {
   indexes: [],
   ui: {
     battle: null,
+    /*
+       value `null` indicates that there is no modal dialog to show
+
+       non-null structure:
+
+       - isShow: <bool>
+       - title: <string> or <null>
+       - body: <string> or <null>
+       - footer: <string> or <null>
+       - closable: <bool>
+
+     */
+    modal: null,
   },
 }
 
 const ACTION_TYPES = {
   indexesReplace: '@poi-plugin-battle-detail@indexesReplace',
   indexesMerge: '@poi-plugin-battle-detail@indexesMerge',
+  uiModify: '@poi-plugin-battle-detail@uiModify',
 }
 
 /*
@@ -48,6 +62,11 @@ const reducer = (state = initState, action) => {
     )(state)
   }
 
+  if (action.type === ACTION_TYPES.uiModify) {
+    const {modifier} = action
+    return modifyObject('ui', modifier)(state)
+  }
+
   return state
 }
 
@@ -59,6 +78,10 @@ const actionCreators = {
   indexesMerge: newIndexes => ({
     type: ACTION_TYPES.indexesMerge,
     newIndexes,
+  }),
+  uiModify: modifier => ({
+    type: ACTION_TYPES.uiModify,
+    modifier,
   }),
 }
 
@@ -96,8 +119,14 @@ const createIndex = async list => {
   return indexes
 }
 
+const wipDoLoading = false
+
 const init = () => {
   extendReducer('poi-plugin-battle-detail', reducer)
+
+  if (!wipDoLoading)
+    return
+
   setTimeout(() =>
     withBoundActionCreators(async bac => {
       const rawIndexes = await AppData.loadIndex()
@@ -126,6 +155,7 @@ const init = () => {
 
 export {
   init,
+  initState,
   reducer,
   actionCreators,
   boundActionCreators,

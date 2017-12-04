@@ -1,8 +1,24 @@
+import React from 'react'
+import { createStructuredSelector } from 'reselect'
+import { connect } from 'react-redux'
+import { Modal, Button } from 'react-bootstrap'
 
-const {React, ReactBootstrap, __} = window
-const {Modal, Button} = ReactBootstrap
+import { PTyp } from './ptyp'
+import { actionCreators } from './store'
+import { modalSelector } from './selectors'
 
-class ModalArea extends React.Component {
+const {__} = window
+
+class ModalAreaImpl extends React.Component {
+  static propTypes = {
+    value: PTyp.object,
+    uiModify: PTyp.func.isRequired,
+  }
+
+  static defaultProps = {
+    value: null,
+  }
+
   constructor() {
     super()
     this.state = {
@@ -13,10 +29,12 @@ class ModalArea extends React.Component {
       closable: false,
     }
   }
+
   componentDidMount() {
     window.showModal = this.showModal
     window.hideModal = this.hideModal
   }
+
   componentWillUnmount() {
     window.showModal = null
     window.hideModal = null
@@ -64,5 +82,12 @@ class ModalArea extends React.Component {
     )
   }
 }
+
+const ModalArea = connect(
+  createStructuredSelector({
+    value: modalSelector,
+  }),
+  actionCreators,
+)(ModalAreaImpl)
 
 export default ModalArea
