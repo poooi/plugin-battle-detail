@@ -4,35 +4,30 @@ import { Modal, Button } from 'react-bootstrap'
 import { modifyObject } from 'subtender'
 
 import { PTyp } from './ptyp'
-import { withBoundActionCreators } from './store'
+import { boundActionCreators } from './store'
 import { modalSelector } from './selectors'
 
 const {__} = window
 
-withBoundActionCreators(bac => {
-  const modifyModal = modifier =>
-    bac.uiModify(modifyObject('modal', modifier))
+const modifyModal = modifier =>
+  boundActionCreators.uiModify(modifyObject('modal', modifier))
 
-  const showModal = options => {
-    if (options instanceof Object) {
-      if (options.closable == null)
-        options.closable = true
-      modifyModal(() => ({
-        isShow: true,
-        title: options.title,
-        body: options.body,
-        footer: options.footer,
-        closable: options.closable,
-      }))
-    }
+const showModal = options => {
+  if (options instanceof Object) {
+    if (options.closable == null)
+      options.closable = true
+    modifyModal(() => ({
+      isShow: true,
+      title: options.title,
+      body: options.body,
+      footer: options.footer,
+      closable: options.closable,
+    }))
   }
+}
 
-  const hideModal = () =>
-    modifyModal(modifyObject('isShow', () => false))
-
-  window.showModal = showModal
-  window.hideModal = hideModal
-})
+const hideModal = () =>
+  modifyModal(modifyObject('isShow', () => false))
 
 class ModalAreaImpl extends React.Component {
   static propTypes = {
@@ -72,7 +67,7 @@ class ModalAreaImpl extends React.Component {
           </Modal.Body>
           <Modal.Footer>
             {footer}
-            {closable ? <Button bsStyle='primary' onClick={window.hideModal}>{__("Close")}</Button> : null}
+            {closable ? <Button bsStyle='primary' onClick={hideModal}>{__("Close")}</Button> : null}
           </Modal.Footer>
         </Modal>
       </div>
@@ -85,3 +80,7 @@ const ModalArea = connect(
 )(ModalAreaImpl)
 
 export default ModalArea
+export {
+  showModal,
+  hideModal,
+}

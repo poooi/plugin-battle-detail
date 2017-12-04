@@ -1,4 +1,4 @@
-
+import { showModal } from './modal-area'
 import { PacketCompat } from 'lib/compat'
 
 const {clipboard} = require('electron')
@@ -26,13 +26,13 @@ class OptionArea extends React.Component {
       // Do nothing
     }
     if (isSuccessful) {
-      window.showModal({
+      showModal({
         title: __("Copy Data"),
         body : [__("The battle packet was copied to clipboard."),
                 __("You can send your friends the packet to share the battle.")],
       })
     } else {
-      window.showModal({
+      showModal({
         title: __("Copy Data"),
         body : __("Failed to copy battle packet to clipboard!"),
       })
@@ -46,7 +46,7 @@ class OptionArea extends React.Component {
       this.props.updateBattle(battle)
     }
     finally {
-      window.showModal({
+      showModal({
         title: __("Paste Data"),
         body : [__("A battle packet was pasted from clipboard."),
                 __("If you see no battle detail, you may have a broken packet.")],

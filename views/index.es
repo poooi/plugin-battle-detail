@@ -2,7 +2,7 @@ import _ from 'lodash'
 import { Provider } from 'react-redux'
 import { store } from 'views/create-store'
 
-import ModalArea from './modal-area'
+import ModalArea, { showModal, hideModal } from './modal-area'
 import OptionArea from './option-area'
 import OverviewArea from './overview-area'
 import DetailArea from './detail-area'
@@ -77,7 +77,7 @@ class MainArea extends React.Component {
       this.setState({
         disableBrowser: true,
       })
-      window.showModal({
+      showModal({
         title: __("Indexing"),
         body : [
           __("An error occurred while indexing battle on disk."),
@@ -90,7 +90,7 @@ class MainArea extends React.Component {
 
   createIndex = async (list) => {
     let eta = new Date(Date.now() + list.length / INDEXES_LOAD_NUMBER * INDEXES_LOAD_INTERVAL)
-    window.showModal({
+    showModal({
       title: __("Indexing"),
       body : [
         __("Indexing battle from disk. Please wait..."),
@@ -116,12 +116,12 @@ class MainArea extends React.Component {
             console.error(`Failed to index battle ${id}. Moving it to trash.`, '\n', err.stack)
             await AppData.trashBattle(id)
           }
-        }
-      ))
+        })
+      )
       await sleep(INDEXES_LOAD_INTERVAL + _st - Date.now())
     }
 
-    window.hideModal()
+    hideModal()
     return indexes
   }
 
