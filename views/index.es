@@ -59,7 +59,7 @@ class MainAreaImpl extends React.Component {
     const newId = PacketCompat.getId(newBattle)
     AppData.saveBattle(newId, newBattle)
 
-    let {battle, indexes, showLast} = this.state
+    let {battle, indexes, showLast} = this.props
     if (newId === (indexes[0] || {}).id) {
       indexes.shift()
     }
