@@ -12,6 +12,10 @@ const initState = {
   indexes: [],
   ui: {
     battle: null,
+    activeTab: 0,
+    disableBrowser: false,
+    showLast: true,
+
     modal: {
       isShow: false,
       title: null,
