@@ -1,2 +1,2 @@
 export * from './common'
-export * from './battle-data-maintenance'
+export * from './data-maintenance'
