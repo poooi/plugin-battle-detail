@@ -1,5 +1,8 @@
-
 import _ from 'lodash'
+import { Provider, connect } from 'react-redux'
+import { store } from 'views/create-store'
+import { modifyObject } from 'subtender'
+
 import ModalArea from './modal-area'
 import OptionArea from './option-area'
 import OverviewArea from './overview-area'
@@ -7,29 +10,33 @@ import DetailArea from './detail-area'
 import BrowseArea from './browse-area'
 import AppData from 'lib/appdata'
 import PacketManager from 'lib/packetmanager'
+
 import { Simulator } from 'lib/battle'
 import { PacketCompat, IndexCompat } from 'lib/compat'
-import { sleep } from 'views/utils'
-import { init as storeInit } from './store'
+import { init as storeInit, actionCreators } from './store'
+import { indexesSelector, uiSelector } from './selectors'
+import { PTyp } from './ptyp'
 
 const {React, ReactBootstrap, remote, ipc, __} = window
 
 const {Tab, Tabs} = ReactBootstrap
-const INDEXES_LOAD_INTERVAL = 500
-const INDEXES_LOAD_NUMBER = 500
 
-// storeInit()
+storeInit()
 
-class MainArea extends React.Component {
-  constructor() {
-    super()
-    this.state = {
-      activeTab: 0,
-      disableBrowser: false,
-      battle: null,
-      indexes: [],
-      showLast: true,
-    }
+class MainAreaImpl extends React.Component {
+  static propTypes = {
+    activeTab: PTyp.number.isRequired,
+    disableBrowser: PTyp.bool.isRequired,
+    battle: PTyp.object,
+    indexes: PTyp.array.isRequired,
+    showLast: PTyp.bool.isRequired,
+
+    indexesReplace: PTyp.func.isRequired,
+    uiModify: PTyp.func.isRequired,
+  }
+
+  static defaultProps = {
+    battle: null,
   }
 
   componentDidMount() {
@@ -39,8 +46,6 @@ class MainArea extends React.Component {
     this.pm = new PacketManager()
     this.pm.addListener('battle', this.handlePacket)
     this.pm.addListener('result', this.handlePacket)
-
-    setTimeout(this.init, 100)
   }
 
   componentWillUnmount() {
@@ -49,86 +54,12 @@ class MainArea extends React.Component {
     this.pm.removeListener('result', this.handlePacket)
   }
 
-  init = async () => {
-    // Load index from disk
-    let indexes = await AppData.loadIndex()
-    for (let line of indexes) {
-      line.id = parseInt(line.id)
-    }
-    await this.updateIndex(indexes)
-
-    // Update index
-    try {
-      let diff = _.difference(
-        await AppData.listBattle(),
-        indexes.map((x) => x.id),
-      )
-      if (diff.length === 0) return
-      const newIndex = await this.createIndex(diff)
-      indexes = newIndex.concat(this.state.indexes || [])
-      indexes.sort((x, y) => y.id - x.id)  // Sort from newer to older
-      AppData.saveIndex(indexes)
-      this.updateIndex(indexes)
-    }
-    catch (err) {
-      console.error(err.stack)
-      this.setState({
-        disableBrowser: true,
-      })
-      window.showModal({
-        title: __("Indexing"),
-        body : [
-          __("An error occurred while indexing battle on disk."),
-          __("Battle browsor is disabled."),
-          __("Please contact the developers."),
-        ],
-      })
-    }
-  }
-
-  createIndex = async (list) => {
-    let eta = new Date(Date.now() + list.length / INDEXES_LOAD_NUMBER * INDEXES_LOAD_INTERVAL)
-    window.showModal({
-      title: __("Indexing"),
-      body : [
-        __("Indexing battle from disk. Please wait..."),
-        __("ETA:") + eta.toLocaleTimeString(),
-      ],
-      closable: false,
-    })
-
-    let indexes = []
-    while (list.length > 0) {
-      let _st = Date.now()
-      console.log(`Indexing... ${list.length} remains at ${_st}.`)  // eslint-disable-line no-console
-      let ids = list.splice(0, INDEXES_LOAD_NUMBER)
-      await Promise.all(
-        ids.map(async (id) => {
-          let battle
-          try {
-            battle = await AppData.loadBattle(id)
-            if (battle != null)
-              indexes.push(IndexCompat.getIndex(battle, id))
-          }
-          catch (err) {
-            console.error(`Failed to index battle ${id}. Moving it to trash.`, '\n', err.stack)
-            await AppData.trashBattle(id)
-          }
-        }
-      ))
-      await sleep(INDEXES_LOAD_INTERVAL + _st - Date.now())
-    }
-
-    window.hideModal()
-    return indexes
-  }
-
   handlePacket = async (newBattle, curPacket) => {
     // Save new battle immediately
     const newId = PacketCompat.getId(newBattle)
     AppData.saveBattle(newId, newBattle)
 
-    let {battle, indexes, showLast} = this.state
+    let {battle, indexes, showLast} = this.props
     if (newId === (indexes[0] || {}).id) {
       indexes.shift()
     }
@@ -139,7 +70,10 @@ class MainArea extends React.Component {
     if (showLast) {
       battle = newBattle
     }
-    this.setState({battle, indexes})
+    this.props.uiModify(
+      modifyObject('battle', () => battle)
+    )
+    this.props.indexesReplace(indexes)
     AppData.saveIndex(indexes)
   }
 
@@ -147,39 +81,22 @@ class MainArea extends React.Component {
     if (typeof battle === 'number') {
       battle = await AppData.loadBattle(battle)
     }
-    this.setState({
-      activeTab: 0,
-      battle   : battle,
-      showLast : true,  // TODO: false
-    })
+    this.props.uiModify(_.flow(
+      modifyObject('activeTab', () => 0),
+      modifyObject('battle', () => battle),
+      // TODO: false
+      modifyObject('showLast', () => true),
+    ))
   }
 
-  updateIndex = async (indexes) => {
-    let {battle, showLast} = this.state
-    if (indexes == null) {
-      indexes = []
-    }
-    if (showLast) {
-      let last = indexes[0] || {}
-      battle = await AppData.loadBattle(last.id)
-    }
-    this.setState({battle, indexes})
-  }
+  updateShowLast = (showLast) =>
+    this.props.uiModify(modifyObject('showLast', () => showLast))
 
-  updateShowLast = (showLast) => {
-    this.setState({
-      showLast: showLast,
-    })
-  }
-
-  onSelectTab = (key) => {
-    this.setState({
-      activeTab: key,
-    })
-  }
+  onSelectTab = (key) =>
+    this.props.uiModify(modifyObject('activeTab', () => key))
 
   render() {
-    const {battle} = this.state
+    const {battle, activeTab, disableBrowser, indexes} = this.props
     let simulator = {}, stages = []
     try {
       simulator = Simulator.auto(battle, { usePoiAPI: true }) || {}
@@ -192,22 +109,22 @@ class MainArea extends React.Component {
     return (
       <div id="main">
         <ModalArea />
-        <Tabs id="main-tabs" activeKey={this.state.activeTab} onSelect={this.onSelectTab}>
+        <Tabs id="main-tabs" activeKey={activeTab} onSelect={this.onSelectTab}>
           <Tab eventKey={0} title={__("Battle")}>
             <OptionArea
-              battle={this.state.battle}
+              battle={battle}
               updateBattle={this.updateBattle}
-              />
+            />
             <div id="battle-area">
               <OverviewArea simulator={simulator} stages={stages} />
               <DetailArea simulator={simulator} stages={stages} />
             </div>
           </Tab>
-          <Tab eventKey={1} title={__("Browse")} disabled={this.state.disableBrowser}>
+          <Tab eventKey={1} title={__("Browse")} disabled={disableBrowser}>
             <BrowseArea
-              indexes={this.state.indexes}
+              indexes={indexes}
               updateBattle={this.updateBattle}
-              />
+            />
           </Tab>
         </Tabs>
       </div>
@@ -224,7 +141,8 @@ class MainArea extends React.Component {
       let start = timestamp - 2000
       let end = timestamp + 2000
       let list = []
-      for (let {id} of this.state.indexes) {
+      const {indexes} = this.props
+      for (let {id} of indexes) {
         if (id > end)
           continue
         if (id < start)
@@ -258,5 +176,27 @@ class MainArea extends React.Component {
   }
 }
 
-export default MainArea
-// module.exports = MainArea
+const MainArea = connect(
+  state => {
+    const {
+      activeTab,
+      disableBrowser,
+      battle,
+      showLast,
+    } = uiSelector(state)
+    const indexes = indexesSelector(state)
+    return {
+      activeTab, disableBrowser,
+      battle, indexes, showLast,
+    }
+  },
+  actionCreators
+)(MainAreaImpl)
+
+const WrappedMain = _props => (
+  <Provider store={store}>
+    <MainArea />
+  </Provider>
+)
+
+export default WrappedMain

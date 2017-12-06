@@ -1,63 +1,73 @@
+import React from 'react'
+import { connect } from 'react-redux'
+import { Modal, Button } from 'react-bootstrap'
+import { modifyObject } from 'subtender'
 
-const {React, ReactBootstrap, __} = window
-const {Modal, Button} = ReactBootstrap
+import { PTyp } from './ptyp'
+import { boundActionCreators } from './store'
+import { modalSelector } from './selectors'
 
-class ModalArea extends React.Component {
-  constructor() {
-    super()
-    this.state = {
-      isShow  : false,
-      title   : null,
-      body    : null,
-      footer  : null,
-      closable: false,
-    }
+const {__} = window
+
+const modifyModal = modifier =>
+  boundActionCreators.uiModify(modifyObject('modal', modifier))
+
+const showModal = options => {
+  if (options instanceof Object) {
+    if (options.closable == null)
+      options.closable = true
+    modifyModal(() => ({
+      isShow: true,
+      title: options.title,
+      body: options.body,
+      footer: options.footer,
+      closable: options.closable,
+    }))
   }
-  componentDidMount() {
-    window.showModal = this.showModal
-    window.hideModal = this.hideModal
-  }
-  componentWillUnmount() {
-    window.showModal = null
-    window.hideModal = null
+}
+
+const hideModal = () =>
+  modifyModal(modifyObject('isShow', () => false))
+
+class ModalAreaImpl extends React.Component {
+  static propTypes = {
+    isShow: PTyp.bool,
+    title: PTyp.node,
+    body: PTyp.node,
+    footer: PTyp.node,
+    closable: PTyp.bool,
   }
 
-  showModal = (options) => {
-    if (options instanceof Object) {
-      if (options.closable == null)
-        options.closable = true
-      this.setState({
-        isShow  : true,
-        title   : options.title,
-        body    : options.body,
-        footer  : options.footer,
-        closable: options.closable,
-      })
-    }
-  }
-  hideModal = () => {
-    this.setState({
-      isShow: false,
-    })
+  static defaultProps = {
+    isShow: false,
+    title: null,
+    body: null,
+    footer: null,
+    closable: false,
   }
 
   render() {
-    let {isShow, title, body, footer, closable} = this.state
-    if (body instanceof Array) {
-      body = body.map((body, i) => <p key={i}>{body}</p> )
-    }
+    const {isShow, title, body, footer, closable} = this.props
+    const bodyNorm = body instanceof Array ?
+      body.map((body, i) => <p key={i}>{body}</p>) :
+      body
     return (
       <div id="modal-area">
-        <Modal autoFocus={true} animation={true} show={isShow} onHide={closable ? this.hideModal : void(0)}>
+        <Modal
+          autoFocus={true}
+          animation={true}
+          show={isShow}
+          onHide={closable ? this.hideModal : null}
+        >
           <Modal.Header>
             <Modal.Title>{title}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            {body}
+            {bodyNorm}
           </Modal.Body>
           <Modal.Footer>
             {footer}
-            {closable ? <Button bsStyle='primary' onClick={this.hideModal}>{__("Close")}</Button> : null}
+            {closable ? <Button bsStyle='primary' onClick={hideModal}>{__("Close")}</Button> : null}
           </Modal.Footer>
         </Modal>
       </div>
@@ -65,4 +75,12 @@ class ModalArea extends React.Component {
   }
 }
 
+const ModalArea = connect(
+  modalSelector,
+)(ModalAreaImpl)
+
 export default ModalArea
+export {
+  showModal,
+  hideModal,
+}
