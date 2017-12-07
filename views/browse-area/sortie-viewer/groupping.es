@@ -1,5 +1,35 @@
 import _ from 'lodash'
 
+/*
+   TODO: new groupping strategy
+
+   - compute map connectivity via fcd.
+     for any two given edge A B, should be able to tell
+     whether it's possible to go from A to B.
+
+   - traverse and emit groupping info:
+     given that (TODO guaranteed?) indexs are sorted in chronological order (descending),
+     we do an Array traversal:
+
+     - for a record of edge A, find the longest consecutive chain of edges B, C, D ...
+       in which all of them belong to same map and going D -> C -> B -> A is possible.
+       (of course every pvp record is special and stands for it's own)
+
+     - emit groupping: 2 types of structure are produced:
+
+       {type: 'single', id: <timestamp>, mapStr: <'pvp' or mapId>}
+       {type: 'groupped', ids: <Array of timestamp, ascending>, mapStr: <'pvp' or mapId>}
+
+     - for supporting "view all" "view pvp" "view <mapStr>",
+       each of them maintains an Array of data emitted above
+
+     - might need to maintain the data in store so it can be actively maintained
+       as new records come in.
+       (do not assume new records are always latest one, making it flexible
+       for a potential recovering-from-trash mechanism)
+
+ */
+
 const groupByLineIndex = xs => {
   const groups = []
   let ind = 0
