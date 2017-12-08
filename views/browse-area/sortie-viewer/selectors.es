@@ -140,7 +140,7 @@ const sortieIndexesSelector = createSelector(
         if (nextMapId !== curMapId)
           break
         const beginEdgeId = nextIndex.route_
-        const endEdgeId = curIndex.route_
+        const endEdgeId = indexes[j].route_
         if (!mapCanGoFromToFunc(curMapId)(beginEdgeId,endEdgeId))
           break
       }
@@ -150,6 +150,44 @@ const sortieIndexesSelector = createSelector(
         mapId: curMapId,
       })
       i = j+1
+    }
+
+    // checking correctness
+    const checkSortieIndex = sortieIndex => {
+      const {mapId, indexes} = sortieIndex
+      const reportProblem = msg => {
+        console.warn(msg)
+        console.warn(sortieIndex)
+        return false
+      }
+      if (
+        (mapId === 'pvp' || _.isInteger(mapId)) &&
+        Array.isArray(indexes) && indexes.length > 0
+      ) {
+        if (mapId === 'pvp') {
+          if (indexes.length !== 1) {
+            return reportProblem('expected pvp data to have exactly one record')
+          }
+          return true
+        } else {
+          if (!indexes.every(index => mapStrToMapId(index.map) === mapId)) {
+            return reportProblem('inconsistent map str encountered')
+          }
+          const canGoFromTo = mapCanGoFromToFunc(mapId)
+          for (let i = 0; i+1 < indexes.length; ++i) {
+            if (!canGoFromTo(indexes[i].route_, indexes[i+1].route_)) {
+              return reportProblem('infeasible route')
+            }
+          }
+          return true
+        }
+      } else {
+        return reportProblem('incorrect data encountered')
+      }
+    }
+    const isCorrect = sortieIndexes.every(checkSortieIndex)
+    if (!isCorrect) {
+      console.warn(`correctness check failed.`)
     }
 
     return sortieIndexes
