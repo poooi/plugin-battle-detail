@@ -43,6 +43,7 @@ class MainAreaImpl extends React.Component {
     ipc.register("BattleDetail", {
       showBattleWithTimestamp: this.showBattleWithTimestamp,
     })
+    window.showBattleWithTimestamp = this.showBattleWithTimestamp
     this.pm = new PacketManager()
     this.pm.addListener('battle', this.handlePacket)
     this.pm.addListener('result', this.handlePacket)
@@ -50,6 +51,7 @@ class MainAreaImpl extends React.Component {
 
   componentWillUnmount() {
     ipc.unregisterAll("BattleDetail")
+    window.showBattleWithTimestamp = null
     this.pm.removeListener('battle', this.handlePacket)
     this.pm.removeListener('result', this.handlePacket)
   }

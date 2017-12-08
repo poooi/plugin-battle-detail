@@ -7,7 +7,7 @@ import {
   mapStrToMapId,
   checkSortieIndexes,
 } from './groupping'
-import { indexesSelector } from '../../selectors'
+import { indexesSelector, sortieViewerSelector } from '../../selectors'
 
 /*
    the "mapCanGoFromToFunc" is a function:
@@ -148,6 +148,72 @@ const sortieIndexesSelector = createSelector(
   }
 )
 
+/* an Array whose values are all valid for getSortieIndexesFunc */
+const sortieIndexesDomainSelector = createSelector(
+  sortieIndexesSelector,
+  sortieIndexes => {
+    const domain = _.uniq(
+      sortieIndexes.map(si => si.mapId).filter(x => x !== 'pvp')
+    )
+    domain.unshift('pvp')
+    domain.unshift('all')
+    // ['all', 'pvp', <mapId> ...]
+    return domain
+  }
+)
+
+/*
+   getSortieIndexesByMapFunc(<mapId or 'pvp' or 'all'>)
+
+   returns an Array of all qualifying sortie indexes
+ */
+const getSortieIndexesFuncSelector = createSelector(
+  sortieIndexesSelector,
+  sortieIndexes => _.memoize(mapId =>
+    mapId === 'all' ? sortieIndexes :
+      sortieIndexes.filter(si => si.mapId === mapId)
+  )
+)
+
+const mapIdSelector = createSelector(
+  sortieViewerSelector,
+  sv => sv.mapId
+)
+
+const activePageSelector = createSelector(
+  sortieViewerSelector,
+  sv => sv.activePage
+)
+
+const currentSortieIndexesSelector = createSelector(
+  getSortieIndexesFuncSelector,
+  mapIdSelector,
+  (getSortieIndexesFunc, mapId) =>
+    getSortieIndexesFunc(mapId)
+)
+
+const itemsPerPage = 20
+
+
+const pageRangeSelector = createSelector(
+  currentSortieIndexesSelector,
+  sortieIndexes => Math.ceil(sortieIndexes.length / itemsPerPage)
+)
+
+const currentFocusingSortieIndexesSelector = createSelector(
+  currentSortieIndexesSelector,
+  activePageSelector,
+  (sortieIndexes, activePage) => {
+    const beginInd = (activePage-1)*itemsPerPage
+    const endInd = Math.min(beginInd+itemsPerPage-1, sortieIndexes.length-1)
+    return sortieIndexes.slice(beginInd, endInd+1)
+  }
+)
+
 export {
   sortieIndexesSelector,
+  sortieIndexesDomainSelector,
+  getSortieIndexesFuncSelector,
+  pageRangeSelector,
+  currentFocusingSortieIndexesSelector,
 }
