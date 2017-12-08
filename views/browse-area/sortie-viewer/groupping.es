@@ -1,62 +1,5 @@
 import _ from 'lodash'
 
-/*
-   TODO: new groupping strategy
-
-   - compute map connectivity via fcd.
-     for any two given edge A B, should be able to tell
-     whether it's possible to go from A to B.
-
-   - traverse and emit groupping info:
-     given that (TODO guaranteed?) indexs are sorted in chronological order (descending),
-     we do an Array traversal:
-
-     - for a record of edge A, find the longest consecutive chain of edges B, C, D ...
-       in which all of them belong to same map and going D -> C -> B -> A is possible.
-       (of course every pvp record is special and stands for it's own)
-
-     - emit groupping: 2 types of structure are produced:
-
-       {type: 'single', id: <timestamp>, mapStr: <'pvp' or mapId>}
-       {type: 'groupped', ids: <Array of timestamp, ascending>, mapStr: <'pvp' or mapId>}
-
-     - for supporting "view all" "view pvp" "view <mapStr>",
-       each of them maintains an Array of data emitted above
-
-     - might need to maintain the data in store so it can be actively maintained
-       as new records come in.
-       (do not assume new records are always latest one, making it flexible
-       for a potential recovering-from-trash mechanism)
-
- */
-
-const groupByLineIndex = xs => {
-  const groups = []
-  let ind = 0
-  let curGroup = []
-  while (ind < xs.length) {
-    const curRecord = xs[ind]
-    if (curGroup.length === 0) {
-      curGroup.push(curRecord)
-      ++ind
-    } else {
-      if (_.last(curGroup).lineInd+1 === curRecord.lineInd) {
-        curGroup.push(curRecord)
-        ++ind
-      } else {
-        groups.push(curGroup)
-        curGroup = [curRecord]
-        ++ind
-      }
-    }
-  }
-  if (curGroup.length > 0) {
-    groups.push(curGroup)
-    curGroup = []
-  }
-  return groups
-}
-
 const prepareNextEdges = mapInfo => {
   // nextEdges[<node>] = Array of edge ids
   const nextEdges = {}
@@ -70,123 +13,78 @@ const prepareNextEdges = mapInfo => {
   return nextEdges
 }
 
-const groupByConnectivity = canGoFromTo => recordArr => {
-  const groups = []
-  let ind = 0
-  let curGroup = []
-  while (ind < recordArr.length) {
-    const curRecord = recordArr[ind]
-    if (curGroup.length === 0) {
-      curGroup.push(curRecord)
-      ++ind
-    } else {
-      const endEdgeId = _.last(curGroup).route
-      const beginEdgeId = curRecord.route
-      if (canGoFromTo(beginEdgeId,endEdgeId)) {
-        curGroup.push(curRecord)
-        ++ind
-      } else {
-        groups.push(curGroup)
-        curGroup = [curRecord]
-        ++ind
-      }
+const mapStrToMapId = _.memoize(mapStr => {
+  if (mapStr === '')
+    return 'pvp'
+  const matchResult = /^(\d+)-(\d+)$/.exec(mapStr)
+  if (!matchResult)
+    return null
+  const [_ignored, areaStr, numStr] = matchResult
+  return Number(areaStr)*10 + Number(numStr)
+})
+
+const checkSortieIndexes = (sortieIndexes, mapCanGoFromToFunc) => {
+  // checking correctness
+  const checkSortieIndex = sortieIndex => {
+    const {mapId, indexes} = sortieIndex
+    const reportProblem = msg => {
+      console.warn(msg)
+      console.warn(sortieIndex)
+      return false
     }
-  }
-  if (curGroup.length > 0) {
-    groups.push(curGroup)
-    curGroup = []
-  }
-  return groups.map(xs => xs.reverse())
-}
-
-/*
-   converts a <Records> structure into <SortieRecords> using fcd.map.
-
-   SortieRecords[<mapStr> or 'pvp'] = <Array of SortieRecord>
-
-   a SortieRecord is meant to be treated as a single sortie history,
-   and is either a index record, or an Array of records:
-
-   - for 'pvp' or `mapStr` whose fcd data cannot be found, a SortieRecord is
-     simply a index record
-
-   - for whose that we can find fcd data, we will attempt to group
-     records by sorties and every SortieRecord will end up being an Array of index records
-
- */
-const groupRecords = (records, fcdMap) => {
-  if (!fcdMap)
-    return records
-  const sortieRecords = {}
-  Object.keys(records).map(recInd => {
-    if (recInd === 'pvp') {
-      sortieRecords[recInd] = records[recInd]
-      return
-    }
-    const mapStr = recInd
-    const mapInfo = _.get(fcdMap,mapStr)
-    if (!mapInfo) {
-      sortieRecords[recInd] = records[recInd]
-      return
-    }
-    const recordArr = records[recInd]
-    /*
-       In "Stage1" we group records by detecting consecutive line indices.
-       This way we won't accidentally group together two sortie records
-       which are obviously not coming from the same sortie.
-     */
-    const recordArrStage1 = groupByLineIndex(recordArr)
-    const nextEdges = prepareNextEdges(mapInfo)
-
-    // if it's possible to go from one edge to another
-    const canGoFromToImpl = (beginEdgeId, endEdgeId) => {
-      /*
-         to go from one edge to another means to go from end node of 'beginEdgeId'
-         to begin node of `endEdgeId`.
-       */
-      const [_node1, beginNode] = mapInfo.route[beginEdgeId]
-      const [endNode, _node2] = mapInfo.route[endEdgeId]
-      if (!beginNode || !endNode)
-        return false
-
-      /*
-         let's assume that it's only possible to go from one edge to another
-         if it can be done within 5 steps. The definition of a step
-         is to go from one node to another one through an edge.
-       */
-      const search = (curNode, remainedSteps = 5) => {
-        if (curNode === endNode)
-          return true
-        if (remainedSteps <= 0)
-          return false
-        const nextEdgeIds = nextEdges[curNode]
-        if (!nextEdgeIds)
-          return false
-        for (let i=0; i<nextEdgeIds.length; ++i) {
-          const nextEdgeId = nextEdgeIds[i]
-          const [_node, nextNode] = mapInfo.route[nextEdgeId]
-          if (search(nextNode,remainedSteps-1))
-            return true
+    if (
+      (mapId === 'pvp' || _.isInteger(mapId)) &&
+      Array.isArray(indexes) && indexes.length > 0
+    ) {
+      if (mapId === 'pvp') {
+        if (indexes.length !== 1) {
+          return reportProblem('expected pvp data to have exactly one record')
         }
-        return false
+        return true
+      } else {
+        if (!indexes.every(index => mapStrToMapId(index.map) === mapId)) {
+          return reportProblem('inconsistent map str encountered')
+        }
+        const canGoFromTo = mapCanGoFromToFunc(mapId)
+        for (let i = 0; i+1 < indexes.length; ++i) {
+          if (!canGoFromTo(indexes[i].route_, indexes[i+1].route_)) {
+            return reportProblem('infeasible route')
+          }
+        }
+        return true
       }
-      return search(beginNode)
+    } else {
+      return reportProblem('incorrect data encountered')
     }
+  }
+  const isCorrect = sortieIndexes.every(checkSortieIndex)
+  if (!isCorrect) {
+    console.warn(`correctness check failed.`)
+  }
 
-    const canGoFromTo = _.memoize(
-      canGoFromToImpl,
-      (eFrom, eTo) => `${eFrom}=>${eTo}`
-    )
-
-    sortieRecords[mapStr] = _.flatMap(
-      recordArrStage1,
-      groupByConnectivity(canGoFromTo)
-    )
-  })
-  return sortieRecords
+  const visualize = false
+  if (visualize) {
+    const fcdMap = window.getStore().fcd.map
+    sortieIndexes.map(sortieIndex => {
+      const {mapId, indexes} = sortieIndex
+      if (mapId === 'pvp') {
+        // eslint-disable-next-line no-console
+        console.log(`PvP: ${indexes[0].desc}`)
+      } else {
+        const area = Math.floor(mapId / 10)
+        const num = mapId % 10
+        const mapStr = `${area}-${num}`
+        const routes = fcdMap[mapStr].route
+        const nodesText = indexes.map(index => routes[index.route_][1]).join(' => ')
+        // eslint-disable-next-line no-console
+        console.log(`Sortie to ${mapStr}: ${nodesText}`)
+      }
+    })
+  }
 }
 
 export {
+  mapStrToMapId,
   prepareNextEdges,
-  groupRecords,
+  checkSortieIndexes,
 }

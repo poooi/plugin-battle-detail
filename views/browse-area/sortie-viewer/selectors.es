@@ -2,13 +2,12 @@ import _ from 'lodash'
 import { createSelector } from 'reselect'
 import { fcdSelector } from 'views/utils/selectors'
 
-import { prepareNextEdges } from './groupping'
+import {
+  prepareNextEdges,
+  mapStrToMapId,
+  checkSortieIndexes,
+} from './groupping'
 import { indexesSelector } from '../../selectors'
-
-const indexesGrouppedByMapSelector = createSelector(
-  indexesSelector,
-  xs => _.groupBy(xs, x => x.map || 'pvp')
-)
 
 /*
    the "mapCanGoFromToFunc" is a function:
@@ -89,16 +88,6 @@ const mapCanGoFromToFuncSelector = createSelector(
   }
 )
 
-const mapStrToMapId = _.memoize(mapStr => {
-  if (mapStr === '')
-    return 'pvp'
-  const matchResult = /^(\d+)-(\d+)$/.exec(mapStr)
-  if (!matchResult)
-    return null
-  const [_ignored, areaStr, numStr] = matchResult
-  return Number(areaStr)*10 + Number(numStr)
-})
-
 /*
    a SortieIndex describes a sequence of battle record indexes which
    can be consider a single sortie.
@@ -153,51 +142,12 @@ const sortieIndexesSelector = createSelector(
     }
 
     // checking correctness
-    const checkSortieIndex = sortieIndex => {
-      const {mapId, indexes} = sortieIndex
-      const reportProblem = msg => {
-        console.warn(msg)
-        console.warn(sortieIndex)
-        return false
-      }
-      if (
-        (mapId === 'pvp' || _.isInteger(mapId)) &&
-        Array.isArray(indexes) && indexes.length > 0
-      ) {
-        if (mapId === 'pvp') {
-          if (indexes.length !== 1) {
-            return reportProblem('expected pvp data to have exactly one record')
-          }
-          return true
-        } else {
-          if (!indexes.every(index => mapStrToMapId(index.map) === mapId)) {
-            return reportProblem('inconsistent map str encountered')
-          }
-          const canGoFromTo = mapCanGoFromToFunc(mapId)
-          for (let i = 0; i+1 < indexes.length; ++i) {
-            if (!canGoFromTo(indexes[i].route_, indexes[i+1].route_)) {
-              return reportProblem('infeasible route')
-            }
-          }
-          return true
-        }
-      } else {
-        return reportProblem('incorrect data encountered')
-      }
-    }
-    const isCorrect = sortieIndexes.every(checkSortieIndex)
-    if (!isCorrect) {
-      console.warn(`correctness check failed.`)
-    }
+    checkSortieIndexes(sortieIndexes, mapCanGoFromToFunc)
 
     return sortieIndexes
   }
 )
 
-import { selectorTester } from 'subtender/poi'
-selectorTester(sortieIndexesSelector)
-
 export {
-  indexesGrouppedByMapSelector,
-  mapCanGoFromToFuncSelector,
+  sortieIndexesSelector,
 }
