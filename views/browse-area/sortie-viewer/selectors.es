@@ -89,6 +89,76 @@ const mapCanGoFromToFuncSelector = createSelector(
   }
 )
 
+const mapStrToMapId = _.memoize(mapStr => {
+  if (mapStr === '')
+    return 'pvp'
+  const matchResult = /^(\d+)-(\d+)$/.exec(mapStr)
+  if (!matchResult)
+    return null
+  const [_ignored, areaStr, numStr] = matchResult
+  return Number(areaStr)*10 + Number(numStr)
+})
+
+/*
+   a SortieIndex describes a sequence of battle record indexes which
+   can be consider a single sortie.
+
+   it is represented by the following structure:
+
+   - {indexes: <Array of index, ascending by id>, mapId: <mapId or 'pvp'>}
+
+ */
+const sortieIndexesSelector = createSelector(
+  indexesSelector,
+  mapCanGoFromToFuncSelector,
+  (indexes, mapCanGoFromToFunc) => {
+    const sortieIndexes = []
+
+    let i = 0
+    while (i < indexes.length) {
+      const curIndex = indexes[i]
+      const curMapId = mapStrToMapId(curIndex.map)
+      if (curMapId === null) {
+        console.warn(
+          `failed to parse map string: ${curIndex.map} of data ${curIndex.id}, skipping.`
+        )
+        ++i
+        continue
+      }
+
+      if (curMapId === 'pvp') {
+        sortieIndexes.push({indexes: [curIndex], mapId: 'pvp'})
+        ++i
+        continue
+      }
+
+      let j = i
+      // INVARIANT: i~j (inclusive) should be considered same sortie
+      for (_.noop() ; j+1 < indexes.length; ++j) {
+        const nextIndex = indexes[j+1]
+        const nextMapId = mapStrToMapId(nextIndex.map)
+        if (nextMapId !== curMapId)
+          break
+        const beginEdgeId = nextIndex.route_
+        const endEdgeId = curIndex.route_
+        if (!mapCanGoFromToFunc(curMapId)(beginEdgeId,endEdgeId))
+          break
+      }
+
+      sortieIndexes.push({
+        indexes: indexes.slice(i,j+1).reverse(),
+        mapId: curMapId,
+      })
+      i = j+1
+    }
+
+    return sortieIndexes
+  }
+)
+
+import { selectorTester } from 'subtender/poi'
+selectorTester(sortieIndexesSelector)
+
 export {
   indexesGrouppedByMapSelector,
   mapCanGoFromToFuncSelector,
