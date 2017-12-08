@@ -108,6 +108,8 @@ class SortieViewerImpl extends PureComponent {
             {
               focusingSortieIndexes.map(si => {
                 const firstIndex = si.indexes[0]
+                // TODO: quick and dirty
+                const routes = _.get(window.getStore().fcd,['map',firstIndex.map,'route'])
                 const compId = firstIndex.id
                 const desc =
                   mapId === 'pvp' ? `Practive: ${firstIndex.desc}` :
@@ -124,10 +126,13 @@ class SortieViewerImpl extends PureComponent {
                       {
                         si.indexes.map(index => (
                           <Button
-                            style={{marginRight: '1em', width: '6em'}}
+                            style={{marginRight: '1em', width: '4em'}}
                             onClick={this.handleSelectBattle(index)}
                             key={index.id}>
-                            {index.route || 'Practice'}
+                            {
+                              index.map === '' ? 'PvP' :
+                                (_.isEmpty(routes) ? index.route_ : routes[index.route_][1])
+                            }
                           </Button>
                         ))
                       }
