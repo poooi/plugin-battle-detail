@@ -187,5 +187,6 @@ const groupRecords = (records, fcdMap) => {
 }
 
 export {
+  prepareNextEdges,
   groupRecords,
 }
