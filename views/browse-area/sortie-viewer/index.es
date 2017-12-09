@@ -120,8 +120,15 @@ class SortieViewerImpl extends PureComponent {
                 return (
                   <ListGroupItem
                     key={compId} style={{padding: '5px 10px'}}>
-                    <div>{desc}</div>
-                    <div>{timeDesc}</div>
+                    <div style={{display: 'flex'}}>
+                      <div
+                        style={{
+                          flex: 1,
+                          fontWeight: 'bold',
+                          fontSize: '110%',
+                        }}>{desc}</div>
+                      <div>{timeDesc}</div>
+                    </div>
                     <div style={{display: 'flex', flexWrap: 'wrap'}}>
                       {
                         si.indexes.map(index => (
