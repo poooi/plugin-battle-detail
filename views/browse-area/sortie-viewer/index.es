@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import {
   ListGroup, ListGroupItem,
   Pagination,
-  Button, ButtonGroup,
+  Button,
 } from 'react-bootstrap'
 import {
   modifyObject,
@@ -112,8 +112,8 @@ class SortieViewerImpl extends PureComponent {
                 const routes = _.get(window.getStore().fcd,['map',firstIndex.map,'route'])
                 const compId = firstIndex.id
                 const desc =
-                  mapId === 'pvp' ? `Practive: ${firstIndex.desc}` :
-                    `Sortie: ${pprMapId(si.mapId)}`
+                  mapId === 'pvp' ? firstIndex.desc :
+                    `Sortie ${pprMapId(si.mapId)}`
                 const timeDesc =
                   si.indexes.length === 1 ? firstIndex.time :
                     `${firstIndex.time} ~ ${_.last(si.indexes).time}`
@@ -126,7 +126,8 @@ class SortieViewerImpl extends PureComponent {
                       {
                         si.indexes.map(index => (
                           <Button
-                            style={{marginRight: '1em', width: '4em'}}
+                            bsSize="xsmall"
+                            style={{marginRight: '.4em', width: '3.6em'}}
                             onClick={this.handleSelectBattle(index)}
                             key={index.id}>
                             {
