@@ -38,6 +38,16 @@ const pprMapId = mapId => {
   return mapId
 }
 
+const rankColors = {
+  'SS': '#ffeb3b',
+  'S': '#ffeb3b',
+  'A': '#b71c1c',
+  'B': '#f4511e',
+  'C': '#ffc400',
+  'D': '#4caf50',
+  'E': '#03a9f4',
+}
+
 class SortieViewerImpl extends PureComponent {
   static propTypes = {
     mapIds: PTyp.array.isRequired,
@@ -134,13 +144,21 @@ class SortieViewerImpl extends PureComponent {
                         si.indexes.map(index => (
                           <Button
                             bsSize="xsmall"
-                            style={{marginRight: '.4em', width: '3.6em'}}
+                            style={{
+                              marginRight: '.4em', width: '3.6em',
+
+                            }}
                             onClick={this.handleSelectBattle(index)}
                             key={index.id}>
-                            {
-                              index.map === '' ? 'PvP' :
-                                (_.isEmpty(routes) ? index.route_ : routes[index.route_][1])
-                            }
+                            <div style={{
+                              fontWeight: 'bold',
+                              ...(index.rank in rankColors ? {color: rankColors[index.rank]} : {}),
+                            }}>
+                              {
+                                index.map === '' ? 'PvP' :
+                                  (_.isEmpty(routes) ? index.route_ : routes[index.route_][1])
+                              }
+                            </div>
                           </Button>
                         ))
                       }
