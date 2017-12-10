@@ -124,7 +124,7 @@ class SortieViewerImpl extends PureComponent {
                 const routes = _.get(window.getStore().fcd,['map',firstIndex.map,'route'])
                 const compId = firstIndex.id
                 const desc =
-                  mapId === 'pvp' ? firstIndex.desc :
+                  si.mapId === 'pvp' ? firstIndex.desc :
                     `${__('Sortie')} ${pprMapId(si.mapId)}`
                 const timeDesc =
                   si.indexes.length === 1 ? firstIndex.time :
