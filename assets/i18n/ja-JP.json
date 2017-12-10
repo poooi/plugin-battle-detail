@@ -95,24 +95,24 @@
 
   "Filter": "濾過器",
   "Usage": "使用法",
-  "Click \"Filter\" or press Enter to apply filter.": "Click \"Filter\" or press Enter to filter.",
-  "Right click \"Filter\" to clear filter.": "Right click \"Filter\" to clear input.",
-  "Multi-value filter are separated by commas.": "Multi-value filter are separated by commas.",
+  "Click \"Filter\" or press Enter to apply filter.": "\"フィルタ\" バタン又はエンターキーを押し、フィルタを適用する。",
+  "Right click \"Filter\" to clear filter.": "\"フィルタ\" バタンを右クリックし、フィルタをクリアする。",
+  "Multi-value filter are separated by commas.": "コンマ区切りで複数指定できます。",
   "Time": "時間",
   "Map": "海域",
   "Route": "路線",
   "Rank": "勝利",
   "Description": "説明",
   "View": "ビュー",
-  "Tip": "Tip",
+  "Tip": "ヒント",
   "Tip.Akashic1.Part1": "航海日誌の出撃データに",
   "Tip.Akashic1.Part2": "をクリックすると、その戦闘の詳細が表示します。",
 
   "BrowseArea": {
-    "Nodes": "Nodes",
-    "Sorties": "Sorties"
+    "Nodes": "マス",
+    "Sorties": "出撃"
   },
-  "All": "All",
+  "All": "全て",
 
   "": ""
 }
