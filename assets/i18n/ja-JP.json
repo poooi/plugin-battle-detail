@@ -108,5 +108,11 @@
   "Tip.Akashic1.Part1": "航海日誌の出撃データに",
   "Tip.Akashic1.Part2": "をクリックすると、その戦闘の詳細が表示します。",
 
+  "BrowseArea": {
+    "Nodes": "Nodes",
+    "Sorties": "Sorties"
+  },
+  "All": "All",
+
   "": ""
 }

@@ -145,8 +145,8 @@ class BrowseArea extends React.Component {
                   >
                     {
                       /* eslint-disable indent */
-                      viewMode === 'nodes' ? 'Nodes' :
-                      viewMode === 'sorties' ? 'Sorties' :
+                      viewMode === 'nodes' ? __('BrowseArea.Nodes') :
+                      viewMode === 'sorties' ? __('BrowseArea.Sorties') :
                       '???'
                       /* eslint-enable indent */
                     }

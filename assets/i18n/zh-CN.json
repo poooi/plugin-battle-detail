@@ -108,5 +108,11 @@
   "Tip.Akashic1.Part1": "在「航海日志」的出击列表中点击",
   "Tip.Akashic1.Part2": "可以打开该场战斗的详情。",
 
+  "BrowseArea": {
+    "Nodes": "节点视图",
+    "Sorties": "出击视图"
+  },
+  "All": "全部",
+
   "": ""
 }

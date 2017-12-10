@@ -24,11 +24,13 @@ import { actionCreators } from '../../store'
 
 import { PTyp } from '../../ptyp'
 
+const {__} = window
+
 const pprMapId = mapId => {
   if (mapId === 'all')
-    return 'All'
+    return __('All')
   if (mapId === 'pvp')
-    return 'Practice'
+    return __('Practice')
 
   if (_.isInteger(mapId)) {
     const area = Math.floor(mapId / 10)
@@ -123,7 +125,7 @@ class SortieViewerImpl extends PureComponent {
                 const compId = firstIndex.id
                 const desc =
                   mapId === 'pvp' ? firstIndex.desc :
-                    `Sortie ${pprMapId(si.mapId)}`
+                    `${__('Sortie')} ${pprMapId(si.mapId)}`
                 const timeDesc =
                   si.indexes.length === 1 ? firstIndex.time :
                     `${firstIndex.time} ~ ${_.last(si.indexes).time}`
