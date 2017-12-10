@@ -11,6 +11,7 @@ import {
   modifyObject,
   mergeMapStateToProps,
 } from 'subtender'
+import { fcdSelector } from 'views/utils/selectors'
 
 import {
   sortieIndexesDomainSelector,
@@ -58,6 +59,7 @@ class SortieViewerImpl extends PureComponent {
     activePage: PTyp.number.isRequired,
     pageRange: PTyp.number.isRequired,
     focusingSortieIndexes: PTyp.array.isRequired,
+    fcdMap: PTyp.object.isRequired,
 
     uiModify: PTyp.func.isRequired,
   }
@@ -89,6 +91,7 @@ class SortieViewerImpl extends PureComponent {
       mapIds, mapId,
       pageRange, activePage,
       focusingSortieIndexes,
+      fcdMap,
     } = this.props
     return (
       <div style={{display: 'flex', height: '80vh', alignItems: 'stretch'}}>
@@ -120,8 +123,7 @@ class SortieViewerImpl extends PureComponent {
             {
               focusingSortieIndexes.map(si => {
                 const firstIndex = si.indexes[0]
-                // TODO: quick and dirty
-                const routes = _.get(window.getStore().fcd,['map',firstIndex.map,'route'])
+                const routes = _.get(fcdMap,[firstIndex.map,'route'])
                 const compId = firstIndex.id
                 const desc =
                   si.mapId === 'pvp' ? firstIndex.desc :
@@ -148,7 +150,6 @@ class SortieViewerImpl extends PureComponent {
                             bsSize="xsmall"
                             style={{
                               marginRight: '.4em', width: '3.6em',
-
                             }}
                             onClick={this.handleSelectBattle(index)}
                             key={index.id}>
@@ -196,6 +197,7 @@ const SortieViewer = connect(
       getSortieIndexes: getSortieIndexesFuncSelector,
       focusingSortieIndexes: currentFocusingSortieIndexesSelector,
       pageRange: pageRangeSelector,
+      fcdMap: state => _.get(fcdSelector(state),'map',{}),
     }),
     sortieViewerSelector,
   ),
