@@ -16,6 +16,11 @@ const initState = {
     disableBrowser: false,
     showLast: true,
 
+    sortieViewer: {
+      mapId: 'all',
+      activePage: 1,
+    },
+
     modal: {
       isShow: false,
       title: null,

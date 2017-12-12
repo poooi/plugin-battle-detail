@@ -8,7 +8,7 @@ const {FormControl, Button, OverlayTrigger, Popover} = ReactBootstrap
 import { SortieViewer } from './sortie-viewer'
 
 const PAGE_ITEM_AMOUNT = 20
-const SORTIE_VIEWER_WIP = false
+const SORTIE_VIEWER_WIP = true
 
 class BrowseArea extends React.Component {
   constructor() {
@@ -145,8 +145,8 @@ class BrowseArea extends React.Component {
                   >
                     {
                       /* eslint-disable indent */
-                      viewMode === 'nodes' ? 'Nodes' :
-                      viewMode === 'sorties' ? 'Sorties' :
+                      viewMode === 'nodes' ? __('BrowseArea.Nodes') :
+                      viewMode === 'sorties' ? __('BrowseArea.Sorties') :
                       '???'
                       /* eslint-enable indent */
                     }

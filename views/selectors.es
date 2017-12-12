@@ -26,9 +26,15 @@ const modalSelector = createSelector(
   ui => ui.modal
 )
 
+const sortieViewerSelector = createSelector(
+  uiSelector,
+  ui => ui.sortieViewer
+)
+
 export {
   extSelector,
   uiSelector,
   modalSelector,
   indexesSelector,
+  sortieViewerSelector,
 }
