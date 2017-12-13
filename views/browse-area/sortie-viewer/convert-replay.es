@@ -17,7 +17,7 @@ const convertReplay = async sortieIndexes => {
 
   // starting for this line poiRecords cannot be empty.
   const poiBattles = await Promise.all(
-    poiRecords.map(r => AppData.loadBattle(r.id))
+    poiRecords.map(r => AppData.loadBattle(r.id, false))
   )
   console.log(sortieIndexes, poiBattles)
   const fstBattle = poiBattles[0]
@@ -117,6 +117,8 @@ const convertReplay = async sortieIndexes => {
     const transformSquadron = sq => {
       const planes = sq.api_plane_info.map(p => {
         const slot = p.poi_slot
+        if (!slot)
+          return null
         return {
           mst_id: slot.api_slotitem_id,
           count: p.api_count,

@@ -96,7 +96,8 @@ class SortieViewerImpl extends PureComponent {
   handleClickPlay = sortieIndexes => async () => {
     const kc3ReplayData = await convertReplay(sortieIndexes)
     console.log(kc3ReplayData)
-    const encoded = compressToEncodedURIComponent(JSON.stringify(kc3ReplayData))
+    const jsonRaw = JSON.stringify(kc3ReplayData)
+    const encoded = compressToEncodedURIComponent(jsonRaw)
     shell.openExternal(`${battleReplayerURL}?fromLZString=${encoded}`)
   }
 
