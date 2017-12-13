@@ -10,6 +10,7 @@
     "postpublish": "npm run reset"
   },
   "dependencies": {
+    "lz-string": "^1.4.4",
     "subtender": "^0.12.2"
   },
   "devDependencies": {

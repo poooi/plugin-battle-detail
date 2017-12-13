@@ -1,4 +1,6 @@
 import _ from 'lodash'
+import { shell } from 'electron'
+import { compressToEncodedURIComponent } from 'lz-string'
 import { createStructuredSelector } from 'reselect'
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
@@ -7,6 +9,7 @@ import {
   Pagination,
   Button,
 } from 'react-bootstrap'
+import FontAwesome from 'react-fontawesome'
 import {
   modifyObject,
   mergeMapStateToProps,
@@ -22,10 +25,14 @@ import {
 
 import { sortieViewerSelector } from '../../selectors'
 import { actionCreators } from '../../store'
+import { convertReplay } from './convert-replay'
 
 import { PTyp } from '../../ptyp'
 
 const {__} = window
+
+// TODO
+const battleReplayerURL = 'http://127.0.0.1:8000/battleplayer.html'
 
 const pprMapId = mapId => {
   if (mapId === 'all')
@@ -86,6 +93,13 @@ class SortieViewerImpl extends PureComponent {
       window.showBattleWithTimestamp(index.id)
   }
 
+  handleClickPlay = sortieIndexes => async () => {
+    const kc3ReplayData = await convertReplay(sortieIndexes)
+    console.log(kc3ReplayData)
+    const encoded = compressToEncodedURIComponent(JSON.stringify(kc3ReplayData))
+    shell.openExternal(`${battleReplayerURL}?fromLZString=${encoded}`)
+  }
+
   render() {
     const {
       mapIds, mapId,
@@ -133,39 +147,49 @@ class SortieViewerImpl extends PureComponent {
                     `${firstIndex.time} ~ ${_.last(si.indexes).time}`
                 return (
                   <ListGroupItem
-                    key={compId} style={{padding: '5px 10px'}}>
-                    <div style={{display: 'flex'}}>
-                      <div
-                        style={{
-                          flex: 1,
-                          fontWeight: 'bold',
-                          fontSize: '110%',
-                        }}>{desc}</div>
-                      <div>{timeDesc}</div>
+                    key={compId}
+                    style={{padding: '5px 10px', display: 'flex'}}>
+                    <div style={{flex: 1}}>
+                      <div style={{display: 'flex'}}>
+                        <div
+                          style={{
+                            flex: 1,
+                            fontWeight: 'bold',
+                            fontSize: '110%',
+                          }}>{desc}</div>
+                        <div>{timeDesc}</div>
+                      </div>
+                      <div style={{display: 'flex', flexWrap: 'wrap'}}>
+                        {
+                          si.indexes.map(index => (
+                            <Button
+                              bsSize="xsmall"
+                              style={{
+                                marginRight: '.4em', width: '3.6em',
+                              }}
+                              onClick={this.handleSelectBattle(index)}
+                              key={index.id}>
+                              <div style={{
+                                fontWeight: 'bold',
+                                ...(index.rank in rankColors ? {color: rankColors[index.rank]} : {}),
+                              }}>
+                                {
+                                  index.map === '' ? 'PvP' :
+                                    (_.isEmpty(routes) ? index.route_ : routes[index.route_][1])
+                                }
+                              </div>
+                            </Button>
+                          ))
+                        }
+                      </div>
                     </div>
-                    <div style={{display: 'flex', flexWrap: 'wrap'}}>
-                      {
-                        si.indexes.map(index => (
-                          <Button
-                            bsSize="xsmall"
-                            style={{
-                              marginRight: '.4em', width: '3.6em',
-                            }}
-                            onClick={this.handleSelectBattle(index)}
-                            key={index.id}>
-                            <div style={{
-                              fontWeight: 'bold',
-                              ...(index.rank in rankColors ? {color: rankColors[index.rank]} : {}),
-                            }}>
-                              {
-                                index.map === '' ? 'PvP' :
-                                  (_.isEmpty(routes) ? index.route_ : routes[index.route_][1])
-                              }
-                            </div>
-                          </Button>
-                        ))
-                      }
-                    </div>
+                    <Button
+                      onClick={this.handleClickPlay(si)}
+                      style={{
+                        width: '3em', height: '2.5em', marginLeft: '.4em',
+                      }}>
+                      <FontAwesome name="play" />
+                    </Button>
                   </ListGroupItem>
                 )
               })
