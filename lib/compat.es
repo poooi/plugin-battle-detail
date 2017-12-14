@@ -231,6 +231,8 @@ export class PacketCompat {
     const tree = {
       'api_ship_ke': 1,
       'api_ship_lv': 1,
+      'api_ship_ke_combined': 1,
+      'api_ship_lv_combined': 1,
       'api_nowhps' : 1,
       'api_maxhps' : 1,
       'api_nowhps_combined': 1,
