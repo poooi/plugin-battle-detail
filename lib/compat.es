@@ -197,6 +197,7 @@ export class PacketCompat {
   // 1510898400000: 2017-11-17T06:00:00.000Z
   static fix20171117_shift_pathes = (() => {
     const hougeki = {
+      'api_at_eflag': 1,
       'api_at_list': 1,
       'api_at_type': 1,
       'api_df_list': 1,
@@ -265,16 +266,6 @@ export class PacketCompat {
       'api_frai' : 1,
       'api_erai' : 1,
     }
-    const kouku_stage3 = {
-      'api_frai_flag': 1,
-      'api_erai_flag': 1,
-      'api_fbak_flag': 1,
-      'api_ebak_flag': 1,
-    }
-    const kouku = {
-      'api_stage3'         : kouku_stage3,
-      'api_stage3_combined': kouku_stage3,
-    }
     const tree = {
       'api_hougeki'       : hougeki,
       'api_hougeki1'      : hougeki,
@@ -283,13 +274,7 @@ export class PacketCompat {
       'api_opening_taisen': hougeki,
       'api_raigeki'      : raigeki,
       'api_opening_atack': raigeki,
-      'api_kouku'             : kouku,
-      'api_kouku2'            : kouku,
-      'api_injection_kouku'   : kouku,
-      'api_air_base_injection': kouku,
-      'api_air_base_attack': Array(6).fill(kouku),
       'api_support_info': {
-        'api_support_airatack': kouku,
         'api_support_hourai': hougeki,
       },
     }
