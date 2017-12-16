@@ -2,22 +2,24 @@ import _ from 'lodash'
 import { modifyObject } from 'subtender'
 import { createStructuredSelector } from 'reselect'
 
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import FontAwesome from 'react-fontawesome'
-
-const {React, ReactBootstrap, __} = window
-const {Panel, Grid, Row, Col, Table, Pagination} = ReactBootstrap
-const {FormControl, Button, OverlayTrigger, Popover} = ReactBootstrap
+import {
+  Panel, Grid, Row, Col, Table, Pagination,
+  FormControl, Button, OverlayTrigger, Popover,
+} from 'react-bootstrap'
 
 import { browseModeSelector } from '../selectors'
 import { SortieViewer } from './sortie-viewer'
 import { actionCreators } from '../store'
 import { PTyp } from '../ptyp'
 
-const PAGE_ITEM_AMOUNT = 20
-const SORTIE_VIEWER_WIP = true
+const { __ } = window
 
-class BrowseAreaImpl extends React.Component {
+const PAGE_ITEM_AMOUNT = 20
+
+class BrowseAreaImpl extends Component {
   static propTypes = {
     browseMode: PTyp.BrowseMode.isRequired,
     uiModify: PTyp.func.isRequired,
@@ -151,22 +153,19 @@ class BrowseAreaImpl extends React.Component {
               <div style={{flex: 1}}>
                 {__("Browse")}
               </div>
-              {
-                SORTIE_VIEWER_WIP && (
-                  <Button
-                    onClick={this.handleSwitchBrowseMode}
-                    style={{margin: 0, width: 'initial'}}
-                  >
-                    {
-                      /* eslint-disable indent */
-                      browseMode === 'nodes' ? __('BrowseArea.Nodes') :
-                      browseMode === 'sorties' ? __('BrowseArea.Sorties') :
-                      '???'
-                      /* eslint-enable indent */
-                    }
-                  </Button>
-                )
-              }
+              <Button
+                onClick={this.handleSwitchBrowseMode}
+                style={{margin: 0, width: 'initial'}}
+              >
+                {
+                  /* eslint-disable indent */
+                  browseMode === 'nodes' ? __('BrowseArea.Nodes') :
+                  browseMode === 'sorties' ? __('BrowseArea.Sorties') :
+                  '???'
+                  /* eslint-enable indent */
+                }
+              </Button>
+
             </div>
           }>
           <div style={browseMode === 'nodes' ? {} : {display: 'none'}}>
