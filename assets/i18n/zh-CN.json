@@ -110,7 +110,11 @@
 
   "BrowseArea": {
     "Nodes": "节点视图",
-    "Sorties": "出击视图"
+    "Sorties": "出击视图",
+    "SortMethod": {
+      "recent": "最近",
+      "numeric": "海域"
+    }
   },
   "All": "全部",
 

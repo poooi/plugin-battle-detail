@@ -4,7 +4,7 @@
   "__COMMENT_003__": "Sort phrase by first exist line number inside a block.",
 
   "Battle Records": "戰鬥記錄",
-  "Save detailed battle log": "儲存詳細的戰鬥記錄",
+  "Save detailed battle log": "保存詳細的戰鬥日誌",
 
   "Battle": "戰鬥",
   "Browse": "瀏覽",
@@ -110,7 +110,11 @@
 
   "BrowseArea": {
     "Nodes": "節點視圖",
-    "Sorties": "出擊視圖"
+    "Sorties": "出擊視圖",
+    "SortMethod": {
+      "recent": "最近",
+      "numeric": "海域"
+    }
   },
   "All": "全部",
 

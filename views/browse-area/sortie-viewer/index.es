@@ -58,7 +58,6 @@ const rankColors = {
   'E': '#03a9f4',
 }
 
-// TODO: i18n: 'recent' / 'numeric'
 class SortieViewerImpl extends PureComponent {
   static propTypes = {
     mapIds: PTyp.array.isRequired,
