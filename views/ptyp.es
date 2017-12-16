@@ -15,9 +15,12 @@ const allRequired = shapeObj => {
   return ret
 }
 
+const BrowseMode = PropTypes.oneOf(['nodes', 'sorties'])
+
 const PTyp = {
   ...PropTypes,
   allRequired,
+  BrowseMode,
 }
 
 export { PTyp }

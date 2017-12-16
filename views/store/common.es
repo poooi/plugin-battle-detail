@@ -16,6 +16,9 @@ const initState = {
     disableBrowser: false,
     showLast: true,
 
+    // TODO: connect
+    // valid values: 'nodes' / 'sorties'
+    browseMode: 'nodes',
     sortieViewer: {
       mapId: 'all',
       activePage: 1,

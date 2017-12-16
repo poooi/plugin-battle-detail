@@ -1,16 +1,28 @@
 import _ from 'lodash'
+import { modifyObject } from 'subtender'
+import { createStructuredSelector } from 'reselect'
+
+import { connect } from 'react-redux'
 import FontAwesome from 'react-fontawesome'
 
 const {React, ReactBootstrap, __} = window
 const {Panel, Grid, Row, Col, Table, Pagination} = ReactBootstrap
 const {FormControl, Button, OverlayTrigger, Popover} = ReactBootstrap
 
+import { browseModeSelector } from '../selectors'
 import { SortieViewer } from './sortie-viewer'
+import { actionCreators } from '../store'
+import { PTyp } from '../ptyp'
 
 const PAGE_ITEM_AMOUNT = 20
 const SORTIE_VIEWER_WIP = true
 
-class BrowseArea extends React.Component {
+class BrowseAreaImpl extends React.Component {
+  static propTypes = {
+    browseMode: PTyp.BrowseMode.isRequired,
+    uiModify: PTyp.func.isRequired,
+  }
+
   constructor() {
     super()
     this.state = {
@@ -23,8 +35,6 @@ class BrowseArea extends React.Component {
         route: [''],
         rank : [''],
       },
-      // nodes / sorties
-      viewMode: 'nodes',
     }
   }
 
@@ -40,12 +50,12 @@ class BrowseArea extends React.Component {
     return !(
       this.state.indexes === nextState.indexes &&
       this.state.pageNo === nextState.pageNo &&
-      this.state.viewMode === nextState.viewMode
+      this.props.browseMode === nextProps.browseMode
     )
   }
 
   applyFilters = (indexes, filters) => {
-    return indexes.filter((index, i) => (
+    return indexes.filter((index, _i) => (
       filters.time .findIndex(keyword => index.time .includes(keyword)) > -1 &&
       filters.desc .findIndex(keyword => index.desc .includes(keyword)) > -1 &&
       filters.map  .findIndex(keyword => index.map  .includes(keyword)) > -1 &&
@@ -100,18 +110,22 @@ class BrowseArea extends React.Component {
     })
   }
 
-  handleViewModeRotate = () =>
-    this.setState(st => {
-      const {viewMode} = st
-      const newViewMode =
-        viewMode === 'nodes' ? 'sorties' :
-        viewMode === 'sorties' ? 'nodes' :
-        /* otherwise */ 'nodes'
-      return {viewMode: newViewMode}
-    })
+  handleSwitchBrowseMode = () =>
+    this.props.uiModify(
+      modifyObject(
+        'browseMode',
+        bm =>
+          /* eslint-disable indent */
+          bm === 'nodes' ? 'sorties' :
+          bm === 'sorties' ? 'nodes' :
+          /* otherwise */ 'nodes'
+          /* eslint-enable indent */
+      )
+    )
 
   render() {
-    const {indexes, pageNo, viewMode} = this.state
+    const {browseMode} = this.props
+    const {indexes, pageNo} = this.state
     let pageAmount = 1, range = []
     if (indexes && indexes.length > 0) {
       pageAmount = Math.ceil(indexes.length / PAGE_ITEM_AMOUNT)
@@ -140,13 +154,13 @@ class BrowseArea extends React.Component {
               {
                 SORTIE_VIEWER_WIP && (
                   <Button
-                    onClick={this.handleViewModeRotate}
+                    onClick={this.handleSwitchBrowseMode}
                     style={{margin: 0, width: 'initial'}}
                   >
                     {
                       /* eslint-disable indent */
-                      viewMode === 'nodes' ? __('BrowseArea.Nodes') :
-                      viewMode === 'sorties' ? __('BrowseArea.Sorties') :
+                      browseMode === 'nodes' ? __('BrowseArea.Nodes') :
+                      browseMode === 'sorties' ? __('BrowseArea.Sorties') :
                       '???'
                       /* eslint-enable indent */
                     }
@@ -155,7 +169,7 @@ class BrowseArea extends React.Component {
               }
             </div>
           }>
-          <div style={viewMode === 'nodes' ? {} : {display: 'none'}}>
+          <div style={browseMode === 'nodes' ? {} : {display: 'none'}}>
             <form onSubmit={this.onClickFilter}>
               <Table className="browse-table" striped bordered condensed hover fill>
                 <OverlayTrigger placement='top' overlay={
@@ -178,20 +192,22 @@ class BrowseArea extends React.Component {
                   </thead>
                 </OverlayTrigger>
                 <tbody>
-                  {range.map(i => {
-                     let item = indexes[i]
-                     return (item == null) ? void 0 : (
-                       <tr key={i}>
-                         <td>{i + 1}</td>
-                         <td>{item.time}</td>
-                         <td>{item.desc}</td>
-                         <td>{item.map}</td>
-                         <td>{item.route}</td>
-                         <td>{item.rank}</td>
-                         <td><ViewButton onClick={() => this.onClickView(item.id)} /></td>
-                       </tr>
-                     )
-                  })}
+                  {
+                    range.map(i => {
+                      let item = indexes[i]
+                      return (item == null) ? void 0 : (
+                        <tr key={i}>
+                          <td>{i + 1}</td>
+                          <td>{item.time}</td>
+                          <td>{item.desc}</td>
+                          <td>{item.map}</td>
+                          <td>{item.route}</td>
+                          <td>{item.rank}</td>
+                          <td><ViewButton onClick={() => this.onClickView(item.id)} /></td>
+                        </tr>
+                      )
+                    })
+                  }
                 </tbody>
               </Table>
             </form>
@@ -204,7 +220,7 @@ class BrowseArea extends React.Component {
               onSelect={this.onSelectPage}
             />
           </div>
-          <div style={viewMode === 'sorties' ? {} : {display: 'none'}}>
+          <div style={browseMode === 'sorties' ? {} : {display: 'none'}}>
             <SortieViewer />
           </div>
         </Panel>
@@ -222,5 +238,12 @@ class ViewButton extends React.Component {
     )
   }
 }
+
+const BrowseArea = connect(
+  createStructuredSelector({
+    browseMode: browseModeSelector,
+  }),
+  actionCreators
+)(BrowseAreaImpl)
 
 export default BrowseArea
