@@ -7,7 +7,7 @@ import { connect } from 'react-redux'
 import {
   ListGroup, ListGroupItem,
   Pagination,
-  Button,
+  Button, ButtonGroup,
 } from 'react-bootstrap'
 import FontAwesome from 'react-fontawesome'
 import {
@@ -58,6 +58,7 @@ const rankColors = {
   'E': '#03a9f4',
 }
 
+// TODO: i18n: 'recent' / 'numeric'
 class SortieViewerImpl extends PureComponent {
   static propTypes = {
     mapIds: PTyp.array.isRequired,
@@ -67,6 +68,10 @@ class SortieViewerImpl extends PureComponent {
     pageRange: PTyp.number.isRequired,
     focusingSortieIndexes: PTyp.array.isRequired,
     fcdMap: PTyp.object.isRequired,
+    sortBy: PTyp.shape({
+      method: PTyp.MapAreaSortMethod.isRequired,
+      reversed: PTyp.bool.isRequired,
+    }).isRequired,
 
     uiModify: PTyp.func.isRequired,
   }
@@ -95,42 +100,127 @@ class SortieViewerImpl extends PureComponent {
 
   handleClickPlay = sortieIndexes => async () => {
     const kc3ReplayData = await convertReplay(sortieIndexes)
-    console.log(kc3ReplayData)
+    // console.log(kc3ReplayData)
     const jsonRaw = JSON.stringify(kc3ReplayData)
     const encoded = compressToEncodedURIComponent(jsonRaw)
     shell.openExternal(`${battleReplayerURL}?fromLZString=${encoded}`)
   }
+
+  handleClickSortMethod = method => () =>
+    this.modifySortieViewer(
+      modifyObject(
+        'sortBy',
+        sortBy => {
+          if (sortBy.method === method) {
+            // clicking same button causes the order to be reversed
+            return {
+              ...sortBy,
+              reversed: !sortBy.reversed,
+            }
+          } else {
+            return {
+              ...sortBy,
+              method,
+              reversed: false,
+            }
+          }
+        }
+      )
+    )
 
   render() {
     const {
       mapIds, mapId,
       pageRange, activePage,
       focusingSortieIndexes,
+      sortBy,
       fcdMap,
     } = this.props
     return (
       <div style={{display: 'flex', height: '80vh', alignItems: 'stretch'}}>
-        <ListGroup
+        <div
           style={{
             width: '20%',
             minWidth: '10em',
             marginRight: 5,
-            overflowY: 'auto',
-          }}>
-          {
-            mapIds.map(curMapId => (
-              <ListGroupItem
-                key={curMapId}
-                onClick={this.handleMapIdChange(curMapId)}
-                style={{padding: '5px 10px'}}
-                fill>
-                <div className={curMapId === mapId ? 'text-primary' : ''}>
-                  {pprMapId(curMapId)}
-                </div>
-              </ListGroupItem>
-            ))
-          }
-        </ListGroup>
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <ButtonGroup
+            style={{
+              marginBottom: 5,
+            }}
+          >
+            <Button
+              onClick={this.handleClickSortMethod('recent')}
+              bsStyle={
+                sortBy.method === 'recent' ?
+                  'primary' :
+                  'default'
+              }
+              style={{width: '50%'}}
+            >
+              <span>
+                Recent
+              </span>
+              {
+                sortBy.method === 'recent' && (
+                  <FontAwesome
+                    style={{marginLeft: '.2em'}}
+                    name={sortBy.reversed ? 'sort-desc' : 'sort-asc'}
+                  />
+                )
+              }
+            </Button>
+            <Button
+              onClick={this.handleClickSortMethod('numeric')}
+              bsStyle={
+                sortBy.method === 'numeric' ?
+                  'primary' :
+                  'default'
+              }
+              style={{width: '50%'}}
+            >
+              <span>
+                Area
+              </span>
+              {
+                sortBy.method === 'numeric' && (
+                  <FontAwesome
+                    style={{marginLeft: '.2em'}}
+                    name={
+                      /*
+                         intentionally reversed than 'recent'
+                         as it looks more natural to have numeric values ascending
+                       */
+                      sortBy.reversed ? 'sort-asc' : 'sort-desc'
+                    }
+                  />
+                )
+              }
+            </Button>
+          </ButtonGroup>
+          <ListGroup
+            style={{
+              overflowY: 'auto',
+              flex: 1,
+            }}>
+            {
+              mapIds.map(curMapId => (
+                <ListGroupItem
+                  key={curMapId}
+                  onClick={this.handleMapIdChange(curMapId)}
+                  style={{padding: '5px 10px'}}
+                  fill>
+                  <div className={curMapId === mapId ? 'text-primary' : ''}>
+                    {pprMapId(curMapId)}
+                  </div>
+                </ListGroupItem>
+              ))
+            }
+          </ListGroup>
+        </div>
         <div
           style={{flex: 1, display: 'flex', flexDirection: 'column'}}
         >
