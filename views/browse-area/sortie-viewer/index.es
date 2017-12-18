@@ -31,8 +31,7 @@ import { PTyp } from '../../ptyp'
 
 const {__} = window
 
-// TODO
-const battleReplayerURL = 'http://127.0.0.1:8000/battleplayer.html'
+const battleReplayerURL = 'https://kc3kai.github.io/kancolle-replay/battleplayer.html'
 
 const pprMapId = mapId => {
   if (mapId === 'all')
