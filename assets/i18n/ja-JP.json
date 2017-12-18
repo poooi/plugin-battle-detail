@@ -112,8 +112,8 @@
     "Nodes": "マス",
     "Sorties": "出撃",
     "SortMethod": {
-      "recent": "Recent",
-      "numeric": "Area"
+      "recent": "新しい順番",
+      "numeric": "マップ"
     }
   },
   "All": "全て",
