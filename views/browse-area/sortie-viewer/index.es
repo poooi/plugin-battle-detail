@@ -25,7 +25,7 @@ import {
 
 import { sortieViewerSelector } from '../../selectors'
 import { actionCreators } from '../../store'
-import { convertReplay } from './convert-replay'
+import { convertReplay } from 'lib/convert-replay'
 
 import { PTyp } from '../../ptyp'
 
