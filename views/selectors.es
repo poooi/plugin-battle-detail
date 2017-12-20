@@ -31,10 +31,16 @@ const sortieViewerSelector = createSelector(
   ui => ui.sortieViewer
 )
 
+const browseModeSelector = createSelector(
+  uiSelector,
+  ui => ui.browseMode
+)
+
 export {
   extSelector,
   uiSelector,
   modalSelector,
   indexesSelector,
   sortieViewerSelector,
+  browseModeSelector,
 }

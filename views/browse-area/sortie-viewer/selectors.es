@@ -148,17 +148,41 @@ const sortieIndexesSelector = createSelector(
   }
 )
 
-/* an Array whose values are all valid for getSortieIndexesFunc */
+/*
+   an Array whose values are all valid for getSortieIndexesFunc (thus the "domain")
+   sorting methods are respected here.
+ */
 const sortieIndexesDomainSelector = createSelector(
   sortieIndexesSelector,
-  sortieIndexes => {
+  sortieViewerSelector,
+  (sortieIndexes, {sortBy: {method, reversed}}) => {
+    /*
+       - _.uniq is guaranteed to keep only the first element when there're duplicates
+       - sortieIndexes is guaranteed to keep more recent ones in front
+       - therefore "domain" is naturally already sorted in "recent" mode
+     */
     const domain = _.uniq(
       sortieIndexes.map(si => si.mapId).filter(x => x !== 'pvp')
     )
-    domain.unshift('pvp')
-    domain.unshift('all')
+
+    let sortedDomain
+    if (method === 'recent') {
+      sortedDomain = domain
+    } else if (method === 'numeric') {
+      sortedDomain = domain.sort((x,y) => x-y)
+    } else {
+      console.warn(`invalid sort method: ${method}`)
+      sortedDomain = domain
+    }
+
+    if (reversed)
+      sortedDomain = sortedDomain.reverse()
+
+    // make 'all' and 'pvp' always in front, in that order.
+    sortedDomain.unshift('pvp')
+    sortedDomain.unshift('all')
     // ['all', 'pvp', <mapId> ...]
-    return domain
+    return sortedDomain
   }
 )
 

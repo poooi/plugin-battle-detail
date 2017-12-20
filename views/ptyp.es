@@ -15,9 +15,14 @@ const allRequired = shapeObj => {
   return ret
 }
 
+const BrowseMode = PropTypes.oneOf(['nodes', 'sorties'])
+const MapAreaSortMethod = PropTypes.oneOf(['recent', 'numeric'])
+
 const PTyp = {
   ...PropTypes,
   allRequired,
+  BrowseMode,
+  MapAreaSortMethod,
 }
 
 export { PTyp }

@@ -16,9 +16,16 @@ const initState = {
     disableBrowser: false,
     showLast: true,
 
+    // valid values: 'nodes' / 'sorties'
+    browseMode: 'nodes',
     sortieViewer: {
       mapId: 'all',
       activePage: 1,
+      sortBy: {
+        // valid values: 'recent' / 'numeric'
+        method: 'recent',
+        reversed: false,
+      },
     },
 
     modal: {

@@ -92,7 +92,7 @@ class AppData {
     await this.saveFile(name, data)
   }
 
-  async loadBattle(id) {
+  async loadBattle(id, applyPatch = true) {
     if (!(id))
       return
     try {
@@ -105,6 +105,9 @@ class AppData {
       }
       if (data != null) {
         let battle = JSON.parse(data)
+        if (!applyPatch) {
+          return battle
+        }
         // Compatibility: Battle packet format
         battle = PacketCompat.v10tov21(battle)
         battle = PacketCompat.v20tov21(battle)

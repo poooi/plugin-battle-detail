@@ -110,7 +110,11 @@
 
   "BrowseArea": {
     "Nodes": "マス",
-    "Sorties": "出撃"
+    "Sorties": "出撃",
+    "SortMethod": {
+      "recent": "新しい順番",
+      "numeric": "マップ"
+    }
   },
   "All": "全て",
 
