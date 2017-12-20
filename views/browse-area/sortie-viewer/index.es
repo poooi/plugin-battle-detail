@@ -135,7 +135,7 @@ class SortieViewerImpl extends PureComponent {
       fcdMap,
     } = this.props
     return (
-      <div style={{display: 'flex', height: '80vh', alignItems: 'stretch'}}>
+      <div style={{display: 'flex'}}>
         <div
           style={{
             width: '20%',

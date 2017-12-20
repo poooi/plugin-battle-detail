@@ -275,3 +275,51 @@ table .form-control {
 .browse-table tr > th:nth-child(7) {
   width: 10%;
 }
+
+#main {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#main-tabs {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+#main-tabs > .tab-content {
+  flex: 1;
+  height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+#main-tabs > .tab-content > #main-tabs-pane-1 {
+  flex: 1;
+  height: 0;
+}
+
+#main-tabs > .tab-content > #main-tabs-pane-1 #browse-area {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#main-tabs > .tab-content > #main-tabs-pane-1 #browse-area > .browse-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+#main-tabs > .tab-content > #main-tabs-pane-1 #browse-area > .browse-view > .panel-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+#main-tabs > .tab-content > #main-tabs-pane-1 #browse-area > .browse-view > .panel-body .sortie-viewer-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}

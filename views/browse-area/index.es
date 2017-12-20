@@ -148,6 +148,7 @@ class BrowseAreaImpl extends Component {
           </Grid>
         </Panel>
         <Panel
+          className="browse-view"
           header={
             <div style={{display: 'flex', alignItems: 'center'}}>
               <div style={{flex: 1}}>
@@ -219,7 +220,9 @@ class BrowseAreaImpl extends Component {
               onSelect={this.onSelectPage}
             />
           </div>
-          <div style={browseMode === 'sorties' ? {} : {display: 'none'}}>
+          <div
+            className="sortie-viewer-wrap"
+            style={browseMode === 'sorties' ? {} : {display: 'none'}}>
             <SortieViewer />
           </div>
         </Panel>
