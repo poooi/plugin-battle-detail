@@ -160,7 +160,7 @@ class SortieViewerImpl extends PureComponent {
               style={{width: '50%'}}
             >
               <span>
-                Recent
+                {__('BrowseArea.SortMethod.recent')}
               </span>
               {
                 sortBy.method === 'recent' && (
@@ -181,7 +181,7 @@ class SortieViewerImpl extends PureComponent {
               style={{width: '50%'}}
             >
               <span>
-                Area
+                {__('BrowseArea.SortMethod.numeric')}
               </span>
               {
                 sortBy.method === 'numeric' && (
