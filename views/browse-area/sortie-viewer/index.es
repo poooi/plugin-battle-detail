@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { shell } from 'electron'
+import { shell, clipboard } from 'electron'
 import { compressToEncodedURIComponent } from 'lz-string'
 import { createStructuredSelector } from 'reselect'
 import React, { PureComponent } from 'react'
@@ -7,6 +7,7 @@ import { connect } from 'react-redux'
 import {
   ListGroup, ListGroupItem,
   Pagination,
+  DropdownButton, MenuItem,
   Button, ButtonGroup,
 } from 'react-bootstrap'
 import FontAwesome from 'react-fontawesome'
@@ -57,6 +58,8 @@ const rankColors = {
   'E': '#03a9f4',
 }
 
+// TODO: i18n
+
 class SortieViewerImpl extends PureComponent {
   static propTypes = {
     mapIds: PTyp.array.isRequired,
@@ -98,10 +101,15 @@ class SortieViewerImpl extends PureComponent {
 
   handleClickPlay = sortieIndexes => async () => {
     const kc3ReplayData = await convertReplay(sortieIndexes)
-    // console.log(kc3ReplayData)
     const jsonRaw = JSON.stringify(kc3ReplayData)
     const encoded = compressToEncodedURIComponent(jsonRaw)
     shell.openExternal(`${battleReplayerURL}?fromLZString=${encoded}`)
+  }
+
+  handleCopyToClipboard = sortieIndexes => async () => {
+    const kc3ReplayData = await convertReplay(sortieIndexes)
+    const jsonRaw = JSON.stringify(kc3ReplayData)
+    clipboard.writeText(jsonRaw)
   }
 
   handleClickSortMethod = method => () =>
@@ -272,13 +280,31 @@ class SortieViewerImpl extends PureComponent {
                         }
                       </div>
                     </div>
-                    <Button
-                      onClick={this.handleClickPlay(si)}
+                    <DropdownButton
+                      noCaret pullRight
                       style={{
-                        width: '3em', height: '2.5em', marginLeft: '.4em',
-                      }}>
-                      <FontAwesome name="play" />
-                    </Button>
+                        width: '3em',
+                        height: '3em',
+                        marginLeft: '.4em',
+                        // this is to get the icon on center
+                        padding: 0,
+                      }}
+                      title={
+                        <FontAwesome name="bars" />
+                      }
+                      id={`battle-detail-sortie-viewer-battle-${compId}`}
+                    >
+                      <MenuItem
+                        onClick={this.handleClickPlay(si)}
+                      >
+                        Play in KanColle Battle Replayer
+                      </MenuItem>
+                      <MenuItem
+                        onClick={this.handleCopyToClipboard(si)}
+                      >
+                        Copy Replay Data to Clipboard
+                      </MenuItem>
+                    </DropdownButton>
                   </ListGroupItem>
                 )
               })
