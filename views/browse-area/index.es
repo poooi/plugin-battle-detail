@@ -135,18 +135,6 @@ class BrowseAreaImpl extends Component {
     }
     return (
       <div id="browse-area">
-        <Panel>
-          <Grid>
-            <Row>
-              <Col xs={12} className='tip'>
-                <span>{__('Tip') + ': '}</span>
-                <span>{__('Tip.Akashic1.Part1')}</span>
-                <span><FontAwesome name='info-circle' /></span>
-                <span>{__('Tip.Akashic1.Part2')}</span>
-              </Col>
-            </Row>
-          </Grid>
-        </Panel>
         <Panel
           className="browse-view"
           header={
@@ -170,6 +158,16 @@ class BrowseAreaImpl extends Component {
             </div>
           }>
           <div style={browseMode === 'nodes' ? {} : {display: 'none'}}>
+            <Grid>
+              <Row>
+                <Col xs={12} className='tip'>
+                  <span>{__('Tip') + ': '}</span>
+                  <span>{__('Tip.Akashic1.Part1')}</span>
+                  <span><FontAwesome name='info-circle' /></span>
+                  <span>{__('Tip.Akashic1.Part2')}</span>
+                </Col>
+              </Row>
+            </Grid>
             <form onSubmit={this.onClickFilter}>
               <Table className="browse-table" striped bordered condensed hover fill>
                 <OverlayTrigger placement='top' overlay={
