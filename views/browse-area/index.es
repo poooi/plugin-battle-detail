@@ -160,7 +160,9 @@ class BrowseAreaImpl extends Component {
           <div style={browseMode === 'nodes' ? {} : {display: 'none'}}>
             <Grid>
               <Row>
-                <Col xs={12} className='tip'>
+                <Col
+                  style={{marginBottom: '1em'}}
+                  xs={12} className='tip'>
                   <span>{__('Tip') + ': '}</span>
                   <span>{__('Tip.Akashic1.Part1')}</span>
                   <span><FontAwesome name='info-circle' /></span>

@@ -245,8 +245,8 @@ img.svg {
 /* Browse Area */
 #browse-area .tip {
   font-size: 80%;
-  margin-bottom: 1em;
 }
+
 table .btn,
 table .form-control {
   height: 20px;
@@ -305,7 +305,6 @@ table .form-control {
   height: 100%;
   display: flex;
   flex-direction: column;
-
   margin-top: .5em;
 }
 
