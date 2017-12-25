@@ -114,6 +114,15 @@
     "SortMethod": {
       "recent": "新しい順番",
       "numeric": "マップ"
+    },
+    "SortieTipsMD": [
+      "If \"Play in KanColle Battle Replayer\" does not work,",
+      "try copy to clipboard, paste your replay data into \"Load from text\" of",
+      "the replayer, and then hit \"Load\"."
+    ],
+    "SortieOptions": {
+      "OpenInReplayer": "Play in KanColle Battle Replayer",
+      "CopyToClipboard": "Copy Replay Data to Clipboard"
     }
   },
   "All": "全て",
