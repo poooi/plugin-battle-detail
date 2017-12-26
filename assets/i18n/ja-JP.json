@@ -121,6 +121,7 @@
       "the replayer, and then hit \"Load\"."
     ],
     "SortieOptions": {
+      "OpenReplayer": "Open Replayer",
       "OpenInReplayer": "Play in KanColle Battle Replayer",
       "CopyToClipboard": "Copy Replay Data to Clipboard"
     }

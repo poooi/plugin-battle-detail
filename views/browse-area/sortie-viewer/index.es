@@ -98,6 +98,9 @@ class SortieViewerImpl extends PureComponent {
       window.showBattleWithTimestamp(index.id)
   }
 
+  handleOpenReplayer = () =>
+    shell.openExternal(battleReplayerURL)
+
   handleClickPlay = sortieIndexes => async () => {
     const kc3ReplayData = await convertReplay(sortieIndexes)
     const jsonRaw = JSON.stringify(kc3ReplayData)
@@ -149,12 +152,33 @@ class SortieViewerImpl extends PureComponent {
           flex: 1,
         }}
       >
-        <div className="tip">
-          <Markdown
-            source={_.join(__('BrowseArea.SortieTipsMD'), '\n')}
-          />
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            marginBottom: 5,
+          }}
+          className="tip">
+          <div
+            className="markdown"
+            style={{flex: 1}}>
+            <Markdown
+              source={_.join(__('BrowseArea.SortieTipsMD'), '\n')}
+            />
+          </div>
+          <Button
+            style={{
+              flex: 0,
+              marginTop: 0,
+              padding: '5px 10px',
+            }}
+            bsSize="xsmall"
+            onClick={this.handleOpenReplayer}
+          >
+            {__('BrowseArea.SortieOptions.OpenReplayer')}
+          </Button>
         </div>
-        <div style={{display: 'flex'}}>
+        <div style={{display: 'flex', flex: 1}}>
           <div
             style={{
               width: '20%',

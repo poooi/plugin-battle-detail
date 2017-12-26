@@ -247,6 +247,11 @@ img.svg {
   font-size: 80%;
 }
 
+#browse-area .tip .markdown p {
+  margin-bottom: .4em;
+}
+
+
 table .btn,
 table .form-control {
   height: 20px;

@@ -121,6 +121,7 @@
       "並點擊“Load”。"
     ],
     "SortieOptions": {
+      "OpenReplayer": "戰鬥播放器",
       "OpenInReplayer": "用 KC3戰鬥播放器 回放",
       "CopyToClipboard": "複製回放數據到剪貼板"
     }
