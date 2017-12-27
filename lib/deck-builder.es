@@ -14,8 +14,6 @@ const convertToDeckBuilder = async sortieIndexes => {
     poiRecords.map(r => AppData.loadBattle(r.id, false))
   )
 
-  window.poiBattles = poiBattles
-
   const fstBattle = poiBattles[0]
 
   let poiFleets = []

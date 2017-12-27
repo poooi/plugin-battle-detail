@@ -29,6 +29,7 @@ import { sortieViewerSelector } from '../../selectors'
 import { actionCreators } from '../../store'
 import { convertReplay } from 'lib/convert-replay'
 import { convertToDeckBuilder } from 'lib/deck-builder'
+import { convertToWctf } from 'lib/wctf'
 
 import { PTyp } from '../../ptyp'
 
@@ -124,6 +125,13 @@ class SortieViewerImpl extends PureComponent {
 
   handleCopyDeckBuilderToClipboard = sortieIndexes => async () =>
     clipboard.writeText(JSON.stringify(await convertToDeckBuilder(sortieIndexes)))
+
+  handleViewInWctf = sortieIndexes => async () => {
+    const wData = await convertToWctf(sortieIndexes)
+    const encoded = compressToEncodedURIComponent(JSON.stringify(wData))
+    const rnd = Number(new Date())
+    shell.openExternal(`http://fleet.diablohu.com/fleets/build/?i=${rnd}&d=${encoded}`)
+  }
 
   handleClickSortMethod = method => () =>
     this.modifySortieViewer(
@@ -359,13 +367,11 @@ class SortieViewerImpl extends PureComponent {
                         >
                           {__('BrowseArea.SortieOptions.CopyDeckBuilderToClipboard')}
                         </MenuItem>
-                        {
-                          false && (
-                            <MenuItem>
-                              {__('BrowseArea.SortieOptions.ViewInWctf')}
-                            </MenuItem>
-                          )
-                        }
+                        <MenuItem
+                          onClick={this.handleViewInWctf(si)}
+                        >
+                          {__('BrowseArea.SortieOptions.ViewInWctf')}
+                        </MenuItem>
                       </DropdownButton>
                     </ListGroupItem>
                   )
