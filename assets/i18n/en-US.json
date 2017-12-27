@@ -123,7 +123,10 @@
     "SortieOptions": {
       "OpenReplayer": "Open Replayer",
       "OpenInReplayer": "Play in KanColle Battle Replayer",
-      "CopyToClipboard": "Copy Replay Data to Clipboard"
+      "CopyReplayToClipboard": "Copy Replay Data to Clipboard",
+      "ViewInDeckBuilder": "View in DeckBuilder",
+      "CopyDeckBuilderToClipboard": "Copy DeckBuilder Data to Clipboard",
+      "ViewInWctf": "View in WhoCallsTheFleet"
     }
   },
   "All": "All",

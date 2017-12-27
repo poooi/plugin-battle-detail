@@ -28,6 +28,7 @@ import {
 import { sortieViewerSelector } from '../../selectors'
 import { actionCreators } from '../../store'
 import { convertReplay } from 'lib/convert-replay'
+import { convertToDeckBuilder } from 'lib/deck-builder'
 
 import { PTyp } from '../../ptyp'
 
@@ -108,11 +109,21 @@ class SortieViewerImpl extends PureComponent {
     shell.openExternal(`${battleReplayerURL}?fromLZString=${encoded}`)
   }
 
-  handleCopyToClipboard = sortieIndexes => async () => {
+  handleCopyReplayToClipboard = sortieIndexes => async () => {
     const kc3ReplayData = await convertReplay(sortieIndexes)
     const jsonRaw = JSON.stringify(kc3ReplayData)
     clipboard.writeText(jsonRaw)
   }
+
+
+  handleViewInDeckBuilder = sortieIndexes => async () => {
+    const encoded =
+      encodeURIComponent(JSON.stringify(await convertToDeckBuilder(sortieIndexes)))
+    shell.openExternal(`http://kancolle-calc.net/deckbuilder.html?predeck=${encoded}`)
+  }
+
+  handleCopyDeckBuilderToClipboard = sortieIndexes => async () =>
+    clipboard.writeText(JSON.stringify(await convertToDeckBuilder(sortieIndexes)))
 
   handleClickSortMethod = method => () =>
     this.modifySortieViewer(
@@ -333,10 +344,28 @@ class SortieViewerImpl extends PureComponent {
                           {__('BrowseArea.SortieOptions.OpenInReplayer')}
                         </MenuItem>
                         <MenuItem
-                          onClick={this.handleCopyToClipboard(si)}
+                          onClick={this.handleCopyReplayToClipboard(si)}
                         >
-                          {__('BrowseArea.SortieOptions.CopyToClipboard')}
+                          {__('BrowseArea.SortieOptions.CopyReplayToClipboard')}
                         </MenuItem>
+                        <MenuItem divider />
+                        <MenuItem
+                          onClick={this.handleViewInDeckBuilder(si)}
+                        >
+                          {__('BrowseArea.SortieOptions.ViewInDeckBuilder')}
+                        </MenuItem>
+                        <MenuItem
+                          onClick={this.handleCopyDeckBuilderToClipboard(si)}
+                        >
+                          {__('BrowseArea.SortieOptions.CopyDeckBuilderToClipboard')}
+                        </MenuItem>
+                        {
+                          false && (
+                            <MenuItem>
+                              {__('BrowseArea.SortieOptions.ViewInWctf')}
+                            </MenuItem>
+                          )
+                        }
                       </DropdownButton>
                     </ListGroupItem>
                   )
