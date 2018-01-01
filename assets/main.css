@@ -246,6 +246,12 @@ img.svg {
 #browse-area .tip {
   font-size: 80%;
 }
+
+#browse-area .tip .markdown p {
+  margin-bottom: .4em;
+}
+
+
 table .btn,
 table .form-control {
   height: 20px;
@@ -304,6 +310,7 @@ table .form-control {
   height: 100%;
   display: flex;
   flex-direction: column;
+  margin-top: .5em;
 }
 
 #main-tabs > .tab-content > #main-tabs-pane-1 #browse-area > .browse-view {

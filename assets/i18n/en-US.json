@@ -114,6 +114,19 @@
     "SortMethod": {
       "recent": "Recent",
       "numeric": "Area"
+    },
+    "SortieTipsMD": [
+      "If \"Play in KanColle Battle Replayer\" does not work,",
+      "try copy to clipboard, paste your replay data into \"Load from text\" of",
+      "the replayer, and then hit \"Load\"."
+    ],
+    "SortieOptions": {
+      "OpenReplayer": "Open Replayer",
+      "OpenInReplayer": "Play in KanColle Battle Replayer",
+      "CopyReplayToClipboard": "Copy Replay Data to Clipboard",
+      "ViewInDeckBuilder": "View in DeckBuilder",
+      "CopyDeckBuilderToClipboard": "Copy DeckBuilder Data to Clipboard",
+      "ViewInWctf": "View in WhoCallsTheFleet"
     }
   },
   "All": "All",
