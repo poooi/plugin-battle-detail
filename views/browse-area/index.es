@@ -137,7 +137,8 @@ class BrowseAreaImpl extends Component {
       <div id="browse-area">
         <Panel
           className="browse-view"
-          header={
+        >
+          <Panel.Heading>
             <div style={{display: 'flex', alignItems: 'center'}}>
               <div style={{flex: 1}}>
                 {__("Browse")}
@@ -154,77 +155,78 @@ class BrowseAreaImpl extends Component {
                   /* eslint-enable indent */
                 }
               </Button>
-
             </div>
-          }>
-          <div style={browseMode === 'nodes' ? {} : {display: 'none'}}>
-            <Grid>
-              <Row>
-                <Col
-                  style={{marginBottom: '1em'}}
-                  xs={12} className='tip'>
-                  <span>{__('Tip') + ': '}</span>
-                  <span>{__('Tip.Akashic1.Part1')}</span>
-                  <span><FontAwesome name='info-circle' /></span>
-                  <span>{__('Tip.Akashic1.Part2')}</span>
-                </Col>
-              </Row>
-            </Grid>
-            <form onSubmit={this.onClickFilter}>
-              <Table className="browse-table" striped bordered condensed hover fill>
-                <OverlayTrigger placement='top' overlay={
-                  <Popover id="browse-filter-usage" title={__("Usage")}>
-                    <div>{`1. ${__('Click "Filter" or press Enter to apply filter.')}`}</div>
-                    <div>{`2. ${__('Right click "Filter" to clear filter.')}`}</div>
-                    <div>{`3. ${__('Multi-value filter are separated by commas.')}`}</div>
-                  </Popover>
-                }>
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th><FormControl inputRef={ref => this.iTime = ref} placeholder={__("Time")} /></th>
-                      <th><FormControl inputRef={ref => this.iDesc = ref} placeholder={__("Description")} /></th>
-                      <th><FormControl inputRef={ref => this.iMap  = ref} placeholder={__("Map")} /></th>
-                      <th><FormControl inputRef={ref => this.iRoute= ref} placeholder={__("Route")} /></th>
-                      <th><FormControl inputRef={ref => this.iRank = ref} placeholder={__("Rank")} /></th>
-                      <th><Button type="submit" bsStyle='primary' onClick={this.onClickFilter} onContextMenu={this.onRightClickFilter}>{__("Filter")}</Button></th>
-                    </tr>
-                  </thead>
-                </OverlayTrigger>
-                <tbody>
-                  {
-                    range.map(i => {
-                      let item = indexes[i]
-                      return (item == null) ? void 0 : (
-                        <tr key={i}>
-                          <td>{i + 1}</td>
-                          <td>{item.time}</td>
-                          <td>{item.desc}</td>
-                          <td>{item.map}</td>
-                          <td>{item.route}</td>
-                          <td>{item.rank}</td>
-                          <td><ViewButton onClick={() => this.onClickView(item.id)} /></td>
-                        </tr>
-                      )
-                    })
-                  }
-                </tbody>
-              </Table>
-            </form>
-            <Pagination
-              ellipsis
-              boundaryLinks
-              items={pageAmount}
-              maxButtons={7}
-              activePage={pageNo}
-              onSelect={this.onSelectPage}
-            />
-          </div>
-          <div
-            className="sortie-viewer-wrap"
-            style={browseMode === 'sorties' ? {} : {display: 'none'}}>
-            <SortieViewer />
-          </div>
+          </Panel.Heading>
+          <Panel.Body>
+            <div style={browseMode === 'nodes' ? {} : {display: 'none'}}>
+              <Grid>
+                <Row>
+                  <Col
+                    style={{marginBottom: '1em'}}
+                    xs={12} className='tip'>
+                    <span>{__('Tip') + ': '}</span>
+                    <span>{__('Tip.Akashic1.Part1')}</span>
+                    <span><FontAwesome name='info-circle' /></span>
+                    <span>{__('Tip.Akashic1.Part2')}</span>
+                  </Col>
+                </Row>
+              </Grid>
+              <form onSubmit={this.onClickFilter}>
+                <Table className="browse-table" striped bordered condensed hover fill>
+                  <OverlayTrigger placement='top' overlay={
+                    <Popover id="browse-filter-usage" title={__("Usage")}>
+                      <div>{`1. ${__('Click "Filter" or press Enter to apply filter.')}`}</div>
+                      <div>{`2. ${__('Right click "Filter" to clear filter.')}`}</div>
+                      <div>{`3. ${__('Multi-value filter are separated by commas.')}`}</div>
+                    </Popover>
+                  }>
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th><FormControl inputRef={ref => this.iTime = ref} placeholder={__("Time")} /></th>
+                        <th><FormControl inputRef={ref => this.iDesc = ref} placeholder={__("Description")} /></th>
+                        <th><FormControl inputRef={ref => this.iMap  = ref} placeholder={__("Map")} /></th>
+                        <th><FormControl inputRef={ref => this.iRoute= ref} placeholder={__("Route")} /></th>
+                        <th><FormControl inputRef={ref => this.iRank = ref} placeholder={__("Rank")} /></th>
+                        <th><Button type="submit" bsStyle='primary' onClick={this.onClickFilter} onContextMenu={this.onRightClickFilter}>{__("Filter")}</Button></th>
+                      </tr>
+                    </thead>
+                  </OverlayTrigger>
+                  <tbody>
+                    {
+                      range.map(i => {
+                        let item = indexes[i]
+                        return (item == null) ? void 0 : (
+                          <tr key={i}>
+                            <td>{i + 1}</td>
+                            <td>{item.time}</td>
+                            <td>{item.desc}</td>
+                            <td>{item.map}</td>
+                            <td>{item.route}</td>
+                            <td>{item.rank}</td>
+                            <td><ViewButton onClick={() => this.onClickView(item.id)} /></td>
+                          </tr>
+                        )
+                      })
+                    }
+                  </tbody>
+                </Table>
+              </form>
+              <Pagination
+                ellipsis
+                boundaryLinks
+                items={pageAmount}
+                maxButtons={7}
+                activePage={pageNo}
+                onSelect={this.onSelectPage}
+              />
+            </div>
+            <div
+              className="sortie-viewer-wrap"
+              style={browseMode === 'sorties' ? {} : {display: 'none'}}>
+              <SortieViewer />
+            </div>
+          </Panel.Body>
         </Panel>
       </div>
     )

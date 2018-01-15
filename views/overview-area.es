@@ -9,43 +9,35 @@ const {SlotitemIcon} = require(`${ROOT}/views/components/etc/icon`)
 const {FABar, HPBar} = require('./bar')
 
 const DEFAULT_EXPANDED = false
-class OverviewArea extends React.Component {
-  constructor() {
-    super()
-    this.state = {
-      isExpanded: DEFAULT_EXPANDED,
-    }
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return nextState.isExpanded
-  }
-
-  onSelect(b) {
-    this.setState({
-      isExpanded: b,
-    })
-  }
-
+class OverviewArea extends React.PureComponent {
   render() {
     const {simulator} = this.props
     return (
       <div id="overview-area">
-        <Panel collapsible defaultExpanded={DEFAULT_EXPANDED}
-               onEnter={this.onSelect.bind(this, true)} onExit={this.onSelect.bind(this, false)}
-               header={<span>{__("Battle Overview")} <FontAwesome name='caret-down' /></span>} >
-        {
-          simulator ? (
-            <div>
-              <FleetView fleet={simulator.mainFleet} title={__('Main Fleet')} />
-              <FleetView fleet={simulator.escortFleet} title={__('Escort Fleet')} />
-              <FleetView fleet={simulator.supportFleet} title={__('Support Fleet')} />
-              <FleetView fleet={simulator.landBaseAirCorps} title={__('Land Base Air Corps')} View={LBACView} />
-              <FleetView fleet={simulator.enemyFleet} title={__('Enemy Fleet')} />
-              <FleetView fleet={simulator.enemyEscort} title={__('Enemy Escort Fleet')} />
-            </div>
-          ) : __("No battle")
-        }
+        <Panel
+          collapsible defaultExpanded={DEFAULT_EXPANDED}
+        >
+          <Panel.Heading>
+            <Panel.Title toggle>
+              <span>{__("Battle Overview")} <FontAwesome name='caret-down' /></span>
+            </Panel.Title>
+          </Panel.Heading>
+          <Panel.Collapse>
+            <Panel.Body>
+              {
+                simulator ? (
+                  <div>
+                    <FleetView fleet={simulator.mainFleet} title={__('Main Fleet')} />
+                    <FleetView fleet={simulator.escortFleet} title={__('Escort Fleet')} />
+                    <FleetView fleet={simulator.supportFleet} title={__('Support Fleet')} />
+                    <FleetView fleet={simulator.landBaseAirCorps} title={__('Land Base Air Corps')} View={LBACView} />
+                    <FleetView fleet={simulator.enemyFleet} title={__('Enemy Fleet')} />
+                    <FleetView fleet={simulator.enemyEscort} title={__('Enemy Escort Fleet')} />
+                  </div>
+                ) : __("No battle")
+              }
+            </Panel.Body>
+          </Panel.Collapse>
         </Panel>
       </div>
     )

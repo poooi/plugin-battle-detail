@@ -68,20 +68,22 @@ class OptionArea extends React.Component {
     return (
       <div id="option-area">
         <Panel>
-          <Grid>
-            <Row>
-              <Col xs={6}>
-                <FormControl disabled value={title}></FormControl>
-              </Col>
-              <Col xs={6}>
-                <ButtonGroup>
-                  <Button bsStyle='primary' onClick={this.onClickExport}>{__("Copy Data")}</Button>
-                  <Button bsStyle='primary' onClick={this.onClickImport}>{__("Paste Data")}</Button>
-                  <Button bsStyle='primary' onClick={this.onClickSave}>{__("Save as Image")}</Button>
-                </ButtonGroup>
-              </Col>
-            </Row>
-          </Grid>
+          <Panel.Body>
+            <Grid>
+              <Row>
+                <Col xs={6}>
+                  <FormControl disabled value={title}></FormControl>
+                </Col>
+                <Col xs={6}>
+                  <ButtonGroup>
+                    <Button bsStyle='primary' onClick={this.onClickExport}>{__("Copy Data")}</Button>
+                    <Button bsStyle='primary' onClick={this.onClickImport}>{__("Paste Data")}</Button>
+                    <Button bsStyle='primary' onClick={this.onClickSave}>{__("Save as Image")}</Button>
+                  </ButtonGroup>
+                </Col>
+              </Row>
+            </Grid>
+          </Panel.Body>
         </Panel>
       </div>
     )

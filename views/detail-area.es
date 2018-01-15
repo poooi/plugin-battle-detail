@@ -351,8 +351,13 @@ class DetailArea extends React.Component {
 
     return (
       <div id="detail-area">
-        <Panel header={__("Battle Detail")}>
-          {tables.length > 0 ? tables : __("No battle")}
+        <Panel>
+          <Panel.Heading>
+            {__("Battle Detail")}
+          </Panel.Heading>
+          <Panel.Body>
+            {tables.length > 0 ? tables : __("No battle")}
+          </Panel.Body>
         </Panel>
       </div>
     )
