@@ -89,6 +89,12 @@ const convertToDeckBuilder = async sortieIndexes => {
           itemObj.rf = item.api_level
         if (_.isInteger(item.api_alv))
           itemObj.mas = item.api_alv
+
+        /*
+           NOTE: this doesn't seem to be mentioned anywhere,
+           but when a ship has less than 4 free slots, "ix" should not be used.
+           Instead we should use "i{ind}" (where ind is the index of first unavailable slot).
+         */
         if (ship.api_slotnum < 4) {
           items[`i${ship.api_slotnum + 1}`] = itemObj
         } else {
