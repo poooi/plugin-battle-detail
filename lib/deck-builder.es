@@ -89,7 +89,11 @@ const convertToDeckBuilder = async sortieIndexes => {
           itemObj.rf = item.api_level
         if (_.isInteger(item.api_alv))
           itemObj.mas = item.api_alv
-        items.ix = itemObj
+        if (ship.api_slotnum < 4) {
+          items[`i${ship.api_slotnum + 1}`] = itemObj
+        } else {
+          items.ix = itemObj
+        }
       }
 
       const shipObj = {
