@@ -6,13 +6,14 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import FontAwesome from 'react-fontawesome'
 import {
-  Panel, Grid, Row, Col, Table, Pagination,
+  Panel, Grid, Row, Col, Table,
   FormControl, Button, OverlayTrigger, Popover,
 } from 'react-bootstrap'
 
 import { browseModeSelector } from '../selectors'
 import { SortieViewer } from './sortie-viewer'
 import { actionCreators } from '../store'
+import { UPagination } from './u-pagination'
 import { PTyp } from '../ptyp'
 
 const { __ } = window
@@ -102,15 +103,8 @@ class BrowseAreaImpl extends Component {
     this.props.updateBattle(id)
   }
 
-  onSelectPage = (key, key2) => {
-    // Compatibility: React Bootstrap v0.28
-    if (key2.eventKey != null) {
-      key = key2.eventKey
-    }
-    this.setState({
-      pageNo: key,
-    })
-  }
+  onSelectPage = pageNo =>
+    this.setState({pageNo})
 
   handleSwitchBrowseMode = () =>
     this.props.uiModify(
@@ -212,13 +206,10 @@ class BrowseAreaImpl extends Component {
                   </tbody>
                 </Table>
               </form>
-              <Pagination
-                ellipsis
-                boundaryLinks
-                items={pageAmount}
-                maxButtons={7}
-                activePage={pageNo}
-                onSelect={this.onSelectPage}
+              <UPagination
+                currentPage={pageNo}
+                totalPages={pageAmount}
+                onChange={this.onSelectPage}
               />
             </div>
             <div
