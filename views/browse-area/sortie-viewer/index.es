@@ -34,6 +34,36 @@ import { PTyp } from '../../ptyp'
 
 const {__} = window
 
+/*
+   TODO: replay image generation. kc3kai style png image with battle data encoded.
+
+   - (1) prep necessary info:
+
+      - date: Number coerced from Date, or [<Number>, <Number>] for a ranged record
+      - sortie info: pvp or sortie to a specific map, or general description
+      - fleets: Array of (Array of mstId) (length <= 2)
+      - routes: Array of NodeInfo, only exist for non-PvP battles
+
+        NodeInfo: {name: <string of node name>, type: 'normal' / 'boss'}
+
+        example:
+
+        [ {name: 'A', type: 'normal'},
+          {name: 'D', type: 'normal'},
+          {name: 'E', type: 'normal'},
+          {name: 'N', type: 'boss'},
+        ]
+
+   - (2) popping up user dialog and layout replay image
+
+      - user operations: save as img / upload / close
+
+   - (3) gen actual image and encoding
+
+      - library: https://github.com/petereigenschink/steganography.js
+
+ */
+
 const battleReplayerURL = 'https://kc3kai.github.io/kancolle-replay/battleplayer.html'
 
 const pprMapId = mapId => {
