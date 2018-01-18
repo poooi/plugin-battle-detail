@@ -7,7 +7,6 @@ import { connect } from 'react-redux'
 import Markdown from 'react-remarkable'
 import {
   ListGroup, ListGroupItem,
-  Pagination,
   DropdownButton, MenuItem,
   Button, ButtonGroup,
 } from 'react-bootstrap'
@@ -30,7 +29,7 @@ import { actionCreators } from '../../store'
 import { convertReplay } from 'lib/convert-replay'
 import { convertToDeckBuilder } from 'lib/deck-builder'
 import { convertToWctf } from 'lib/wctf'
-
+import { UPagination } from '../u-pagination'
 import { PTyp } from '../../ptyp'
 
 const {__} = window
@@ -378,19 +377,16 @@ class SortieViewerImpl extends PureComponent {
                 })
               }
             </ListGroup>
-            <Pagination
-              style={{marginBottom: '1em'}}
-              items={pageRange}
-              activePage={activePage}
-              prev
-              next
-              first
-              last
-              ellipsis
-              boundaryLinks
-              maxButtons={5}
-              onSelect={this.handleSelectPage}
-            />
+            {
+              (activePage <= pageRange) && (
+                <UPagination
+                  style={{marginBottom: '1em'}}
+                  currentPage={activePage}
+                  totalPages={pageRange}
+                  onChange={this.handleSelectPage}
+                />
+              )
+            }
           </div>
         </div>
       </div>
