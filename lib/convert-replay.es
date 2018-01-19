@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import { mapIdToStr } from 'subtender/kc'
 import AppData from 'lib/appdata'
 
 /*
@@ -19,7 +20,9 @@ const convertReplay = async sortieIndexes => {
   const poiBattles = await Promise.all(
     poiRecords.map(r => AppData.loadBattle(r.id, false))
   )
-  console.log(sortieIndexes, poiBattles)
+
+  // console.log(sortieIndexes, poiBattles)
+  const fstRecord = poiRecords[0]
   const fstBattle = poiBattles[0]
 
   // there's a typo in battle-details that 'Pratice' is used instead of 'Practice'
@@ -167,7 +170,7 @@ const convertReplay = async sortieIndexes => {
   const lbas = transformLbas(fstBattle.fleet.LBAC)
   const battles = poiBattles.map(transformBattle)
 
-  return {
+  const replayData = {
     ...whichMap,
     fleetnum: 1,
     combined,
@@ -176,6 +179,45 @@ const convertReplay = async sortieIndexes => {
     lbas,
     battles,
   }
+
+  let imageInfo
+
+  {
+    const desc =
+      isPvP ?
+        fstRecord.desc :
+        `${fstRecord.desc} ${mapIdToStr(mapId)}`
+
+    const timeStrs =
+      poiRecords.length > 0 ?
+        [fstRecord.time, _.last(poiRecords).time] :
+        [fstRecord.time]
+
+
+    const routes =
+      isPvP ?
+        [] :
+        poiRecords.map(r => r.route_)
+
+    const translateFleet = poiFleet => {
+      if (_.isEmpty(poiFleet))
+        return null
+      const mstIds = poiFleet.map(x =>
+        x && typeof x === 'object' && x.api_ship_id
+      ).filter(x =>
+        _.isInteger(x)
+      )
+      return mstIds.length > 0 ? mstIds : null
+    }
+
+    const fleets = _.compact(
+      [fstBattle.fleet.main, fstBattle.fleet.escort].map(translateFleet)
+    )
+
+    imageInfo = {isPvP, desc, timeStrs, routes, fleets}
+  }
+
+  return {replayData, imageInfo}
 }
 
 export { convertReplay }
