@@ -31,6 +31,7 @@ import { convertToDeckBuilder } from 'lib/deck-builder'
 import { convertToWctf } from 'lib/wctf'
 import { UPagination } from '../u-pagination'
 import { PTyp } from '../../ptyp'
+import { openReplayGenerator } from './replay-generator'
 
 const {__} = window
 
@@ -124,10 +125,8 @@ class SortieViewerImpl extends PureComponent {
     shell.openExternal(`${battleReplayerURL}?fromLZString=${encoded}`)
   }
 
-  handleGenerateReplay = sortieIndexes => async () => {
-    const rep = await convertReplay(sortieIndexes)
-    // TODO: rep
-  }
+  handleGenerateReplay = sortieIndexes => async () =>
+    openReplayGenerator(await convertReplay(sortieIndexes))
 
   handleCopyReplayToClipboard = sortieIndexes => async () => {
     const {replayData: kc3ReplayData} = await convertReplay(sortieIndexes)
