@@ -12,6 +12,7 @@ import { getMapNodeLetterFuncSelector } from '../../selectors'
 import { PTyp } from '../../ptyp'
 import { version as pluginVersion } from '../../../package.json'
 import domToImage from 'dom-to-image'
+import steg from '../../../assets/js/steganography.min.js'
 
 const {POI_VERSION, $, remote} = window
 
@@ -21,21 +22,26 @@ class ReplayGeneratorImpl extends PureComponent {
     getMapNodeLetter: PTyp.func.isRequired,
   }
 
-  handleSaveImage = () => {
+  handleSaveImage = replayData => () => {
+    const ref = $('#replay-render-root')
+    const computed = getComputedStyle(ref)
+    const width = parseInt(computed.width, 10)
+    const height = parseInt(computed.height, 10)
     domToImage
       .toPng(
-        $('#replay-render-root'),
+        ref,
         {
           bgcolor: /* TODO: theme dependent, from .panel */ '#303030',
-          width: 400,
+          width, height,
         })
       .then(dataUrl => {
-        remote.getCurrentWebContents().downloadURL(dataUrl)
+        const encoded = steg.encode(JSON.stringify(replayData), dataUrl)
+        remote.getCurrentWebContents().downloadURL(encoded)
       })
   }
 
   render() {
-    const {rep: {imageInfo}, getMapNodeLetter} = this.props
+    const {rep: {imageInfo, replayData}, getMapNodeLetter} = this.props
     const getNodeLetter = getMapNodeLetter(imageInfo.mapId)
     if (imageInfo.fleets.length < 1 || imageInfo.fleets.length > 2) {
       console.warn(`unexpected number of fleets: ${imageInfo.fleets.length}`)
@@ -219,7 +225,7 @@ class ReplayGeneratorImpl extends PureComponent {
             </div>
           </Panel.Body>
         </Panel>
-        <Button onClick={this.handleSaveImage}>
+        <Button onClick={this.handleSaveImage(replayData)}>
           Save Image
         </Button>
       </div>
