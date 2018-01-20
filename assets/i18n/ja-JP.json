@@ -123,10 +123,22 @@
     "SortieOptions": {
       "OpenReplayer": "Open Replayer",
       "OpenInReplayer": "Play in KanColle Battle Replayer",
+      "GenerateReplay": "Generate Replay ...",
       "CopyReplayToClipboard": "Copy Replay Data to Clipboard",
       "ViewInDeckBuilder": "View in DeckBuilder",
       "CopyDeckBuilderToClipboard": "Copy DeckBuilder Data to Clipboard",
       "ViewInWctf": "View in WhoCallsTheFleet"
+    },
+    "ReplayGen": {
+      "GenerateKC3Replay": "Generate KC3 Replay",
+      "Instructions": [
+        "This image contains battle replay data, which can be watched with:",
+        "",
+        "> http://bit.ly/1MU1z7y",
+        "",
+        "If you want to share your replay, please make sure to use lossless image sharing services",
+        "in order to keep battle replay data intact."
+      ]
     }
   },
   "All": "全て",

@@ -357,7 +357,7 @@ class SortieViewerImpl extends PureComponent {
                         <MenuItem
                           onClick={this.handleGenerateReplay(si)}
                         >
-                          Generate Replay ...
+                          {__('BrowseArea.SortieOptions.GenerateReplay')}
                         </MenuItem>
                         <MenuItem
                           onClick={this.handleCopyReplayToClipboard(si)}

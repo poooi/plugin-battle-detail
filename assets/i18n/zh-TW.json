@@ -123,10 +123,21 @@
     "SortieOptions": {
       "OpenReplayer": "戰鬥播放器",
       "OpenInReplayer": "用“KC3戰鬥播放器”回放",
+      "GenerateReplay": "生成KC3戰鬥回放…",
       "CopyReplayToClipboard": "複製回放數據到剪貼板",
       "ViewInDeckBuilder": "在DeckBuilder中查看",
       "CopyDeckBuilderToClipboard": "複製DeckBuilder數據到剪貼板",
       "ViewInWctf": "在“是誰呼叫艦隊”中查看"
+    },
+    "ReplayGen": {
+      "GenerateKC3Replay": "生成KC3戰鬥回放",
+      "Instructions": [
+        "本圖片包含戰鬥回放數據，可以使用以下工具觀看：",
+        "",
+        "> http://bit.ly/1MU1z7y",
+        "",
+        "若想分享該戰鬥回放，請確保使用無損圖牀以保持回放數據完整。"
+      ]
     }
   },
   "All": "全部",

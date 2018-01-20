@@ -123,10 +123,21 @@
     "SortieOptions": {
       "OpenReplayer": "战斗播放器",
       "OpenInReplayer": "用“KC3战斗播放器”回放",
+      "GenerateReplay": "生成KC3战斗回放…",
       "CopyReplayToClipboard": "复制回放数据到剪贴板",
       "ViewInDeckBuilder": "在DeckBuilder中查看",
       "CopyDeckBuilderToClipboard": "复制DeckBuilder数据到剪贴板",
       "ViewInWctf": "在“是谁呼叫舰队”中查看"
+    },
+    "ReplayGen": {
+      "GenerateKC3Replay": "生成KC3战斗回放",
+      "Instructions": [
+        "本图片包含战斗回放数据，可以使用以下工具观看：",
+        "",
+        "> http://bit.ly/1MU1z7y",
+        "",
+        "若想分享该战斗回放，请确保使用无损图床以保持回放数据完整。"
+      ]
     }
   },
   "All": "全部",
