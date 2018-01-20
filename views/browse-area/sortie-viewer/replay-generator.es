@@ -16,6 +16,26 @@ import steg from '../../../assets/js/steganography.min.js'
 
 const {POI_VERSION, $, remote} = window
 
+/*
+   replay image generation. kc3kai style png image with battle data encoded.
+
+   - (1) prep necessary info (lib/convert-replay.es)
+
+   - (2) popping up user dialog and layout replay image (this module)
+
+      - user operations: save as img / upload (TODO) / close
+
+   - (3) gen actual image and encoding
+
+      - using https://github.com/petereigenschink/steganography.js
+
+   TODO:
+
+   - i18n
+   - settings for switching between github / kcwiki reverse proxy
+
+ */
+
 class ReplayGeneratorImpl extends PureComponent {
   static propTypes = {
     rep: PTyp.object.isRequired,
