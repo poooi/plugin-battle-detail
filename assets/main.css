@@ -330,3 +330,7 @@ table .form-control {
   display: flex;
   flex-direction: column;
 }
+
+.replay-render-root .fleet-view.single-fleet > .ship-avatar-container {
+  margin: 5px;
+}

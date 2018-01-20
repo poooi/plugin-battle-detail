@@ -1,8 +1,9 @@
 import _ from 'lodash'
 import { createSelector } from 'reselect'
-
+import { mapIdToStr } from 'subtender/kc'
 import {
   extensionSelectorFactory,
+  fcdSelector,
 } from 'views/utils/selectors'
 
 import { initState } from './store'
@@ -36,6 +37,17 @@ const browseModeSelector = createSelector(
   ui => ui.browseMode
 )
 
+const getMapNodeLetterFuncSelector = createSelector(
+  fcdSelector,
+  fcd => _.memoize(mapId => {
+    const routeInfo = _.get(fcd, ['map', mapIdToStr(mapId), 'route'])
+    if (_.isEmpty(routeInfo))
+      return edgeId => String(edgeId)
+
+    return edgeId => routeInfo[edgeId][1]
+  })
+)
+
 export {
   extSelector,
   uiSelector,
@@ -43,4 +55,5 @@ export {
   indexesSelector,
   sortieViewerSelector,
   browseModeSelector,
+  getMapNodeLetterFuncSelector,
 }

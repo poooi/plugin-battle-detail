@@ -197,7 +197,13 @@ const convertReplay = async sortieIndexes => {
     const routes =
       isPvP ?
         [] :
-        poiRecords.map(r => r.route_)
+        poiRecords.map((r,ind) => {
+          const poiBattle = poiBattles[ind]
+          const {type} = poiBattle
+          if (!['Normal', 'Boss'].includes(type))
+            console.warn(`unexpected record type: ${type}`)
+          return {edge: r.route_, type}
+        })
 
     const translateFleet = poiFleet => {
       if (_.isEmpty(poiFleet))
@@ -214,7 +220,7 @@ const convertReplay = async sortieIndexes => {
       [fstBattle.fleet.main, fstBattle.fleet.escort].map(translateFleet)
     )
 
-    imageInfo = {isPvP, desc, timeStrs, routes, fleets}
+    imageInfo = {isPvP, desc, timeStrs, mapId, routes, fleets}
   }
 
   return {replayData, imageInfo}
