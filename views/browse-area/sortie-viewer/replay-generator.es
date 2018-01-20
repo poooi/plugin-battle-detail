@@ -22,36 +22,53 @@ class ReplayGeneratorImpl extends PureComponent {
     getMapNodeLetter: PTyp.func.isRequired,
   }
 
+  constructor(props) {
+    super(props)
+    this.state = {
+      disableSaveImage: false,
+    }
+  }
+
   handleSaveImage = replayData => () => {
     const ref = $('#replay-render-root')
     const computed = getComputedStyle(ref)
     const width = parseInt(computed.width, 10)
     const height = parseInt(computed.height, 10)
-    domToImage
-      .toPng(
-        ref,
-        {
-          bgcolor: getComputedStyle($('.modal-body .panel')).backgroundColor,
-          width, height,
-        })
-      .then(dataUrl => {
-        const image = new Image()
-        image.src = dataUrl
-        image.onload = () => {
-          /*
-             steg.encode won't wait for a dataURL to be fully loaded
-             therefore causing width & height to be not available sometimes.
-             in order to produce consistent and correct result, we wait until
-             image is fully loaded before next step.
-           */
-          const encoded = steg.encode(JSON.stringify(replayData), image)
-          remote.getCurrentWebContents().downloadURL(encoded)
-        }
-      })
+    this.setState(
+      {disableSaveImage: true},
+      () =>
+        domToImage
+          .toPng(
+            ref,
+            {
+              bgcolor: getComputedStyle($('.modal-body .panel')).backgroundColor,
+              width, height,
+            })
+          .then(dataUrl => {
+            const image = new Image()
+            image.src = dataUrl
+            image.onload = () => {
+              /*
+                 steg.encode won't wait for a dataURL to be fully loaded
+                 therefore causing width & height to be not available sometimes.
+                 in order to produce consistent and correct result, we wait until
+                 image is fully loaded before next step.
+               */
+              const encoded = steg.encode(JSON.stringify(replayData), image)
+              remote.getCurrentWebContents().downloadURL(encoded)
+              this.setState({disableSaveImage: false})
+            }
+          })
+          .catch(e => {
+            console.error(`error while generating replay`, e)
+            this.setState({disableSaveImage: false})
+          })
+    )
   }
 
   render() {
     const {rep: {imageInfo, replayData}, getMapNodeLetter} = this.props
+    const {disableSaveImage} = this.state
     const getNodeLetter = getMapNodeLetter(imageInfo.mapId)
     if (imageInfo.fleets.length < 1 || imageInfo.fleets.length > 2) {
       console.warn(`unexpected number of fleets: ${imageInfo.fleets.length}`)
@@ -235,7 +252,9 @@ class ReplayGeneratorImpl extends PureComponent {
             </div>
           </Panel.Body>
         </Panel>
-        <Button onClick={this.handleSaveImage(replayData)}>
+        <Button
+          disabled={disableSaveImage}
+          onClick={this.handleSaveImage(replayData)}>
           Save Image
         </Button>
       </div>
