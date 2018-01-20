@@ -35,8 +35,18 @@ class ReplayGeneratorImpl extends PureComponent {
           width, height,
         })
       .then(dataUrl => {
-        const encoded = steg.encode(JSON.stringify(replayData), dataUrl)
-        remote.getCurrentWebContents().downloadURL(encoded)
+        const image = new Image()
+        image.src = dataUrl
+        image.onload = () => {
+          /*
+             steg.encode won't wait for a dataURL to be fully loaded
+             therefore causing width & height to be not available sometimes.
+             in order to produce consistent and correct result, we wait until
+             image is fully loaded before next step.
+           */
+          const encoded = steg.encode(JSON.stringify(replayData), image)
+          remote.getCurrentWebContents().downloadURL(encoded)
+        }
       })
   }
 
