@@ -31,7 +31,7 @@ class ReplayGeneratorImpl extends PureComponent {
       .toPng(
         ref,
         {
-          bgcolor: /* TODO: theme dependent, from .panel */ '#303030',
+          bgcolor: getComputedStyle($('.modal-body .panel')).backgroundColor,
           width, height,
         })
       .then(dataUrl => {
