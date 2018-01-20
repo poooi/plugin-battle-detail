@@ -38,6 +38,7 @@ const {POI_VERSION, $, remote, __} = window
  */
 
 const battleReplayerURL = 'https://kc3kai.github.io/kancolle-replay/battleplayer.html'
+const imagesPath = join(__dirname, '..','..','..','assets','images')
 
 class ReplayGeneratorImpl extends PureComponent {
   static propTypes = {
@@ -129,7 +130,7 @@ class ReplayGeneratorImpl extends PureComponent {
                   alignItems: 'center',
                 }}>
                 <img
-                  src={join(__dirname, '..','..','..','assets','poi-128x128.png')}
+                  src={join(imagesPath, 'poi-128x128.png')}
                   alt="poi-logo"
                   style={{marginRight: 5}}
                 />
@@ -182,7 +183,7 @@ class ReplayGeneratorImpl extends PureComponent {
                               key={r.edge}
                             >
                               <img
-                                src={join(__dirname, '..','..','..','assets',`bg-${r.type}.png`)}
+                                src={join(imagesPath ,`bg-${r.type}.png`)}
                                 alt={`node-bg-${r.type}`}
                                 style={{width: 24, height: 24, opacity: 0.6}}
                               />
