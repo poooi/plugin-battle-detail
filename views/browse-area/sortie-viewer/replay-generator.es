@@ -32,7 +32,6 @@ const {POI_VERSION, $, remote, __} = window
 
    TODO:
 
-   - i18n
    - settings for switching between github / kcwiki reverse proxy
 
  */

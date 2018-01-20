@@ -1,3 +1,4 @@
+import domToImage from 'dom-to-image'
 import { showModal } from './modal-area'
 import { PacketCompat } from 'lib/compat'
 
@@ -55,11 +56,19 @@ class OptionArea extends React.Component {
   }
 
   onClickSave = () => {
-    html2canvas($('#battle-area'), {
-      background: window.isVibrant ? "rgba(38,38,38,0.8)" : undefined,
-      onrendered: (canvas) => {
-        remote.getCurrentWebContents().downloadURL(canvas.toDataURL("image/png"))} ,
-    })
+    const ref = $('#battle-area')
+    const computed = getComputedStyle(ref)
+    const width = parseInt(computed.width, 10)
+    const height = parseInt(computed.height, 10)
+    domToImage.toPng(ref, {
+      bgcolor: window.isVibrant ? "rgba(38,38,38,0.8)" : undefined,
+      width, height,
+    }
+    ).then(dataUrl =>
+      remote.getCurrentWebContents().downloadURL(dataUrl)
+    ).catch(e =>
+      console.error(`error while generating battle detail img`, e)
+    )
   }
 
   render() {
