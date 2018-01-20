@@ -3,7 +3,7 @@ import { join } from 'path-extra'
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
 import { createStructuredSelector } from 'reselect'
-import { Panel } from 'react-bootstrap'
+import { Panel, Button } from 'react-bootstrap'
 import Markdown from 'react-remarkable'
 import { Avatar } from 'views/components/etc/avatar'
 
@@ -11,13 +11,27 @@ import { showModal } from '../../modal-area'
 import { getMapNodeLetterFuncSelector } from '../../selectors'
 import { PTyp } from '../../ptyp'
 import { version as pluginVersion } from '../../../package.json'
+import domToImage from 'dom-to-image'
 
-const {POI_VERSION} = window
+const {POI_VERSION, $, remote} = window
 
 class ReplayGeneratorImpl extends PureComponent {
   static propTypes = {
     rep: PTyp.object.isRequired,
     getMapNodeLetter: PTyp.func.isRequired,
+  }
+
+  handleSaveImage = () => {
+    domToImage
+      .toPng(
+        $('#replay-render-root'),
+        {
+          bgcolor: /* TODO: theme dependent, from .panel */ '#303030',
+          width: 400,
+        })
+      .then(dataUrl => {
+        remote.getCurrentWebContents().downloadURL(dataUrl)
+      })
   }
 
   render() {
@@ -39,11 +53,13 @@ class ReplayGeneratorImpl extends PureComponent {
           <Panel.Body>
             <div
               className="replay-render-root"
+              id="replay-render-root"
               style={{
                 width: 400,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
+                padding: 5,
               }}
             >
               <div
@@ -185,7 +201,7 @@ class ReplayGeneratorImpl extends PureComponent {
                   </div>
                 )
               }
-              <div>
+              <div style={{marginTop: 10}}>
                 <Markdown
                   source={[
                     'This image contains battle replay data, which can be played using:',
@@ -203,6 +219,9 @@ class ReplayGeneratorImpl extends PureComponent {
             </div>
           </Panel.Body>
         </Panel>
+        <Button onClick={this.handleSaveImage}>
+          Save Image
+        </Button>
       </div>
     )
   }
