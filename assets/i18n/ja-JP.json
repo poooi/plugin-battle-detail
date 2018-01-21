@@ -131,7 +131,7 @@
     },
     "ReplayGen": {
       "GenerateKC3Replay": "Generate KC3 Replay",
-      "Instructions": [
+      "InstructionsMD": [
         "This image contains battle replay data, which can be watched with:",
         "",
         "> http://bit.ly/1MU1z7y",

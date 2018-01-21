@@ -106,7 +106,7 @@ class ReplayGeneratorImpl extends PureComponent {
     if (imageInfo.fleets.length < 1 || imageInfo.fleets.length > 2) {
       console.warn(`unexpected number of fleets: ${imageInfo.fleets.length}`)
     }
-    let instructions = __('BrowseArea.ReplayGen.Instructions')
+    const instructions = __('BrowseArea.ReplayGen.InstructionsMD')
 
     return (
       <div

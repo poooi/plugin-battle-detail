@@ -131,7 +131,7 @@
     },
     "ReplayGen": {
       "GenerateKC3Replay": "生成KC3戰鬥回放",
-      "Instructions": [
+      "InstructionsMD": [
         "本圖片包含戰鬥回放數據，可以使用以下工具觀看：",
         "",
         "> http://bit.ly/1MU1z7y",
