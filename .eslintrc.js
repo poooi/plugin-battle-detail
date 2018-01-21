@@ -49,6 +49,7 @@ module.exports = {
               'views/utils/game-utils',
               'views/utils/selectors',
               'views/create-store',
+              'views/components/etc/avatar',
               'reselect', 'react-*', 'prop-types',
             ] }],
   },

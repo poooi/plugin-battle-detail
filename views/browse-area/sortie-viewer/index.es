@@ -31,6 +31,7 @@ import { convertToDeckBuilder } from 'lib/deck-builder'
 import { convertToWctf } from 'lib/wctf'
 import { UPagination } from '../u-pagination'
 import { PTyp } from '../../ptyp'
+import { openReplayGenerator } from './replay-generator'
 
 const {__} = window
 
@@ -103,14 +104,17 @@ class SortieViewerImpl extends PureComponent {
     shell.openExternal(battleReplayerURL)
 
   handleClickPlay = sortieIndexes => async () => {
-    const kc3ReplayData = await convertReplay(sortieIndexes)
+    const {replayData: kc3ReplayData} = await convertReplay(sortieIndexes)
     const jsonRaw = JSON.stringify(kc3ReplayData)
     const encoded = compressToEncodedURIComponent(jsonRaw)
     shell.openExternal(`${battleReplayerURL}?fromLZString=${encoded}`)
   }
 
+  handleGenerateReplay = sortieIndexes => async () =>
+    openReplayGenerator(await convertReplay(sortieIndexes))
+
   handleCopyReplayToClipboard = sortieIndexes => async () => {
-    const kc3ReplayData = await convertReplay(sortieIndexes)
+    const {replayData: kc3ReplayData} = await convertReplay(sortieIndexes)
     const jsonRaw = JSON.stringify(kc3ReplayData)
     clipboard.writeText(jsonRaw)
   }
@@ -349,6 +353,11 @@ class SortieViewerImpl extends PureComponent {
                           onClick={this.handleClickPlay(si)}
                         >
                           {__('BrowseArea.SortieOptions.OpenInReplayer')}
+                        </MenuItem>
+                        <MenuItem
+                          onClick={this.handleGenerateReplay(si)}
+                        >
+                          {__('BrowseArea.SortieOptions.GenerateReplay')}
                         </MenuItem>
                         <MenuItem
                           onClick={this.handleCopyReplayToClipboard(si)}
