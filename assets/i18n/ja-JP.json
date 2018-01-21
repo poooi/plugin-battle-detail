@@ -138,7 +138,8 @@
         "",
         "If you want to share your replay, please make sure to use lossless image sharing services",
         "in order to keep battle replay data intact."
-      ]
+      ],
+      "CommentPlaceholder": "Input comments here (optional)"
     }
   },
   "All": "全て",

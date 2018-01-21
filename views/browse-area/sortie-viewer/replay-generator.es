@@ -3,7 +3,7 @@ import { join } from 'path-extra'
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
 import { createStructuredSelector } from 'reselect'
-import { Panel, Button } from 'react-bootstrap'
+import { Panel, Button, FormControl } from 'react-bootstrap'
 import { shell } from 'electron'
 import Markdown from 'react-remarkable'
 import { Avatar } from 'views/components/etc/avatar'
@@ -49,11 +49,18 @@ class ReplayGeneratorImpl extends PureComponent {
     super(props)
     this.state = {
       disableSaveImage: false,
+      // optional user comment
+      comment: '',
     }
   }
 
   handleOpenReplayer = () =>
     shell.openExternal(battleReplayerURL)
+
+  handleChangeComment = e => {
+    const comment = e.target.value
+    this.setState({comment})
+  }
 
   handleSaveImage = replayData => () => {
     const ref = $('#replay-render-root')
@@ -94,7 +101,7 @@ class ReplayGeneratorImpl extends PureComponent {
 
   render() {
     const {rep: {imageInfo, replayData}, getMapNodeLetter} = this.props
-    const {disableSaveImage} = this.state
+    const {disableSaveImage, comment} = this.state
     const getNodeLetter = getMapNodeLetter(imageInfo.mapId)
     if (imageInfo.fleets.length < 1 || imageInfo.fleets.length > 2) {
       console.warn(`unexpected number of fleets: ${imageInfo.fleets.length}`)
@@ -207,6 +214,18 @@ class ReplayGeneratorImpl extends PureComponent {
                 </div>
               </div>
               {
+                comment && (
+                  <div
+                    style={{
+                      fontSize: '120%',
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    {comment}
+                  </div>
+                )
+              }
+              {
                 imageInfo.fleets.length === 1 ? (
                   <div
                     className="fleet-view single-fleet"
@@ -276,6 +295,12 @@ class ReplayGeneratorImpl extends PureComponent {
             </div>
           </Panel.Body>
         </Panel>
+        <FormControl
+          style={{marginLeft: '.5em', marginRight: '.5em'}}
+          type="text" placeholder={__('BrowseArea.ReplayGen.CommentPlaceholder')}
+          value={comment}
+          onChange={this.handleChangeComment}
+        />
         <div style={{display: 'flex', alignItems: 'center', width: '100%'}}>
           <Button
             disabled={disableSaveImage}
