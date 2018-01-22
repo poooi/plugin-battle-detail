@@ -24,11 +24,11 @@
   "Close": "閉じる",
 
   "Options": "設定",
-  "Copy Data": "データをコピーします",
+  "Copy Data": "データをコピーする",
   "The battle packet was copied to clipboard.": "戦闘データのクリップボードへのコピーに成功しました",
   "You can send your friends the packet to share the battle.": "データを公開することで、戦闘を友達に共有できます！",
   "Failed to copy battle packet to clipboard!": "戦闘データのクリップボードへのコピーに失敗しました",
-  "Paste Data": "データを贴り付けます",
+  "Paste Data": "データを贴り付ける",
   "A battle packet was pasted from clipboard.": "戦闘データのクリップボードからの読込みに成功しました",
   "If you see no battle detail, you may have a broken packet.": "戦闘の詳細が正しく表示されていない場合、破損したデータを使用した恐れがあります",
   "Last Battle": "最後の戦闘",
@@ -116,30 +116,30 @@
       "numeric": "マップ"
     },
     "SortieTipsMD": [
-      "If \"Play in KanColle Battle Replayer\" does not work,",
-      "try copy to clipboard, paste your replay data into \"Load from text\" of",
-      "the replayer, and then hit \"Load\"."
+      "\"艦これ戦闘リプレーヤーで再生\" 機能は不具合がある場合,",
+      "リプレイデータをコピーして、リプレーヤーに \"Load from text\" エリアに貼り付けて",
+      "\"ロード\" ボタンを押してください"
     ],
     "SortieOptions": {
-      "OpenReplayer": "Open Replayer",
-      "OpenInReplayer": "Play in KanColle Battle Replayer",
-      "GenerateReplay": "Generate Replay ...",
-      "CopyReplayToClipboard": "Copy Replay Data to Clipboard",
-      "ViewInDeckBuilder": "View in DeckBuilder",
-      "CopyDeckBuilderToClipboard": "Copy DeckBuilder Data to Clipboard",
-      "ViewInWctf": "View in WhoCallsTheFleet"
+      "OpenReplayer": "リプレーヤーを開く",
+      "OpenInReplayer": "艦これ戦闘リプレーヤーで再生",
+      "GenerateReplay": "リプレイ作成中...",
+      "CopyReplayToClipboard": "リプレイデータをコピー",
+      "ViewInDeckBuilder": "デッキビルダーにチェック",
+      "CopyDeckBuilderToClipboard": "デッキビルダーデータをコピー",
+      "ViewInWctf": "WhoCallsTheFleet にチェック"
     },
     "ReplayGen": {
-      "GenerateKC3Replay": "Generate KC3 Replay",
+      "GenerateKC3Replay": "KC3 リプレイデータを作成",
       "InstructionsMD": [
-        "This image contains battle replay data, which can be watched with:",
+        "この画像にはバトルリプレイデータが含まれています。下記のサイトで再生してください:",
         "",
         "> http://bit.ly/1MU1z7y",
         "",
-        "If you want to share your replay, please make sure to use lossless image sharing services",
-        "in order to keep battle replay data intact."
+        "この画像を共有する場合、リプレイデータを破壊されないため",
+        "ぜひ無圧縮で画像共有できるサービスを利用してください"
       ],
-      "CommentPlaceholder": "Input comments here (optional)"
+      "CommentPlaceholder": "ここにコメントテキストを入力 (オプショナル)"
     }
   },
   "All": "全て",
