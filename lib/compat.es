@@ -86,7 +86,7 @@ export class PacketCompat {
       let fleet = []
       for (let i of Array(6).keys()) {
         let shipId = poi_fleet[i]
-        let ship = window.$ships[shipId] || null
+        let ship = getStore(['const', '$ships', shipId]) || null
         if (ship) {
           ship.api_ship_id = shipId
           ship.api_maxhp = ship.api_taik[1]
@@ -95,7 +95,7 @@ export class PacketCompat {
           ship.poi_slot_ex = null
           for (let j of Array(6).keys()) {
             let itemId = poi_equipment[i][j]
-            let item = window.$slotitems[itemId] || null
+            let item = getStore(['const', '$equips', itemId]) || null
             if (item) {
               item.api_slotitem_id = itemId
             }

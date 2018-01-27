@@ -2,7 +2,7 @@ import React from 'react'
 import { ProgressBar } from 'react-bootstrap'
 import {MaterialIcon, SlotitemIcon} from 'views/components/etc/icon'
 
-const {$slotitems} = window
+const {getStore} = window
 
 export class FABar extends React.Component {
   render() {
@@ -46,6 +46,8 @@ export class HPBar extends React.Component {
     if (damage !== 0) {
       additions.push(`${-damage}`)
     }
+
+    const $slotitems = getStore(['const', '$equips']) || {}
     if (item && $slotitems[item]) {
       let itemIcon = $slotitems[item].api_type[3]
       additions.push(<SlotitemIcon slotitemId={itemIcon} />)

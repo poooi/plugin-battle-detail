@@ -6,8 +6,9 @@ import {getShipName, getItemName} from 'views/utils'
 import { equipIsAircraft } from 'views/utils/game-utils'
 import { SlotitemIcon } from 'views/components/etc/icon'
 
-const { ROOT, __} = window
-const {FABar, HPBar} = require('./bar')
+import {FABar, HPBar} from './bar'
+
+const {ROOT, __, getStore} = window
 
 const DEFAULT_EXPANDED = false
 class OverviewArea extends React.PureComponent {
@@ -99,7 +100,7 @@ class ShipView extends React.Component {
       return <div />
     }
     let raw = ship.raw || {}
-    let mst = window.$ships[ship.id] || {}
+    let mst = getStore(['const', '$ships', ship.id]) || {}
     let data = Object.assign(Object.clone(mst), raw)
 
     if (! data.api_maxeq) {
@@ -178,7 +179,7 @@ class ItemView extends React.Component {
       return <div />
     }
     let raw = item
-    let mst = window.$slotitems[item.api_slotitem_id] || {}
+    let mst = getStore(['const', '$equips', item.api_slotitem_id]) || {}
     let data = Object.assign(Object.clone(mst), raw)
 
     return (
