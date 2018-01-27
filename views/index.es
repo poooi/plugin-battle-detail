@@ -2,6 +2,9 @@ import _ from 'lodash'
 import { Provider, connect } from 'react-redux'
 import { store } from 'views/create-store'
 import { modifyObject } from 'subtender'
+import React from 'react'
+import { Tab, Tabs } from 'react-bootstrap'
+import { remote } from 'electron'
 
 import ModalArea from './modal-area'
 import OptionArea from './option-area'
@@ -17,9 +20,7 @@ import { init as storeInit, actionCreators } from './store'
 import { indexesSelector, uiSelector } from './selectors'
 import { PTyp } from './ptyp'
 
-const {React, ReactBootstrap, remote, ipc, __} = window
-
-const {Tab, Tabs} = ReactBootstrap
+const {ipc, __} = window
 
 storeInit()
 

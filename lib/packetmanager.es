@@ -2,6 +2,8 @@
 import EventEmitter from 'events'
 import { Battle, BattleType, Fleet } from 'lib/battle'
 
+const {getStore} = window
+
 class PacketManager extends EventEmitter {
   constructor() {
     super()
@@ -32,7 +34,7 @@ class PacketManager extends EventEmitter {
       let {normalSF, bossSF} = this
       this.normalSF = this.bossSF = null
       for (let deck of body.api_deck_port) {
-        let mission = window.$missions[deck.api_mission[1]] || {}
+        let mission = getStore(['const', '$missions', deck.api_mission[1]]) || {}
         let missionName = mission.api_name || ''
         if (missionName.includes("前衛支援任務")) {
           this.normalSF = normalSF
@@ -44,7 +46,7 @@ class PacketManager extends EventEmitter {
     }
     if (req.path === '/kcsapi/api_req_mission/start') {
       let fleetId = postBody.api_deck_id
-      let mission = window.$missions[postBody.api_mission_id] || {}
+      let mission = getStore(['const', '$missions', postBody.api_mission_id]) || {}
       let missionName = mission.api_name || ''
       if (missionName.includes("前衛支援任務")) {
         this.normalSF = this.getFleet(fleetId)
@@ -183,7 +185,7 @@ class PacketManager extends EventEmitter {
 
   // deckId in [1, 2, 3, 4]
   getFleet(deckId) {
-    let deck = window._decks[deckId - 1] || {}
+    let deck = getStore(['info', 'fleets', deckId - 1]) || {}
     let ships = deck.api_ship
     if (ships) {
       let fleet = []
@@ -197,7 +199,7 @@ class PacketManager extends EventEmitter {
   }
 
   getShip(shipId) {
-    let ship = Object.clone(window._ships[shipId] || null)
+    let ship = Object.clone(getStore(['info', 'ships', shipId]) || null)
     if (ship) {
       ship.poi_slot = []
       for (let id of ship.api_slot) {

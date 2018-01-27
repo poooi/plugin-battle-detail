@@ -1,9 +1,9 @@
 
-const {__r} = window
+const {__r, getStore} = window
 
 export function getShipName(ship) {
   if (Number.isInteger(ship)) {
-    ship = window.$ships[ship]
+    ship = getStore(['const', '$ships', ship])
   }
   if (ship == null) {
     return null
@@ -18,7 +18,7 @@ export function getShipName(ship) {
 
 export function getItemName(item) {
   if (Number.isInteger(item)) {
-    item = window.$slotitems[item]
+    item = getStore(['const', '$equips', item])
   }
   if (item == null) {
     return null
@@ -28,7 +28,7 @@ export function getItemName(item) {
 }
 
 export async function sleep(ms) {
-  await new Promise((resolve, reject) => {
+  await new Promise((resolve, _reject) => {
     setTimeout(() => resolve(), ms > 0 ? ms : 0)
   })
 }

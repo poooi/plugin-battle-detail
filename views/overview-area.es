@@ -1,12 +1,14 @@
+import React from 'react'
+import { Panel, Grid, Row, Col } from 'react-bootstrap'
+import FontAwesome from 'react-fontawesome'
 
 import {getShipName, getItemName} from 'views/utils'
-import FontAwesome from 'react-fontawesome'
 import { equipIsAircraft } from 'views/utils/game-utils'
+import { SlotitemIcon } from 'views/components/etc/icon'
 
-const {React, ReactBootstrap, ROOT, __} = window
-const {Panel, Grid, Row, Col} = ReactBootstrap
-const {SlotitemIcon} = require(`${ROOT}/views/components/etc/icon`)
-const {FABar, HPBar} = require('./bar')
+import {FABar, HPBar} from './bar'
+
+const {ROOT, __, getStore} = window
 
 const DEFAULT_EXPANDED = false
 class OverviewArea extends React.PureComponent {
@@ -98,7 +100,7 @@ class ShipView extends React.Component {
       return <div />
     }
     let raw = ship.raw || {}
-    let mst = window.$ships[ship.id] || {}
+    let mst = getStore(['const', '$ships', ship.id]) || {}
     let data = Object.assign(Object.clone(mst), raw)
 
     if (! data.api_maxeq) {
@@ -177,7 +179,7 @@ class ItemView extends React.Component {
       return <div />
     }
     let raw = item
-    let mst = window.$slotitems[item.api_slotitem_id] || {}
+    let mst = getStore(['const', '$equips', item.api_slotitem_id]) || {}
     let data = Object.assign(Object.clone(mst), raw)
 
     return (

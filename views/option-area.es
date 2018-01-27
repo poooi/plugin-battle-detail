@@ -1,10 +1,18 @@
 import domToImage from 'dom-to-image'
+import { remote } from 'electron'
+import React from 'react'
+import {
+  Panel,
+  Grid, Row, Col,
+  Button, ButtonGroup,
+  FormControl,
+} from 'react-bootstrap'
+
 import { showModal } from './modal-area'
 import { PacketCompat } from 'lib/compat'
 
 const {clipboard} = require('electron')
-const {React, ReactBootstrap, remote, __, $} = window
-const {Panel, Grid, Row, Col, Button, ButtonGroup, FormControl} = ReactBootstrap
+const {__, $} = window
 
 class OptionArea extends React.Component {
   shouldComponentUpdate(nextProps, nextState) {
