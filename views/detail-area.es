@@ -1,8 +1,9 @@
 
 import FontAwesome from 'react-fontawesome'
 import { get } from 'lodash'
-const { React, ReactBootstrap, __ } = window
-const { Panel, OverlayTrigger, Tooltip, Row } = ReactBootstrap
+import React from 'react'
+import { Panel, OverlayTrigger, Tooltip, Row } from 'react-bootstrap'
+const { __ } = window
 
 import { HPBar } from './bar'
 import { getShipName, getItemName } from './utils'

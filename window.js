@@ -58,5 +58,7 @@ window.__r = window.i18n.resources.__.bind(window.i18n.resources)
 document.title = __('Battle Records')
 $('#font-awesome').setAttribute('href', require.resolve('font-awesome/css/font-awesome.css'))
 
+const React = require('react')
+const ReactDOM = require('react-dom')
 const MainArea = require('./views')
 ReactDOM.render(React.createElement(MainArea, null), $('main'))

@@ -1,7 +1,8 @@
+import React from 'react'
+import { ProgressBar } from 'react-bootstrap'
+import {MaterialIcon, SlotitemIcon} from 'views/components/etc/icon'
 
-const {React, ReactBootstrap, ROOT, $slotitems} = window
-const {ProgressBar} = ReactBootstrap
-const {MaterialIcon, SlotitemIcon} = require(`${ROOT}/views/components/etc/icon`)
+const {$slotitems} = window
 
 export class FABar extends React.Component {
   render() {
