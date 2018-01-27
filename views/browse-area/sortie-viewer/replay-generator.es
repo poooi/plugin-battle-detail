@@ -4,7 +4,7 @@ import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
 import { createStructuredSelector } from 'reselect'
 import { Panel, Button, FormControl } from 'react-bootstrap'
-import { shell } from 'electron'
+import { remote, shell } from 'electron'
 import Markdown from 'react-remarkable'
 import { Avatar } from 'views/components/etc/avatar'
 
@@ -15,7 +15,7 @@ import { version as pluginVersion } from '../../../package.json'
 import domToImage from 'dom-to-image'
 import steg from '../../../assets/js/steganography.min.js'
 
-const {POI_VERSION, $, remote, __} = window
+const {POI_VERSION, $, __} = window
 
 /*
    replay image generation. kc3kai style png image with battle data encoded.

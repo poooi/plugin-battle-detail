@@ -1,4 +1,5 @@
 import domToImage from 'dom-to-image'
+import { remote } from 'electron'
 import React from 'react'
 import {
   Panel,
@@ -11,7 +12,7 @@ import { showModal } from './modal-area'
 import { PacketCompat } from 'lib/compat'
 
 const {clipboard} = require('electron')
-const { remote, __, $} = window
+const {__, $} = window
 
 class OptionArea extends React.Component {
   shouldComponentUpdate(nextProps, nextState) {
