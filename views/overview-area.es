@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import React from 'react'
 import { Panel, Grid, Row, Col } from 'react-bootstrap'
 import FontAwesome from 'react-fontawesome'
@@ -124,7 +125,9 @@ class ShipView extends React.Component {
             </Col>
             <Col xs={6}>
               <span>Cond.</span>
-              <span className={this.getCondClass(data.api_cond)}>{data.api_cond || '-'}</span>
+              <span className={this.getCondClass(data.api_cond)}>
+                {_.isInteger(data.api_cond) ? data.api_cond : '-'}
+              </span>
             </Col>
           </Row>
           <Row className='ship-fa'>
