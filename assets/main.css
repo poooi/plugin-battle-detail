@@ -334,3 +334,35 @@ table .form-control {
 .replay-render-root .fleet-view.single-fleet > .ship-avatar-container {
   margin: 5px;
 }
+
+.theme-darkly .replay-render-root {
+  background-color: #303030;
+}
+
+.theme-slate .replay-render-root {
+  background-color: #2e3338;
+}
+
+.theme-superhero .replay-render-root {
+  background-color: #546575;
+}
+
+.theme-lumendark .replay-render-root {
+  background-color: #555555;
+}
+
+.theme-paperdark .replay-render-root {
+  background-color: #303030;
+}
+
+.theme-papercyan .replay-render-root {
+  background-color: #222222;
+}
+
+.theme-paperblack .replay-render-root {
+  background-color: #424242;
+}
+
+.theme-darklykai .replay-render-root {
+  background-color: #222222;
+}

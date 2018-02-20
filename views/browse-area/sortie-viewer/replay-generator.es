@@ -9,7 +9,7 @@ import Markdown from 'react-remarkable'
 import { Avatar } from 'views/components/etc/avatar'
 
 import { showModal } from '../../modal-area'
-import { getMapNodeLetterFuncSelector } from '../../selectors'
+import { getMapNodeLetterFuncSelector, themeSelector } from '../../selectors'
 import { PTyp } from '../../ptyp'
 import { version as pluginVersion } from '../../../package.json'
 import domToImage from 'dom-to-image'
@@ -43,6 +43,7 @@ class ReplayGeneratorImpl extends PureComponent {
   static propTypes = {
     rep: PTyp.object.isRequired,
     getMapNodeLetter: PTyp.func.isRequired,
+    theme: PTyp.string.isRequired,
   }
 
   constructor(props) {
@@ -74,7 +75,6 @@ class ReplayGeneratorImpl extends PureComponent {
           .toPng(
             ref,
             {
-              bgcolor: getComputedStyle($('.modal-body .panel')).backgroundColor,
               width, height,
             })
           .then(dataUrl => {
@@ -100,7 +100,7 @@ class ReplayGeneratorImpl extends PureComponent {
   }
 
   render() {
-    const {rep: {imageInfo, replayData}, getMapNodeLetter} = this.props
+    const {rep: {imageInfo, replayData}, getMapNodeLetter, theme} = this.props
     const {disableSaveImage, comment} = this.state
     const getNodeLetter = getMapNodeLetter(imageInfo.mapId)
     if (imageInfo.fleets.length < 1 || imageInfo.fleets.length > 2) {
@@ -110,6 +110,7 @@ class ReplayGeneratorImpl extends PureComponent {
 
     return (
       <div
+        className={`theme-${theme}`}
         style={{
           display: 'flex',
           flexDirection: 'column',
@@ -321,6 +322,7 @@ class ReplayGeneratorImpl extends PureComponent {
 const ReplayGenerator = connect(
   createStructuredSelector({
     getMapNodeLetter: getMapNodeLetterFuncSelector,
+    theme: themeSelector,
   })
 )(ReplayGeneratorImpl)
 
