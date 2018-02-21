@@ -154,4 +154,7 @@ class AppData {
   }
 }
 
-export default new AppData()
+const appDataInst = new AppData()
+window.AppData = appDataInst
+
+export default appDataInst

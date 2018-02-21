@@ -4,6 +4,7 @@ import { mapIdToStr } from 'subtender/kc'
 import {
   extensionSelectorFactory,
   fcdSelector,
+  configSelector as poiConfSelector,
 } from 'views/utils/selectors'
 
 import { initState } from './store'
@@ -11,6 +12,11 @@ import { initState } from './store'
 const extSelector = createSelector(
   extensionSelectorFactory('poi-plugin-battle-detail'),
   ext => _.isEmpty(ext) ? initState : ext)
+
+window.getExt = () => {
+  const {getStore} = window
+  return extSelector(getStore())
+}
 
 const uiSelector = createSelector(
   extSelector,
@@ -48,6 +54,11 @@ const getMapNodeLetterFuncSelector = createSelector(
   })
 )
 
+const themeSelector = createSelector(
+  poiConfSelector,
+  conf => _.get(conf, 'poi.theme', 'paperdark')
+)
+
 export {
   extSelector,
   uiSelector,
@@ -56,4 +67,5 @@ export {
   sortieViewerSelector,
   browseModeSelector,
   getMapNodeLetterFuncSelector,
+  themeSelector,
 }
