@@ -80,6 +80,7 @@ img.svg {
   width: 100%;
   height: 30px;
   display: flex;
+  white-space: nowrap;
 }
 #detail-area .panel .row > span {
   height: 20px;
