@@ -34,6 +34,7 @@ class OverviewArea extends React.PureComponent {
                     <FleetView fleet={simulator.escortFleet} title={__('Escort Fleet')} />
                     <FleetView fleet={simulator.supportFleet} title={__('Support Fleet')} />
                     <FleetView fleet={simulator.landBaseAirCorps} title={__('Land Base Air Corps')} View={LBACView} />
+                    <FleetView fleet={simulator.friendFleet} title={__('Friendly Fleet')} />
                     <FleetView fleet={simulator.enemyFleet} title={__('Enemy Fleet')} />
                     <FleetView fleet={simulator.enemyEscort} title={__('Enemy Escort Fleet')} />
                   </div>

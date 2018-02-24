@@ -1,7 +1,7 @@
 
 import FontAwesome from 'react-fontawesome'
 import { get } from 'lodash'
-import React from 'react'
+import React, { Fragment } from 'react'
 import { Panel, OverlayTrigger, Tooltip, Row } from 'react-bootstrap'
 const { __ } = window
 
@@ -198,27 +198,18 @@ class ShipInfo extends React.Component {
   }
 }
 
-class DamageInfo extends React.Component {
-  render() {
-    const {type, damage, hit} = this.props
-    let elements = []
-    elements.push(<span key={-1}>{AttackTypeName[type]}</span>)
-    elements.push(<span key={-2}>{" ("}</span>)
-    damage.map((damage, i) => {
-      let cls = ''
-      if (hit[i] == HitType.Miss)
-        damage = "miss"
-      if (hit[i] == HitType.Critical)
-        cls = 'critical'
-      elements.push(<span key={10 * i + 1} className={cls}>{damage}</span>)
-      elements.push(<span key={10 * i + 2}>{", "}</span>)
-    })
-    elements.pop()  // Remove last comma
-    elements.push(<span key={-3}>{")"}</span>)
-
-    return <span>{elements}</span>
-  }
-}
+const DamageInfo = ({type, damage, hit}) => (
+  <span>
+    {AttackTypeName[type]} (
+    {damage.map((current, i) => (
+      <Fragment key={i}>
+        <span className={hit[i] === HitType.Critical && 'critical'}>{hit[i] === HitType.Miss ? 'miss' : current}</span>
+        {i !== damage.length - 1 && ','}
+      </Fragment>
+    ))}
+    )
+  </span>
+)
 
 class AttackRow extends React.Component {
   render() {
@@ -226,7 +217,7 @@ class AttackRow extends React.Component {
     const {maxHP} = toShip
     const totalDamage = damage.reduce((p, x) => p + x)
     // Is enemy attack?
-    return (toShip.owner === ShipOwner.Ours) ? (
+    return (toShip.owner !== ShipOwner.Enemy) ? (
       <Row className={"attack-row"}>
         <span><HPBar max={maxHP} from={fromHP} to={toHP} damage={totalDamage} item={useItem} /></span>
         <span><ShipInfo ship={toShip} /></span>
