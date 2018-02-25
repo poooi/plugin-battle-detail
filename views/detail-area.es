@@ -3,6 +3,7 @@ import FontAwesome from 'react-fontawesome'
 import { get } from 'lodash'
 import React, { Fragment } from 'react'
 import { Panel, OverlayTrigger, Tooltip, Row } from 'react-bootstrap'
+import cls from 'classnames'
 const { __ } = window
 
 import { HPBar } from './bar'
@@ -203,7 +204,7 @@ const DamageInfo = ({type, damage, hit}) => (
     {AttackTypeName[type]} (
     {damage.map((current, i) => (
       <Fragment key={i}>
-        <span className={hit[i] === HitType.Critical && 'critical'}>{hit[i] === HitType.Miss ? 'miss' : current}</span>
+        <span className={cls({ critical: hit[i] === HitType.Critical })}>{hit[i] === HitType.Miss ? 'miss' : current}</span>
         {i !== damage.length - 1 && ','}
       </Fragment>
     ))}
