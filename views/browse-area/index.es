@@ -85,6 +85,7 @@ class BrowseAreaImpl extends Component {
     if (_.isEqual(this.state.filters, filters))
       return
     this.setState({
+      pageNo : 1,
       indexes: this.applyFilters(this.props.indexes, filters),
       filters: filters,
     })
