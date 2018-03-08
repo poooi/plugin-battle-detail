@@ -153,7 +153,7 @@ class BrowseAreaImpl extends Component {
             </div>
           </Panel.Heading>
           <Panel.Body>
-            <div style={browseMode === 'nodes' ? {} : {display: 'none'}}>
+            <div style={browseMode === 'nodes' ? {overflowY: 'auto'} : {overflowY: 'auto', display: 'none'}}>
               <Grid>
                 <Row>
                   <Col
