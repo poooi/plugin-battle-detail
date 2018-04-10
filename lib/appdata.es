@@ -144,7 +144,7 @@ class AppData {
     const BATTLE_REGEXP = /^(\d+)\.json/
     let ids = []
     let files = await readDirAsync(APPDATA)
-    files.map((file, i) => {
+    files.map((file) => {
       let match = file.match(BATTLE_REGEXP)
       if (match && match[1]) {
         ids.push(parseInt(match[1]))

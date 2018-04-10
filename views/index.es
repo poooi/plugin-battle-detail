@@ -1,10 +1,12 @@
 import _ from 'lodash'
-import { Provider, connect } from 'react-redux'
+import { connect } from 'react-redux'
 import { store } from 'views/create-store'
 import { modifyObject } from 'subtender'
 import React from 'react'
 import { Tab, Tabs } from 'react-bootstrap'
 import { remote } from 'electron'
+import { EventEmitter } from 'events'
+import { join } from 'path-extra'
 
 import ModalArea from './modal-area'
 import OptionArea from './option-area'
@@ -16,13 +18,49 @@ import PacketManager from 'lib/packetmanager'
 
 import { Simulator } from 'lib/battle'
 import { PacketCompat, IndexCompat } from 'lib/compat'
-import { init as storeInit, actionCreators } from './store'
+import { initData, actionCreators } from './store'
 import { indexesSelector, uiSelector } from './selectors'
 import { PTyp } from './ptyp'
 
 const {ipc, __} = window
 
-storeInit()
+const pm = new PacketManager()
+const em = new EventEmitter()
+
+async function handlePacket(newBattle, _curPacket) {
+  let state = store.getState()
+  // Save new battle immediately
+  const newId = PacketCompat.getId(newBattle)
+  AppData.saveBattle(newId, newBattle)
+  let {
+    battle,
+    showLast,
+  } = uiSelector(state)
+  let indexes = indexesSelector(state)
+  if (newId === (indexes[0] || {}).id) {
+    indexes.shift()
+  }
+  indexes = [
+    IndexCompat.getIndex(newBattle, newId),
+    ...indexes,
+  ]
+  if (showLast) {
+    battle = newBattle
+  }
+  AppData.saveIndex(indexes)
+  em.emit('dataupdate', battle, indexes)
+}
+
+export function pluginDidLoad() {
+  initData()
+  pm.addListener('battle', handlePacket)
+  pm.addListener('result', handlePacket)
+}
+
+export function pluginWillUnload() {
+  pm.removeListener('battle', handlePacket)
+  pm.removeListener('result', handlePacket)
+}
 
 class MainAreaImpl extends React.Component {
   static propTypes = {
@@ -45,39 +83,20 @@ class MainAreaImpl extends React.Component {
       showBattleWithTimestamp: this.showBattleWithTimestamp,
     })
     window.showBattleWithTimestamp = this.showBattleWithTimestamp
-    this.pm = new PacketManager()
-    this.pm.addListener('battle', this.handlePacket)
-    this.pm.addListener('result', this.handlePacket)
+    em.addListener('dataupdate', this.handleDataUpdate)
   }
 
   componentWillUnmount() {
     ipc.unregisterAll("BattleDetail")
     window.showBattleWithTimestamp = null
-    this.pm.removeListener('battle', this.handlePacket)
-    this.pm.removeListener('result', this.handlePacket)
+    em.removeListener('dataupdate', this.handleDataUpdate)
   }
 
-  handlePacket = async (newBattle, curPacket) => {
-    // Save new battle immediately
-    const newId = PacketCompat.getId(newBattle)
-    AppData.saveBattle(newId, newBattle)
-
-    let {battle, indexes, showLast} = this.props
-    if (newId === (indexes[0] || {}).id) {
-      indexes.shift()
-    }
-    indexes = [
-      IndexCompat.getIndex(newBattle, newId),
-      ...indexes,
-    ]
-    if (showLast) {
-      battle = newBattle
-    }
+  handleDataUpdate = (battle, indexes) => {
     this.props.uiModify(
       modifyObject('battle', () => battle)
     )
     this.props.indexesReplace(indexes)
-    AppData.saveIndex(indexes)
   }
 
   updateBattle = async (battle) => {
@@ -110,7 +129,8 @@ class MainAreaImpl extends React.Component {
     }
 
     return (
-      <div id="main">
+      <div id="battle-detail-main">
+        <link rel="stylesheet" href={join(__dirname, '..', 'assets', 'main.css')} />
         <ModalArea />
         <Tabs id="main-tabs" activeKey={activeTab} onSelect={this.onSelectTab}>
           <Tab eventKey={0} title={__("Battle")}>
@@ -179,7 +199,9 @@ class MainAreaImpl extends React.Component {
   }
 }
 
-const MainArea = connect(
+export { reducer } from './store/common'
+
+export const reactClass = connect(
   state => {
     const {
       activeTab,
@@ -195,11 +217,3 @@ const MainArea = connect(
   },
   actionCreators
 )(MainAreaImpl)
-
-const WrappedMain = _props => (
-  <Provider store={store}>
-    <MainArea />
-  </Provider>
-)
-
-export default WrappedMain

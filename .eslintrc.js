@@ -74,6 +74,7 @@ module.exports = {
       'fs-extra',
       'lodash',
       'cson',
+      'classnames',
     ],
   },
 }

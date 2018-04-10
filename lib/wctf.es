@@ -15,8 +15,6 @@ const convertToWctf = async sortieIndexes => {
     poiRecords.map(r => AppData.loadBattle(r.id, false))
   )
 
-  console.log(sortieIndexes, poiBattles)
-
   const fstBattle = poiBattles[0]
 
   let poiFleets = []

@@ -6,11 +6,10 @@ import {
 import AppData from 'lib/appdata'
 import { IndexCompat } from 'lib/compat'
 import { sleep } from 'views/utils'
-import { extendReducer } from 'views/create-store'
 
 import { showModal, hideModal } from '../modal-area'
 import { indexesSelector, uiSelector } from '../selectors'
-import { reducer, boundActionCreators } from './common'
+import { boundActionCreators } from './common'
 
 const {__, getStore} = window
 
@@ -69,7 +68,7 @@ const updateIndex = async (indexes) => {
   boundActionCreators.indexesReplace(indexes)
 }
 
-const initData =  async () => {
+export const initData =  async () => {
   // Load index from disk
   let indexes = await AppData.loadIndex()
   for (let line of indexes) {
@@ -107,11 +106,3 @@ const initData =  async () => {
   }
 }
 
-const init = () => {
-  extendReducer('poi-plugin-battle-detail', reducer)
-  setTimeout(initData, 100)
-}
-
-export {
-  init,
-}
