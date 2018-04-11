@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import AppData from 'lib/appdata'
+import AppData from './appdata'
 
 const convertToDeckBuilder = async sortieIndexes => {
   const {

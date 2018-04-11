@@ -26,9 +26,9 @@ import {
 
 import { sortieViewerSelector } from '../../selectors'
 import { actionCreators } from '../../store'
-import { convertReplay } from 'lib/convert-replay'
-import { convertToDeckBuilder } from 'lib/deck-builder'
-import { convertToWctf } from 'lib/wctf'
+import { convertReplay } from '../../../lib/convert-replay'
+import { convertToDeckBuilder } from '../../../lib/deck-builder'
+import { convertToWctf } from '../../../lib/wctf'
 import { UPagination } from '../u-pagination'
 import { PTyp } from '../../ptyp'
 import { openReplayGenerator } from './replay-generator'

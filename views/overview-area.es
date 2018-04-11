@@ -3,7 +3,7 @@ import React from 'react'
 import { Panel, Grid, Row, Col } from 'react-bootstrap'
 import FontAwesome from 'react-fontawesome'
 
-import {getShipName, getItemName} from 'views/utils'
+import {getShipName, getItemName} from './utils'
 import { equipIsAircraft } from 'views/utils/game-utils'
 import { SlotitemIcon } from 'views/components/etc/icon'
 

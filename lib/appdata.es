@@ -3,8 +3,8 @@ import fs from 'fs-extra'
 import path from 'path-extra'
 import zlib from 'zlib'
 import { promisify } from 'bluebird'
-import CSV from 'lib/csv'
-import { IndexCompat, PacketCompat } from 'lib/compat'
+import CSV from './csv'
+import { IndexCompat, PacketCompat } from './compat'
 
 const renameAsync = promisify(fs.rename)
 const readDirAsync = promisify(fs.readdir)

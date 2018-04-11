@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import { mapIdToStr } from 'subtender/kc'
-import AppData from 'lib/appdata'
+import AppData from './appdata'
 
 const convertToWctf = async sortieIndexes => {
   const {

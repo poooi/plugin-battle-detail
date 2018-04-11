@@ -3,9 +3,9 @@ import {
   modifyObject,
 } from 'subtender'
 
-import AppData from 'lib/appdata'
-import { IndexCompat } from 'lib/compat'
-import { sleep } from 'views/utils'
+import AppData from '../../lib/appdata'
+import { IndexCompat } from '../../lib/compat'
+import { sleep } from '../utils'
 
 import { showModal, hideModal } from '../modal-area'
 import { indexesSelector, uiSelector } from '../selectors'

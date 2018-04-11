@@ -13,11 +13,11 @@ import OptionArea from './option-area'
 import OverviewArea from './overview-area'
 import DetailArea from './detail-area'
 import BrowseArea from './browse-area'
-import AppData from 'lib/appdata'
-import PacketManager from 'lib/packetmanager'
+import AppData from '../lib/appdata'
+import PacketManager from '../lib/packetmanager'
 
-import { Simulator } from 'lib/battle'
-import { PacketCompat, IndexCompat } from 'lib/compat'
+import { Simulator } from '../lib/battle'
+import { PacketCompat, IndexCompat } from '../lib/compat'
 import { initData, actionCreators } from './store'
 import { indexesSelector, uiSelector } from './selectors'
 import { PTyp } from './ptyp'
@@ -192,6 +192,7 @@ class MainAreaImpl extends React.Component {
         message = __("Unknown error")
         console.error(err.stack)
       }
+    // eslint-disable-next-line no-constant-condition
     } while (0)
     if (typeof callback === 'function') {
       callback(message)

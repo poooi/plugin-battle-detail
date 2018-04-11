@@ -12,7 +12,7 @@ import { getShipName, getItemName } from './utils'
 import {
   StageType, AttackType, HitType, ShipOwner,
   AirControl, Engagement, Formation, Detection,
-} from 'lib/battle'
+} from '../lib/battle'
 
 
 const AirControlName = {

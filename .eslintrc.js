@@ -58,7 +58,6 @@ module.exports = {
     'import/resolver': {
       'node': {
         'extensions': ['.js', '.jsx', '.es', '.coffee', '.cjsx'],
-        'paths': [__dirname],
       },
     },
     'import/core-modules': [

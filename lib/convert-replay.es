@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import { mapIdToStr } from 'subtender/kc'
-import AppData from 'lib/appdata'
+import AppData from './appdata'
 
 /*
    input structure (poiReplayGroup) is either a battle record,

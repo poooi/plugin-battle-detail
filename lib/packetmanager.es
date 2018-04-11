@@ -1,6 +1,6 @@
 
 import EventEmitter from 'events'
-import { Battle, BattleType, Fleet } from 'lib/battle'
+import { Battle, BattleType, Fleet } from './battle'
 
 const {getStore} = window
 
