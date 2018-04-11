@@ -87,7 +87,7 @@
   overflow: hidden;
 }
 
-#battle-detail-main /* HP Bar */
+/* HP Bar */
 #battle-detail-main .hp-bar.progress {
   margin: 0;
   height: 22px;
@@ -107,7 +107,7 @@
   margin-right: -4px;
 }
 
-#battle-detail-main /* Fleet View */
+/* Fleet View */
 #battle-detail-main .fleet-title {
   font-size: 110%;
 }
@@ -125,7 +125,7 @@
 #battle-detail-main .fleet-view .col-xs-12 {
   padding: 0;
 }
-#battle-detail-main /* Ship View */
+/* Ship View */
 #battle-detail-main .ship-view.container {
   padding: 10px;
 }
@@ -140,14 +140,14 @@
   font-size: 90%;
   opacity: 0.8;
 }
-#battle-detail-main /* LBAC View */
+/* LBAC View */
 #battle-detail-main .lbac-view.container {
   padding: 10px;
 }
 #battle-detail-main .lbac-view .row {
   height: 22px;
 }
-#battle-detail-main /* Item View */
+/* Item View */
 #battle-detail-main .item-view {
   overflow: hidden;
   display: flex;
@@ -194,7 +194,7 @@
   width: 16px;
 }
 
-#battle-detail-main /* Stage Table */
+/* Stage Table */
 #battle-detail-main .stage-title {
   font-size: 110%;
   margin: 0 0 8px;
@@ -202,11 +202,11 @@
 #battle-detail-main .stage-table hr {
   margin: 7px 0 7px;
 }
-#battle-detail-main /* Engagement Table */
+/* Engagement Table */
 #battle-detail-main .engagement-row > span {
   flex: 1;
 }
-#battle-detail-main /* Aerial Table */
+/* Aerial Table */
 #battle-detail-main .aerial-row .anti-air-tooltip div {
   display: block;
   width: 100%;
@@ -220,7 +220,7 @@
 #battle-detail-main .aerial-row > span:nth-child(4) {
   flex: 7;
 }
-#battle-detail-main /* Attack Info */
+/* Attack Info */
 #battle-detail-main .critical {
   color: #FFFF00;
 }
@@ -241,7 +241,7 @@
   flex: 1;
 }
 
-#battle-detail-main /* Browse Area */
+/* Browse Area */
 #battle-detail-main #browse-area .tip {
   font-size: 80%;
 }
