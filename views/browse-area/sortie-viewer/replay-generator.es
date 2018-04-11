@@ -15,7 +15,8 @@ import { version as pluginVersion } from '../../../package.json'
 import domToImage from 'dom-to-image'
 import steg from '../../../assets/js/steganography.min.js'
 
-const {POI_VERSION, $, __} = window
+const { POI_VERSION, $ } = window
+const { __ } = window.i18n["poi-plugin-battle-detail"]
 
 /*
    replay image generation. kc3kai style png image with battle data encoded.

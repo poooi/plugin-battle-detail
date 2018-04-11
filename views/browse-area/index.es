@@ -16,7 +16,7 @@ import { actionCreators } from '../store'
 import { UPagination } from './u-pagination'
 import { PTyp } from '../ptyp'
 
-const { __ } = window
+const { __ } = window.i18n["poi-plugin-battle-detail"]
 
 const PAGE_ITEM_AMOUNT = 20
 

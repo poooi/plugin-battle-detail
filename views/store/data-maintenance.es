@@ -11,7 +11,8 @@ import { showModal, hideModal } from '../modal-area'
 import { indexesSelector, uiSelector } from '../selectors'
 import { boundActionCreators } from './common'
 
-const {__, getStore} = window
+const { getStore } = window
+const { __ } = window.i18n["poi-plugin-battle-detail"]
 
 const INDEXES_LOAD_INTERVAL = 500
 const INDEXES_LOAD_NUMBER = 500

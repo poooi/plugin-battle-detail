@@ -33,7 +33,7 @@ import { UPagination } from '../u-pagination'
 import { PTyp } from '../../ptyp'
 import { openReplayGenerator } from './replay-generator'
 
-const {__} = window
+const { __ } = window.i18n["poi-plugin-battle-detail"]
 
 const battleReplayerURL = 'https://kc3kai.github.io/kancolle-replay/battleplayer.html'
 
