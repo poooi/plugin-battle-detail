@@ -106,8 +106,8 @@
   "Description": "説明",
   "View": "ビュー",
   "Tip": "ヒント",
-  "Tip.Akashic1.Part1": "航海日誌の出撃データに",
-  "Tip.Akashic1.Part2": "をクリックすると、その戦闘の詳細が表示します。",
+  "Tip_Akashic1_Part1": "航海日誌の出撃データに",
+  "Tip_Akashic1_Part2": "をクリックすると、その戦闘の詳細が表示します。",
 
   "BrowseArea": {
     "Nodes": "マス",
