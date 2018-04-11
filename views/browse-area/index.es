@@ -26,11 +26,11 @@ class BrowseAreaImpl extends Component {
     uiModify: PTyp.func.isRequired,
   }
 
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     this.state = {
       pageNo: 1,
-      indexes: [],
+      indexes: props.indexes,
       filters: {
         time : [''],
         desc : [''],
