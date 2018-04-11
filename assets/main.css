@@ -1,6 +1,7 @@
 #battle-detail-main {
   height: 100%;
   overflow: auto;
+  display: flex;
 }
 #battle-detail-main .btn-group {
   display: flex;
@@ -306,7 +307,6 @@
 }
 
 #battle-detail-main #main-tabs > .tab-content > #main-tabs-pane-1 #browse-area {
-  height: 100%;
   display: flex;
   flex-direction: column;
   margin-top: .5em;
