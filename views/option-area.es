@@ -9,13 +9,14 @@ import {
 } from 'react-bootstrap'
 
 import { showModal } from './modal-area'
-import { PacketCompat } from 'lib/compat'
+import { PacketCompat } from '../lib/compat'
 
 const {clipboard} = require('electron')
-const {__, $} = window
+const { $ } = window
+const { __ } = window.i18n["poi-plugin-battle-detail"]
 
 class OptionArea extends React.Component {
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate(nextProps) {
     return !(
       this.props.battle === nextProps.battle
     )
@@ -38,7 +39,7 @@ class OptionArea extends React.Component {
       showModal({
         title: __("Copy Data"),
         body : [__("The battle packet was copied to clipboard."),
-                __("You can send your friends the packet to share the battle.")],
+          __("You can send your friends the packet to share the battle.")],
       })
     } else {
       showModal({
@@ -58,7 +59,7 @@ class OptionArea extends React.Component {
       showModal({
         title: __("Paste Data"),
         body : [__("A battle packet was pasted from clipboard."),
-                __("If you see no battle detail, you may have a broken packet.")],
+          __("If you see no battle detail, you may have a broken packet.")],
       })
     }
   }

@@ -58,7 +58,6 @@ module.exports = {
     'import/resolver': {
       'node': {
         'extensions': ['.js', '.jsx', '.es', '.coffee', '.cjsx'],
-        'paths': [__dirname],
       },
     },
     'import/core-modules': [
@@ -74,6 +73,7 @@ module.exports = {
       'fs-extra',
       'lodash',
       'cson',
+      'classnames',
     ],
   },
 }

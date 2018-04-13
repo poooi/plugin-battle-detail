@@ -16,7 +16,7 @@ import { actionCreators } from '../store'
 import { UPagination } from './u-pagination'
 import { PTyp } from '../ptyp'
 
-const { __ } = window
+const { __ } = window.i18n["poi-plugin-battle-detail"]
 
 const PAGE_ITEM_AMOUNT = 20
 
@@ -26,11 +26,11 @@ class BrowseAreaImpl extends Component {
     uiModify: PTyp.func.isRequired,
   }
 
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     this.state = {
       pageNo: 1,
-      indexes: [],
+      indexes: props.indexes,
       filters: {
         time : [''],
         desc : [''],
@@ -160,9 +160,9 @@ class BrowseAreaImpl extends Component {
                     style={{marginBottom: '1em'}}
                     xs={12} className='tip'>
                     <span>{__('Tip') + ': '}</span>
-                    <span>{__('Tip.Akashic1.Part1')}</span>
+                    <span>{__('Tip_Akashic1_Part1')}</span>
                     <span><FontAwesome name='info-circle' /></span>
-                    <span>{__('Tip.Akashic1.Part2')}</span>
+                    <span>{__('Tip_Akashic1_Part2')}</span>
                   </Col>
                 </Row>
               </Grid>

@@ -3,13 +3,14 @@ import React from 'react'
 import { Panel, Grid, Row, Col } from 'react-bootstrap'
 import FontAwesome from 'react-fontawesome'
 
-import {getShipName, getItemName} from 'views/utils'
+import {getShipName, getItemName} from './utils'
 import { equipIsAircraft } from 'views/utils/game-utils'
 import { SlotitemIcon } from 'views/components/etc/icon'
 
 import {FABar, HPBar} from './bar'
 
-const {ROOT, __, getStore} = window
+const { ROOT, getStore } = window
+const { __ } = window.i18n["poi-plugin-battle-detail"]
 
 const DEFAULT_EXPANDED = false
 class OverviewArea extends React.PureComponent {
@@ -65,16 +66,16 @@ class FleetView extends React.Component {
       <div className="fleet-view">
         <div className="fleet-title">{title}</div>
         <Grid>
-        {rows.map(([a, b], i) =>
-          <Row key={i}>
-            <Col xs={6}>
-              <View child={a} />
-            </Col>
-            <Col xs={6}>
-              <View child={b} />
-            </Col>
-          </Row>
-        )}
+          {rows.map(([a, b], i) =>
+            <Row key={i}>
+              <Col xs={6}>
+                <View child={a} />
+              </Col>
+              <Col xs={6}>
+                <View child={b} />
+              </Col>
+            </Row>
+          )}
         </Grid>
       </div>
     )
@@ -140,10 +141,10 @@ class ShipView extends React.Component {
           </Row>
         </Col>
         <Col xs={7}>
-        {(data.poi_slot || []).map((item, i) =>
-          <ItemView key={i} item={item} extra={false} label={data.api_onslot[i]}
-            warn={data.api_onslot[i] !== data.api_maxeq[i]} />
-        )}
+          {(data.poi_slot || []).map((item, i) =>
+            <ItemView key={i} item={item} extra={false} label={data.api_onslot[i]}
+              warn={data.api_onslot[i] !== data.api_maxeq[i]} />
+          )}
           <ItemView item={data.poi_slot_ex} extra={true} label={'+'} warn={false} />
         </Col>
       </Grid>
@@ -166,10 +167,10 @@ class LBACView extends React.Component {
           </Row>
         </Col>
         <Col xs={7}>
-        {corps.api_plane_info.map((plane, i) =>
-          <ItemView key={i} item={plane.poi_slot} extra={false} label={plane.api_count}
-            warn={plane.api_count !== plane.api_max_count} />
-        )}
+          {corps.api_plane_info.map((plane, i) =>
+            <ItemView key={i} item={plane.poi_slot} extra={false} label={plane.api_count}
+              warn={plane.api_count !== plane.api_max_count} />
+          )}
         </Col>
       </Grid>
     )

@@ -26,14 +26,14 @@ import {
 
 import { sortieViewerSelector } from '../../selectors'
 import { actionCreators } from '../../store'
-import { convertReplay } from 'lib/convert-replay'
-import { convertToDeckBuilder } from 'lib/deck-builder'
-import { convertToWctf } from 'lib/wctf'
+import { convertReplay } from '../../../lib/convert-replay'
+import { convertToDeckBuilder } from '../../../lib/deck-builder'
+import { convertToWctf } from '../../../lib/wctf'
 import { UPagination } from '../u-pagination'
 import { PTyp } from '../../ptyp'
 import { openReplayGenerator } from './replay-generator'
 
-const {__} = window
+const { __ } = window.i18n["poi-plugin-battle-detail"]
 
 const battleReplayerURL = 'https://kc3kai.github.io/kancolle-replay/battleplayer.html'
 

@@ -4,7 +4,8 @@ import { get } from 'lodash'
 import React, { Fragment } from 'react'
 import { Panel, OverlayTrigger, Tooltip, Row } from 'react-bootstrap'
 import cls from 'classnames'
-const { __ } = window
+
+const { __ } = window.i18n["poi-plugin-battle-detail"]
 
 import { HPBar } from './bar'
 import { getShipName, getItemName } from './utils'
@@ -12,7 +13,7 @@ import { getShipName, getItemName } from './utils'
 import {
   StageType, AttackType, HitType, ShipOwner,
   AirControl, Engagement, Formation, Detection,
-} from 'lib/battle'
+} from '../lib/battle'
 
 
 const AirControlName = {
@@ -52,14 +53,14 @@ const DetectionName = {
 }
 
 const AttackTypeName = {
-  [AttackType.Normal              ]: __("AT.Normal"),
-  [AttackType.Double              ]: __("AT.Double"),
-  [AttackType.Primary_Secondary_CI]: __("AT.Primary_Secondary_CI"),
-  [AttackType.Primary_Radar_CI    ]: __("AT.Primary_Radar_CI"),
-  [AttackType.Primary_AP_CI       ]: __("AT.Primary_AP_CI"),
-  [AttackType.Primary_Primary_CI  ]: __("AT.Primary_Primary_CI"),
-  [AttackType.Primary_Torpedo_CI  ]: __("AT.Primary_Torpedo_CI"),
-  [AttackType.Torpedo_Torpedo_CI  ]: __("AT.Torpedo_Torpedo_CI"),
+  [AttackType.Normal              ]: __("AT_Normal"),
+  [AttackType.Double              ]: __("AT_Double"),
+  [AttackType.Primary_Secondary_CI]: __("AT_Primary_Secondary_CI"),
+  [AttackType.Primary_Radar_CI    ]: __("AT_Primary_Radar_CI"),
+  [AttackType.Primary_AP_CI       ]: __("AT_Primary_AP_CI"),
+  [AttackType.Primary_Primary_CI  ]: __("AT_Primary_Primary_CI"),
+  [AttackType.Primary_Torpedo_CI  ]: __("AT_Primary_Torpedo_CI"),
+  [AttackType.Torpedo_Torpedo_CI  ]: __("AT_Torpedo_Torpedo_CI"),
 }
 
 

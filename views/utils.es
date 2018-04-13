@@ -1,5 +1,6 @@
 
-const {__r, getStore} = window
+const { getStore } = window
+const { __: __r } = window.i18n.resources
 
 export function getShipName(ship) {
   if (Number.isInteger(ship)) {

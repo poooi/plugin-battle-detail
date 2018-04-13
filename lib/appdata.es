@@ -3,8 +3,8 @@ import fs from 'fs-extra'
 import path from 'path-extra'
 import zlib from 'zlib'
 import { promisify } from 'bluebird'
-import CSV from 'lib/csv'
-import { IndexCompat, PacketCompat } from 'lib/compat'
+import CSV from './csv'
+import { IndexCompat, PacketCompat } from './compat'
 
 const renameAsync = promisify(fs.rename)
 const readDirAsync = promisify(fs.readdir)
@@ -144,7 +144,7 @@ class AppData {
     const BATTLE_REGEXP = /^(\d+)\.json/
     let ids = []
     let files = await readDirAsync(APPDATA)
-    files.map((file, i) => {
+    files.map((file) => {
       let match = file.match(BATTLE_REGEXP)
       if (match && match[1]) {
         ids.push(parseInt(match[1]))

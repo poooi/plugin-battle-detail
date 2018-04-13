@@ -3,10 +3,11 @@ import _ from 'lodash'
 import fs from 'fs-extra'
 import path from 'path-extra'
 
-import { Simulator, Models } from 'lib/battle'
+import { Simulator, Models } from '../lib/battle'
 const { Battle, BattleType, Fleet } = Models
 const { Rank } = Models
-const { __, getStore } = window
+const { getStore } = window
+const { __ } = window.i18n["poi-plugin-battle-detail"]
 
 function tree2path(tree) {
   const pathes = []
