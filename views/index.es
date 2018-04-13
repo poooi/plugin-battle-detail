@@ -80,16 +80,21 @@ class MainAreaImpl extends React.Component {
   }
 
   componentDidMount() {
+    const startupState = ipc.access("BattleDetail")
+    if (startupState && startupState.timestamp) {
+      this.showBattleWithTimestamp(startupState.timestamp)
+      ipc.unregister("BattleDetail", "timestamp")
+    }
     ipc.register("BattleDetail", {
       showBattleWithTimestamp: this.showBattleWithTimestamp,
     })
-    window.showBattleWithTimestamp = this.showBattleWithTimestamp
+    // window.showBattleWithTimestamp = this.showBattleWithTimestamp
     em.addListener('dataupdate', this.handleDataUpdate)
   }
 
   componentWillUnmount() {
     ipc.unregisterAll("BattleDetail")
-    window.showBattleWithTimestamp = null
+    // window.showBattleWithTimestamp = null
     em.removeListener('dataupdate', this.handleDataUpdate)
   }
 
@@ -188,7 +193,6 @@ class MainAreaImpl extends React.Component {
       try {
         let id = list[0]
         this.updateBattle(id)
-        remote.getCurrentWindow().show()
       } catch (err) {
         message = __("Unknown error")
         console.error(err.stack)
