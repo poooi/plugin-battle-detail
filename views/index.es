@@ -4,7 +4,6 @@ import { store } from 'views/create-store'
 import { modifyObject } from 'subtender'
 import React from 'react'
 import { Tab, Tabs } from 'react-bootstrap'
-import { remote } from 'electron'
 import { EventEmitter } from 'events'
 import { join } from 'path-extra'
 
@@ -49,6 +48,7 @@ async function handlePacket(newBattle, _curPacket) {
     battle = newBattle
   }
   AppData.saveIndex(indexes)
+  store.dispatch(actionCreators.indexesReplace(indexes))
   em.emit('dataupdate', battle, indexes)
 }
 
@@ -98,11 +98,10 @@ class MainAreaImpl extends React.Component {
     em.removeListener('dataupdate', this.handleDataUpdate)
   }
 
-  handleDataUpdate = (battle, indexes) => {
+  handleDataUpdate = (battle) => {
     this.props.uiModify(
       modifyObject('battle', () => battle)
     )
-    this.props.indexesReplace(indexes)
   }
 
   updateBattle = async (battle) => {
