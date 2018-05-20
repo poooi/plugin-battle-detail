@@ -88,13 +88,13 @@ class MainAreaImpl extends React.Component {
     ipc.register("BattleDetail", {
       showBattleWithTimestamp: this.showBattleWithTimestamp,
     })
-    // window.showBattleWithTimestamp = this.showBattleWithTimestamp
+    window.showBattleWithTimestamp = this.showBattleWithTimestamp
     em.addListener('dataupdate', this.handleDataUpdate)
   }
 
   componentWillUnmount() {
     ipc.unregisterAll("BattleDetail")
-    // window.showBattleWithTimestamp = null
+    window.showBattleWithTimestamp = null
     em.removeListener('dataupdate', this.handleDataUpdate)
   }
 
