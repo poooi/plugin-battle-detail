@@ -7,6 +7,7 @@ import { Panel, Button, FormControl } from 'react-bootstrap'
 import { remote, shell } from 'electron'
 import Markdown from 'react-remarkable'
 import { Avatar } from 'views/components/etc/avatar'
+import { translate } from 'react-i18next'
 
 import { showModal } from '../../modal-area'
 import { getMapNodeLetterFuncSelector, themeSelector } from '../../selectors'
@@ -40,11 +41,13 @@ const { __ } = window.i18n["poi-plugin-battle-detail"]
 const battleReplayerURL = 'https://kc3kai.github.io/kancolle-replay/battleplayer.html'
 const imagesPath = join(__dirname, '..','..','..','assets','images')
 
+@translate('poi-plugin-battle-detail')
 class ReplayGeneratorImpl extends PureComponent {
   static propTypes = {
     rep: PTyp.object.isRequired,
     getMapNodeLetter: PTyp.func.isRequired,
     theme: PTyp.string.isRequired,
+    t: PTyp.func.isRequired,
   }
 
   constructor(props) {
@@ -107,7 +110,7 @@ class ReplayGeneratorImpl extends PureComponent {
     if (imageInfo.fleets.length < 1 || imageInfo.fleets.length > 2) {
       console.warn(`unexpected number of fleets: ${imageInfo.fleets.length}`)
     }
-    const instructions = __('BrowseArea.ReplayGen.InstructionsMD')
+    const instructions = this.props.t('BrowseArea.ReplayGen.InstructionsMD')
 
     return (
       <div
