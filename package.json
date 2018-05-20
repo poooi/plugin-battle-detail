@@ -22,7 +22,7 @@
     "eslint": "^4.10.0",
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-react": "^7.4.0",
-    "poi-util-transpile": "^7.6.1"
+    "poi-util-transpile": "^8.2.1"
   },
   "repository": {
     "type": "git",
