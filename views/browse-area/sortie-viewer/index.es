@@ -16,6 +16,7 @@ import {
   mergeMapStateToProps,
 } from 'subtender'
 import { fcdSelector } from 'views/utils/selectors'
+import { translate } from 'react-i18next'
 
 import {
   sortieIndexesDomainSelector,
@@ -61,6 +62,7 @@ const rankColors = {
   'E': '#03a9f4',
 }
 
+@translate('poi-plugin-battle-detail')
 class SortieViewerImpl extends PureComponent {
   static propTypes = {
     mapIds: PTyp.array.isRequired,
@@ -76,6 +78,7 @@ class SortieViewerImpl extends PureComponent {
     }).isRequired,
 
     uiModify: PTyp.func.isRequired,
+    t: PTyp.func.isRequired,
   }
 
   modifySortieViewer = modifier =>
@@ -185,7 +188,9 @@ class SortieViewerImpl extends PureComponent {
             className="markdown"
             style={{flex: 1}}>
             <Markdown
-              source={_.join(__('BrowseArea.SortieTipsMD'), '\n')}
+              source={
+                _.join(this.props.t('BrowseArea.SortieTipsMD'), '\n')
+              }
             />
           </div>
           <Button
