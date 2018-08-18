@@ -11,7 +11,7 @@ import {
 } from 'react-bootstrap'
 
 import { browseModeSelector } from '../selectors'
-import { SortieViewer } from './sortie-viewer'
+// import { SortieViewer } from './sortie-viewer'
 import { actionCreators } from '../store'
 import { UPagination } from './u-pagination'
 import { PTyp } from '../ptyp'
@@ -216,7 +216,7 @@ class BrowseAreaImpl extends Component {
             <div
               className="sortie-viewer-wrap"
               style={browseMode === 'sorties' ? {} : {display: 'none'}}>
-              <SortieViewer />
+              {/* <SortieViewer /> */}
             </div>
           </Panel.Body>
         </Panel>
