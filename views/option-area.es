@@ -1,4 +1,3 @@
-import domToImage from 'dom-to-image'
 import { remote } from 'electron'
 import React from 'react'
 import {
@@ -12,7 +11,6 @@ import { showModal } from './modal-area'
 import { PacketCompat } from '../lib/compat'
 
 const {clipboard} = require('electron')
-const { $ } = window
 const { __ } = window.i18n["poi-plugin-battle-detail"]
 
 class OptionArea extends React.Component {
@@ -65,7 +63,8 @@ class OptionArea extends React.Component {
   }
 
   onClickSave = () => {
-    const ref = $('#battle-area')
+    const ref = this.props.battleArea.current
+    const domToImage = ref.ownerDocument.defaultView.require(require.resolve('dom-to-image'))
     const computed = getComputedStyle(ref)
     const width = parseInt(computed.width, 10)
     const height = parseInt(computed.height, 10)

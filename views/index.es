@@ -79,6 +79,8 @@ class MainAreaImpl extends React.Component {
     battle: null,
   }
 
+  battleArea = React.createRef()
+
   componentDidMount() {
     const startupState = ipc.access("BattleDetail")
     if (startupState && startupState.timestamp) {
@@ -142,8 +144,9 @@ class MainAreaImpl extends React.Component {
             <OptionArea
               battle={battle}
               updateBattle={this.updateBattle}
+              battleArea={this.battleArea}
             />
-            <div id="battle-area">
+            <div id="battle-area" ref={this.battleArea}>
               <OverviewArea simulator={simulator} stages={stages} />
               <DetailArea simulator={simulator} stages={stages} />
             </div>

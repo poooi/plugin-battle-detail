@@ -13,10 +13,9 @@ import { showModal } from '../../modal-area'
 import { getMapNodeLetterFuncSelector, themeSelector } from '../../selectors'
 import { PTyp } from '../../ptyp'
 import { version as pluginVersion } from '../../../package.json'
-import domToImage from 'dom-to-image'
 import steg from '../../../assets/js/steganography.min.js'
 
-const { POI_VERSION, $ } = window
+const { POI_VERSION } = window
 const { __ } = window.i18n["poi-plugin-battle-detail"]
 
 /*
@@ -59,6 +58,8 @@ class ReplayGeneratorImpl extends PureComponent {
     }
   }
 
+  renderRoot = React.createRef()
+
   handleOpenReplayer = () =>
     shell.openExternal(battleReplayerURL)
 
@@ -68,7 +69,8 @@ class ReplayGeneratorImpl extends PureComponent {
   }
 
   handleSaveImage = replayData => () => {
-    const ref = $('#replay-render-root')
+    const ref = this.renderRoot.current
+    const domToImage = ref.ownerDocument.defaultView.require(require.resolve('dom-to-image'))
     const computed = getComputedStyle(ref)
     const width = parseInt(computed.width, 10)
     const height = parseInt(computed.height, 10)
@@ -126,6 +128,7 @@ class ReplayGeneratorImpl extends PureComponent {
             <div
               className="replay-render-root"
               id="replay-render-root"
+              ref={this.renderRoot}
               style={{
                 width: 400,
                 display: 'flex',
