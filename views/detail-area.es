@@ -57,6 +57,7 @@ const AttackTypeName = {
   [AttackType.Laser               ]: __("AT_Laser"),
   [AttackType.Double              ]: __("AT_Double"),
   [AttackType.Nelson_Touch        ]: __("AT_Nelson_Touch"),
+  [AttackType.Nagato_Punch        ]: __("AT_Nagato_Punch"),
   [AttackType.Carrier_CI          ]: __("AT_Carrier_CI"),
   [AttackType.Primary_Secondary_CI]: __("AT_Primary_Secondary_CI"),
   [AttackType.Primary_Radar_CI    ]: __("AT_Primary_Radar_CI"),
