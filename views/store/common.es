@@ -10,6 +10,37 @@ const initState = {
   // INVARIANT: indexes must be sorted in descending order
   // of "id", which is an integer
   indexes: [],
+
+  /*
+     draft for new data structure that handles
+     "group by sortie" feature, which is then reponsible for bringing back
+     sortie view.
+
+     N.B. old approach uses selector for grouping sorties, which
+     impose significant performance penalty when # of sorites are larger (> 10000)
+   */
+  /*
+  records: {
+    // seems battle id and timestamp are the same thing.
+    // BattleRef = Int = Timestamp
+    // might need an extension to MapId:
+    // EffMapId for effective map id: <mapid>p<phase>
+    // - 11p1 is 1-1 for phase 1
+    // - 32p2 is 3-2 but for phase 2, etc.
+    meta: {
+      // old toplevel "indexes", Array<BattleRef>, descending
+      // (recent ones are in front)
+      byBattle: [],
+      // ByTime: Array<SortieRecord>
+      byTime: [],
+      // ByMap: Object<MapId, ByTime>
+      byMap: {},
+    },
+    // Object<Time, BattleRecord>
+    battleCache: {},
+  },
+  */
+
   ui: {
     battle: null,
     activeTab: 0,
