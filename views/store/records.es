@@ -1,4 +1,21 @@
 /*
+   TODO: might be helpful to split into more modules
+
+   this module contains a bunch of building block responsible for
+   making p1 and p2 data battle data universally accessible and useful.
+ */
+import _ from 'lodash'
+import { createSelector } from 'reselect'
+import { join } from 'path-extra'
+import { readJsonSync } from 'fs-extra'
+
+import { fcdSelector } from 'views/utils/selectors'
+
+const fcdMapP1Raw = readJsonSync(
+  join(__dirname, '..', '..', 'assets', 'data', 'fcd-map-p1.json')
+)
+
+/*
 
    the maintenance for the transition from p1 to p2 was started at:
 
@@ -44,6 +61,7 @@ const toEffMapId = (mapId, timestamp) => {
 
 // - f : (mapId: Number, phase: 1 or 2) => ret typ of f
 // - withEffMapId(EffMapId)(f) => ret typ of f
+// if f receives `null` as mapId, we've failed at parsing
 const withEffMapId = eMapId => do {
   const matchResult = /^(\d+)p(1|2)$/.exec(eMapId)
   if (!matchResult) {
@@ -58,7 +76,35 @@ const withEffMapId = eMapId => do {
   }
 }
 
+/*
+   get FCD map data using EffMapId.
+   note that this is a selector, which requires a valid store state
+   for accessing phase-2 data
+ */
+const getFcdMapInfoFuncSelector = createSelector(
+  fcdSelector,
+  fcd => effMapId => withEffMapId(effMapId)((mapId, phase) => {
+    if (mapId === null)
+      return null
+    const num = mapId % 10
+    const world = Math.round((mapId - num) / 10)
+    // in the form of `X-Y`
+    const fcdMapId = `${world}-${num}`
+
+    if (phase === 1) {
+      return _.get(fcdMapP1Raw, ['data', fcdMapId], null)
+    }
+
+    if (phase === 2) {
+      return _.get(fcd, ['map', fcdMapId], null)
+    }
+
+    return null
+  })
+)
+
 export {
   toEffMapId,
   withEffMapId,
+  getFcdMapInfoFuncSelector,
 }
