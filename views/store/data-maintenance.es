@@ -9,7 +9,7 @@ import { sleep } from '../utils'
 
 import { showModal, hideModal } from '../modal-area'
 import { indexesSelector, uiSelector } from '../selectors'
-import { boundActionCreators } from './common'
+import { boundActionCreators } from './ext-root'
 
 const { getStore } = window
 const { __ } = window.i18n["poi-plugin-battle-detail"]

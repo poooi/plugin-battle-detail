@@ -207,7 +207,7 @@ class MainAreaImpl extends React.Component {
   }
 }
 
-export { reducer } from './store/common'
+export { reducer } from './store'
 
 export const reactClass = connect(
   state => {
