@@ -47,14 +47,15 @@ const toEffMapId = (mapId, timestamp) => {
 const withEffMapId = eMapId => do {
   const matchResult = /^(\d+)p(1|2)$/.exec(eMapId)
   if (!matchResult) {
-    throw new Error(`parse error: ${eMapId} is not a valid EffMapId`)
+    console.error(`parse error: ${eMapId} is not a valid EffMapId`)
+    f => f(null)
+  } else {
+    const [_ignored, mapIdStr, phaseStr] = matchResult
+    const mapId = Number(mapIdStr)
+    const phase = Number(phaseStr)
+    // use currying to avoid redundant parsing steps
+    f => f(mapId, phase)
   }
-  const [_ignored, mapIdStr, phaseStr] = matchResult
-  const mapId = Number(mapIdStr)
-  const phase = Number(phaseStr)
-
-  // use currying to avoid redundant parsing steps
-  f => f(mapId, phase)
 }
 
 export {
