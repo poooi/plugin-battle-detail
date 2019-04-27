@@ -7,7 +7,7 @@ const {getStore} = window
 export class FABar extends React.Component {
   render() {
     let {max, now, icon} = this.props
-    let pcnt = Math.round(100 * now / max)
+    let pcnt = Math.floor(100 * now / max)
     if (! (max && now)) {
       max = now = 0
       pcnt = 100
