@@ -2,6 +2,7 @@
   height: 100%;
   overflow: auto;
   display: flex;
+  margin: auto 4px;
 }
 #battle-detail-main .btn-group {
   display: flex;
@@ -364,4 +365,8 @@
 
 #battle-detail-main .theme-darklykai .replay-render-root {
   background-color: #222222;
+}
+
+.bp3-dark #battle-detail-main #main-tabs-pane-0 {
+  text-shadow: 0 1px #000, 1px 0 #000, -1px 0 #000, 0 -1px #000;
 }
