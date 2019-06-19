@@ -69,7 +69,7 @@ class OptionArea extends React.Component {
     const width = parseInt(computed.width, 10)
     const height = parseInt(computed.height, 10)
     domToImage.toPng(ref, {
-      bgcolor: window.isVibrant ? "rgba(38,38,38,0.8)" : undefined,
+      bgcolor: document.body.style.backgroundColor || window.isVibrant ? "rgba(38,38,38,0.8)" : undefined,
       width, height,
     }
     ).then(dataUrl =>
