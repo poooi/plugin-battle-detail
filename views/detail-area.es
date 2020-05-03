@@ -53,20 +53,21 @@ const DetectionName = {
 }
 
 const AttackTypeName = {
-  [AttackType.Normal              ]: __("AT_Normal"),
-  [AttackType.Laser               ]: __("AT_Laser"),
-  [AttackType.Double              ]: __("AT_Double"),
-  [AttackType.Nelson_Touch        ]: __("AT_Nelson_Touch"),
-  [AttackType.Nagato_Punch        ]: __("AT_Nagato_Punch"),
-  [AttackType.Mutsu_Splash        ]: __("AT_Mutsu_Splash"),
-  [AttackType.Colorado_Fire       ]: __("AT_Colorado_Fire"),
-  [AttackType.Carrier_CI          ]: __("AT_Carrier_CI"),
-  [AttackType.Primary_Secondary_CI]: __("AT_Primary_Secondary_CI"),
-  [AttackType.Primary_Radar_CI    ]: __("AT_Primary_Radar_CI"),
-  [AttackType.Primary_AP_CI       ]: __("AT_Primary_AP_CI"),
-  [AttackType.Primary_Primary_CI  ]: __("AT_Primary_Primary_CI"),
-  [AttackType.Primary_Torpedo_CI  ]: __("AT_Primary_Torpedo_CI"),
-  [AttackType.Torpedo_Torpedo_CI  ]: __("AT_Torpedo_Torpedo_CI"),
+  [AttackType.Normal                    ]: __("AT_Normal"),
+  [AttackType.Laser                     ]: __("AT_Laser"),
+  [AttackType.Double                    ]: __("AT_Double"),
+  [AttackType.Nelson_Touch              ]: __("AT_Nelson_Touch"),
+  [AttackType.Nagato_Punch              ]: __("AT_Nagato_Punch"),
+  [AttackType.Mutsu_Splash              ]: __("AT_Mutsu_Splash"),
+  [AttackType.Colorado_Fire             ]: __("AT_Colorado_Fire"),
+  [AttackType.Kongo_Class_Kaini_C_Charge]: __("AT_Kongo_Class_Kaini_C_Charge"),
+  [AttackType.Carrier_CI                ]: __("AT_Carrier_CI"),
+  [AttackType.Primary_Secondary_CI      ]: __("AT_Primary_Secondary_CI"),
+  [AttackType.Primary_Radar_CI          ]: __("AT_Primary_Radar_CI"),
+  [AttackType.Primary_AP_CI             ]: __("AT_Primary_AP_CI"),
+  [AttackType.Primary_Primary_CI        ]: __("AT_Primary_Primary_CI"),
+  [AttackType.Primary_Torpedo_CI        ]: __("AT_Primary_Torpedo_CI"),
+  [AttackType.Torpedo_Torpedo_CI        ]: __("AT_Torpedo_Torpedo_CI"),
 }
 
 
