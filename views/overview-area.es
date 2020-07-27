@@ -162,7 +162,7 @@ class LBACView extends React.Component {
       <Grid className="lbac-view">
         <Col xs={5}>
           <Row className='lbac-name'>
-            <span>{getItemName(corps)}</span>
+            <span>{corps.api_name}</span>
             <span className="position-indicator">{`(No.${corps.api_rid})`}</span>
           </Row>
         </Col>
