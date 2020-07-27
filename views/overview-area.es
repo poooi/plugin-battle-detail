@@ -3,11 +3,11 @@ import React from 'react'
 import { Panel, Grid, Row, Col } from 'react-bootstrap'
 import FontAwesome from 'react-fontawesome'
 
-import {getShipName, getItemName} from './utils'
+import { getShipName } from './utils'
 import { equipIsAircraft } from 'views/utils/game-utils'
 import { SlotitemIcon } from 'views/components/etc/icon'
 
-import {FABar, HPBar} from './bar'
+import { FABar, HPBar } from './bar'
 
 const { ROOT, getStore } = window
 const { __ } = window.i18n["poi-plugin-battle-detail"]
@@ -15,7 +15,7 @@ const { __ } = window.i18n["poi-plugin-battle-detail"]
 const DEFAULT_EXPANDED = false
 class OverviewArea extends React.PureComponent {
   render() {
-    const {simulator} = this.props
+    const { simulator } = this.props
     return (
       <div id="overview-area">
         <Panel
@@ -51,8 +51,8 @@ class OverviewArea extends React.PureComponent {
 
 class FleetView extends React.Component {
   render() {
-    let {fleet, title, View} = this.props
-    if (! (fleet && fleet.length > 0)) {
+    let { fleet, title, View } = this.props
+    if (!(fleet && fleet.length > 0)) {
       return <div />
     }
     if (View == null) {
@@ -60,7 +60,7 @@ class FleetView extends React.Component {
     }
     let rows = []
     for (let i of Array(Math.ceil(fleet.length / 2)).keys()) {
-      rows.push([fleet[2*i+0], fleet[2*i+1]])
+      rows.push([fleet[2 * i + 0], fleet[2 * i + 1]])
     }
     return (
       <div className="fleet-view">
@@ -98,18 +98,18 @@ class ShipView extends React.Component {
   }
 
   render() {
-    let {child: ship} = this.props
-    if (! (ship && ship.id > 0)) {
+    let { child: ship } = this.props
+    if (!(ship && ship.id > 0)) {
       return <div />
     }
     let raw = ship.raw || {}
     let mst = getStore(['const', '$ships', ship.id]) || {}
     let data = Object.assign(Object.clone(mst), raw)
 
-    if (! data.api_maxeq) {
+    if (!data.api_maxeq) {
       data.api_maxeq = []
     }
-    if (! data.api_onslot) {
+    if (!data.api_onslot) {
       data.api_onslot = data.api_maxeq
     }
 
@@ -154,8 +154,8 @@ class ShipView extends React.Component {
 
 class LBACView extends React.Component {
   render() {
-    let {child: corps} = this.props
-    if (! (corps && corps.api_plane_info)) {
+    let { child: corps } = this.props
+    if (!(corps && corps.api_plane_info)) {
       return <div />
     }
     return (
@@ -179,8 +179,8 @@ class LBACView extends React.Component {
 
 class ItemView extends React.Component {
   render() {
-    let {item, extra, label, warn} = this.props
-    if (! item) {
+    let { item, extra, label, warn } = this.props
+    if (!item) {
       return <div />
     }
     let raw = item
