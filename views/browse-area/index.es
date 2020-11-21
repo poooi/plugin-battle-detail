@@ -41,7 +41,7 @@ class BrowseAreaImpl extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (this.props.indexes === nextProps.indexes)
       return
     this.setState({
@@ -68,7 +68,8 @@ class BrowseAreaImpl extends Component {
     ))
   }
 
-  onClickFilter = () => {
+  onClickFilter = (e) => {
+    e.preventDefault()
     const SEPARATOR = ','
     const time  = this.iTime.value
     const desc  = this.iDesc.value
