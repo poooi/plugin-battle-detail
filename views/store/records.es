@@ -35,7 +35,7 @@ const fcdMapP1Raw = readJsonSync(
 const p1Cutoff = Number(new Date('2018-08-17T00:00:00+09:00'))
 
 /*
-   EffMapId is a string that not only represents map id
+   EffMapId is a string that not only represents map id (Eff for effective)
    but make explicit the concept of phase:
    due to the fact that old data (phase 1) is completely a different story
    than newer ones (phase 2), we'll have to make this distinction.
@@ -102,6 +102,21 @@ const getFcdMapInfoFuncSelector = createSelector(
     return null
   })
 )
+
+const debug = true
+
+if (debug) {
+  const {selectorTester} = require('subtender/poi')
+  selectorTester(getFcdMapInfoFuncSelector)
+
+  /*
+   usage:
+
+   > testSelector(f => console.log(f('25p1')))
+   > testSelector(f => console.log(f('25p2')))
+
+   */
+}
 
 export {
   toEffMapId,

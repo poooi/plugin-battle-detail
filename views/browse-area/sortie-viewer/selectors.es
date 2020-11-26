@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import { createSelector } from 'reselect'
 import { fcdSelector } from 'views/utils/selectors'
-
+import { mapIdToStr } from 'subtender/kc'
 import {
   prepareNextEdges,
   mapStrToMapId,
@@ -234,10 +234,23 @@ const currentFocusingSortieIndexesSelector = createSelector(
   }
 )
 
+
+const getMapNodeLetterFuncSelector = createSelector(
+  fcdSelector,
+  fcd => _.memoize(mapId => {
+    const routeInfo = _.get(fcd, ['map', mapIdToStr(mapId), 'route'])
+    if (_.isEmpty(routeInfo))
+      return edgeId => String(edgeId)
+
+    return edgeId => routeInfo[edgeId][1]
+  })
+)
+
 export {
   sortieIndexesSelector,
   sortieIndexesDomainSelector,
   getSortieIndexesFuncSelector,
   pageRangeSelector,
   currentFocusingSortieIndexesSelector,
+  getMapNodeLetterFuncSelector,
 }

@@ -1,9 +1,7 @@
 import _ from 'lodash'
 import { createSelector } from 'reselect'
-import { mapIdToStr } from 'subtender/kc'
 import {
   extensionSelectorFactory,
-  fcdSelector,
   configSelector as poiConfSelector,
 } from 'views/utils/selectors'
 
@@ -43,17 +41,6 @@ const browseModeSelector = createSelector(
   ui => ui.browseMode
 )
 
-const getMapNodeLetterFuncSelector = createSelector(
-  fcdSelector,
-  fcd => _.memoize(mapId => {
-    const routeInfo = _.get(fcd, ['map', mapIdToStr(mapId), 'route'])
-    if (_.isEmpty(routeInfo))
-      return edgeId => String(edgeId)
-
-    return edgeId => routeInfo[edgeId][1]
-  })
-)
-
 const themeSelector = createSelector(
   poiConfSelector,
   conf => _.get(conf, 'poi.theme', 'paperdark')
@@ -66,6 +53,5 @@ export {
   indexesSelector,
   sortieViewerSelector,
   browseModeSelector,
-  getMapNodeLetterFuncSelector,
   themeSelector,
 }
