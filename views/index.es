@@ -36,7 +36,7 @@ async function handlePacket(newBattle, _curPacket) {
     battle,
     showLast,
   } = uiSelector(state)
-  let indexes = indexesSelector(state)
+  let indexes = indexesSelector(state).slice()
   if (newId === (indexes[0] || {}).id) {
     indexes.shift()
   }
