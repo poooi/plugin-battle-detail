@@ -51,7 +51,7 @@ module.exports = {
               'views/create-store',
               'views/components/etc/avatar',
               'views/components/etc/icon',
-              'reselect', 'react-*', 'prop-types',
+              'reselect', 'react-*', 'prop-types', 'immutable',
             ] }],
   },
   'settings': {
