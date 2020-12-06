@@ -15,6 +15,12 @@ const reducer = combineReducers({
 
 const initState = reducer(undefined, {type: '@@INIT'})
 
+/*
+  TODO: instead of replacing the whole index array with a new one every time,
+  we'll signal a redux action which can be received by both `indexes` and `nestedIndexes`.
+  this way we can make sure both structure are kept in sync.
+ */
+
 const actionCreators = {
   ...indexesAC,
   ...uiAC,

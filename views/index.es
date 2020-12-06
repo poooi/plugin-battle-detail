@@ -47,6 +47,13 @@ async function handlePacket(newBattle, _curPacket) {
   if (showLast) {
     battle = newBattle
   }
+  /*
+    TODO: we can probably avoid some unnecessary saving by
+    comparing new index replacing the old one.
+
+    Note: don't use observer here - performance when comparing between two long Arrays
+    might suffer.
+   */
   AppData.saveIndex(indexes)
   store.dispatch(actionCreators.indexesReplace(indexes))
   em.emit('dataupdate', battle, indexes)
@@ -101,6 +108,7 @@ class MainAreaImpl extends React.Component {
   }
 
   handleDataUpdate = (battle) => {
+    // TOOD: should we check lastBattle before replacing ui content?
     this.props.uiModify(
       modifyObject('battle', () => battle)
     )
