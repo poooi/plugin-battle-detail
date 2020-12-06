@@ -3,6 +3,13 @@ import {
 } from 'subtender'
 
 /*
+  indexes subreducer stores Array of metadata for each battle.
+
+  items are sorted in decending order of time (which is the same as id)
+  so that the newest item is always the first one.
+ */
+
+/*
    mergeIndexes(<Array of index>, <Array of index>) : <Array of index>
 
    - merges two Arrays of indexes together
