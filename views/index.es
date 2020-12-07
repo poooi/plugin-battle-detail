@@ -37,11 +37,12 @@ async function handlePacket(newBattle, _curPacket) {
     showLast,
   } = uiSelector(state)
   let indexes = indexesSelector(state).slice()
+  const newIndex = IndexCompat.getIndex(newBattle, newId)
   if (newId === (indexes[0] || {}).id) {
     indexes.shift()
   }
   indexes = [
-    IndexCompat.getIndex(newBattle, newId),
+    newIndex,
     ...indexes,
   ]
   if (showLast) {
