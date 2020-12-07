@@ -34,6 +34,10 @@ const reducer = (state = [], action) => {
 }
 
 const actionCreators = {
+  /*
+    TODO: we need a single action that both indexes and nestedIndexes can respond
+    to ensure atomicity
+   */
   indexesReplace: indexes => ({
     type: '@poi-plugin-battle-detail@indexesReplace',
     indexes,
