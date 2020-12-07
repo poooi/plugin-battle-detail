@@ -43,6 +43,8 @@ const p1Cutoff = Number(new Date('2018-08-17T00:00:00+09:00'))
    the string format is `${mapId}p${phase}`, in which phase
    can only be 1 or 2.
 
+   for pvp that this is fixed to "pvp" as effective map id.
+
    examples:
 
    - 11p1: 1-1 of phase 1
@@ -55,6 +57,8 @@ const p1Cutoff = Number(new Date('2018-08-17T00:00:00+09:00'))
    convert MapId to EffMapId with a timestamp (must be number).
  */
 const toEffMapId = (mapId, timestamp) => {
+  if (!mapId)
+    return 'pvp'
   const phase = timestamp > p1Cutoff ? 2 : 1
   return `${mapId}p${phase}`
 }
@@ -63,16 +67,20 @@ const toEffMapId = (mapId, timestamp) => {
 // - withEffMapId(EffMapId)(f) => ret typ of f
 // if f receives `null` as mapId, we've failed at parsing
 const withEffMapId = eMapId => do {
-  const matchResult = /^(\d+)p(1|2)$/.exec(eMapId)
-  if (!matchResult) {
-    console.error(`parse error: ${eMapId} is not a valid EffMapId`)
-    f => f(null)
+  if (eMapId === 'pvp') {
+    f => f('pvp')
   } else {
-    const [_ignored, mapIdStr, phaseStr] = matchResult
-    const mapId = Number(mapIdStr)
-    const phase = Number(phaseStr)
-    // use currying to avoid redundant parsing steps
-    f => f(mapId, phase)
+    const matchResult = /^(\d+)p(1|2)$/.exec(eMapId)
+    if (!matchResult) {
+      console.error(`parse error: ${eMapId} is not a valid EffMapId`)
+      f => f(null)
+    } else {
+      const [_ignored, mapIdStr, phaseStr] = matchResult
+      const mapId = Number(mapIdStr)
+      const phase = Number(phaseStr)
+      // use currying to avoid redundant parsing steps
+      f => f(mapId, phase)
+    }
   }
 }
 
