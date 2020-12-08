@@ -92,7 +92,7 @@ const withEffMapId = eMapId => do {
 const getFcdMapInfoFuncSelector = createSelector(
   fcdSelector,
   fcd => effMapId => withEffMapId(effMapId)((mapId, phase) => {
-    if (mapId === null)
+    if (mapId === null || mapId === 'pvp')
       return null
     const num = mapId % 10
     const world = Math.round((mapId - num) / 10)

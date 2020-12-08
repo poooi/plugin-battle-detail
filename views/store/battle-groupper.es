@@ -7,9 +7,10 @@
 
 import {
   toEffMapId,
+  getFcdMapInfoFuncSelector,
 } from './records'
 
-const groupBattleIndexes = _store => battles => {
+const groupBattleIndexes = store => battles => {
   const battleCounts = new Map()
   battles.forEach(battle => {
     const mapIdStr = battle.map.split('-').join('')
@@ -27,7 +28,11 @@ const groupBattleIndexes = _store => battles => {
     const r = b[0]
     return l < r ? -1 : l > r ? 1 : 0
   })
-  xs.forEach(e => console.log(e))
+  const getFcdMapInfo = getFcdMapInfoFuncSelector(store)
+  xs.forEach(([effMapId, count]) => {
+    console.log(`mapId: ${effMapId}, count: ${count}`)
+    console.log(getFcdMapInfo(effMapId))
+  })
 }
 
 export { groupBattleIndexes }
