@@ -94,7 +94,9 @@ const groupBattleIndexes = store => battles => {
   const getFcdMapInfo = getFcdMapInfoFuncSelector(store)
   xs.forEach(([effMapId, count]) => {
     console.log(`mapId: ${effMapId}, count: ${count}`)
-    console.log(getFcdMapInfo(effMapId))
+    const mapInfo = getFcdMapInfo(effMapId)
+    const canGoFromTo = mapCanGoFromTo(mapInfo)
+    console.log(`test A -> B: ${canGoFromTo(1,2)}`)
   })
 }
 
