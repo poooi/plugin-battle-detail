@@ -23,6 +23,13 @@ const mapCanGoFromTo = mapInfo => {
   }
 
   const nextEdges = prepareNextEdges(mapInfo)
+  /*
+    TODO: Regarding this implementation, we can do better than relying the "5 steps assumption" described below:
+    we can treat edge ids as labels and propagate them forward (though BFS, probably) along viable paths.
+    This way answering whether going (directly or indirectly due to missing nodes) from edge u to edge v is possible
+    is simply querying on labels attached to edge v and asking whether edge u is there - preprocessing requried but
+    we can get rid of memoization.
+   */
   // if it's possible to go from one edge to another
   const canGoFromToImpl = (beginEdgeId, endEdgeId) => {
     /*
@@ -93,4 +100,5 @@ const groupBattleIndexes = store => battles => {
 
 export {
   groupBattleIndexes,
+  mapCanGoFromTo,
 }
