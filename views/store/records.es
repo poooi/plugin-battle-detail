@@ -60,7 +60,6 @@ const BATTLE_MAP_PATTERN = /^(\d+)-(\d+)$/
    parse battle.map with a timestamp to EffMapId and phase.
 
    examples of battle.map: '2-5', '48-3'
-
  */
 const parseBattleMapAndTime = (battleMapStr, timestamp) => {
   if (typeof battleMapStr !== 'string') {
@@ -87,9 +86,18 @@ const parseBattleMapAndTime = (battleMapStr, timestamp) => {
   }
 }
 
-// - f : (mapId: Number, phase: 1 or 2) => ret typ of f
-// - withEffMapId(EffMapId)(f) => ret typ of f
-// if f receives `null` as mapId, we've failed at parsing
+
+/*
+  unfolds EffMapId and folds with f.
+
+  withEffMapId(EffMapId)(f) => return type of f
+
+  - f will be called in the following ways:
+    + f(mapId: Number, phase: 1 or 2)
+    + f('pvp') for pvp
+    + f(null) to indicate parse failure.
+
+ */
 const withEffMapId = eMapId => do {
   if (eMapId === 'pvp') {
     f => f('pvp')
@@ -131,11 +139,12 @@ const getFcdMapInfoFuncSelector = createSelector(
       return _.get(fcd, ['map', fcdMapId], null)
     }
 
+    console.warn(`fcd lookup failed, unexpected phase: ${phase}`)
     return null
   })
 )
 
-const debug = true
+const debug = false
 
 if (debug) {
   const {selectorTester} = require('subtender/poi')
