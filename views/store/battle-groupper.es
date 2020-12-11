@@ -74,7 +74,7 @@ const mapCanGoFromTo = mapInfo => {
   return canGoFromTo
 }
 
-const groupBattleIndexes = _store => battles => {
+const groupBattleIndexes = store => battles => {
   const battleCounts = new Map()
   battles.forEach(battle => {
     const parsed = parseBattleMapAndTime(battle.map, battle.time_)
@@ -96,14 +96,67 @@ const groupBattleIndexes = _store => battles => {
     return l < r ? -1 : l > r ? 1 : 0
   })
   xs.forEach(([effMapId, count]) => {
-    console.log(`mapId: ${effMapId}, count: ${count}`)
+    console.log(`effMapId: ${effMapId}, count: ${count}`)
   })
 
   /*
     This is the new version of sortieIndexes that uses immutable structures
     for efficient list insertion.
    */
-  let sortieIndexes = List()
+  const sortieIndexes = do {
+    const indexes = battles
+    const getFcdMapInfo = getFcdMapInfoFuncSelector(store)
+    let xs = []
+
+    let i = 0
+    while (i < indexes.length) {
+      const curIndex = indexes[i]
+      const parsed = parseBattleMapAndTime(curIndex.map, curIndex.time_)
+      if (parsed === null) {
+        console.warn(
+          `failed to parse map string: ${curIndex.map} of data ${curIndex.id}, skipping.`
+        )
+        ++i
+        continue
+      }
+      const {effMapId} = parsed
+      if (effMapId === 'pvp') {
+        xs.push({indexes: [curIndex], effMapId})
+        ++i
+        continue
+      }
+      const mapInfo = getFcdMapInfo(effMapId)
+      const canGoFromTo = mapCanGoFromTo(mapInfo)
+
+      let j = i
+      // INVARIANT: i~j (inclusive) should be considered same sortie
+      for (_.noop() ; j+1 < indexes.length; ++j) {
+        const nextIndex = indexes[j+1]
+        const nextParsed = parseBattleMapAndTime(nextIndex.map, nextIndex.time_)
+        if (nextParsed === null) {
+          // next record is broken, we'll also cut current sortie record here.
+          break
+        }
+        const {effMapId: nextEffMapId} = nextParsed
+        if (nextEffMapId !== effMapId)
+          break
+
+        const beginEdgeId = nextIndex.route_
+        const endEdgeId = indexes[j].route_
+        if (!canGoFromTo(beginEdgeId,endEdgeId))
+          break
+      }
+
+      xs.push({
+        indexes: indexes.slice(i,j+1).reverse(),
+        effMapId,
+      })
+      i = j+1
+    }
+
+    xs
+  }
+
   console.log(sortieIndexes)
 }
 
