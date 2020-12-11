@@ -89,13 +89,13 @@ const groupBattleIndexes = store => battles => {
       battleCounts.set(effMapId, 1)
     }
   })
-  const xs = [...battleCounts.entries()]
-  xs.sort((a,b) => {
+  const es = [...battleCounts.entries()]
+  es.sort((a,b) => {
     const l = a[0]
     const r = b[0]
     return l < r ? -1 : l > r ? 1 : 0
   })
-  xs.forEach(([effMapId, count]) => {
+  es.forEach(([effMapId, count]) => {
     console.log(`effMapId: ${effMapId}, count: ${count}`)
   })
 
@@ -106,7 +106,7 @@ const groupBattleIndexes = store => battles => {
   const sortieIndexes = do {
     const indexes = battles
     const getFcdMapInfo = getFcdMapInfoFuncSelector(store)
-    let xs = []
+    let xs = List()
 
     let i = 0
     while (i < indexes.length) {
@@ -121,7 +121,7 @@ const groupBattleIndexes = store => battles => {
       }
       const {effMapId} = parsed
       if (effMapId === 'pvp') {
-        xs.push({indexes: [curIndex], effMapId})
+        xs = xs.push({indexes: [curIndex], effMapId})
         ++i
         continue
       }
@@ -147,7 +147,7 @@ const groupBattleIndexes = store => battles => {
           break
       }
 
-      xs.push({
+      xs = xs.push({
         indexes: indexes.slice(i,j+1).reverse(),
         effMapId,
       })
@@ -157,7 +157,7 @@ const groupBattleIndexes = store => battles => {
     xs
   }
 
-  console.log(sortieIndexes)
+  console.log(sortieIndexes.toArray())
 }
 
 export {
