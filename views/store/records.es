@@ -44,6 +44,7 @@ const p1Cutoff = Number(new Date('2018-08-17T00:00:00+09:00'))
    can only be 1 or 2.
 
    for pvp that this is fixed to "pvp" as effective map id.
+   (note that battle.map would be an empty string for PvP)
 
    examples:
 
@@ -53,14 +54,37 @@ const p1Cutoff = Number(new Date('2018-08-17T00:00:00+09:00'))
 
  */
 
+const BATTLE_MAP_PATTERN = /^(\d+)-(\d+)$/
+
 /*
-   convert MapId to EffMapId with a timestamp (must be number).
+   parse battle.map with a timestamp to EffMapId and phase.
+
+   examples of battle.map: '2-5', '48-3'
+
  */
-const toEffMapId = (mapId, timestamp) => {
-  if (!mapId)
-    return 'pvp'
+const parseBattleMapAndTime = (battleMapStr, timestamp) => {
+  if (typeof battleMapStr !== 'string') {
+    console.warn(`battle.map is expected to be a string, but got ${typeof battleMapStr}`)
+    return null
+  }
   const phase = timestamp > p1Cutoff ? 2 : 1
-  return `${mapId}p${phase}`
+  if (battleMapStr === '') {
+    return {
+      effMapId: 'pvp',
+      phase,
+    }
+  }
+
+  const matchResult = BATTLE_MAP_PATTERN.exec(battleMapStr)
+  if (matchResult === null) {
+    console.warn(`unexpected content of battle.map: ${battleMapStr}`)
+    return null
+  }
+  const [_ignored, worldRaw, areaRaw] = matchResult
+  return {
+    effMapId: `${worldRaw}${areaRaw}p${phase}`,
+    phase,
+  }
 }
 
 // - f : (mapId: Number, phase: 1 or 2) => ret typ of f
@@ -127,7 +151,7 @@ if (debug) {
 }
 
 export {
-  toEffMapId,
+  parseBattleMapAndTime,
   withEffMapId,
   getFcdMapInfoFuncSelector,
 }

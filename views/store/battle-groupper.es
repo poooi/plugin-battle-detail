@@ -6,9 +6,10 @@
  */
 
 import _ from 'lodash'
+import { List } from 'immutable'
 
 import {
-  toEffMapId,
+  parseBattleMapAndTime,
   getFcdMapInfoFuncSelector,
 } from './records'
 
@@ -73,12 +74,15 @@ const mapCanGoFromTo = mapInfo => {
   return canGoFromTo
 }
 
-const groupBattleIndexes = store => battles => {
+const groupBattleIndexes = _store => battles => {
   const battleCounts = new Map()
   battles.forEach(battle => {
-    const mapIdStr = battle.map.split('-').join('')
-    const effMapId = toEffMapId(mapIdStr, battle.time_)
-
+    const parsed = parseBattleMapAndTime(battle.map, battle.time_)
+    if (parsed === null) {
+      console.warn(`cannot parse: ${battle.map}, ${battle.time_}`)
+      return
+    }
+    const {effMapId} = parsed
     if (battleCounts.has(effMapId)) {
       battleCounts.set(effMapId, battleCounts.get(effMapId) + 1)
     } else {
@@ -91,13 +95,16 @@ const groupBattleIndexes = store => battles => {
     const r = b[0]
     return l < r ? -1 : l > r ? 1 : 0
   })
-  const getFcdMapInfo = getFcdMapInfoFuncSelector(store)
   xs.forEach(([effMapId, count]) => {
     console.log(`mapId: ${effMapId}, count: ${count}`)
-    const mapInfo = getFcdMapInfo(effMapId)
-    const canGoFromTo = mapCanGoFromTo(mapInfo)
-    console.log(`test A -> B: ${canGoFromTo(1,2)}`)
   })
+
+  /*
+    This is the new version of sortieIndexes that uses immutable structures
+    for efficient list insertion.
+   */
+  let sortieIndexes = List()
+  console.log(sortieIndexes)
 }
 
 export {
