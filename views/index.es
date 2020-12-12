@@ -36,14 +36,13 @@ async function handlePacket(newBattle, _curPacket) {
     will update the store.
    */
   let {
-    battle,
     showLast,
   } = uiSelector(store.getState())
   const newIndex = IndexCompat.getIndex(newBattle, newId)
   store.dispatch(actionCreators.notifyIndex(newId, newIndex))
   const indexes = indexesSelector(store.getState())
   if (showLast) {
-    battle = newBattle
+    em.emit('dataupdate', newBattle)
   }
   /*
     TODO: we can probably avoid some unnecessary saving by
@@ -53,7 +52,6 @@ async function handlePacket(newBattle, _curPacket) {
     might suffer.
    */
   AppData.saveIndex(indexes)
-  em.emit('dataupdate', battle, indexes)
 }
 
 export function pluginDidLoad() {
