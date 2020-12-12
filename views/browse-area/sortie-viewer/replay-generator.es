@@ -10,9 +10,10 @@ import { Avatar } from 'views/components/etc/avatar'
 import { translate } from 'react-i18next'
 
 import { showModal } from '../../modal-area'
-import { getMapNodeLetterFuncSelector, themeSelector } from '../../selectors'
+import { themeSelector } from '../../selectors'
 import { PTyp } from '../../ptyp'
 import { version as pluginVersion } from '../../../package.json'
+import { getMapNodeLetterFuncSelector } from './selectors'
 import steg from '../../../assets/js/steganography.min.js'
 
 const { POI_VERSION } = window

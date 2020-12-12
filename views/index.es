@@ -28,28 +28,28 @@ const pm = new PacketManager()
 const em = new EventEmitter()
 
 async function handlePacket(newBattle, _curPacket) {
-  let state = store.getState()
   // Save new battle immediately
   const newId = PacketCompat.getId(newBattle)
   AppData.saveBattle(newId, newBattle)
+  /*
+    Note: don't cache store.getState(), as the dispatched action
+    will update the store.
+   */
   let {
-    battle,
     showLast,
-  } = uiSelector(state)
-  let indexes = indexesSelector(state)
-  if (newId === (indexes[0] || {}).id) {
-    indexes.shift()
-  }
-  indexes = [
-    IndexCompat.getIndex(newBattle, newId),
-    ...indexes,
-  ]
+  } = uiSelector(store.getState())
+  const newIndex = IndexCompat.getIndex(newBattle, newId)
+  store.dispatch(actionCreators.notifyIndex(newId, newIndex))
+  const indexes = indexesSelector(store.getState())
   if (showLast) {
-    battle = newBattle
+    em.emit('dataupdate', newBattle)
   }
+  /*
+    TODO: perhaps observer can be used after all: we just need to examine the first element.
+    (we'll need a flag to indicate whether initialization is done
+    to avoid writing back during it).
+   */
   AppData.saveIndex(indexes)
-  store.dispatch(actionCreators.indexesReplace(indexes))
-  em.emit('dataupdate', battle, indexes)
 }
 
 export function pluginDidLoad() {
@@ -71,7 +71,6 @@ class MainAreaImpl extends React.Component {
     indexes: PTyp.array.isRequired,
     showLast: PTyp.bool.isRequired,
 
-    indexesReplace: PTyp.func.isRequired,
     uiModify: PTyp.func.isRequired,
   }
 
@@ -101,6 +100,7 @@ class MainAreaImpl extends React.Component {
   }
 
   handleDataUpdate = (battle) => {
+    // TOOD: should we check lastBattle before replacing ui content?
     this.props.uiModify(
       modifyObject('battle', () => battle)
     )
@@ -207,7 +207,7 @@ class MainAreaImpl extends React.Component {
   }
 }
 
-export { reducer } from './store/common'
+export { reducer } from './store'
 
 export const reactClass = connect(
   state => {

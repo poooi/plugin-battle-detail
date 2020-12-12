@@ -9,7 +9,8 @@ import { sleep } from '../utils'
 
 import { showModal, hideModal } from '../modal-area'
 import { indexesSelector, uiSelector } from '../selectors'
-import { boundActionCreators } from './common'
+import { boundActionCreators } from './ext-root'
+import { groupBattleIndexes } from './battle-groupper'
 
 const { getStore } = window
 const { __ } = window.i18n["poi-plugin-battle-detail"]
@@ -55,7 +56,8 @@ const createIndex = async (list) => {
 }
 
 const updateIndex = async (indexes) => {
-  let {battle, showLast} = uiSelector(getStore())
+  const store = getStore()
+  let {battle, showLast} = uiSelector(store)
   if (indexes == null) {
     indexes = []
   }
@@ -66,7 +68,7 @@ const updateIndex = async (indexes) => {
   boundActionCreators.uiModify(
     modifyObject('battle', () => battle)
   )
-  boundActionCreators.indexesReplace(indexes)
+  boundActionCreators.atomicReplaceIndexes(indexes)
 }
 
 export const initData =  async () => {
