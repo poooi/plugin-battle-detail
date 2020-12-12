@@ -35,7 +35,7 @@ const reducer = (state = [], action) => {
 
 const actionCreators = {
   /*
-    TODO: we need a single action that both indexes and nestedIndexes can respond
+    TODO: we need a single action that both indexes and sortieIndexes can respond
     to ensure atomicity
    */
   indexesReplace: indexes => ({

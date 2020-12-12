@@ -69,7 +69,7 @@ const updateIndex = async (indexes) => {
     modifyObject('battle', () => battle)
   )
   boundActionCreators.indexesReplace(indexes)
-  // TODO: groupped indexes are to be transfered to nestedIndexes.
+  // TODO: groupped indexes are to be transfered to sortieIndexes.
   groupBattleIndexes(store)(indexes)
 }
 
