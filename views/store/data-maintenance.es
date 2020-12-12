@@ -69,8 +69,9 @@ const updateIndex = async (indexes) => {
     modifyObject('battle', () => battle)
   )
   boundActionCreators.indexesReplace(indexes)
-  // TODO: groupped indexes are to be transfered to sortieIndexes.
-  groupBattleIndexes(store)(indexes)
+  // TODO: let indexesReplace trigger a sortieIndexes rebuild.
+  const sortieIndexes = groupBattleIndexes(store)(indexes)
+  boundActionCreators.sortieIndexesReplace(sortieIndexes)
 }
 
 export const initData =  async () => {

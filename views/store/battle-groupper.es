@@ -89,15 +89,6 @@ const groupBattleIndexes = store => battles => {
       battleCounts.set(effMapId, 1)
     }
   })
-  const es = [...battleCounts.entries()]
-  es.sort((a,b) => {
-    const l = a[0]
-    const r = b[0]
-    return l < r ? -1 : l > r ? 1 : 0
-  })
-  es.forEach(([effMapId, count]) => {
-    console.log(`effMapId: ${effMapId}, count: ${count}`)
-  })
 
   /*
     This is the new version of sortieIndexes that uses immutable structures
@@ -157,7 +148,7 @@ const groupBattleIndexes = store => battles => {
     xs
   }
 
-  console.log(sortieIndexes.toArray())
+  return sortieIndexes
 }
 
 export {
