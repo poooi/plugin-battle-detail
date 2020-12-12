@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 import {
   unionSorted,
 } from 'subtender'
@@ -32,8 +34,13 @@ const reducer = (state = [], action) => {
 
   if (action.type === '@poi-plugin-battle-detail@notifyIndex') {
     const {newId, newIndex} = action
+
+    if (_.isEqual(state[0], newIndex)) {
+      return state
+    }
+
     let indexes = state.slice()
-    if (newId === (indexes[0] || {}).id) {
+    if (newId === _.get(indexes, [0, 'id'])) {
       indexes.shift()
     }
     indexes = [

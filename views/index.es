@@ -45,11 +45,9 @@ async function handlePacket(newBattle, _curPacket) {
     em.emit('dataupdate', newBattle)
   }
   /*
-    TODO: we can probably avoid some unnecessary saving by
-    comparing new index replacing the old one.
-
-    Note: don't use observer here - performance when comparing between two long Arrays
-    might suffer.
+    TODO: perhaps observer can be used after all: we just need to examine the first element.
+    (we'll need a flag to indicate whether initialization is done
+    to avoid writing back during it).
    */
   AppData.saveIndex(indexes)
 }
