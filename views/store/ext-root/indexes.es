@@ -30,6 +30,18 @@ const reducer = (state = [], action) => {
     return mergeIndexes(state, newIndexes)
   }
 
+  if (action.type === '@poi-plugin-battle-detail@notifyIndex') {
+    const {newId, newIndex} = action
+    let indexes = state.slice()
+    if (newId === (indexes[0] || {}).id) {
+      indexes.shift()
+    }
+    indexes = [
+      newIndex,
+      ...indexes,
+    ]
+    return indexes
+  }
   return state
 }
 
