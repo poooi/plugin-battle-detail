@@ -41,6 +41,11 @@ const reducer = (state = initState, action) => {
     return newState
   }
 
+  if (action.type ===  '@poi-plugin-battle-detail@notifyIndex') {
+    // TODO:  `sortieIndexes` subreducer support
+    return state
+  }
+
   return state
 }
 

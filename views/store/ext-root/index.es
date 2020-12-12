@@ -22,7 +22,7 @@ const initState = reducer(undefined, {type: '@@INIT'})
  */
 
 const actionCreators = {
-  notifyIndex: (newId, newIndex) => ({
+  notifyIndex: (newId, newIndex) => (dispatch, getState) => {
     /*
       This action is supported in both `indexes` and `sortieIndexes` subreducer
       for notifying a (potentially) new index.
@@ -32,12 +32,16 @@ const actionCreators = {
       While xxxxReplace actions are available, those should be avoided
       as they are only meant for initialization.
 
-      TODO:
-      - `sortieIndexes` subreducer support
+
+      We are relying on redux-thunk to get access to the full store,
+      as we need FCD for sortieIndexes to work.
      */
-    type: '@poi-plugin-battle-detail@notifyIndex',
-    newId, newIndex,
-  }),
+    const curStore = getState()
+    dispatch({
+      type: '@poi-plugin-battle-detail@notifyIndex',
+      newId, newIndex, curStore,
+    })
+  },
   ...indexesAC,
   ...uiAC,
   ...sortieIndexesAC,
