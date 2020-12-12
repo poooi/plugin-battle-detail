@@ -74,21 +74,25 @@ const mapCanGoFromTo = mapInfo => {
   return canGoFromTo
 }
 
+const debug = false
+
 const groupBattleIndexes = store => battles => {
-  const battleCounts = new Map()
-  battles.forEach(battle => {
-    const parsed = parseBattleMapAndTime(battle.map, battle.time_)
-    if (parsed === null) {
-      console.warn(`cannot parse: ${battle.map}, ${battle.time_}`)
-      return
-    }
-    const {effMapId} = parsed
-    if (battleCounts.has(effMapId)) {
-      battleCounts.set(effMapId, battleCounts.get(effMapId) + 1)
-    } else {
-      battleCounts.set(effMapId, 1)
-    }
-  })
+  if (debug) {
+    const battleCounts = new Map()
+    battles.forEach(battle => {
+      const parsed = parseBattleMapAndTime(battle.map, battle.time_)
+      if (parsed === null) {
+        console.warn(`cannot parse: ${battle.map}, ${battle.time_}`)
+        return
+      }
+      const {effMapId} = parsed
+      if (battleCounts.has(effMapId)) {
+        battleCounts.set(effMapId, battleCounts.get(effMapId) + 1)
+      } else {
+        battleCounts.set(effMapId, 1)
+      }
+    })
+  }
 
   /*
     This is the new version of sortieIndexes that uses immutable structures
