@@ -15,12 +15,6 @@ const reducer = combineReducers({
 
 const initState = reducer(undefined, {type: '@@INIT'})
 
-/*
-  TODO: instead of replacing the whole index array with a new one every time,
-  we'll signal a redux action which can be received by both `indexes` and `sortieIndexes`.
-  this way we can make sure both structure are kept in sync.
- */
-
 const actionCreators = {
   notifyIndex: (newId, newIndex) => (dispatch, getState) => {
     /*
@@ -29,9 +23,8 @@ const actionCreators = {
       This notified index should either be the latest battle index already,
       or a brand new one.
 
-      While xxxxReplace actions are available, those should be avoided
-      as they are only meant for initialization.
-
+      While atomicReplaceIndexes action is available, those should be avoided
+      as it is only meant for initialization.
 
       We are relying on redux-thunk to get access to the full store,
       as we need FCD for sortieIndexes to work.
@@ -43,6 +36,10 @@ const actionCreators = {
     })
   },
   atomicReplaceIndexes: indexes => (dispatch, getState) => {
+    /*
+       this function builds up sortieIndexes as indexes are loaded,
+       and distributes resulting indexes & sortieIndexes to subreducers.
+     */
     const curStore = getState()
     const sortieIndexes = groupBattleIndexes(curStore)(indexes)
     dispatch({

@@ -36,12 +36,6 @@ const reducer = (state = initState, action) => {
     return sortieIndexes
   }
 
-  if (action.type === '@poi-plugin-battle-detail@sortieIndexesReplace') {
-    console.warn(`sortieIndexesReplace is deprecated, use atomicReplaceIndexes.`)
-    const {newState} = action
-    return newState
-  }
-
   if (action.type === '@poi-plugin-battle-detail@sortieIndexesModify') {
     const {modifier} = action
     return modifier(state)
@@ -59,10 +53,6 @@ const actionCreators = {
   sortieIndexesModify: modifier => ({
     type: '@poi-plugin-battle-detail@sortieIndexesModify',
     modifier,
-  }),
-  sortieIndexesReplace: newState => ({
-    type: '@poi-plugin-battle-detail@sortieIndexesReplace',
-    newState,
   }),
 }
 

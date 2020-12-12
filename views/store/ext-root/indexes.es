@@ -27,12 +27,6 @@ const reducer = (state = [], action) => {
     return indexes
   }
 
-  if (action.type === '@poi-plugin-battle-detail@indexesReplace') {
-    console.warn(`indexesReplace is deprecated, use atomicReplaceIndexes.`)
-    const {indexes} = action
-    return indexes
-  }
-
   if (action.type === '@poi-plugin-battle-detail@indexesMerge') {
     const {newIndexes} = action
     return mergeIndexes(state, newIndexes)
@@ -59,14 +53,6 @@ const reducer = (state = [], action) => {
 }
 
 const actionCreators = {
-  /*
-    TODO: we need a single action that both indexes and sortieIndexes can respond
-    to ensure atomicity
-   */
-  indexesReplace: indexes => ({
-    type: '@poi-plugin-battle-detail@indexesReplace',
-    indexes,
-  }),
   indexesMerge: newIndexes => ({
     type: '@poi-plugin-battle-detail@indexesMerge',
     newIndexes,
