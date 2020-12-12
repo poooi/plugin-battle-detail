@@ -155,7 +155,56 @@ const groupBattleIndexes = store => battles => {
   return sortieIndexes
 }
 
+// note that newIndex might have been existing in sortieIndexes despite its name.
+const insertIndex = store => (sortieIndexes, newId, newIndex) => {
+  const curSortieIndex = sortieIndexes.first(null)
+  const lastIndex = _.last(_.get(curSortieIndex, 'indexes'))
+  if (newId === _.get(lastIndex, 'id')) {
+    if (_.isEqual(lastIndex, newIndex)) {
+      // index is identical to an existing one, return original structure
+      return sortieIndexes
+    }
+
+    // replacing old last index with this one.
+    const newIndexes = curSortieIndex.indexes.slice()
+    newIndexes[newIndexes.length-1] = newIndex
+    return sortieIndexes.set(0, {
+      ...curSortieIndex,
+      indexes: newIndexes,
+    })
+  }
+
+  // actually inserting newIndex
+  const parsed = parseBattleMapAndTime(newIndex.map, newIndex.time_)
+  if (parsed === null) {
+    console.error(`parsing index failed: ${newIndex.map, newIndex.time_}, skipping.`)
+    return sortieIndexes
+  }
+  const {effMapId} = parsed
+  if (!curSortieIndex || effMapId === 'pvp' || effMapId !== curSortieIndex.effMapId) {
+    return sortieIndexes.unshift({indexes: [newIndex], effMapId})
+  }
+
+  // now we have a case where we might be inserting into an existing one
+  const getFcdMapInfo = getFcdMapInfoFuncSelector(store)
+  const mapInfo = getFcdMapInfo(effMapId)
+  const canGoFromTo = mapCanGoFromTo(mapInfo)
+  const beginEdgeId = _.last(curSortieIndex.indexes).route_
+  const endEdgeId = newIndex.route_
+  if (canGoFromTo(beginEdgeId, endEdgeId)) {
+    // merge with existing record
+    return sortieIndexes.set(0, {
+      ...curSortieIndex,
+      indexes: [...curSortieIndex.indexes, newIndex],
+    })
+  } else {
+    // insert a new SortieIndex
+    return sortieIndexes.unshift({indexes: [newIndex], effMapId})
+  }
+}
+
 export {
   groupBattleIndexes,
   mapCanGoFromTo,
+  insertIndex,
 }
