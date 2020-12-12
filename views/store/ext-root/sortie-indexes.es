@@ -31,14 +31,20 @@ const initState = List()
  */
 
 const reducer = (state = initState, action) => {
-  if (action.type === '@poi-plugin-battle-detail@sortieIndexesModify') {
-    const {modifier} = action
-    return modifier(state)
+  if (action.type === '@poi-plugin-battle-detail@atomicReplaceIndexes') {
+    const {sortieIndexes} = action
+    return sortieIndexes
   }
 
   if (action.type === '@poi-plugin-battle-detail@sortieIndexesReplace') {
+    console.warn(`sortieIndexesReplace is deprecated, use atomicReplaceIndexes.`)
     const {newState} = action
     return newState
+  }
+
+  if (action.type === '@poi-plugin-battle-detail@sortieIndexesModify') {
+    const {modifier} = action
+    return modifier(state)
   }
 
   if (action.type ===  '@poi-plugin-battle-detail@notifyIndex') {

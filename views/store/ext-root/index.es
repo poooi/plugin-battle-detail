@@ -4,7 +4,7 @@ import { store } from 'views/create-store'
 import { reducer as ui, actionCreators as uiAC } from './ui'
 import { reducer as indexes, actionCreators as indexesAC } from './indexes'
 import { reducer as sortieIndexes, actionCreators as sortieIndexesAC } from './sortie-indexes'
-
+import { groupBattleIndexes } from '../battle-groupper'
 /*
    this module and sub-modules mirror redux structure at runtime
  */
@@ -40,6 +40,14 @@ const actionCreators = {
     dispatch({
       type: '@poi-plugin-battle-detail@notifyIndex',
       newId, newIndex, curStore,
+    })
+  },
+  atomicReplaceIndexes: indexes => (dispatch, getState) => {
+    const curStore = getState()
+    const sortieIndexes = groupBattleIndexes(curStore)(indexes)
+    dispatch({
+      type: '@poi-plugin-battle-detail@atomicReplaceIndexes',
+      indexes, sortieIndexes,
     })
   },
   ...indexesAC,

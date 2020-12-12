@@ -22,7 +22,13 @@ import {
 const mergeIndexes = unionSorted((x,y) => y.id - x.id)
 
 const reducer = (state = [], action) => {
+  if (action.type === '@poi-plugin-battle-detail@atomicReplaceIndexes') {
+    const {indexes} = action
+    return indexes
+  }
+
   if (action.type === '@poi-plugin-battle-detail@indexesReplace') {
+    console.warn(`indexesReplace is deprecated, use atomicReplaceIndexes.`)
     const {indexes} = action
     return indexes
   }

@@ -68,10 +68,7 @@ const updateIndex = async (indexes) => {
   boundActionCreators.uiModify(
     modifyObject('battle', () => battle)
   )
-  boundActionCreators.indexesReplace(indexes)
-  // TODO: let indexesReplace trigger a sortieIndexes rebuild, or do both at the same time.
-  const sortieIndexes = groupBattleIndexes(store)(indexes)
-  boundActionCreators.sortieIndexesReplace(sortieIndexes)
+  boundActionCreators.atomicReplaceIndexes(indexes)
 }
 
 export const initData =  async () => {
