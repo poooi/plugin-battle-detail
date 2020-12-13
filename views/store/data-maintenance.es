@@ -20,7 +20,7 @@ const INDEXES_LOAD_NUMBER = 500
 // a flag that will be set to true once data are loaded
 let dataLoaded = false
 
-const isDataLoaded = () => dataLoaded
+export const isDataLoaded = () => dataLoaded
 
 const createIndex = async (list) => {
   let eta = new Date(Date.now() + list.length / INDEXES_LOAD_NUMBER * INDEXES_LOAD_INTERVAL)
@@ -75,7 +75,7 @@ const updateIndex = async (indexes) => {
   boundActionCreators.atomicReplaceIndexes(indexes)
 }
 
-const initData =  async () => {
+export const initData =  async () => {
   // Load index from disk
   let indexes = await AppData.loadIndex()
   for (let line of indexes) {
@@ -115,9 +115,4 @@ const initData =  async () => {
     })
   }
   dataLoaded = true
-}
-
-export {
-  initData,
-  isDataLoaded,
 }

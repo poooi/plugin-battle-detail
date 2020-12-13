@@ -29,7 +29,7 @@ const indexesSaver = observer(
 
 let unsubscribe = null
 
-const globalSubscribe = () => {
+export const globalSubscribe = () => {
   if (unsubscribe !== null) {
     console.warn('expecting "unsubscribe" to be null')
     if (typeof unsubscribe === 'function')
@@ -40,16 +40,11 @@ const globalSubscribe = () => {
   unsubscribe = observe(store, [indexesSaver])
 }
 
-const globalUnsubscribe = () => {
+export const globalUnsubscribe = () => {
   if (typeof unsubscribe !== 'function') {
     console.warn(`unsubscribe is not a function`)
   } else {
     unsubscribe()
     unsubscribe = null
   }
-}
-
-export {
-  globalSubscribe,
-  globalUnsubscribe,
 }
