@@ -20,6 +20,7 @@ import { PacketCompat, IndexCompat } from '../lib/compat'
 import { initData, actionCreators } from './store'
 import { indexesSelector, uiSelector } from './selectors'
 import { PTyp } from './ptyp'
+import { globalSubscribe, globalUnsubscribe } from './observers'
 
 const { ipc } = window
 const { __ } = window.i18n["poi-plugin-battle-detail"]
@@ -40,20 +41,14 @@ async function handlePacket(newBattle, _curPacket) {
   } = uiSelector(store.getState())
   const newIndex = IndexCompat.getIndex(newBattle, newId)
   store.dispatch(actionCreators.notifyIndex(newId, newIndex))
-  const indexes = indexesSelector(store.getState())
   if (showLast) {
     em.emit('dataupdate', newBattle)
   }
-  /*
-    TODO: perhaps observer can be used after all: we just need to examine the first element.
-    (we'll need a flag to indicate whether initialization is done
-    to avoid writing back during it).
-   */
-  AppData.saveIndex(indexes)
 }
 
 export function pluginDidLoad() {
   initData()
+  globalSubscribe()
   pm.addListener('battle', handlePacket)
   pm.addListener('result', handlePacket)
 }
@@ -61,6 +56,7 @@ export function pluginDidLoad() {
 export function pluginWillUnload() {
   pm.removeListener('battle', handlePacket)
   pm.removeListener('result', handlePacket)
+  globalUnsubscribe()
 }
 
 class MainAreaImpl extends React.Component {

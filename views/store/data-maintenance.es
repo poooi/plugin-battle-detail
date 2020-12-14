@@ -10,13 +10,17 @@ import { sleep } from '../utils'
 import { showModal, hideModal } from '../modal-area'
 import { indexesSelector, uiSelector } from '../selectors'
 import { boundActionCreators } from './ext-root'
-import { groupBattleIndexes } from './battle-groupper'
 
 const { getStore } = window
 const { __ } = window.i18n["poi-plugin-battle-detail"]
 
 const INDEXES_LOAD_INTERVAL = 500
 const INDEXES_LOAD_NUMBER = 500
+
+// a flag that will be set to true once data are loaded
+let dataLoaded = false
+
+export const isDataLoaded = () => dataLoaded
 
 const createIndex = async (list) => {
   let eta = new Date(Date.now() + list.length / INDEXES_LOAD_NUMBER * INDEXES_LOAD_INTERVAL)
@@ -85,7 +89,10 @@ export const initData =  async () => {
       await AppData.listBattle(),
       indexes.map((x) => x.id),
     )
-    if (diff.length === 0) return
+    if (diff.length === 0) {
+      dataLoaded = true
+      return
+    }
     const newIndex = await createIndex(diff)
     const currentIndexes = indexesSelector(getStore())
     indexes = newIndex.concat(currentIndexes || [])
@@ -107,5 +114,5 @@ export const initData =  async () => {
       ],
     })
   }
+  dataLoaded = true
 }
-
