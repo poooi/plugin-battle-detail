@@ -17,7 +17,6 @@ import {
   prepareNextEdges,
 } from '../browse-area/sortie-viewer/groupping'
 
-// TODO: cargoculted from sortie-viewer selectors, to be cleaned up.
 const mapCanGoFromTo = mapInfo => {
   if (_.isEmpty(mapInfo)) {
     return (_begin, _end) => false

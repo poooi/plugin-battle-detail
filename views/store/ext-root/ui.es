@@ -7,7 +7,12 @@ const initState = {
   // valid values: 'nodes' / 'sorties'
   browseMode: 'nodes',
   sortieViewer: {
-    mapId: 'all',
+    /*
+      Indicates the effMapId user is viewing.
+
+      This is either a EffMapId or string literal 'all'
+     */
+    viewingMapId: 'all',
     activePage: 1,
     sortBy: {
       // valid values: 'recent' / 'numeric'
