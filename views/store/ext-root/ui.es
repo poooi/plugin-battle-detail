@@ -14,8 +14,19 @@ const initState = {
      */
     viewingMapId: 'all',
     activePage: 1,
+    /*
+      Sorties are groupped (or filtered) by map ids.
+      This part dictates how are those map ids sorted.
+
+      `method` must be one of:
+      - 'recent': put most recently sortied map first
+      - 'numeric': sort map ids by world and area
+        (as this is simply accomplished by sorting map ids numerically).
+        (TODO: thing might complicate a bit here as phase are now introduced)
+
+      `reversed`: a Boolean indicated whether to reverse sorted result.
+     */
     sortBy: {
-      // valid values: 'recent' / 'numeric'
       method: 'recent',
       reversed: false,
     },
