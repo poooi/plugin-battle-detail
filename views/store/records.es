@@ -8,7 +8,7 @@ import _ from 'lodash'
 import { createSelector } from 'reselect'
 import { join } from 'path-extra'
 import { readJsonSync } from 'fs-extra'
-
+import { splitMapId } from 'subtender/kc'
 import { fcdSelector } from 'views/utils/selectors'
 
 const fcdMapP1Raw = readJsonSync(
@@ -103,9 +103,9 @@ const parseEffMapId = _.memoize(eMapId => {
   const [_ignored, mapIdStr, phaseStr] = matchResult
   const mapId = Number(mapIdStr)
   const phase = Number(phaseStr)
-  return {mapId, phase}
+  const {area: mapArea, num: mapNo} = splitMapId(mapId)
+  return {mapId, phase, mapArea, mapNo}
 })
-
 
 /*
   unfolds EffMapId and folds with f.
