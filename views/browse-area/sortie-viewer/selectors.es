@@ -1,9 +1,5 @@
-/*
-  TODO: Note that for now this entire module is not imported anywhere, we'll need to recover
-  those selectors first.
- */
-
 import _ from 'lodash'
+import { List } from 'immutable'
 import { createSelector } from 'reselect'
 import { fcdSelector } from 'views/utils/selectors'
 import { mapIdToStr } from 'subtender/kc'
@@ -92,29 +88,23 @@ const sortieIndexesDomainSelector = createSelector(
 )
 
 /*
-  TODO: original sortieIndexesSelector uses Array and for elements
-  mapId is used to identify the viewing map.
-  But for our new store-based structure, immutable List and effMapId is used instead.
+   getSortieIndexesByMapFunc(<effMapId or 'all'>)
 
-  TODO: revisit everything below to adapt to new store structure.
- */
+   Note that effMapId includes 'pvp'.
 
-/*
-   getSortieIndexesByMapFunc(<mapId or 'pvp' or 'all'>)
-
-   returns an Array of all qualifying sortie indexes
+   returns an immutable List of all qualifying sortie indexes
  */
 const getSortieIndexesFuncSelector = createSelector(
   sortieIndexesSelector,
-  sortieIndexes => _.memoize(mapId =>
-    mapId === 'all' ? sortieIndexes :
-      sortieIndexes.filter(si => si.mapId === mapId)
-  )
+  grouppedSortieIndexesSelector,
+  (sortieIndexes, gSortieIndexes) => mId =>
+    mId === 'all' ? sortieIndexes :
+      gSortieIndexes.has(mId) ? _ : List()
 )
 
-const mapIdSelector = createSelector(
+const viewingMapIdSelector = createSelector(
   sortieViewerSelector,
-  sv => sv.mapId
+  sv => sv.viewingMapId
 )
 
 const activePageSelector = createSelector(
@@ -122,19 +112,20 @@ const activePageSelector = createSelector(
   sv => sv.activePage
 )
 
+// note that this selects immutable List.
 const currentSortieIndexesSelector = createSelector(
   getSortieIndexesFuncSelector,
-  mapIdSelector,
-  (getSortieIndexesFunc, mapId) =>
-    getSortieIndexesFunc(mapId)
+  viewingMapIdSelector,
+  (getSortieIndexesFunc, mId) =>
+    getSortieIndexesFunc(mId)
 )
+
 
 const itemsPerPage = 20
 
-
 const pageRangeSelector = createSelector(
   currentSortieIndexesSelector,
-  sortieIndexes => Math.ceil(sortieIndexes.length / itemsPerPage)
+  sortieIndexes => Math.ceil(sortieIndexes.size / itemsPerPage)
 )
 
 const currentFocusingSortieIndexesSelector = createSelector(
@@ -142,15 +133,18 @@ const currentFocusingSortieIndexesSelector = createSelector(
   activePageSelector,
   (sortieIndexes, activePage) => {
     const beginInd = (activePage-1)*itemsPerPage
-    const endInd = Math.min(beginInd+itemsPerPage-1, sortieIndexes.length-1)
+    const endInd = Math.min(beginInd+itemsPerPage-1, sortieIndexes.size-1)
     return sortieIndexes.slice(beginInd, endInd+1)
   }
 )
 
-
 const getMapNodeLetterFuncSelector = createSelector(
   fcdSelector,
   fcd => _.memoize(mapId => {
+    // TODO: FCD data needs to be resolved by phase.
+    if (true)
+      return edgeId => String(edgeId)
+
     const routeInfo = _.get(fcd, ['map', mapIdToStr(mapId), 'route'])
     if (_.isEmpty(routeInfo))
       return edgeId => String(edgeId)
@@ -161,11 +155,8 @@ const getMapNodeLetterFuncSelector = createSelector(
 
 
 export {
-  sortieIndexesSelector,
   sortieIndexesDomainSelector,
-  getSortieIndexesFuncSelector,
   pageRangeSelector,
   currentFocusingSortieIndexesSelector,
   getMapNodeLetterFuncSelector,
-  grouppedSortieIndexesSelector,
 }
