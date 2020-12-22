@@ -11,12 +11,22 @@ import {
   sortieViewerSelector,
   sortieIndexesSelector,
 } from '../../selectors'
+import {
+  parseEffMapId,
+} from '../../store/records'
+
 
 /*
-  TODO: original sortieIndexesSelector uses Array and for elements
-  mapId is used to identify the viewing map.
-  But for our new store-based structure, immutable List and effMapId is used instead.
+  Selects an immutable OrderedMap from EffMapId to List of sorties, order preserved.
+
+  Note that since keys are ordered in which they were set,
+  iterating through elements will also give us most recently sortied maps.
+
  */
+const grouppedSortieIndexesSelector = createSelector(
+  sortieIndexesSelector,
+  si => si.groupBy(x => x.effMapId)
+)
 
 /*
   TODO: should new structure have some verification like `checkSortieIndexes`?
@@ -24,41 +34,70 @@ import {
 
 /*
    an Array whose values are all valid for getSortieIndexesFunc (thus the "domain")
-   sorting methods are respected here.
+   sorting methods are respected within game phases.
+
+   We have 4 categories in the following order:
+
+   - 'all' always in front
+   - 'pvp' always the second one
+   - phase2 (current) maps
+   - phase1 (old) maps
+
+   And `sortBy` will only have effect on phase2 and phase1 maps.
+   The intention is to always place phase2 maps in front regardless of sorting method
+   and whether we are reversing the order - as user would most likely view p2 maps more often than p1 maps.
  */
 const sortieIndexesDomainSelector = createSelector(
-  sortieIndexesSelector,
+  grouppedSortieIndexesSelector,
   sortieViewerSelector,
-  (sortieIndexes, {sortBy: {method, reversed}}) => {
-    /*
-       - _.uniq is guaranteed to keep only the first element when there're duplicates
-       - sortieIndexes is guaranteed to keep more recent ones in front
-       - therefore "domain" is naturally already sorted in "recent" mode
-     */
-    const domain = _.uniq(
-      sortieIndexes.map(si => si.mapId).filter(x => x !== 'pvp')
-    )
-
-    let sortedDomain
-    if (method === 'recent') {
-      sortedDomain = domain
-    } else if (method === 'numeric') {
-      sortedDomain = domain.sort((x,y) => x-y)
-    } else {
-      console.warn(`invalid sort method: ${method}`)
-      sortedDomain = domain
+  (grpdSortieIndexes, {sortBy: {method, reversed}}) => {
+    let p1Maps = []
+    let p2Maps = []
+    for (const effMapId of grpdSortieIndexes.keys()) {
+      const parsed = parseEffMapId(effMapId)
+      if (parsed === 'pvp') {
+        continue
+      }
+      if (parsed === null) {
+        console.warn(`skipping ${effMapId} due to parse error.`)
+      }
+      if (parsed.phase === 1) {
+        p1Maps.push(effMapId)
+      } else if (parsed.phase === 2) {
+        p2Maps.push(effMapId)
+      } else {
+        console.warn(`skipping ${effMapId} due to unknown phase.`)
+      }
     }
 
-    if (reversed)
-      sortedDomain = sortedDomain.reverse()
+    if (method === 'recent') {
+      // already sorted in recent order thanks to OrderedMap.
+    } else if (method === 'numeric') {
+      const compare =
+        (x,y) => parseEffMapId(x).mapId - parseEffMapId(y).mapId
+      p1Maps.sort(compare)
+      p2Maps.sort(compare)
+    } else {
+      console.warn(`invalid sort method: ${method}`)
+    }
 
-    // make 'all' and 'pvp' always in front, in that order.
-    sortedDomain.unshift('pvp')
-    sortedDomain.unshift('all')
-    // ['all', 'pvp', <mapId> ...]
-    return sortedDomain
+    if (reversed) {
+      p1Maps = p1Maps.reverse()
+      p2Maps = p2Maps.reverse()
+    }
+
+    // 'all' and 'pvp' always in front, in that order.
+    return ['all', 'pvp', ...p2Maps, ...p1Maps]
   }
 )
+
+/*
+  TODO: original sortieIndexesSelector uses Array and for elements
+  mapId is used to identify the viewing map.
+  But for our new store-based structure, immutable List and effMapId is used instead.
+
+  TODO: revisit everything below to adapt to new store structure.
+ */
 
 /*
    getSortieIndexesByMapFunc(<mapId or 'pvp' or 'all'>)
@@ -120,6 +159,7 @@ const getMapNodeLetterFuncSelector = createSelector(
   })
 )
 
+
 export {
   sortieIndexesSelector,
   sortieIndexesDomainSelector,
@@ -127,4 +167,5 @@ export {
   pageRangeSelector,
   currentFocusingSortieIndexesSelector,
   getMapNodeLetterFuncSelector,
+  grouppedSortieIndexesSelector,
 }

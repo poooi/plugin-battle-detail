@@ -175,4 +175,5 @@ export {
   parseBattleMapAndTime,
   withEffMapId,
   getFcdMapInfoFuncSelector,
+  parseEffMapId,
 }
