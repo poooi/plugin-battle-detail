@@ -20,7 +20,6 @@ import { translate } from 'react-i18next'
 
 import {
   sortieIndexesDomainSelector,
-  getSortieIndexesFuncSelector,
   pageRangeSelector,
   currentFocusingSortieIndexesSelector,
 } from './selectors'
@@ -66,7 +65,6 @@ const rankColors = {
 class SortieViewerImpl extends PureComponent {
   static propTypes = {
     mapIds: PTyp.array.isRequired,
-    getSortieIndexes: PTyp.func.isRequired,
     mapId: PTyp.oneOfType([PTyp.number, PTyp.string]).isRequired,
     activePage: PTyp.number.isRequired,
     pageRange: PTyp.number.isRequired,
@@ -294,7 +292,7 @@ class SortieViewerImpl extends PureComponent {
           >
             <ListGroup style={{flex: 1, overflowY: 'auto'}}>
               {
-                focusingSortieIndexes.map(si => {
+                focusingSortieIndexes.toArray().map(si => {
                   const firstIndex = si.indexes[0]
                   const routes = _.get(fcdMap,[firstIndex.map,'route'])
                   const compId = firstIndex.id
@@ -412,7 +410,6 @@ const SortieViewer = connect(
   mergeMapStateToProps(
     createStructuredSelector({
       mapIds: sortieIndexesDomainSelector,
-      getSortieIndexes: getSortieIndexesFuncSelector,
       focusingSortieIndexes: currentFocusingSortieIndexesSelector,
       pageRange: pageRangeSelector,
       fcdMap: state => _.get(fcdSelector(state),'map',{}),
