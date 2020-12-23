@@ -33,23 +33,27 @@ import { convertToWctf } from '../../../lib/wctf'
 import { UPagination } from '../u-pagination'
 import { PTyp } from '../../ptyp'
 import { openReplayGenerator } from './replay-generator'
+import { parseEffMapId } from '../../store/records'
 
 const { __ } = window.i18n["poi-plugin-battle-detail"]
 
 const battleReplayerURL = 'https://kc3kai.github.io/kancolle-replay/battleplayer.html'
 
-const pprMapId = mapId => {
-  if (mapId === 'all')
+// eMapId could be EffMapId or 'all'
+const pprMapId = eMapId => {
+  if (eMapId === 'all')
     return __('All')
-  if (mapId === 'pvp')
+  if (eMapId === 'pvp')
     return __('Practice')
 
-  if (_.isInteger(mapId)) {
-    const area = Math.floor(mapId / 10)
-    const num = mapId % 10
-    return `${area}-${num}`
-  }
-  return mapId
+  const parsed = parseEffMapId(eMapId)
+  if (parsed === null)
+    return eMapId
+
+  const suffix = parsed.phase === 2 ? '' : ` (P${parsed.phase})`
+  const mapStr = `${parsed.mapArea}-${parsed.mapNo}${suffix}`
+
+  return mapStr
 }
 
 const rankColors = {
@@ -65,7 +69,7 @@ const rankColors = {
 @translate('poi-plugin-battle-detail')
 class SortieViewerImpl extends PureComponent {
   static propTypes = {
-    mapIds: PTyp.array.isRequired,
+    effMapIds: PTyp.array.isRequired,
     mapId: PTyp.oneOfType([PTyp.number, PTyp.string]).isRequired,
     activePage: PTyp.number.isRequired,
     pageRange: PTyp.number.isRequired,
@@ -162,7 +166,7 @@ class SortieViewerImpl extends PureComponent {
 
   render() {
     const {
-      mapIds, mapId,
+      effMapIds, mapId,
       pageRange, activePage,
       focusingSortieIndexes,
       sortBy,
@@ -274,7 +278,7 @@ class SortieViewerImpl extends PureComponent {
                 flex: 1,
               }}>
               {
-                mapIds.map(curMapId => (
+                effMapIds.map(curMapId => (
                   <ListGroupItem
                     key={curMapId}
                     onClick={this.handleMapIdChange(curMapId)}
@@ -298,7 +302,7 @@ class SortieViewerImpl extends PureComponent {
                   const routes = _.get(fcdMap,[firstIndex.map,'route'])
                   const compId = firstIndex.id
                   const desc =
-                    si.mapId === 'pvp' ? firstIndex.desc : `${__('Sortie')} ${pprMapId(si.mapId)}`
+                    si.mapId === 'pvp' ? firstIndex.desc : `${__('Sortie')} ${pprMapId(si.effMapId)}`
                   const timeDesc =
                     si.indexes.length === 1 ? firstIndex.time : `${firstIndex.time} ~ ${_.last(si.indexes).time}`
                   return (
@@ -410,7 +414,7 @@ class SortieViewerImpl extends PureComponent {
 const SortieViewer = connect(
   mergeMapStateToProps(
     createStructuredSelector({
-      mapIds: sortieIndexesDomainSelector,
+      effMapIds: sortieIndexesDomainSelector,
       focusingSortieIndexes: currentFocusingSortieIndexesSelector,
       pageRange: pageRangeSelector,
       fcdMap: state => _.get(fcdSelector(state),'map',{}),
