@@ -5,6 +5,7 @@ import { createStructuredSelector } from 'reselect'
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
 import Markdown from 'react-remarkable'
+import { List } from 'immutable'
 import {
   ListGroup, ListGroupItem,
   DropdownButton, MenuItem,
@@ -68,7 +69,7 @@ class SortieViewerImpl extends PureComponent {
     mapId: PTyp.oneOfType([PTyp.number, PTyp.string]).isRequired,
     activePage: PTyp.number.isRequired,
     pageRange: PTyp.number.isRequired,
-    focusingSortieIndexes: PTyp.array.isRequired,
+    focusingSortieIndexes: PTyp.instanceOf(List).isRequired,
     fcdMap: PTyp.object.isRequired,
     sortBy: PTyp.shape({
       method: PTyp.MapAreaSortMethod.isRequired,
