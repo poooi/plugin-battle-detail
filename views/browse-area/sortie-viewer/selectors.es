@@ -1,207 +1,111 @@
 import _ from 'lodash'
+import { List } from 'immutable'
 import { createSelector } from 'reselect'
 import { fcdSelector } from 'views/utils/selectors'
 import { mapIdToStr } from 'subtender/kc'
 import {
-  prepareNextEdges,
-  mapStrToMapId,
-  checkSortieIndexes,
-} from './groupping'
-import { indexesSelector, sortieViewerSelector } from '../../selectors'
+  sortieViewerSelector,
+  sortieIndexesSelector,
+} from '../../selectors'
+import {
+  parseEffMapId,
+  getFcdMapInfoFuncSelector,
+} from '../../store/records'
+
 
 /*
-   the "mapCanGoFromToFunc" is a function:
+  Selects an immutable OrderedMap from EffMapId to List of sorties, order preserved.
 
-   mapCanGoFromToFunc(<mapId>)(<beginEdgeId>,<endEdgeId>) = <bool>
-
-   the <bool> indicates whether it's possible to go from edge <beginEdgeId>
-   to <endEdgeId> in <mapId>
-
-   the function is curried in this way to avoid some key-resolving
-   while memoizing.
+  Note that since keys are ordered in which they were set,
+  iterating through elements will also give us most recently sortied maps.
 
  */
-const mapCanGoFromToFuncSelector = createSelector(
-  fcdSelector,
-  fcd => {
-    const fcdMap = _.get(fcd,'map')
-    // false when fcd data is not available
-    if (_.isEmpty(fcdMap)) {
-      return _mapId => (_begin, _end) => false
-    }
-
-    return _.memoize(mapId => {
-      const mArea = Math.floor(mapId/10)
-      const mNum = mapId % 10
-      const mapStr = `${mArea}-${mNum}`
-      const mapInfo = _.get(fcdMap,mapStr)
-
-      // false when fcd data of that map is not available
-      if (_.isEmpty(mapInfo)) {
-        return (_begin, _end) => false
-      }
-
-      const nextEdges = prepareNextEdges(mapInfo)
-      // if it's possible to go from one edge to another
-      const canGoFromToImpl = (beginEdgeId, endEdgeId) => {
-        /*
-           to go from one edge to another means to go from end node of 'beginEdgeId'
-           to begin node of `endEdgeId`.
-         */
-        const [_node1, beginNode] = mapInfo.route[beginEdgeId]
-        const [endNode, _node2] = mapInfo.route[endEdgeId]
-        if (!beginNode || !endNode)
-          return false
-
-        /*
-           let's assume that it's only possible to go from one edge to another
-           if it can be done within 5 steps. The definition of a step
-           is to go from one node to another one through an edge.
-         */
-        const search = (curNode, remainedSteps = 5) => {
-          if (curNode === endNode)
-            return true
-          if (remainedSteps <= 0)
-            return false
-          const nextEdgeIds = nextEdges[curNode]
-          if (!nextEdgeIds)
-            return false
-          for (let i=0; i<nextEdgeIds.length; ++i) {
-            const nextEdgeId = nextEdgeIds[i]
-            const [_node, nextNode] = mapInfo.route[nextEdgeId]
-            if (search(nextNode,remainedSteps-1))
-              return true
-          }
-          return false
-        }
-        return search(beginNode)
-      }
-
-      const canGoFromTo = _.memoize(
-        canGoFromToImpl,
-        // key resolving
-        (eFrom, eTo) => `${eFrom}=>${eTo}`
-      )
-
-      return canGoFromTo
-    })
-  }
+const grouppedSortieIndexesSelector = createSelector(
+  sortieIndexesSelector,
+  si => si.groupBy(x => x.effMapId)
 )
 
 /*
-   a SortieIndex describes a sequence of battle record indexes which
-   can be consider a single sortie.
-
-   it is represented by the following structure:
-
-   - {indexes: <Array of index, ascending by id>, mapId: <mapId or 'pvp'>}
-
+  TODO: should new structure have some verification like `checkSortieIndexes`?
  */
-const sortieIndexesSelector = createSelector(
-  indexesSelector,
-  mapCanGoFromToFuncSelector,
-  (indexes, mapCanGoFromToFunc) => {
-    const sortieIndexes = []
-
-    let i = 0
-    while (i < indexes.length) {
-      const curIndex = indexes[i]
-      const curMapId = mapStrToMapId(curIndex.map)
-      if (curMapId === null) {
-        console.warn(
-          `failed to parse map string: ${curIndex.map} of data ${curIndex.id}, skipping.`
-        )
-        ++i
-        continue
-      }
-
-      if (curMapId === 'pvp') {
-        sortieIndexes.push({indexes: [curIndex], mapId: 'pvp'})
-        ++i
-        continue
-      }
-
-      let j = i
-      // INVARIANT: i~j (inclusive) should be considered same sortie
-      for (_.noop() ; j+1 < indexes.length; ++j) {
-        const nextIndex = indexes[j+1]
-        const nextMapId = mapStrToMapId(nextIndex.map)
-        if (nextMapId !== curMapId)
-          break
-        const beginEdgeId = nextIndex.route_
-        const endEdgeId = indexes[j].route_
-        if (!mapCanGoFromToFunc(curMapId)(beginEdgeId,endEdgeId))
-          break
-      }
-
-      sortieIndexes.push({
-        indexes: indexes.slice(i,j+1).reverse(),
-        mapId: curMapId,
-      })
-      i = j+1
-    }
-
-    // checking correctness
-    checkSortieIndexes(sortieIndexes, mapCanGoFromToFunc)
-
-    return sortieIndexes
-  }
-)
 
 /*
    an Array whose values are all valid for getSortieIndexesFunc (thus the "domain")
-   sorting methods are respected here.
+   sorting methods are respected within game phases.
+
+   We have 4 categories in the following order:
+
+   - 'all' always in front
+   - 'pvp' always the second one
+   - phase2 (current) maps
+   - phase1 (old) maps
+
+   And `sortBy` will only have effect on phase2 and phase1 maps.
+   The intention is to always place phase2 maps in front regardless of sorting method
+   and whether we are reversing the order - as user would most likely view p2 maps more often than p1 maps.
  */
 const sortieIndexesDomainSelector = createSelector(
-  sortieIndexesSelector,
+  grouppedSortieIndexesSelector,
   sortieViewerSelector,
-  (sortieIndexes, {sortBy: {method, reversed}}) => {
-    /*
-       - _.uniq is guaranteed to keep only the first element when there're duplicates
-       - sortieIndexes is guaranteed to keep more recent ones in front
-       - therefore "domain" is naturally already sorted in "recent" mode
-     */
-    const domain = _.uniq(
-      sortieIndexes.map(si => si.mapId).filter(x => x !== 'pvp')
-    )
-
-    let sortedDomain
-    if (method === 'recent') {
-      sortedDomain = domain
-    } else if (method === 'numeric') {
-      sortedDomain = domain.sort((x,y) => x-y)
-    } else {
-      console.warn(`invalid sort method: ${method}`)
-      sortedDomain = domain
+  (grpdSortieIndexes, {sortBy: {method, reversed}}) => {
+    let p1Maps = []
+    let p2Maps = []
+    for (const effMapId of grpdSortieIndexes.keys()) {
+      const parsed = parseEffMapId(effMapId)
+      if (parsed === 'pvp') {
+        continue
+      }
+      if (parsed === null) {
+        console.warn(`skipping ${effMapId} due to parse error.`)
+      }
+      if (parsed.phase === 1) {
+        p1Maps.push(effMapId)
+      } else if (parsed.phase === 2) {
+        p2Maps.push(effMapId)
+      } else {
+        console.warn(`skipping ${effMapId} due to unknown phase.`)
+      }
     }
 
-    if (reversed)
-      sortedDomain = sortedDomain.reverse()
+    if (method === 'recent') {
+      // already sorted in recent order thanks to OrderedMap.
+    } else if (method === 'numeric') {
+      const compare =
+        (x,y) => parseEffMapId(x).mapId - parseEffMapId(y).mapId
+      p1Maps.sort(compare)
+      p2Maps.sort(compare)
+    } else {
+      console.warn(`invalid sort method: ${method}`)
+    }
 
-    // make 'all' and 'pvp' always in front, in that order.
-    sortedDomain.unshift('pvp')
-    sortedDomain.unshift('all')
-    // ['all', 'pvp', <mapId> ...]
-    return sortedDomain
+    if (reversed) {
+      p1Maps = p1Maps.reverse()
+      p2Maps = p2Maps.reverse()
+    }
+
+    // 'all' and 'pvp' always in front, in that order.
+    return ['all', 'pvp', ...p2Maps, ...p1Maps]
   }
 )
 
 /*
-   getSortieIndexesByMapFunc(<mapId or 'pvp' or 'all'>)
+   getSortieIndexesByMapFunc(<effMapId or 'all'>)
 
-   returns an Array of all qualifying sortie indexes
+   Note that effMapId includes 'pvp'.
+
+   returns an immutable List of all qualifying sortie indexes
  */
 const getSortieIndexesFuncSelector = createSelector(
   sortieIndexesSelector,
-  sortieIndexes => _.memoize(mapId =>
-    mapId === 'all' ? sortieIndexes :
-      sortieIndexes.filter(si => si.mapId === mapId)
-  )
+  grouppedSortieIndexesSelector,
+  (sortieIndexes, gSortieIndexes) => mId =>
+    mId === 'all' ? sortieIndexes :
+      gSortieIndexes.has(mId) ? gSortieIndexes.get(mId) : List()
 )
 
-const mapIdSelector = createSelector(
+const viewingMapIdSelector = createSelector(
   sortieViewerSelector,
-  sv => sv.mapId
+  sv => sv.viewingMapId
 )
 
 const activePageSelector = createSelector(
@@ -209,19 +113,20 @@ const activePageSelector = createSelector(
   sv => sv.activePage
 )
 
+// note that this selects immutable List.
 const currentSortieIndexesSelector = createSelector(
   getSortieIndexesFuncSelector,
-  mapIdSelector,
-  (getSortieIndexesFunc, mapId) =>
-    getSortieIndexesFunc(mapId)
+  viewingMapIdSelector,
+  (getSortieIndexesFunc, mId) =>
+    getSortieIndexesFunc(mId)
 )
+
 
 const itemsPerPage = 20
 
-
 const pageRangeSelector = createSelector(
   currentSortieIndexesSelector,
-  sortieIndexes => Math.ceil(sortieIndexes.length / itemsPerPage)
+  sortieIndexes => Math.ceil(sortieIndexes.size / itemsPerPage)
 )
 
 const currentFocusingSortieIndexesSelector = createSelector(
@@ -229,27 +134,30 @@ const currentFocusingSortieIndexesSelector = createSelector(
   activePageSelector,
   (sortieIndexes, activePage) => {
     const beginInd = (activePage-1)*itemsPerPage
-    const endInd = Math.min(beginInd+itemsPerPage-1, sortieIndexes.length-1)
+    const endInd = Math.min(beginInd+itemsPerPage-1, sortieIndexes.size-1)
     return sortieIndexes.slice(beginInd, endInd+1)
   }
 )
 
+/*
+  Selects a curried function:
 
+  getMapNodeLetter(effMapId)(edgeId) returns a string descripting node name
+  or null on failure.
+ */
 const getMapNodeLetterFuncSelector = createSelector(
-  fcdSelector,
-  fcd => _.memoize(mapId => {
-    const routeInfo = _.get(fcd, ['map', mapIdToStr(mapId), 'route'])
+  getFcdMapInfoFuncSelector,
+  getFcdMapInfo => effMapId => {
+    const routeInfo = _.get(getFcdMapInfo(effMapId), 'route')
     if (_.isEmpty(routeInfo))
       return edgeId => String(edgeId)
 
     return edgeId => routeInfo[edgeId][1]
-  })
+  }
 )
 
 export {
-  sortieIndexesSelector,
   sortieIndexesDomainSelector,
-  getSortieIndexesFuncSelector,
   pageRangeSelector,
   currentFocusingSortieIndexesSelector,
   getMapNodeLetterFuncSelector,

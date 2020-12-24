@@ -26,6 +26,11 @@ const indexesSelector = createSelector(
   ext => ext.indexes
 )
 
+const sortieIndexesSelector = createSelector(
+  extSelector,
+  ext => ext.sortieIndexes
+)
+
 const modalSelector = createSelector(
   uiSelector,
   ui => ui.modal
@@ -51,6 +56,7 @@ export {
   uiSelector,
   modalSelector,
   indexesSelector,
+  sortieIndexesSelector,
   sortieViewerSelector,
   browseModeSelector,
   themeSelector,

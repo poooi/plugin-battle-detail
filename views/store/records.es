@@ -8,7 +8,7 @@ import _ from 'lodash'
 import { createSelector } from 'reselect'
 import { join } from 'path-extra'
 import { readJsonSync } from 'fs-extra'
-
+import { splitMapId } from 'subtender/kc'
 import { fcdSelector } from 'views/utils/selectors'
 
 const fcdMapP1Raw = readJsonSync(
@@ -86,6 +86,26 @@ const parseBattleMapAndTime = (battleMapStr, timestamp) => {
   }
 }
 
+/*
+  Note that this function assumes that the input is a valid EffMapId
+  despite having some error messaging for invalid cases.
+  Since this function is memoized to avoid executing RegExp more than needed,
+  please avoid calling this function with invalid inputs.
+ */
+const parseEffMapId = _.memoize(eMapId => {
+  if (eMapId === 'pvp')
+    return 'pvp'
+  const matchResult = /^(\d+)p(1|2)$/.exec(eMapId)
+  if (!matchResult) {
+    console.error(`parse error: ${eMapId} is not a valid EffMapId`)
+    return null
+  }
+  const [_ignored, mapIdStr, phaseStr] = matchResult
+  const mapId = Number(mapIdStr)
+  const phase = Number(phaseStr)
+  const {area: mapArea, num: mapNo} = splitMapId(mapId)
+  return {mapId, phase, mapArea, mapNo}
+})
 
 /*
   unfolds EffMapId and folds with f.
@@ -99,20 +119,12 @@ const parseBattleMapAndTime = (battleMapStr, timestamp) => {
 
  */
 const withEffMapId = eMapId => do {
-  if (eMapId === 'pvp') {
-    f => f('pvp')
+  const result = parseEffMapId(eMapId)
+  if (typeof result === 'object') {
+    const {mapId, phase} = result
+    f => f(mapId, phase)
   } else {
-    const matchResult = /^(\d+)p(1|2)$/.exec(eMapId)
-    if (!matchResult) {
-      console.error(`parse error: ${eMapId} is not a valid EffMapId`)
-      f => f(null)
-    } else {
-      const [_ignored, mapIdStr, phaseStr] = matchResult
-      const mapId = Number(mapIdStr)
-      const phase = Number(phaseStr)
-      // use currying to avoid redundant parsing steps
-      f => f(mapId, phase)
-    }
+    f => f(result)
   }
 }
 
@@ -144,23 +156,9 @@ const getFcdMapInfoFuncSelector = createSelector(
   })
 )
 
-const debug = false
-
-if (debug) {
-  const {selectorTester} = require('subtender/poi')
-  selectorTester(getFcdMapInfoFuncSelector)
-
-  /*
-   usage:
-
-   > testSelector(f => console.log(f('25p1')))
-   > testSelector(f => console.log(f('25p2')))
-
-   */
-}
-
 export {
   parseBattleMapAndTime,
   withEffMapId,
   getFcdMapInfoFuncSelector,
+  parseEffMapId,
 }

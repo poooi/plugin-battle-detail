@@ -310,18 +310,21 @@
   display: flex;
   flex-direction: column;
   margin-top: .5em;
+  height: 100%;
 }
 
 #battle-detail-main #main-tabs > .tab-content > #main-tabs-pane-1 #browse-area > .browse-view {
   flex: 1;
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 #battle-detail-main #main-tabs > .tab-content > #main-tabs-pane-1 #browse-area > .browse-view > .panel-body {
   flex: 1;
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 #battle-detail-main #main-tabs > .tab-content > #main-tabs-pane-1 #browse-area > .browse-view > .panel-body .sortie-viewer-wrap {
