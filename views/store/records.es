@@ -156,21 +156,6 @@ const getFcdMapInfoFuncSelector = createSelector(
   })
 )
 
-const debug = false
-
-if (debug) {
-  const {selectorTester} = require('subtender/poi')
-  selectorTester(getFcdMapInfoFuncSelector)
-
-  /*
-   usage:
-
-   > testSelector(f => console.log(f('25p1')))
-   > testSelector(f => console.log(f('25p2')))
-
-   */
-}
-
 export {
   parseBattleMapAndTime,
   withEffMapId,

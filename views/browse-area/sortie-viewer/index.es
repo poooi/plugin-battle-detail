@@ -16,7 +16,6 @@ import {
   modifyObject,
   mergeMapStateToProps,
 } from 'subtender'
-import { fcdSelector } from 'views/utils/selectors'
 import { translate } from 'react-i18next'
 
 import {
@@ -33,13 +32,19 @@ import { convertToWctf } from '../../../lib/wctf'
 import { UPagination } from '../u-pagination'
 import { PTyp } from '../../ptyp'
 import { openReplayGenerator } from './replay-generator'
-import { parseEffMapId } from '../../store/records'
+import {
+  parseEffMapId,
+  getFcdMapInfoFuncSelector,
+} from '../../store/records'
 
 const { __ } = window.i18n["poi-plugin-battle-detail"]
 
 const battleReplayerURL = 'https://kc3kai.github.io/kancolle-replay/battleplayer.html'
 
-// eMapId could be EffMapId or 'all'
+/*
+  Converts eMapId, which could be EffMapId or 'all'
+  to a more human-friendly form for display.
+ */
 const pprMapId = eMapId => {
   if (eMapId === 'all')
     return __('All')
@@ -50,10 +55,9 @@ const pprMapId = eMapId => {
   if (parsed === null)
     return eMapId
 
+  // phase 2 is implicit, otherwise we go with P+phase.
   const suffix = parsed.phase === 2 ? '' : ` (P${parsed.phase})`
-  const mapStr = `${parsed.mapArea}-${parsed.mapNo}${suffix}`
-
-  return mapStr
+  return `${parsed.mapArea}-${parsed.mapNo}${suffix}`
 }
 
 const rankColors = {
@@ -69,31 +73,35 @@ const rankColors = {
 @translate('poi-plugin-battle-detail')
 class SortieViewerImpl extends PureComponent {
   static propTypes = {
-    effMapIds: PTyp.array.isRequired,
-    mapId: PTyp.oneOfType([PTyp.number, PTyp.string]).isRequired,
-    activePage: PTyp.number.isRequired,
+    // connected
     pageRange: PTyp.number.isRequired,
+    effMapIds: PTyp.array.isRequired,
     focusingSortieIndexes: PTyp.instanceOf(List).isRequired,
-    fcdMap: PTyp.object.isRequired,
+
+    // connected from ui subreducer
+    viewingMapId: PTyp.string.isRequired,
+    activePage: PTyp.number.isRequired,
     sortBy: PTyp.shape({
       method: PTyp.MapAreaSortMethod.isRequired,
       reversed: PTyp.bool.isRequired,
     }).isRequired,
 
+    // connected functions
     uiModify: PTyp.func.isRequired,
     t: PTyp.func.isRequired,
+    getFcdMapInfo: PTyp.func.isRequired,
   }
 
   modifySortieViewer = modifier =>
     this.props.uiModify(modifyObject('sortieViewer', modifier))
 
-  handleMapIdChange = mapId => () =>
+  handleViewingMapIdChange = eMapId => () =>
     this.modifySortieViewer(sv => {
-      if (sv.mapId === mapId)
+      if (sv.viewingMapId === eMapId)
         return sv
       return {
         ...sv,
-        mapId,
+        viewingMapId: eMapId,
         activePage: 1,
       }
     })
@@ -154,6 +162,7 @@ class SortieViewerImpl extends PureComponent {
               reversed: !sortBy.reversed,
             }
           } else {
+            // switch off reverse flag whenever a new method is applied.
             return {
               ...sortBy,
               method,
@@ -166,11 +175,11 @@ class SortieViewerImpl extends PureComponent {
 
   render() {
     const {
-      effMapIds, mapId,
+      effMapIds, viewingMapId,
       pageRange, activePage,
       focusingSortieIndexes,
       sortBy,
-      fcdMap,
+      getFcdMapInfo,
     } = this.props
     return (
       <div
@@ -278,14 +287,14 @@ class SortieViewerImpl extends PureComponent {
                 flex: 1,
               }}>
               {
-                effMapIds.map(curMapId => (
+                effMapIds.map(curEMapId => (
                   <ListGroupItem
-                    key={curMapId}
-                    onClick={this.handleMapIdChange(curMapId)}
+                    key={curEMapId}
+                    onClick={this.handleViewingMapIdChange(curEMapId)}
                     style={{padding: '5px 10px'}}
                     fill>
-                    <div className={curMapId === mapId ? 'text-primary' : ''}>
-                      {pprMapId(curMapId)}
+                    <div className={curEMapId === viewingMapId ? 'text-primary' : ''}>
+                      {pprMapId(curEMapId)}
                     </div>
                   </ListGroupItem>
                 ))
@@ -298,8 +307,9 @@ class SortieViewerImpl extends PureComponent {
             <ListGroup style={{flex: 1, overflowY: 'auto'}}>
               {
                 focusingSortieIndexes.toArray().map(si => {
+                  const eMapId = si.effMapId
                   const firstIndex = si.indexes[0]
-                  const routes = _.get(fcdMap,[firstIndex.map,'route'])
+                  const routes = _.get(getFcdMapInfo(eMapId),'route')
                   const compId = firstIndex.id
                   const desc =
                     si.mapId === 'pvp' ? firstIndex.desc : `${__('Sortie')} ${pprMapId(si.effMapId)}`
@@ -417,7 +427,7 @@ const SortieViewer = connect(
       effMapIds: sortieIndexesDomainSelector,
       focusingSortieIndexes: currentFocusingSortieIndexesSelector,
       pageRange: pageRangeSelector,
-      fcdMap: state => _.get(fcdSelector(state),'map',{}),
+      getFcdMapInfo: getFcdMapInfoFuncSelector,
     }),
     sortieViewerSelector,
   ),
