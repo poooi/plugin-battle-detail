@@ -99,7 +99,7 @@ const getSortieIndexesFuncSelector = createSelector(
   grouppedSortieIndexesSelector,
   (sortieIndexes, gSortieIndexes) => mId =>
     mId === 'all' ? sortieIndexes :
-      gSortieIndexes.has(mId) ? _ : List()
+      gSortieIndexes.has(mId) ? gSortieIndexes.get(mId) : List()
 )
 
 const viewingMapIdSelector = createSelector(
@@ -152,7 +152,6 @@ const getMapNodeLetterFuncSelector = createSelector(
     return edgeId => routeInfo[edgeId][1]
   })
 )
-
 
 export {
   sortieIndexesDomainSelector,
