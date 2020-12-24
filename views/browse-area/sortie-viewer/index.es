@@ -188,6 +188,7 @@ class SortieViewerImpl extends PureComponent {
           display: 'flex',
           flexDirection: 'column',
           flex: 1,
+          height: '100%',
         }}
       >
         <div
@@ -218,7 +219,11 @@ class SortieViewerImpl extends PureComponent {
             {__('BrowseArea.SortieOptions.OpenReplayer')}
           </Button>
         </div>
-        <div style={{display: 'flex', flex: 1}}>
+        <div
+          style={{
+            display: 'flex', flex: 1,
+            height: 0,
+          }}>
           <div
             style={{
               width: '20%',
@@ -226,6 +231,7 @@ class SortieViewerImpl extends PureComponent {
               marginRight: 5,
               display: 'flex',
               flexDirection: 'column',
+              height: '100%',
             }}
           >
             <ButtonGroup
@@ -303,7 +309,12 @@ class SortieViewerImpl extends PureComponent {
             </ListGroup>
           </div>
           <div
-            style={{flex: 1, display: 'flex', flexDirection: 'column'}}
+            style={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              height: '100%',
+            }}
           >
             <ListGroup style={{flex: 1, overflowY: 'auto'}}>
               {
