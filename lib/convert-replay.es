@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import { mapIdToStr } from 'subtender/kc'
 import AppData from './appdata'
-
+import { parseEffMapId } from '../views/store/records'
 /*
    input structure (poiReplayGroup) is either a battle record,
    or an Array of battle records sorted in the order they happened.
@@ -10,8 +10,13 @@ import AppData from './appdata'
 const convertReplay = async sortieIndexes => {
   const {
     indexes: poiRecords,
-    mapId,
+    effMapId,
   } = sortieIndexes
+
+  const parsedMapId = parseEffMapId(effMapId)
+  if (parsedMapId === null) {
+    console.warn(`parse error on ${effMapId}, generated replay might have wrong map info.`)
+  }
 
   if (poiRecords.length === 0)
     throw new Error('cannot convert an empty record')
@@ -40,13 +45,13 @@ const convertReplay = async sortieIndexes => {
       console.warn('expecting mapStr to be non-empty')
   }
 
-  let whichMap
-  if (sortieIndexes.mapId === 'pvp') {
-    whichMap = {world: 0, mapnum: 0}
-  } else {
-    const world = Math.floor(mapId/10)
-    const mapnum = mapId % 10
-    whichMap = {world, mapnum}
+  const whichMap = do {
+    if (parsedMapId === 'pvp' || parsedMapId === null) {
+      ({world: 0, mapnum: 0})
+    } else {
+      const {mapArea: world, mapNo: mapnum} = parsedMapId;
+      ({world, mapnum})
+    }
   }
 
   const combined = fstBattle.fleet.type
@@ -183,10 +188,13 @@ const convertReplay = async sortieIndexes => {
   let imageInfo
 
   {
-    const desc =
-      isPvP ?
-        fstRecord.desc :
-        `${fstRecord.desc} ${mapIdToStr(mapId)}`
+    const desc = do {
+      if (parsedMapId === 'pvp' || parsedMapId === null) {
+        fstRecord.desc
+      } else {
+        `${fstRecord.desc} ${parsedMapId.mapArea}-${parsedMapId.mapNo}`
+      }
+    }
 
     const timeStrs =
       poiRecords.length > 0 ?
@@ -220,7 +228,7 @@ const convertReplay = async sortieIndexes => {
       [fstBattle.fleet.main, fstBattle.fleet.escort].map(translateFleet)
     )
 
-    imageInfo = {isPvP, desc, timeStrs, mapId, routes, fleets}
+    imageInfo = {isPvP, desc, timeStrs, effMapId, routes, fleets}
   }
 
   return {replayData, imageInfo}
