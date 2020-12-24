@@ -324,7 +324,7 @@ class SortieViewerImpl extends PureComponent {
                   const routes = _.get(getFcdMapInfo(eMapId),'route')
                   const compId = firstIndex.id
                   const desc =
-                    si.mapId === 'pvp' ? firstIndex.desc : `${__('Sortie')} ${pprMapId(si.effMapId)}`
+                    si.effMapId === 'pvp' ? firstIndex.desc : `${__('Sortie')} ${pprMapId(si.effMapId)}`
                   const timeDesc =
                     si.indexes.length === 1 ? firstIndex.time : `${firstIndex.time} ~ ${_.last(si.indexes).time}`
                   return (
