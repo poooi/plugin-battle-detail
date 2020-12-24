@@ -45,6 +45,9 @@ const imagesPath = join(__dirname, '..','..','..','assets','images')
 class ReplayGeneratorImpl extends PureComponent {
   static propTypes = {
     rep: PTyp.object.isRequired,
+    effMapId: PTyp.string.isRequired,
+
+    // connected:
     getMapNodeLetter: PTyp.func.isRequired,
     theme: PTyp.string.isRequired,
     t: PTyp.func.isRequired,
@@ -107,9 +110,14 @@ class ReplayGeneratorImpl extends PureComponent {
   }
 
   render() {
-    const {rep: {imageInfo, replayData}, getMapNodeLetter, theme} = this.props
+    const {
+      rep: {imageInfo, replayData},
+      effMapId,
+      getMapNodeLetter,
+      theme,
+    } = this.props
     const {disableSaveImage, comment} = this.state
-    const getNodeLetter = getMapNodeLetter(imageInfo.mapId)
+    const getNodeLetter = getMapNodeLetter(effMapId)
     if (imageInfo.fleets.length < 1 || imageInfo.fleets.length > 2) {
       console.warn(`unexpected number of fleets: ${imageInfo.fleets.length}`)
     }
@@ -334,10 +342,10 @@ const ReplayGenerator = connect(
   })
 )(ReplayGeneratorImpl)
 
-const openReplayGenerator = rep => {
+const openReplayGenerator = (rep, effMapId) => {
   showModal({
     title: __('BrowseArea.ReplayGen.GenerateKC3Replay'),
-    body: (<ReplayGenerator rep={rep} />),
+    body: (<ReplayGenerator rep={rep} effMapId={effMapId} />),
   })
 }
 

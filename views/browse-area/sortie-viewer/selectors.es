@@ -9,6 +9,7 @@ import {
 } from '../../selectors'
 import {
   parseEffMapId,
+  getFcdMapInfoFuncSelector,
 } from '../../store/records'
 
 
@@ -138,19 +139,21 @@ const currentFocusingSortieIndexesSelector = createSelector(
   }
 )
 
-const getMapNodeLetterFuncSelector = createSelector(
-  fcdSelector,
-  fcd => _.memoize(mapId => {
-    // TODO: FCD data needs to be resolved by phase.
-    if (true)
-      return edgeId => String(edgeId)
+/*
+  Selects a curried function:
 
-    const routeInfo = _.get(fcd, ['map', mapIdToStr(mapId), 'route'])
+  getMapNodeLetter(effMapId)(edgeId) returns a string descripting node name
+  or null on failure.
+ */
+const getMapNodeLetterFuncSelector = createSelector(
+  getFcdMapInfoFuncSelector,
+  getFcdMapInfo => effMapId => {
+    const routeInfo = _.get(getFcdMapInfo(effMapId), 'route')
     if (_.isEmpty(routeInfo))
       return edgeId => String(edgeId)
 
     return edgeId => routeInfo[edgeId][1]
-  })
+  }
 )
 
 export {

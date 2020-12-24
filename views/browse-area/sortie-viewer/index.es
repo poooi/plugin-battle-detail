@@ -124,8 +124,9 @@ class SortieViewerImpl extends PureComponent {
     shell.openExternal(`${battleReplayerURL}?fromLZString=${encoded}`)
   }
 
-  handleGenerateReplay = sortieIndexes => async () =>
-    openReplayGenerator(await convertReplay(sortieIndexes))
+  handleGenerateReplay = sortieIndexes => async () => {
+    openReplayGenerator(await convertReplay(sortieIndexes), sortieIndexes.effMapId)
+  }
 
   handleCopyReplayToClipboard = sortieIndexes => async () => {
     const {replayData: kc3ReplayData} = await convertReplay(sortieIndexes)
