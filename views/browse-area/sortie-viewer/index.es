@@ -16,7 +16,7 @@ import {
   modifyObject,
   mergeMapStateToProps,
 } from 'subtender'
-import { translate } from 'react-i18next'
+import { withTranslation } from 'react-i18next'
 
 import {
   sortieIndexesDomainSelector,
@@ -70,7 +70,7 @@ const rankColors = {
   'E': '#03a9f4',
 }
 
-@translate('poi-plugin-battle-detail')
+@withTranslation('poi-plugin-battle-detail')
 class SortieViewerImpl extends PureComponent {
   static propTypes = {
     // connected
