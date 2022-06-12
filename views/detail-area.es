@@ -61,6 +61,8 @@ const AttackTypeName = {
   [AttackType.Mutsu_Splash              ]: __("AT_Mutsu_Splash"),
   [AttackType.Colorado_Fire             ]: __("AT_Colorado_Fire"),
   [AttackType.Kongo_Class_Kaini_C_Charge]: __("AT_Kongo_Class_Kaini_C_Charge"),
+  [AttackType.Yamato_Attack_Double      ]: __("AT_Yamato_Attack_Double"),
+  [AttackType.Yamato_Attack_Triple      ]: __("AT_Yamato_Attack_Triple"),
   [AttackType.Submarine_Special_Attack  ]: __("AT_Submarine_Special_Attack"),
   [AttackType.Carrier_CI                ]: __("AT_Carrier_CI"),
   [AttackType.Primary_Secondary_CI      ]: __("AT_Primary_Secondary_CI"),
