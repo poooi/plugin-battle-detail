@@ -64,7 +64,7 @@ class OptionArea extends React.Component {
 
   onClickSave = () => {
     const ref = this.props.battleArea.current
-    const domToImage = ref.ownerDocument.defaultView.require(require.resolve('dom-to-image'))
+    const domToImage = ref.ownerDocument.defaultView.domtoimage
     const computed = getComputedStyle(ref)
     const width = parseInt(computed.width, 10)
     const height = parseInt(computed.height, 10)

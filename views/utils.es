@@ -33,3 +33,9 @@ export async function sleep(ms) {
     setTimeout(() => resolve(), ms > 0 ? ms : 0)
   })
 }
+
+export function loadScript(path, targetDocument = document) {
+  const script = targetDocument.createElement('script')
+  script.setAttribute('src', path)
+  targetDocument.head.appendChild(script)
+}

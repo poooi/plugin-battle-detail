@@ -21,6 +21,7 @@ import { initData, actionCreators } from './store'
 import { indexesSelector, uiSelector } from './selectors'
 import { PTyp } from './ptyp'
 import { globalSubscribe, globalUnsubscribe } from './observers'
+import { loadScript } from './utils.es'
 
 const { ipc } = window
 const { __ } = window.i18n["poi-plugin-battle-detail"]
@@ -87,6 +88,8 @@ class MainAreaImpl extends React.Component {
     })
     window.showBattleWithTimestamp = this.showBattleWithTimestamp
     em.addListener('dataupdate', this.handleDataUpdate)
+
+    loadScript(require.resolve('dom-to-image'), this.battleArea.current.ownerDocument)
   }
 
   componentWillUnmount() {
