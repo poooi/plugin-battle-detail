@@ -21,7 +21,7 @@ import { initData, actionCreators } from './store'
 import { indexesSelector, uiSelector } from './selectors'
 import { PTyp } from './ptyp'
 import { globalSubscribe, globalUnsubscribe } from './observers'
-import { loadScript } from './utils.es'
+import { loadScript } from './utils'
 
 const { ipc } = window
 const { __ } = window.i18n["poi-plugin-battle-detail"]
