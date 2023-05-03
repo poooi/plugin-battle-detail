@@ -119,9 +119,9 @@ class EngagementTable extends React.Component {
     if (e.fFlare || e.eFlare)
       rows.push(
         <Row className={"engagement-row"} key={5}>
-          <span>{e.fFlare ? `${__("Star Shell")}: ${getShipName(get(e, 'fFlare.id'))}` : ''}</span>
+          <span>{e.fFlare >= 0 ? `${__("Star Shell")}: ${getShipName(get(e, 'fFlare.id'))}` : ''}</span>
           <span />
-          <span>{e.eFlare ? `${__("Star Shell")}: ${getShipName(get(e, 'eFlare.id'))}` : ''}</span>
+          <span>{e.eFlare >= 0 ? `${__("Star Shell")}: ${getShipName(get(e, 'eFlare.id'))}` : ''}</span>
         </Row>
       )
 
