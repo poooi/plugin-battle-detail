@@ -313,6 +313,41 @@ export class PacketCompat {
     }
     return battle
   }
+
+  /*
+    After Nov 9, 2022 maintenance, abyssal equipment ids start with 1501
+    instead of 501.
+
+    According to kancollewiki revisions [1] the maintenance last
+    from November 9 2022 11:00 to 20:00 JST, same day.
+
+    1: https://en.kancollewiki.net/w/index.php?title=Template:Maintenance/Times&oldid=14051
+
+   */
+  static fix20221109 = (() => {
+    const cut = Number(new Date('2022-11-09T15:00:00.000+09:00'))
+    const remap_ids = n => n > 500 ? n + 1000 : n
+
+    return battle => {
+      if (battle.time >= cut) {
+        return battle
+      }
+
+      for (const packet of battle.packet) {
+        for (const k of ['api_eSlot', 'api_eSlot_combined']) {
+          const p = _.get(packet, k)
+          if (Array.isArray(p)) {
+            p.forEach((eSlot, i) => {
+              if (Array.isArray(eSlot)) {
+                p[i] = eSlot.map(remap_ids)
+              }
+            })
+          }
+        }
+      }
+      return battle
+    }
+  }) ()
 }
 
 export class IndexCompat {
