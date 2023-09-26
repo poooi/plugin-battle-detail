@@ -37,6 +37,7 @@ const FormationName = {
   [Formation.Diamond]: __("Diamond"),
   [Formation.Echelon]: __("Echelon"),
   [Formation.Abreast]: __("Line Abreast"),
+  [Formation.Vanguard]: __("Vanguard"),
   [Formation.CruisingAntiSub]: __("Cruising Formation 1 (anti-sub)"),
   [Formation.CruisingForward]: __("Cruising Formation 2 (forward)"),
   [Formation.CruisingDiamond]: __("Cruising Formation 3 (ring)"),
