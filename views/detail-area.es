@@ -99,9 +99,18 @@ class EngagementTable extends React.Component {
         </Row>
       )
 
-    if (e.weakened)
+    if (e.smokeType) {
       rows.push(
         <Row className={"engagement-row"} key={3}>
+          <span />
+          <span>{`${__("Smoke")}: ${e.smokeType}`}</span>
+          <span />
+        </Row>
+      )
+    }
+    if (e.weakened)
+      rows.push(
+        <Row className={"engagement-row"} key={4}>
           <span />
           <span>{`${__("Gimmick")}: ${e.weakened}`}</span>
           <span />
@@ -110,7 +119,7 @@ class EngagementTable extends React.Component {
 
     if (e.fContact || e.eContact)
       rows.push(
-        <Row className={"engagement-row"} key={4}>
+        <Row className={"engagement-row"} key={5}>
           <span>{e.fContact ? `${__("Contact")}: ${getItemName(e.fContact)}` : ''}</span>
           <span />
           <span>{e.eContact ? `${__("Contact")}: ${getItemName(e.eContact)}` : ''}</span>
@@ -119,7 +128,7 @@ class EngagementTable extends React.Component {
 
     if (e.fFlare || e.eFlare)
       rows.push(
-        <Row className={"engagement-row"} key={5}>
+        <Row className={"engagement-row"} key={6}>
           <span>{e.fFlare ? `${__("Star Shell")}: ${getShipName(get(e, 'fFlare.id'))}` : ''}</span>
           <span />
           <span>{e.eFlare ? `${__("Star Shell")}: ${getShipName(get(e, 'eFlare.id'))}` : ''}</span>
