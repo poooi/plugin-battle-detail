@@ -19,7 +19,7 @@
     "babel-preset-es2017-node7": "^0.5.2",
     "babel-preset-react": "^6.5.0",
     "babel-preset-stage-0": "^6.5.0",
-    "eslint": "^4.10.0",
+    "eslint": "^8.22.0",
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-react": "^7.4.0",
     "poi-util-transpile": "^8.2.2"
