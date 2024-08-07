@@ -64,6 +64,7 @@ const AttackTypeName = {
   [AttackType.Kongo_Class_Kaini_C_Charge  ]: __("AT_Kongo_Class_Kaini_C_Charge"),
   [AttackType.Yamato_Attack_Double        ]: __("AT_Yamato_Attack_Double"),
   [AttackType.Yamato_Attack_Triple        ]: __("AT_Yamato_Attack_Triple"),
+  [AttackType.Baguette_Charge             ]: __("AT_Baguette_Charge"),
   [AttackType.Zuiun_Night_Attack          ]: __("AT_Zuiun_Night_Attack"),
   [AttackType.Type_4_LC_Special_Attack    ]: __("AT_Type_4_LC_Special_Attack"),
   [AttackType.Submarine_Special_Attack_2_3]: __("AT_Submarine_Special_Attack"),
