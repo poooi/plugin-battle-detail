@@ -8,7 +8,7 @@ import { equipIsAircraft } from 'views/utils/game-utils'
 import { SlotitemIcon } from 'views/components/etc/icon'
 
 import { FABar, HPBar } from './bar'
-import { Simulator, Ship, RawFleetShip, RawLBAC, RawSlotItem } from 'lib/battle'
+import { Simulator, Ship, RawFleetShip, RawLBAC, RawSlotItem } from 'poi-lib-battle'
 
 const { ROOT, getStore } = window as any
 const { __ } = window.i18n['poi-plugin-battle-detail']

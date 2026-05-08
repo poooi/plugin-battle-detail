@@ -19,7 +19,6 @@
     "shims/**/*"
   ],
   "exclude": [
-    "node_modules",
-    "lib/battle/**/*"
+    "node_modules"
   ]
 }

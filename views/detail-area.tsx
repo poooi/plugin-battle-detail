@@ -14,7 +14,7 @@ import {
   StageType, AttackType, HitType, ShipOwner,
   AirControl, Engagement, Formation, Detection,
   Stage, Attack, AerialInfo, EngagementInfo, Ship, Simulator,
-} from '../lib/battle'
+} from 'poi-lib-battle'
 
 const AirControlName: Record<string, string> = {
   [AirControl.Parity]: __('Air Parity'),

@@ -1,5 +1,5 @@
 import EventEmitter from 'events'
-import { Battle, BattleType, Fleet } from './battle'
+import { Battle, BattleType, Fleet } from 'poi-lib-battle'
 
 const { getStore } = window
 

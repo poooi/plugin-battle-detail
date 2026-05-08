@@ -15,13 +15,12 @@ import BrowseArea from './browse-area'
 import AppData from '../lib/appdata'
 import PacketManager from '../lib/packetmanager'
 
-import { Simulator } from '../lib/battle'
+import { Simulator } from 'poi-lib-battle'
 import { PacketCompat, IndexCompat } from '../lib/compat'
 import { initData, actionCreators } from './store'
 import { indexesSelector, uiSelector } from './selectors'
 import { globalSubscribe, globalUnsubscribe } from './observers'
 import { loadScript } from './utils'
-import Simulator2 from 'lib/battle/simulator'
 
 const { ipc } = window
 const { __ } = window.i18n['poi-plugin-battle-detail']
@@ -142,8 +141,8 @@ const MainAreaImpl: React.FC<MainAreaProps> = ({
     uiModify(modifyObject('activeTab', () => newTabId))
   }, [uiModify])
 
-  let simulator: Simulator2
-  let stages: Simulator2['stages'] = []
+  let simulator: Simulator
+  let stages: Simulator['stages'] = []
   try {
     simulator = Simulator.auto(battle, { usePoiAPI: true })
     stages = simulator.stages || []

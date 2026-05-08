@@ -2,7 +2,7 @@ import _ from 'lodash'
 import fs from 'fs-extra'
 import path from 'path-extra'
 
-import { Simulator, Models } from '../lib/battle'
+import { Simulator, Models } from 'poi-lib-battle'
 const { Battle, BattleType, Fleet } = Models
 const { Rank } = Models
 const { getStore } = window
