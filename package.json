@@ -5,24 +5,25 @@
   "main": "index.js",
   "scripts": {
     "reset": "git clean -f && git checkout . && git submodule foreach git checkout . && git submodule foreach git clean -f",
-    "prepack": "poi-util-transpile --sm --replace",
-    "lint": "eslint 'views/*.es' || true",
+    "prepack": "tsdown",
     "postpublish": "npm run reset"
   },
   "dependencies": {
-    "dom-to-image": "^2.6.0",
-    "lz-string": "^1.4.4",
-    "subtender": "^0.12.4"
+    "dom-to-image": "^2.6.0"
   },
   "devDependencies": {
-    "babel-eslint": "^8.0.1",
-    "babel-preset-es2017-node7": "^0.5.2",
-    "babel-preset-react": "^6.5.0",
-    "babel-preset-stage-0": "^6.5.0",
-    "eslint": "^4.10.0",
-    "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-react": "^7.4.0",
-    "poi-util-transpile": "^8.2.2"
+    "@blueprintjs/core": "^6.0.0",
+    "@types/lodash": "^4.14.200",
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "@types/react-fontawesome": "^1.6.8",
+    "immutable": "^4.3.0",
+    "lz-string": "^1.4.4",
+    "reselect": "^4.1.8",
+    "subtender": "^0.12.4",
+    "tsdown": "^0.17.0",
+    "typescript": "^5.0.0"
   },
   "repository": {
     "type": "git",

@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "commonjs",
+    "jsx": "react",
+    "strict": false,
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "experimentalDecorators": true
+  },
+  "include": [
+    "index-src.ts",
+    "views/**/*",
+    "lib/**/*",
+    "shims/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "lib/battle/tests"
+  ]
+}
