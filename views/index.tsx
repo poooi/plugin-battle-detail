@@ -152,7 +152,7 @@ const MainAreaImpl: React.FC<MainAreaProps> = ({
 
   return (
     <div id="battle-detail-main">
-      <link rel="stylesheet" href={join(__dirname, '..', 'assets', 'main.css')} />
+      <link rel="stylesheet" href={join(__dirname, 'assets', 'main.css')} />
       <ModalArea />
       <Tabs id="main-tabs" selectedTabId={activeTab} onChange={handleSelectTab}>
         <Tab

@@ -18,7 +18,7 @@ const { POI_VERSION } = window
 const { __ } = window.i18n['poi-plugin-battle-detail']
 
 const battleReplayerURL = 'https://kc3kai.github.io/kancolle-replay/battleplayer.html'
-const imagesPath = path.join(__dirname, '..', '..', '..', 'assets', 'images')
+const imagesPath = path.join(__dirname, 'assets', 'images')
 
 interface ReplayGeneratorProps {
   rep: any

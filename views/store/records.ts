@@ -6,7 +6,7 @@ import { splitMapId } from 'subtender/kc'
 import { fcdSelector } from 'views/utils/selectors'
 
 const fcdMapP1Raw = readJsonSync(
-  path.join(__dirname, '..', '..', 'assets', 'data', 'fcd-map-p1.json')
+  path.join(__dirname, 'assets', 'data', 'fcd-map-p1.json')
 )
 
 const p1Cutoff = Number(new Date('2018-08-17T00:00:00+09:00'))
