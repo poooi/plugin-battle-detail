@@ -6,7 +6,7 @@ import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { connect } from 'react-redux'
 import FontAwesome from 'react-fontawesome'
 import { Card, Button, InputGroup } from '@blueprintjs/core'
-import { Tooltip, Popover } from 'views/components/etc/overlay'
+import { Tooltip, HTMLTable } from '@blueprintjs/core'
 
 import { browseModeSelector } from '../selectors'
 import { SortieViewer } from './sortie-viewer'
@@ -117,8 +117,7 @@ const BrowseAreaImpl: React.FC<BrowseAreaProps> = ({
             <span>{__('Tip_Akashic1_Part2')}</span>
           </div>
           <form onSubmit={onClickFilter}>
-            <Tooltip content={filterPopover} placement="top">
-              <table className="browse-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <HTMLTable striped interactive className="browse-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr>
                     <th>#</th>
@@ -128,14 +127,16 @@ const BrowseAreaImpl: React.FC<BrowseAreaProps> = ({
                     <th><InputGroup inputRef={iRoute} placeholder={__('Route')} /></th>
                     <th><InputGroup inputRef={iRank} placeholder={__('Rank')} /></th>
                     <th>
-                      <Button
-                        type="submit"
-                        intent="primary"
-                        onClick={onClickFilter}
-                        onContextMenu={onRightClickFilter}
-                      >
-                        {__('Filter')}
-                      </Button>
+                      <Tooltip content={filterPopover} placement="top">
+                        <Button
+                          type="submit"
+                          intent="primary"
+                          onClick={onClickFilter}
+                          onContextMenu={onRightClickFilter}
+                        >
+                          {__('Filter')}
+                        </Button>
+                      </Tooltip>
                     </th>
                   </tr>
                 </thead>
@@ -159,8 +160,7 @@ const BrowseAreaImpl: React.FC<BrowseAreaProps> = ({
                     )
                   })}
                 </tbody>
-              </table>
-            </Tooltip>
+              </HTMLTable>
           </form>
           <UPagination
             currentPage={pageNo}

@@ -115,7 +115,7 @@ export const insertIndex = (store: any) => (
   const getFcdMapInfo = getFcdMapInfoFuncSelector(store)
   const mapInfo = getFcdMapInfo(effMapId)
   const canGoFromTo = mapCanGoFromTo(mapInfo)
-  const beginEdgeId = _.last(curSortieIndex.indexes).route_
+  const beginEdgeId = (_.last(curSortieIndex.indexes) as any).route_
   const endEdgeId = newIndex.route_
   if (canGoFromTo(beginEdgeId, endEdgeId)) {
     return sortieIndexes.set(0, { ...curSortieIndex, indexes: [...curSortieIndex.indexes, newIndex] })

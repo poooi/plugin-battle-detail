@@ -21,6 +21,7 @@ import { initData, actionCreators } from './store'
 import { indexesSelector, uiSelector } from './selectors'
 import { globalSubscribe, globalUnsubscribe } from './observers'
 import { loadScript } from './utils'
+import Simulator2 from 'lib/battle/simulator'
 
 const { ipc } = window
 const { __ } = window.i18n['poi-plugin-battle-detail']
@@ -141,10 +142,10 @@ const MainAreaImpl: React.FC<MainAreaProps> = ({
     uiModify(modifyObject('activeTab', () => newTabId))
   }, [uiModify])
 
-  let simulator: any = {}
-  let stages: any[] = []
+  let simulator: Simulator2
+  let stages: Simulator2['stages'] = []
   try {
-    simulator = Simulator.auto(battle, { usePoiAPI: true }) || {}
+    simulator = Simulator.auto(battle, { usePoiAPI: true })
     stages = simulator.stages || []
   } catch (err: any) {
     console.error(battle, err.stack)
@@ -154,7 +155,7 @@ const MainAreaImpl: React.FC<MainAreaProps> = ({
     <div id="battle-detail-main">
       <link rel="stylesheet" href={join(__dirname, 'assets', 'main.css')} />
       <ModalArea />
-      <Tabs id="main-tabs" selectedTabId={activeTab} onChange={handleSelectTab}>
+      <Tabs id="main-tabs" selectedTabId={activeTab} onChange={handleSelectTab} size="large">
         <Tab
           id={0}
           title={__('Battle')}
@@ -166,7 +167,7 @@ const MainAreaImpl: React.FC<MainAreaProps> = ({
                 battleArea={battleArea}
               />
               <div id="battle-area" ref={battleArea}>
-                <OverviewArea simulator={simulator} stages={stages} />
+                <OverviewArea simulator={simulator} />
                 <DetailArea simulator={simulator} stages={stages} />
               </div>
             </>

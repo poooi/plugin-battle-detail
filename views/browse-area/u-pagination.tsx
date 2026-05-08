@@ -19,7 +19,7 @@ export const UPagination: React.FC<UPaginationProps> = ({ currentPage, totalPage
         key={page}
         active={page === currentPage}
         onClick={() => onChange(page)}
-        small
+        variant="minimal"
       >
         {label ?? page}
       </Button>
@@ -28,7 +28,7 @@ export const UPagination: React.FC<UPaginationProps> = ({ currentPage, totalPage
 
   const addEllipsis = (key: string) => {
     pages.push(
-      <Button key={key} disabled small>…</Button>
+      <Button key={key} disabled variant="minimal">…</Button>
     )
   }
 
@@ -45,15 +45,15 @@ export const UPagination: React.FC<UPaginationProps> = ({ currentPage, totalPage
       <Button
         disabled={currentPage <= 1}
         onClick={() => onChange(currentPage - 1)}
-        small
         icon="chevron-left"
+        variant="minimal"
       />
-      <ButtonGroup minimal>{pages}</ButtonGroup>
+      <ButtonGroup variant="minimal">{pages}</ButtonGroup>
       <Button
         disabled={currentPage >= totalPages}
         onClick={() => onChange(currentPage + 1)}
-        small
         icon="chevron-right"
+        variant="minimal"
       />
     </div>
   )

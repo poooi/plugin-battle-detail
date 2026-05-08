@@ -181,7 +181,7 @@ const SortieViewerImpl: React.FC<SortieViewerProps> = ({
                 : `${__('Sortie')} ${pprMapId(si.effMapId)}`
               const timeDesc = si.indexes.length === 1
                 ? firstIndex.time
-                : `${firstIndex.time} ~ ${_.last(si.indexes).time}`
+                : `${firstIndex.time} ~ ${(_.last(si.indexes) as any).time}`
 
               const dropdownMenu = (
                 <Menu>

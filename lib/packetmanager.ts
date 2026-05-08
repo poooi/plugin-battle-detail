@@ -50,7 +50,7 @@ class PacketManager extends EventEmitter {
     }
 
     if (req.path === '/kcsapi/api_get_member/mapinfo') {
-      this.api_base_corps = Object.clone(body.api_air_base || [])
+      this.api_base_corps = [...body.api_air_base ?? []]
     }
     if (['/kcsapi/api_req_air_corps/supply', '/kcsapi/api_req_air_corps/set_plane'].includes(req.path)) {
       const corps = this.api_base_corps[postBody.api_base_id - 1]
@@ -59,7 +59,7 @@ class PacketManager extends EventEmitter {
         for (let i = 0; i < corps.api_plane_info.length; i++) {
           const oldp = corps.api_plane_info[i]
           if (newp.api_squadron_id == oldp.api_squadron_id) {
-            corps.api_plane_info[i] = Object.clone(newp)
+            corps.api_plane_info[i] = { ...newp }
           }
         }
       }
@@ -128,7 +128,7 @@ class PacketManager extends EventEmitter {
         return
       }
 
-      const packet: any = Object.clone(body)
+      const packet: any = { ...body }
       packet.poi_path = req.path
       packet.poi_time = timestamp
 
@@ -152,17 +152,17 @@ class PacketManager extends EventEmitter {
       this.battle.packet.push(packet)
 
       if (req.path.includes('result')) {
-        this.emit('result', Object.clone(this.battle), packet)
+        this.emit('result', { ...this.battle }, packet)
         this.battle = null
       } else {
-        this.emit('battle', Object.clone(this.battle), packet)
+        this.emit('battle', { ...this.battle }, packet)
       }
       return
     }
   }
 
   getFleet(deckId: number): any[] | null {
-    const deck = getStore(['info', 'fleets', deckId - 1]) || {}
+    const deck = getStore(['info', 'fleets', `${deckId - 1}`]) || {}
     const ships = deck.api_ship
     if (ships) {
       return ships.map((id: number) => this.getShip(id))
@@ -171,7 +171,7 @@ class PacketManager extends EventEmitter {
   }
 
   getShip(shipId: number): any {
-    const ship = Object.clone(getStore(['info', 'ships', shipId]) || null)
+    const ship = { ...getStore(['info', 'ships', `${shipId}`]) }
     if (ship) {
       ship.poi_slot = ship.api_slot.map((id: number) => this.getItem(id))
       ship.poi_slot_ex = this.getItem(ship.api_slot_ex)
@@ -184,7 +184,7 @@ class PacketManager extends EventEmitter {
   }
 
   getItem(itemId: number): any {
-    const item = Object.clone(window._slotitems[itemId] || null)
+    const item = { ...window._slotitems[itemId] }
     if (item) {
       delete item.api_info
     }
@@ -197,7 +197,7 @@ class PacketManager extends EventEmitter {
       if (!(corps.api_area_id == areaId && corps.api_action_kind === 1)) {
         continue
       }
-      corps = Object.clone(corps)
+      corps = { ...corps }
       for (const plane of corps.api_plane_info) {
         plane.poi_slot = this.getItem(plane.api_slotid)
         delete plane.api_slotid

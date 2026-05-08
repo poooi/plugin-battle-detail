@@ -74,7 +74,7 @@ export const HPBar: React.FC<HPBarProps> = ({ max, from, to, damage, item }) => 
     <div className="hp-bar">
       <div
         className={`hp-bar-fill hp-${style}`}
-        style={{ width: `${now}%`, position: 'relative' }}
+        style={{ width: `${now}%`}}
       >
         <span className="hp-label">{labels}</span>
       </div>

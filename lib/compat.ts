@@ -240,7 +240,7 @@ export class IndexCompat {
     if (battle == null) return undefined
     if (battle.map == null) battle.map = []
     if (id == null) id = PacketCompat.getId(battle) ?? undefined
-    if (simulator == null) simulator = Simulator.auto(battle)
+    if (simulator == null) simulator = Simulator.auto(battle, {})
     const time_ = battle.time
     const time = PacketCompat.fmtTime(time_)
     const map = battle.map.slice(0, 2).join('-')

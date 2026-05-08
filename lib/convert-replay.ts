@@ -134,7 +134,7 @@ export const convertReplay = async (sortieIndexes: any) => {
   })()
 
   const timeStrs = poiRecords.length > 0
-    ? [fstRecord.time, _.last(poiRecords).time]
+    ? [fstRecord.time, (_.last(poiRecords) as any).time]
     : [fstRecord.time]
 
   const routes = isPvP

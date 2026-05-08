@@ -1,11 +1,11 @@
 import React, { memo } from 'react'
-import { remote } from 'electron'
+import * as remote from '@electron/remote'
 import { Button, ButtonGroup, InputGroup } from '@blueprintjs/core'
 
 import { showModal } from './modal-area'
 import { PacketCompat } from '../lib/compat'
 
-const { clipboard } = require('electron')
+const { clipboard } = remote
 const { __ } = window.i18n['poi-plugin-battle-detail']
 
 interface OptionAreaProps {
@@ -78,9 +78,9 @@ const OptionArea: React.FC<OptionAreaProps> = memo(({ battle, updateBattle, batt
     <div id="option-area">
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0' }}>
         <InputGroup
+          className='optional-area-input'
           disabled
           value={title}
-          style={{ flex: 1 }}
           readOnly
         />
         <ButtonGroup>

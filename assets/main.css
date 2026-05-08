@@ -1,48 +1,12 @@
 #battle-detail-main {
   height: 100%;
-  overflow: auto;
+  overflow: hidden;
   display: flex;
-}
-#battle-detail-main .btn-group {
-  display: flex;
-}
-#battle-detail-main .btn {
-  width: 100%;
+  flex-direction: column;
+  margin: 0px 2em;
 }
 #battle-detail-main .cbtn {
   cursor: pointer;
-}
-#battle-detail-main .panel {
-  margin-bottom: 12px;
-}
-#battle-detail-main .panel .panel-title {
-  font-size: inherit;
-}
-#battle-detail-main .panel .container {
-  width: 100%;
-  padding: 0;
-}
-#battle-detail-main .panel .row {
-  margin: 0;
-}
-#battle-detail-main .panel .col {
-  padding: 0;
-}
-#battle-detail-main .pagination {
-  display: flex;
-  margin: auto;
-  width: fit-content;
-}
-#battle-detail-main .progress {
-  border-radius: 0px;
-}
-#battle-detail-main .progress-bar {
-  transition: none;
-}
-#battle-detail-main .progress-bar > span {
-  position: absolute;
-  width: 100%;
-  display: block;
 }
 
 #battle-detail-main .poi-ship-cond-0 {  /* cond 0~19  */
@@ -63,25 +27,41 @@
   height: 16px;
   margin-top: -4px;
 }
-
-#battle-detail-main #main {
-  padding: 10px;
+#battle-detail-main .bp5-tabs,
+#battle-detail-main .bp6-tabs {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
 }
-#battle-detail-main .nav-tabs {
+#battle-detail-main .bp5-tab-panel,
+#battle-detail-main .bp6-tab-panel {
+  overflow: auto;
+  flex: 1 0 0;
+}
+/* Tabs */
+#battle-detail-main .bp5-tab-list,
+#battle-detail-main .bp6-tab-list {
   display: flex;
 }
-#battle-detail-main .nav-tabs li {
+#battle-detail-main .bp5-tab-list .bp5-tab,
+#battle-detail-main .bp6-tab-list .bp6-tab {
   flex: 1;
   text-align: center;
 }
 
-#battle-detail-main #detail-area .row {
+/* Detail area rows */
+#battle-detail-main #detail-area .engagement-row,
+#battle-detail-main #detail-area .aerial-row,
+#battle-detail-main #detail-area .attack-row {
   width: 100%;
   height: 30px;
   display: flex;
   white-space: nowrap;
 }
-#battle-detail-main #detail-area .panel .row > span {
+#battle-detail-main #detail-area .engagement-row > span,
+#battle-detail-main #detail-area .aerial-row > span,
+#battle-detail-main #detail-area .attack-row > span {
   height: 20px;
   margin: 2px;
   text-align: center;
@@ -89,19 +69,37 @@
 }
 
 /* HP Bar */
-#battle-detail-main .hp-bar.progress {
+#battle-detail-main .hp-bar {
   margin: 0;
   height: 22px;
   position: relative;
   background-color: #1F1F1F;
-  /* background-color: rgba(0, 0, 0, 0.2); */
+  display: flex;
 }
-#battle-detail-main .hp-bar.progress-bar {
+#battle-detail-main .hp-bar-fill {
   font-size: 100%;
   line-height: 22px;
 }
-#battle-detail-main .hp-bar.lost.progress-bar {
+#battle-detail-main .hp-bar-fill.hp-danger  { background-color: #d9534f; }
+#battle-detail-main .hp-bar-fill.hp-warning { background-color: #f0ad4e; }
+#battle-detail-main .hp-bar-fill.hp-info    { background-color: #5bc0de; }
+#battle-detail-main .hp-bar-fill.hp-success { background-color: #5cb85c; }
+#battle-detail-main .hp-bar-lost {
   background-color: rgba(255, 255, 255, 0.1);
+}
+#battle-detail-main .ship-hp {
+  position: relative;
+}
+#battle-detail-main .hp-label {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: 0;
+  line-height: 22px;
+  display: block;
+  text-align: center;
+  z-index: 1;
+  pointer-events: none;
 }
 #battle-detail-main .hp-bar img {
   margin-left: -4px;
@@ -112,26 +110,9 @@
 #battle-detail-main .fleet-title {
   font-size: 110%;
 }
-#battle-detail-main .fleet-view .col-xs-1,
-#battle-detail-main .fleet-view .col-xs-2,
-#battle-detail-main .fleet-view .col-xs-3,
-#battle-detail-main .fleet-view .col-xs-4,
-#battle-detail-main .fleet-view .col-xs-5,
-#battle-detail-main .fleet-view .col-xs-6,
-#battle-detail-main .fleet-view .col-xs-7,
-#battle-detail-main .fleet-view .col-xs-8,
-#battle-detail-main .fleet-view .col-xs-9,
-#battle-detail-main .fleet-view .col-xs-10,
-#battle-detail-main .fleet-view .col-xs-11,
-#battle-detail-main .fleet-view .col-xs-12 {
-  padding: 0;
-}
 /* Ship View */
-#battle-detail-main .ship-view.container {
+#battle-detail-main .ship-view {
   padding: 10px;
-}
-#battle-detail-main .ship-view .row {
-  height: 22px;
 }
 #battle-detail-main .ship-view .ship-name {
   font-size: 110%;
@@ -142,18 +123,13 @@
   opacity: 0.8;
 }
 /* LBAC View */
-#battle-detail-main .lbac-view.container {
+#battle-detail-main .lbac-view {
   padding: 10px;
-}
-#battle-detail-main .lbac-view .row {
-  height: 22px;
 }
 /* Item View */
 #battle-detail-main .item-view {
   overflow: hidden;
   display: flex;
-}
-#battle-detail-main .item-view.row {
   height: 22px;
 }
 #battle-detail-main .item-view .item-info {
@@ -246,16 +222,13 @@
 #battle-detail-main #browse-area .tip {
   font-size: 80%;
 }
-
-#battle-detail-main #browse-area .tip .markdown p {
-  margin-bottom: .4em;
-}
-
-
-#battle-detail-main table .btn,
-#battle-detail-main table .form-control {
+#battle-detail-main table .bp5-button,
+#battle-detail-main table .bp5-input {
   height: 20px;
   padding: 0 4px;
+}
+#battle-detail-main .optional-area-input {
+  flex: 1 0 auto;
 }
 #battle-detail-main #browse-filter-usage {
   max-width: 600px;
@@ -282,57 +255,49 @@
   width: 10%;
 }
 
-#battle-detail-main #main {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
+/* Main tabs layout */
 #battle-detail-main #main-tabs {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
 }
 
-#battle-detail-main #main-tabs > .tab-content {
+#battle-detail-main #main-tabs > .bp5-tab-panel {
   flex: 1;
-  height: 0;
+  min-height: 0;
+  overflow: auto;
   display: flex;
   flex-direction: column;
 }
 
-#battle-detail-main #main-tabs > .tab-content > #main-tabs-pane-1 {
-  flex: 1;
-  height: 0;
-}
-
-#battle-detail-main #main-tabs > .tab-content > #main-tabs-pane-1 #browse-area {
+#battle-detail-main #browse-area {
   display: flex;
   flex-direction: column;
   margin-top: .5em;
   height: 100%;
 }
 
-#battle-detail-main #main-tabs > .tab-content > #main-tabs-pane-1 #browse-area > .browse-view {
+#battle-detail-main #browse-area > .browse-view {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-#battle-detail-main #main-tabs > .tab-content > #main-tabs-pane-1 #browse-area > .browse-view > .panel-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-#battle-detail-main #main-tabs > .tab-content > #main-tabs-pane-1 #browse-area > .browse-view > .panel-body .sortie-viewer-wrap {
-  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
 }
 
+#battle-detail-main #browse-area > .browse-view .sortie-viewer-wrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+#battle-detail-main #battle-area,
+#battle-detail-main #detail-area {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 20px;
+}
 #battle-detail-main .replay-render-root .fleet-view.single-fleet > .ship-avatar-container {
   margin: 5px;
 }

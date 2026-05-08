@@ -13,6 +13,7 @@ import { getShipName, getItemName } from './utils'
 import {
   StageType, AttackType, HitType, ShipOwner,
   AirControl, Engagement, Formation, Detection,
+  Stage, Attack, AerialInfo, EngagementInfo, Ship, Simulator,
 } from '../lib/battle'
 
 const AirControlName: Record<string, string> = {
@@ -79,24 +80,24 @@ const AttackTypeName: Record<string, string> = {
   [AttackType.Torpedo_Torpedo_CI]: __('AT_Torpedo_Torpedo_CI'),
 }
 
-const EngagementTable: React.FC<{ engagement: any }> = ({ engagement: e }) => {
+const EngagementTable: React.FC<{ engagement: EngagementInfo }> = ({ engagement: e }) => {
   const rows: React.ReactNode[] = []
 
   if (e.engagement || e.fFormation || e.eFormation)
     rows.push(
       <div className="engagement-row" key={1}>
-        <span>{FormationName[e.fFormation]}</span>
-        <span>{EngagementName[e.engagement]}</span>
-        <span>{FormationName[e.eFormation]}</span>
+        <span>{FormationName[e.fFormation!]}</span>
+        <span>{EngagementName[e.engagement!]}</span>
+        <span>{FormationName[e.eFormation!]}</span>
       </div>
     )
 
   if (e.fDetection || e.eDetection)
     rows.push(
       <div className="engagement-row" key={2}>
-        <span>{DetectionName[e.fDetection]}</span>
+        <span>{DetectionName[e.fDetection!]}</span>
         <span />
-        <span>{DetectionName[e.eDetection]}</span>
+        <span>{DetectionName[e.eDetection!]}</span>
       </div>
     )
 
@@ -143,32 +144,32 @@ const PlaneCount: React.FC<{ init?: number; now?: number }> = ({ init, now }) =>
     </span>
   )
 
-const AntiAirCICell: React.FC<{ aerial: any }> = ({ aerial }) => {
+const AntiAirCICell: React.FC<{ aerial: AerialInfo }> = ({ aerial }) => {
   const { aaciKind, aaciShip, aaciItems } = aerial
   if (aaciKind == null) return <span />
 
   const tooltipContent = (
     <div className="anti-air-tooltip">
       <div>{__('Anti-air Kind')}: {aaciKind}</div>
-      {aaciItems.map((id: number, i: number) => <div key={i}>{getItemName(id)}</div>)}
+      {(aaciItems ?? []).map((id: number, i: number) => <div key={i}>{getItemName(id)}</div>)}
     </div>
   )
 
   return (
     <Tooltip content={tooltipContent} placement="top">
-      <span>{__('Anti-air Cut-in')}: {getShipName(aaciShip.id)} ({aaciKind})</span>
+      <span>{__('Anti-air Cut-in')}: {getShipName(aaciShip?.id)} ({aaciKind})</span>
     </Tooltip>
   )
 }
 
-const AerialTable: React.FC<{ aerial: any }> = ({ aerial: a }) => {
+const AerialTable: React.FC<{ aerial: AerialInfo | null }> = ({ aerial: a }) => {
   if (a == null) return <div />
   return (
     <div className="aerial-table">
       <div className="aerial-row">
         <span><PlaneCount init={a.fPlaneInit1} now={a.fPlaneNow1} /></span>
         <span>{a.fContact ? `${__('Contact')}: ${getItemName(a.fContact)}` : ''}</span>
-        <span>{AirControlName[a.control]}</span>
+        <span>{AirControlName[a.control!]}</span>
         <span>{a.eContact ? `${__('Contact')}: ${getItemName(a.eContact)}` : ''}</span>
         <span><PlaneCount init={a.ePlaneInit1} now={a.ePlaneNow1} /></span>
       </div>
@@ -183,7 +184,7 @@ const AerialTable: React.FC<{ aerial: any }> = ({ aerial: a }) => {
   )
 }
 
-const ShipInfo: React.FC<{ ship: any }> = ({ ship }) => {
+const ShipInfo: React.FC<{ ship: Ship | null | undefined }> = ({ ship }) => {
   if (ship == null) return <span />
   return (
     <span>
@@ -193,7 +194,7 @@ const ShipInfo: React.FC<{ ship: any }> = ({ ship }) => {
   )
 }
 
-const DamageInfo: React.FC<{ type: any; damage: number[]; hit: any[] }> = ({ type, damage, hit }) => (
+const DamageInfo: React.FC<{ type: AttackType; damage: number[]; hit: HitType[] }> = ({ type, damage, hit }) => (
   <span>
     {AttackTypeName[type]} (
     {damage.map((current, i) => (
@@ -208,16 +209,16 @@ const DamageInfo: React.FC<{ type: any; damage: number[]; hit: any[] }> = ({ typ
   </span>
 )
 
-const AttackRow: React.FC<{ attack: any }> = ({ attack }) => {
+const AttackRow: React.FC<{ attack: Attack }> = ({ attack }) => {
   const { type, fromShip, toShip, fromHP, toHP, damage, hit, useItem } = attack
-  const { maxHP } = toShip
-  const totalDamage = damage.reduce((p: number, x: number) => p + x, 0)
-  return toShip.owner !== ShipOwner.Enemy ? (
+  const { maxHP } = toShip!
+  const totalDamage = (damage ?? []).reduce((p: number, x: number) => p + x, 0)
+  return toShip!.owner !== ShipOwner.Enemy ? (
     <div className="attack-row">
-      <span><HPBar max={maxHP} from={fromHP} to={toHP} damage={totalDamage} item={useItem} /></span>
+      <span><HPBar max={maxHP} from={fromHP!} to={toHP!} damage={totalDamage} item={useItem ?? undefined} /></span>
       <span><ShipInfo ship={toShip} /></span>
       <span><FontAwesome name="long-arrow-left" /></span>
-      <span><DamageInfo type={type} damage={damage} hit={hit} /></span>
+      <span><DamageInfo type={type} damage={damage!} hit={hit!} /></span>
       <span />
       <span><ShipInfo ship={fromShip} /></span>
       <span />
@@ -227,15 +228,15 @@ const AttackRow: React.FC<{ attack: any }> = ({ attack }) => {
       <span />
       <span><ShipInfo ship={fromShip} /></span>
       <span />
-      <span><DamageInfo type={type} damage={damage} hit={hit} /></span>
+      <span><DamageInfo type={type} damage={damage!} hit={hit!} /></span>
       <span><FontAwesome name="long-arrow-right" /></span>
       <span><ShipInfo ship={toShip} /></span>
-      <span><HPBar max={maxHP} from={fromHP} to={toHP} damage={totalDamage} item={useItem} /></span>
+      <span><HPBar max={maxHP} from={fromHP!} to={toHP!} damage={totalDamage} item={useItem ?? undefined} /></span>
     </div>
   )
 }
 
-const AttackTable: React.FC<{ attacks: any[] }> = ({ attacks }) => {
+const AttackTable: React.FC<{ attacks: Attack[] }> = ({ attacks }) => {
   if (attacks == null || attacks.length === 0) return <div />
   return (
     <div className="attack-table">
@@ -244,7 +245,7 @@ const AttackTable: React.FC<{ attacks: any[] }> = ({ attacks }) => {
   )
 }
 
-const StageTable: React.FC<{ stage: any }> = ({ stage }) => {
+const StageTable: React.FC<{ stage: Stage | null }> = ({ stage }) => {
   if (stage == null) return <div />
 
   let title: string | null = null
@@ -281,7 +282,7 @@ const StageTable: React.FC<{ stage: any }> = ({ stage }) => {
     case StageType.LandBase:
       title = stage.subtype === StageType.Assault
         ? `${__('Land Base Air Corps')} - ${__('Jet Air Assault')}`
-        : `${__('Land Base Air Corps')} - No.${stage.kouku.api_base_id}`
+        : `${__('Land Base Air Corps')} - No.${(stage.kouku as any)?.api_base_id}`
       break
   }
 
@@ -297,19 +298,19 @@ const StageTable: React.FC<{ stage: any }> = ({ stage }) => {
 }
 
 interface DetailAreaProps {
-  simulator: any
-  stages: any[]
+  simulator: Simulator | undefined
+  stages: Array<Stage | null>
 }
 
-const DetailArea: React.FC<DetailAreaProps> = ({ simulator, stages }) => {
+const DetailArea: React.FC<DetailAreaProps> = ({ stages }) => {
   const tables = stages != null
-    ? stages.map((stage, i) => <StageTable key={i} stage={stage} simulator={simulator} />)
+    ? stages.map((stage, i) => <StageTable key={i} stage={stage} />)
     : []
 
   return (
     <div id="detail-area">
       <Card>
-        <h5 className="bp3-heading">{__('Battle Detail')}</h5>
+        <h5 className="bp5-heading">{__('Battle Detail')}</h5>
         <div>
           {tables.length > 0 ? tables : __('No battle')}
         </div>
