@@ -6,16 +6,17 @@ import { Dialog } from 'views/components/etc/overlay'
 
 import { boundActionCreators } from './store'
 import { modalSelector } from './selectors'
+import type { ModalState } from './store/ext-root/ui'
 
 const { __ } = window.i18n['poi-plugin-battle-detail']
 
-const modifyModal = (modifier: (modal: any) => any) =>
+const modifyModal = (modifier: (modal: ModalState) => ModalState) =>
   boundActionCreators.uiModify(modifyObject('modal', modifier))
 
 export const showModal = (options: {
-  title?: any
-  body?: any
-  footer?: any
+  title?: React.ReactNode
+  body?: React.ReactNode
+  footer?: React.ReactNode
   closable?: boolean
 }) => {
   if (options instanceof Object) {
@@ -25,7 +26,7 @@ export const showModal = (options: {
       title: options.title,
       body: options.body,
       footer: options.footer,
-      closable: options.closable,
+      closable: options.closable ?? true,
     }))
   }
 }
@@ -35,9 +36,9 @@ export const hideModal = () =>
 
 interface ModalAreaProps {
   isShow?: boolean
-  title?: any
-  body?: any
-  footer?: any
+  title?: React.ReactNode
+  body?: React.ReactNode
+  footer?: React.ReactNode
   closable?: boolean
 }
 
@@ -45,7 +46,7 @@ const ModalAreaImpl: React.FC<ModalAreaProps> = ({
   isShow = false, title, body, footer, closable = false,
 }) => {
   const bodyNorm = Array.isArray(body)
-    ? body.map((b: any, i: number) => <p key={i}>{b}</p>)
+    ? body.map((b, i: number) => <p key={i}>{b}</p>)
     : body
 
   return (

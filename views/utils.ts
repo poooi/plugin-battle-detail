@@ -1,6 +1,7 @@
 const { getStore } = window
 const { __: __r } = window.i18n.resources
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getShipName(ship: number | any): string | null {
   if (Number.isInteger(ship)) {
     ship = getStore(['const', '$ships', ship])
@@ -14,12 +15,13 @@ export function getShipName(ship: number | any): string | null {
   return name
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getItemName(item: number | any): string | null {
   if (Number.isInteger(item)) {
     item = getStore(['const', '$equips', item])
   }
   if (item == null) return null
-  return __r(item.api_name) as string
+  return __r(item.api_name)
 }
 
 export async function sleep(ms: number): Promise<void> {

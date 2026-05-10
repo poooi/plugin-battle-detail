@@ -1,10 +1,9 @@
 import _ from 'lodash'
 import { shell, clipboard } from 'electron'
 import { compressToEncodedURIComponent } from 'lz-string'
-import { createStructuredSelector } from 'reselect'
 import React, { useCallback } from 'react'
 import { connect } from 'react-redux'
-import { List } from 'immutable'
+import type { List } from 'immutable'
 import {
   Button, ButtonGroup, Menu, MenuItem, MenuDivider,
 } from '@blueprintjs/core'
@@ -26,6 +25,9 @@ import { convertToWctf } from '../../../lib/wctf'
 import { UPagination } from '../u-pagination'
 import { openReplayGenerator } from './replay-generator'
 import { parseEffMapId, getFcdMapInfoFuncSelector } from '../../store/records'
+import type { SortieIndex } from '../../store/ext-root/sortie-indexes'
+import type { BattleIndex } from '../../store/ext-root/indexes'
+import type { SortieViewerState, UIState } from '../../store/ext-root/ui'
 
 const { __ } = window.i18n['poi-plugin-battle-detail']
 
@@ -35,9 +37,9 @@ const pprMapId = (eMapId: string): string => {
   if (eMapId === 'all') return __('All')
   if (eMapId === 'pvp') return __('Practice')
   const parsed = parseEffMapId(eMapId)
-  if (parsed === null) return eMapId
-  const suffix = (parsed as any).phase === 2 ? '' : ` (P${(parsed as any).phase})`
-  return `${(parsed as any).mapArea}-${(parsed as any).mapNo}${suffix}`
+  if (parsed === null || parsed === 'pvp') return eMapId
+  const suffix = parsed.phase === 2 ? '' : ` (P${parsed.phase})`
+  return `${parsed.mapArea}-${parsed.mapNo}${suffix}`
 }
 
 const rankColors: Record<string, string> = {
@@ -48,11 +50,12 @@ const rankColors: Record<string, string> = {
 interface SortieViewerProps {
   pageRange: number
   effMapIds: string[]
-  focusingSortieIndexes: List<any>
+  focusingSortieIndexes: List<SortieIndex>
   viewingMapId: string
   activePage: number
-  sortBy: { method: 'recent' | 'numeric'; reversed: boolean }
-  uiModify: (modifier: any) => void
+  sortBy: SortieViewerState['sortBy']
+  uiModify: (modifier: (state: UIState) => UIState) => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getFcdMapInfo: (effMapId: string) => any
 }
 
@@ -61,12 +64,12 @@ const SortieViewerImpl: React.FC<SortieViewerProps> = ({
   focusingSortieIndexes, sortBy, uiModify, getFcdMapInfo,
 }) => {
   const modifySortieViewer = useCallback(
-    (modifier: any) => uiModify(modifyObject('sortieViewer', modifier)),
-    [uiModify]
+    (modifier: (sv: SortieViewerState) => SortieViewerState) => uiModify(modifyObject('sortieViewer', modifier)),
+    [uiModify],
   )
 
   const handleViewingMapIdChange = (eMapId: string) => () =>
-    modifySortieViewer((sv: any) => {
+    modifySortieViewer((sv: SortieViewerState) => {
       if (sv.viewingMapId === eMapId) return sv
       return { ...sv, viewingMapId: eMapId, activePage: 1 }
     })
@@ -74,37 +77,37 @@ const SortieViewerImpl: React.FC<SortieViewerProps> = ({
   const handleSelectPage = (page: number) =>
     modifySortieViewer(modifyObject('activePage', () => page))
 
-  const handleSelectBattle = (index: any) => () => {
+  const handleSelectBattle = (index: BattleIndex) => () => {
     if (typeof window.showBattleWithTimestamp === 'function')
       window.showBattleWithTimestamp(index.id)
   }
 
   const handleOpenReplayer = () => shell.openExternal(battleReplayerURL)
 
-  const handleClickPlay = (si: any) => async () => {
+  const handleClickPlay = (si: SortieIndex) => async () => {
     const { replayData: kc3ReplayData } = await convertReplay(si)
     const encoded = compressToEncodedURIComponent(JSON.stringify(kc3ReplayData))
     shell.openExternal(`${battleReplayerURL}?fromLZString=${encoded}`)
   }
 
-  const handleGenerateReplay = (si: any) => async () => {
+  const handleGenerateReplay = (si: SortieIndex) => async () => {
     openReplayGenerator(await convertReplay(si), si.effMapId)
   }
 
-  const handleCopyReplayToClipboard = (si: any) => async () => {
+  const handleCopyReplayToClipboard = (si: SortieIndex) => async () => {
     const { replayData: kc3ReplayData } = await convertReplay(si)
     clipboard.writeText(JSON.stringify(kc3ReplayData))
   }
 
-  const handleViewInDeckBuilder = (si: any) => async () => {
+  const handleViewInDeckBuilder = (si: SortieIndex) => async () => {
     const encoded = encodeURIComponent(JSON.stringify(await convertToDeckBuilder(si)))
     shell.openExternal(`http://kancolle-calc.net/deckbuilder.html?predeck=${encoded}`)
   }
 
-  const handleCopyDeckBuilderToClipboard = (si: any) => async () =>
+  const handleCopyDeckBuilderToClipboard = (si: SortieIndex) => async () =>
     clipboard.writeText(JSON.stringify(await convertToDeckBuilder(si)))
 
-  const handleViewInWctf = (si: any) => async () => {
+  const handleViewInWctf = (si: SortieIndex) => async () => {
     const wData = await convertToWctf(si)
     const encoded = compressToEncodedURIComponent(JSON.stringify(wData))
     const rnd = Number(new Date())
@@ -113,10 +116,10 @@ const SortieViewerImpl: React.FC<SortieViewerProps> = ({
 
   const handleClickSortMethod = (method: 'recent' | 'numeric') => () =>
     modifySortieViewer(
-      modifyObject('sortBy', (sb: any) => {
+      modifyObject('sortBy', (sb: SortieViewerState['sortBy']) => {
         if (sb.method === method) return { ...sb, reversed: !sb.reversed }
         return { ...sb, method, reversed: false }
-      })
+      }),
     )
 
   return (
@@ -171,7 +174,7 @@ const SortieViewerImpl: React.FC<SortieViewerProps> = ({
         </div>
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
           <div style={{ flex: 1, overflowY: 'auto' }}>
-            {focusingSortieIndexes.toArray().map((si: any) => {
+            {focusingSortieIndexes.toArray().map((si: SortieIndex) => {
               const eMapId = si.effMapId
               const firstIndex = si.indexes[0]
               const routes = _.get(getFcdMapInfo(eMapId), 'route')
@@ -181,7 +184,7 @@ const SortieViewerImpl: React.FC<SortieViewerProps> = ({
                 : `${__('Sortie')} ${pprMapId(si.effMapId)}`
               const timeDesc = si.indexes.length === 1
                 ? firstIndex.time
-                : `${firstIndex.time} ~ ${(_.last(si.indexes) as any).time}`
+                : `${firstIndex.time} ~ ${_.last(si.indexes)?.time}`
 
               const dropdownMenu = (
                 <Menu>
@@ -203,7 +206,7 @@ const SortieViewerImpl: React.FC<SortieViewerProps> = ({
                       <div>{timeDesc}</div>
                     </div>
                     <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                      {si.indexes.map((index: any) => (
+                      {si.indexes.map((index: BattleIndex) => (
                         <Button
                           key={index.id}
                           small
@@ -247,7 +250,7 @@ const SortieViewerImpl: React.FC<SortieViewerProps> = ({
 }
 
 export const SortieViewer = connect(
-  (state: any) => {
+  (state: RootState) => {
     const svState = sortieViewerSelector(state)
     return {
       effMapIds: sortieIndexesDomainSelector(state),
@@ -259,5 +262,5 @@ export const SortieViewer = connect(
       sortBy: svState.sortBy,
     }
   },
-  actionCreators
+  actionCreators,
 )(SortieViewerImpl)

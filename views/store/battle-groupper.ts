@@ -4,20 +4,23 @@ import { List } from 'immutable'
 import { parseBattleMapAndTime, getFcdMapInfoFuncSelector } from './records'
 import { prepareNextEdges } from '../browse-area/sortie-viewer/groupping'
 import type { SortieIndex } from './ext-root/sortie-indexes'
+import type { BattleIndex } from './ext-root/indexes'
 
-const mapCanGoFromTo = (mapInfo: any) => {
+type FcdMapInfo = { route: Record<string, [number, number]> }
+
+const mapCanGoFromTo = (mapInfo: FcdMapInfo | null) => {
   if (_.isEmpty(mapInfo)) {
-    return (_begin: any, _end: any) => false
+    return (_begin: number, _end: number) => false
   }
 
   const nextEdges = prepareNextEdges(mapInfo)
 
-  const canGoFromToImpl = (beginEdgeId: any, endEdgeId: any): boolean => {
+  const canGoFromToImpl = (beginEdgeId: number, endEdgeId: number): boolean => {
     const [, beginNode] = mapInfo.route[beginEdgeId]
     const [endNode] = mapInfo.route[endEdgeId]
     if (!beginNode || !endNode) return false
 
-    const search = (curNode: any, remainedSteps = 5): boolean => {
+    const search = (curNode: number, remainedSteps = 5): boolean => {
       if (curNode === endNode) return true
       if (remainedSteps <= 0) return false
       const nextEdgeIds = nextEdges[curNode]
@@ -34,13 +37,13 @@ const mapCanGoFromTo = (mapInfo: any) => {
 
   const canGoFromTo = _.memoize(
     canGoFromToImpl,
-    (eFrom: any, eTo: any) => `${eFrom}=>${eTo}`
+    (eFrom: number, eTo: number) => `${eFrom}=>${eTo}`,
   )
 
   return canGoFromTo
 }
 
-export const groupBattleIndexes = (store: any) => (battles: any[]): List<SortieIndex> => {
+export const groupBattleIndexes = (store: RootState) => (battles: BattleIndex[]): List<SortieIndex> => {
   const sortieIndexes: List<SortieIndex> = (() => {
     const indexes = battles
     const getFcdMapInfo = getFcdMapInfoFuncSelector(store)
@@ -87,10 +90,10 @@ export const groupBattleIndexes = (store: any) => (battles: any[]): List<SortieI
   return sortieIndexes
 }
 
-export const insertIndex = (store: any) => (
+export const insertIndex = (store: RootState) => (
   sortieIndexes: List<SortieIndex>,
   newId: number,
-  newIndex: any
+  newIndex: BattleIndex,
 ): List<SortieIndex> => {
   const curSortieIndex = sortieIndexes.first(null)
   const lastIndex = _.last(_.get(curSortieIndex, 'indexes'))
@@ -115,7 +118,7 @@ export const insertIndex = (store: any) => (
   const getFcdMapInfo = getFcdMapInfoFuncSelector(store)
   const mapInfo = getFcdMapInfo(effMapId)
   const canGoFromTo = mapCanGoFromTo(mapInfo)
-  const beginEdgeId = (_.last(curSortieIndex.indexes) as any).route_
+  const beginEdgeId = (curSortieIndex.indexes[curSortieIndex.indexes.length - 1]).route_
   const endEdgeId = newIndex.route_
   if (canGoFromTo(beginEdgeId, endEdgeId)) {
     return sortieIndexes.set(0, { ...curSortieIndex, indexes: [...curSortieIndex.indexes, newIndex] })

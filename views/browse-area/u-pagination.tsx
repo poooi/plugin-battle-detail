@@ -22,13 +22,13 @@ export const UPagination: React.FC<UPaginationProps> = ({ currentPage, totalPage
         variant="minimal"
       >
         {label ?? page}
-      </Button>
+      </Button>,
     )
   }
 
   const addEllipsis = (key: string) => {
     pages.push(
-      <Button key={key} disabled variant="minimal">…</Button>
+      <Button key={key} disabled variant="minimal">…</Button>,
     )
   }
 

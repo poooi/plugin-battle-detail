@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import _ from 'lodash'
 import fs from 'fs-extra'
 import path from 'path-extra'
@@ -94,8 +95,8 @@ export class PacketCompat {
       type: packet.poi_is_combined ? (packet.poi_is_carrier ? 1 : 2) : 0,
       main: mainFleet ?? [],
       escort: escortFleet ?? [],
-      support: null,
-      LBAC: null,
+      support: undefined,
+      LBAC: undefined,
     })
     const packets = [packet]
     packet.poi_path = packet.poi_uri

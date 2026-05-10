@@ -1,8 +1,11 @@
+import type React from 'react'
+import type { Battle } from 'poi-lib-battle'
+
 export interface ModalState {
   isShow: boolean
-  title: any
-  body: any
-  footer: any
+  title: React.ReactNode
+  body: React.ReactNode
+  footer: React.ReactNode
   closable: boolean
 }
 
@@ -16,7 +19,7 @@ export interface SortieViewerState {
 }
 
 export interface UIState {
-  battle: any
+  battle: Battle | null
   activeTab: number
   disableBrowser: boolean
   showLast: boolean
@@ -48,6 +51,7 @@ const initState: UIState = {
   },
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const reducer = (state: UIState = initState, action: any): UIState => {
   if (action.type === '@poi-plugin-battle-detail@uiModify') {
     const { modifier } = action

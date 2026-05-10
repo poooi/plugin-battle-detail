@@ -7,18 +7,20 @@ import { indexesSelector } from './selectors'
 import { isDataLoaded } from './store/data-maintenance'
 import AppData from '../lib/appdata'
 
+import type { BattleIndex } from './store/ext-root/indexes'
+
 const indexesSaver = observer(
   createSelector(
     indexesSelector,
-    (indexes: any[]) => indexes[0]
+    (indexes: BattleIndex[]) => indexes[0],
   ),
-  (_dispatch: any, cur: any, prev: any) => {
+  (_dispatch: unknown, cur: BattleIndex | undefined, prev: BattleIndex | undefined) => {
     if (!isDataLoaded()) return
     if (!_.isEqual(cur, prev)) {
       const indexes = indexesSelector(store.getState())
       AppData.saveIndex(indexes)
     }
-  }
+  },
 )
 
 let unsubscribe: (() => void) | null = null

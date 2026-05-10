@@ -21,9 +21,10 @@ const battleReplayerURL = 'https://kc3kai.github.io/kancolle-replay/battleplayer
 const imagesPath = path.join(__dirname, 'assets', 'images')
 
 interface ReplayGeneratorProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   rep: any
   effMapId: string
-  getMapNodeLetter: (effMapId: string) => (edgeId: any) => string
+  getMapNodeLetter: (effMapId: string) => (edgeId: number | string) => string
   theme: string
 }
 
@@ -42,6 +43,7 @@ const ReplayGeneratorImpl: React.FC<ReplayGeneratorProps> = ({
   const handleSaveImage = () => {
     const ref = renderRoot.current
     if (!ref) return
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const domToImage = (ref.ownerDocument.defaultView as any).domtoimage
     const computed = getComputedStyle(ref)
     const width = parseInt(computed.width, 10)
@@ -54,6 +56,7 @@ const ReplayGeneratorImpl: React.FC<ReplayGeneratorProps> = ({
         image.src = dataUrl
         image.onload = () => {
           const encoded = steg.encode(JSON.stringify(replayData), image)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           ;(window as any).require('electron').remote.getCurrentWebContents().downloadURL(encoded)
           setDisableSaveImage(false)
         }
@@ -93,6 +96,7 @@ const ReplayGeneratorImpl: React.FC<ReplayGeneratorProps> = ({
               </div>
               {imageInfo.routes.length > 0 && (
                 <div style={{ marginTop: 5, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', maxWidth: 200 }}>
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {imageInfo.routes.map((r: any, ind: number) => (
                     <div key={r.edge} style={{ position: 'relative', ...(ind > 0 ? { marginLeft: '.5em' } : {}) }}>
                       <img
@@ -159,9 +163,10 @@ const ReplayGenerator = connect(
   createStructuredSelector({
     getMapNodeLetter: getMapNodeLetterFuncSelector,
     theme: themeSelector,
-  })
+  }),
 )(ReplayGeneratorImpl)
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const openReplayGenerator = (rep: any, effMapId: string) => {
   showModal({
     title: __('BrowseArea.ReplayGen.GenerateKC3Replay'),

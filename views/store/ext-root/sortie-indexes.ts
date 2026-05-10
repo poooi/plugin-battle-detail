@@ -1,13 +1,15 @@
 import { List } from 'immutable'
 import { insertIndex } from '../battle-groupper'
+import type { BattleIndex } from './indexes'
 
 export interface SortieIndex {
   effMapId: string
-  indexes: any[]
+  indexes: BattleIndex[]
 }
 
 const initState: List<SortieIndex> = List()
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const reducer = (state: List<SortieIndex> = initState, action: any): List<SortieIndex> => {
   if (action.type === '@poi-plugin-battle-detail@atomicReplaceIndexes') {
     return action.sortieIndexes

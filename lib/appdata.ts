@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from 'fs-extra'
 import path from 'path-extra'
 import zlib from 'zlib'
@@ -129,9 +130,9 @@ class AppData {
     const BATTLE_REGEXP = /^(\d+)\.json/
     const ids: number[] = []
     const files = await readDirAsync(APPDATA)
-    ;(files as string[]).forEach((file) => {
+    files.forEach((file) => {
       const match = file.match(BATTLE_REGEXP)
-      if (match && match[1]) {
+      if (match?.[1]) {
         ids.push(parseInt(match[1]))
       }
     })

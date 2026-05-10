@@ -7,6 +7,7 @@ import { sleep } from '../utils'
 import { showModal, hideModal } from '../modal-area'
 import { indexesSelector, uiSelector } from '../selectors'
 import { boundActionCreators } from './ext-root'
+import type { BattleIndex } from './ext-root/indexes'
 
 const { getStore } = window
 const { __ } = window.i18n['poi-plugin-battle-detail']
@@ -18,7 +19,7 @@ let dataLoaded = false
 
 export const isDataLoaded = () => dataLoaded
 
-const createIndex = async (list: number[]): Promise<any[]> => {
+const createIndex = async (list: number[]): Promise<BattleIndex[]> => {
   const eta = new Date(Date.now() + list.length / INDEXES_LOAD_NUMBER * INDEXES_LOAD_INTERVAL)
   showModal({
     title: __('Indexing'),
@@ -29,10 +30,10 @@ const createIndex = async (list: number[]): Promise<any[]> => {
     closable: false,
   })
 
-  const indexes: any[] = []
+  const indexes: BattleIndex[] = []
   while (list.length > 0) {
     const _st = Date.now()
-    console.log(`Indexing... ${list.length} remains at ${_st}.`)
+    console.warn(`Indexing... ${list.length} remains at ${_st}.`)
     const ids = list.splice(0, INDEXES_LOAD_NUMBER)
     await Promise.all(
       ids.map(async (id) => {
@@ -41,11 +42,11 @@ const createIndex = async (list: number[]): Promise<any[]> => {
           battle = await AppData.loadBattle(id)
           if (battle != null)
             indexes.push(IndexCompat.getIndex(battle, id))
-        } catch (err: any) {
-          console.error(`Failed to index battle ${id}. Moving it to trash.`, '\n', err.stack)
+        } catch (err: unknown) {
+          console.error(`Failed to index battle ${id}. Moving it to trash.`, '\n', (err as Error).stack)
           await AppData.trashBattle(id)
         }
-      })
+      }),
     )
     await sleep(INDEXES_LOAD_INTERVAL + _st - Date.now())
   }
@@ -54,13 +55,13 @@ const createIndex = async (list: number[]): Promise<any[]> => {
   return indexes
 }
 
-const updateIndex = async (indexes: any[]) => {
+const updateIndex = async (indexes: BattleIndex[]) => {
   const store = getStore()
   let { battle, showLast } = uiSelector(store)
   if (indexes == null) indexes = []
   if (showLast) {
-    const last = indexes[0] || {}
-    battle = await AppData.loadBattle(last.id)
+    const last = indexes[0]
+    battle = await AppData.loadBattle(last?.id)
   }
   boundActionCreators.uiModify(modifyObject('battle', () => battle))
   boundActionCreators.atomicReplaceIndexes(indexes)
@@ -88,8 +89,8 @@ export const initData = async () => {
     indexes.sort((x, y) => y.id - x.id)
     AppData.saveIndex(indexes)
     updateIndex(indexes)
-  } catch (err: any) {
-    console.error(err.stack)
+  } catch (err: unknown) {
+    console.error((err as Error).stack)
     boundActionCreators.uiModify(modifyObject('disableBrowser', () => true))
     showModal({
       title: __('Indexing'),

@@ -15,12 +15,15 @@ import BrowseArea from './browse-area'
 import AppData from '../lib/appdata'
 import PacketManager from '../lib/packetmanager'
 
+import type { Battle } from 'poi-lib-battle'
 import { Simulator } from 'poi-lib-battle'
 import { PacketCompat, IndexCompat } from '../lib/compat'
 import { initData, actionCreators } from './store'
 import { indexesSelector, uiSelector } from './selectors'
 import { globalSubscribe, globalUnsubscribe } from './observers'
 import { loadScript } from './utils'
+import type { BattleIndex } from './store/ext-root/indexes'
+import type { UIState } from './store/ext-root/ui'
 
 const { ipc } = window
 const { __ } = window.i18n['poi-plugin-battle-detail']
@@ -28,8 +31,9 @@ const { __ } = window.i18n['poi-plugin-battle-detail']
 const pm = new PacketManager()
 const em = new EventEmitter()
 
-async function handlePacket(newBattle: any, _curPacket: any) {
+async function handlePacket(newBattle: Battle | null, _curPacket?: unknown) {
   const newId = PacketCompat.getId(newBattle)
+  if (newId == null) return
   AppData.saveBattle(newId, newBattle)
   const { showLast } = uiSelector(store.getState())
   const newIndex = IndexCompat.getIndex(newBattle, newId)
@@ -55,10 +59,10 @@ export function pluginWillUnload() {
 interface MainAreaProps {
   activeTab: number
   disableBrowser: boolean
-  battle: any
-  indexes: any[]
+  battle: Battle | null
+  indexes: BattleIndex[]
   showLast: boolean
-  uiModify: (modifier: any) => void
+  uiModify: (modifier: (state: UIState) => UIState) => void
 }
 
 const MainAreaImpl: React.FC<MainAreaProps> = ({
@@ -68,7 +72,7 @@ const MainAreaImpl: React.FC<MainAreaProps> = ({
   const indexesRef = useRef(indexes)
   useEffect(() => { indexesRef.current = indexes }, [indexes])
 
-  const updateBattle = useCallback(async (id: any) => {
+  const updateBattle = useCallback(async (id: number | Battle | null) => {
     let resolved = id
     if (typeof id === 'number') {
       resolved = await AppData.loadBattle(id)
@@ -83,7 +87,7 @@ const MainAreaImpl: React.FC<MainAreaProps> = ({
   const updateBattleRef = useRef(updateBattle)
   useEffect(() => { updateBattleRef.current = updateBattle }, [updateBattle])
 
-  const showBattleWithTimestamp = useCallback(async (timestamp: any, callback?: (msg: string | null) => void) => {
+  const showBattleWithTimestamp = useCallback(async (timestamp: number, callback?: (msg: string | null) => void) => {
     let message: string | null = null
     if (typeof timestamp !== 'number') {
       message = __('Unknown error')
@@ -103,9 +107,9 @@ const MainAreaImpl: React.FC<MainAreaProps> = ({
       } else {
         try {
           await updateBattleRef.current(list[0])
-        } catch (err: any) {
+        } catch (err: unknown) {
           message = __('Unknown error')
-          console.error(err.stack)
+          console.error((err as Error).stack)
         }
       }
     }
@@ -114,13 +118,13 @@ const MainAreaImpl: React.FC<MainAreaProps> = ({
     }
   }, [])
 
-  const handleDataUpdate = useCallback((newBattle: any) => {
+  const handleDataUpdate = useCallback((newBattle: Battle | null) => {
     uiModify(modifyObject('battle', () => newBattle))
   }, [uiModify])
 
   useEffect(() => {
     const startupState = ipc.access('BattleDetail')
-    if (startupState && startupState.timestamp) {
+    if (startupState?.timestamp) {
       showBattleWithTimestamp(startupState.timestamp)
       ipc.unregister('BattleDetail', 'timestamp')
     }
@@ -137,17 +141,17 @@ const MainAreaImpl: React.FC<MainAreaProps> = ({
     }
   }, [showBattleWithTimestamp, handleDataUpdate])
 
-  const handleSelectTab = useCallback((newTabId: any) => {
+  const handleSelectTab = useCallback((newTabId: number) => {
     uiModify(modifyObject('activeTab', () => newTabId))
   }, [uiModify])
 
-  let simulator: Simulator
+  let simulator: Simulator | undefined
   let stages: Simulator['stages'] = []
   try {
     simulator = Simulator.auto(battle, { usePoiAPI: true })
-    stages = simulator.stages || []
-  } catch (err: any) {
-    console.error(battle, err.stack)
+    stages = simulator!.stages || []
+  } catch (err: unknown) {
+    console.error(battle, (err as Error).stack)
   }
 
   return (
@@ -166,8 +170,8 @@ const MainAreaImpl: React.FC<MainAreaProps> = ({
                 battleArea={battleArea}
               />
               <div id="battle-area" ref={battleArea}>
-                <OverviewArea simulator={simulator} />
-                <DetailArea simulator={simulator} stages={stages} />
+                {simulator != null && <OverviewArea simulator={simulator} />}
+                {simulator != null && <DetailArea simulator={simulator} stages={stages} />}
               </div>
             </>
           }
@@ -191,10 +195,10 @@ const MainAreaImpl: React.FC<MainAreaProps> = ({
 export { reducer } from './store'
 
 export const reactClass = connect(
-  (state: any) => {
+  (state: RootState) => {
     const { activeTab, disableBrowser, battle, showLast } = uiSelector(state)
     const indexes = indexesSelector(state)
     return { activeTab, disableBrowser, battle, indexes, showLast }
   },
-  actionCreators
+  actionCreators,
 )(MainAreaImpl)

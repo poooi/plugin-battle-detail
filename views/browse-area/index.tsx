@@ -12,16 +12,18 @@ import { browseModeSelector } from '../selectors'
 import { SortieViewer } from './sortie-viewer'
 import { actionCreators } from '../store'
 import { UPagination } from './u-pagination'
+import type { BattleIndex } from '../store/ext-root/indexes'
+import type { UIState } from '../store/ext-root/ui'
 
 const { __ } = window.i18n['poi-plugin-battle-detail']
 
 const PAGE_ITEM_AMOUNT = 20
 
 interface BrowseAreaProps {
-  indexes: any[]
+  indexes: BattleIndex[]
   updateBattle: (id: number) => void
   browseMode: 'nodes' | 'sorties'
-  uiModify: (modifier: any) => void
+  uiModify: (modifier: (state: UIState) => UIState) => void
 }
 
 const BrowseAreaImpl: React.FC<BrowseAreaProps> = ({
@@ -43,14 +45,13 @@ const BrowseAreaImpl: React.FC<BrowseAreaProps> = ({
     setFilteredIndexes(applyFilters(propIndexes, filters))
   }, [propIndexes])
 
-  const applyFilters = useCallback((idxs: any[], flt: typeof filters) => {
-    const SEPARATOR = ','
+  const applyFilters = useCallback((idxs: BattleIndex[], flt: typeof filters) => {
     return idxs.filter(index =>
       flt.time.findIndex(k => index.time.includes(k)) > -1 &&
       flt.desc.findIndex(k => index.desc.includes(k)) > -1 &&
       flt.map.findIndex(k => index.map.includes(k)) > -1 &&
       flt.route.findIndex(k => index.route.includes(k)) > -1 &&
-      flt.rank.findIndex(k => index.rank.includes(k)) > -1
+      flt.rank.findIndex(k => index.rank.includes(k)) > -1,
     )
   }, [])
 
@@ -82,8 +83,8 @@ const BrowseAreaImpl: React.FC<BrowseAreaProps> = ({
   const handleSwitchBrowseMode = () =>
     uiModify(
       modifyObject('browseMode', (bm: string) =>
-        bm === 'nodes' ? 'sorties' : 'nodes'
-      )
+        bm === 'nodes' ? 'sorties' : 'nodes',
+      ),
     )
 
   const pageAmount = filteredIndexes && filteredIndexes.length > 0
@@ -117,50 +118,50 @@ const BrowseAreaImpl: React.FC<BrowseAreaProps> = ({
             <span>{__('Tip_Akashic1_Part2')}</span>
           </div>
           <form onSubmit={onClickFilter}>
-              <HTMLTable striped interactive className="browse-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th><InputGroup inputRef={iTime} placeholder={__('Time')} /></th>
-                    <th><InputGroup inputRef={iDesc} placeholder={__('Description')} /></th>
-                    <th><InputGroup inputRef={iMap} placeholder={__('Map')} /></th>
-                    <th><InputGroup inputRef={iRoute} placeholder={__('Route')} /></th>
-                    <th><InputGroup inputRef={iRank} placeholder={__('Rank')} /></th>
-                    <th>
-                      <Tooltip content={filterPopover} placement="top">
-                        <Button
-                          type="submit"
-                          intent="primary"
-                          onClick={onClickFilter}
-                          onContextMenu={onRightClickFilter}
-                        >
-                          {__('Filter')}
-                        </Button>
-                      </Tooltip>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {range.map(i => {
-                    const item = filteredIndexes[i]
-                    return item == null ? null : (
-                      <tr key={i}>
-                        <td>{i + 1}</td>
-                        <td>{item.time}</td>
-                        <td>{item.desc}</td>
-                        <td>{item.map}</td>
-                        <td>{item.route}</td>
-                        <td>{item.rank}</td>
-                        <td>
-                          <div className="cbtn" onClick={() => updateBattle(item.id)}>
-                            <FontAwesome name="info-circle" />{__('View')}
-                          </div>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </HTMLTable>
+            <HTMLTable striped interactive className="browse-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th><InputGroup inputRef={iTime} placeholder={__('Time')} /></th>
+                  <th><InputGroup inputRef={iDesc} placeholder={__('Description')} /></th>
+                  <th><InputGroup inputRef={iMap} placeholder={__('Map')} /></th>
+                  <th><InputGroup inputRef={iRoute} placeholder={__('Route')} /></th>
+                  <th><InputGroup inputRef={iRank} placeholder={__('Rank')} /></th>
+                  <th>
+                    <Tooltip content={filterPopover} placement="top">
+                      <Button
+                        type="submit"
+                        intent="primary"
+                        onClick={onClickFilter}
+                        onContextMenu={onRightClickFilter}
+                      >
+                        {__('Filter')}
+                      </Button>
+                    </Tooltip>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {range.map(i => {
+                  const item = filteredIndexes[i]
+                  return item == null ? null : (
+                    <tr key={i}>
+                      <td>{i + 1}</td>
+                      <td>{item.time}</td>
+                      <td>{item.desc}</td>
+                      <td>{item.map}</td>
+                      <td>{item.route}</td>
+                      <td>{item.rank}</td>
+                      <td>
+                        <div className="cbtn" onClick={() => updateBattle(item.id)}>
+                          <FontAwesome name="info-circle" />{__('View')}
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </HTMLTable>
           </form>
           <UPagination
             currentPage={pageNo}
@@ -181,7 +182,7 @@ const BrowseAreaImpl: React.FC<BrowseAreaProps> = ({
 
 const BrowseArea = connect(
   createStructuredSelector({ browseMode: browseModeSelector }),
-  actionCreators
+  actionCreators,
 )(BrowseAreaImpl)
 
 export default BrowseArea

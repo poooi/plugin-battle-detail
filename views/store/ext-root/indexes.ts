@@ -15,6 +15,7 @@ export interface BattleIndex {
 const mergeIndexes: (a: BattleIndex[], b: BattleIndex[]) => BattleIndex[] =
   unionSorted((x: BattleIndex, y: BattleIndex) => y.id - x.id)
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const reducer = (state: BattleIndex[] = [], action: any): BattleIndex[] => {
   if (action.type === '@poi-plugin-battle-detail@atomicReplaceIndexes') {
     return action.indexes

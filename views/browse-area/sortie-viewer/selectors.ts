@@ -5,17 +5,20 @@ import {
   sortieViewerSelector,
   sortieIndexesSelector,
 } from '../../selectors'
+import type { ParsedMapId } from '../../store/records'
 import { parseEffMapId, getFcdMapInfoFuncSelector } from '../../store/records'
+import type { SortieIndex } from '../../store/ext-root/sortie-indexes'
+import type { SortieViewerState } from '../../store/ext-root/ui'
 
 const grouppedSortieIndexesSelector = createSelector(
   sortieIndexesSelector,
-  (si: List<any>) => si.groupBy((x: any) => x.effMapId)
+  (si: List<SortieIndex>) => si.groupBy((x: SortieIndex) => x.effMapId),
 )
 
 export const sortieIndexesDomainSelector = createSelector(
   grouppedSortieIndexesSelector,
   sortieViewerSelector,
-  (grpdSortieIndexes: any, { sortBy: { method, reversed } }: any) => {
+  (grpdSortieIndexes, { sortBy: { method, reversed } }: SortieViewerState) => {
     let p1Maps: string[] = []
     let p2Maps: string[] = []
     for (const effMapId of grpdSortieIndexes.keys()) {
@@ -38,7 +41,7 @@ export const sortieIndexesDomainSelector = createSelector(
       // already sorted in recent order
     } else if (method === 'numeric') {
       const compare = (x: string, y: string) =>
-        (parseEffMapId(x) as any).mapId - (parseEffMapId(y) as any).mapId
+        (parseEffMapId(x) as ParsedMapId).mapId - (parseEffMapId(y) as ParsedMapId).mapId
       p1Maps.sort(compare)
       p2Maps.sort(compare)
     } else {
@@ -51,55 +54,56 @@ export const sortieIndexesDomainSelector = createSelector(
     }
 
     return ['all', 'pvp', ...p2Maps, ...p1Maps]
-  }
+  },
 )
 
 const getSortieIndexesFuncSelector = createSelector(
   sortieIndexesSelector,
   grouppedSortieIndexesSelector,
-  (sortieIndexes: List<any>, gSortieIndexes: any) => (mId: string) =>
+  (sortieIndexes: List<SortieIndex>, gSortieIndexes) => (mId: string) =>
     mId === 'all' ? sortieIndexes :
-      gSortieIndexes.has(mId) ? gSortieIndexes.get(mId) : List()
+      gSortieIndexes.has(mId) ? gSortieIndexes.get(mId) : List(),
 )
 
 const viewingMapIdSelector = createSelector(
   sortieViewerSelector,
-  (sv: any) => sv.viewingMapId
+  (sv: SortieViewerState) => sv.viewingMapId,
 )
 
 const activePageSelector = createSelector(
   sortieViewerSelector,
-  (sv: any) => sv.activePage
+  (sv: SortieViewerState) => sv.activePage,
 )
 
 const currentSortieIndexesSelector = createSelector(
   getSortieIndexesFuncSelector,
   viewingMapIdSelector,
-  (getSortieIndexesFunc: any, mId: string) => getSortieIndexesFunc(mId)
+  (getSortieIndexesFunc, mId: string) => getSortieIndexesFunc(mId),
 )
 
 const itemsPerPage = 20
 
 export const pageRangeSelector = createSelector(
   currentSortieIndexesSelector,
-  (sortieIndexes: List<any>) => Math.ceil(sortieIndexes.size / itemsPerPage)
+  (sortieIndexes) => Math.ceil((sortieIndexes?.size ?? 0) / itemsPerPage),
 )
 
 export const currentFocusingSortieIndexesSelector = createSelector(
   currentSortieIndexesSelector,
   activePageSelector,
-  (sortieIndexes: List<any>, activePage: number) => {
+  (sortieIndexes, activePage: number) => {
+    if (!sortieIndexes) return List<SortieIndex>()
     const beginInd = (activePage - 1) * itemsPerPage
     const endInd = Math.min(beginInd + itemsPerPage - 1, sortieIndexes.size - 1)
     return sortieIndexes.slice(beginInd, endInd + 1)
-  }
+  },
 )
 
 export const getMapNodeLetterFuncSelector = createSelector(
   getFcdMapInfoFuncSelector,
-  (getFcdMapInfo: any) => (effMapId: string) => {
+  (getFcdMapInfo) => (effMapId: string) => {
     const routeInfo = _.get(getFcdMapInfo(effMapId), 'route')
-    if (_.isEmpty(routeInfo)) return (edgeId: any) => String(edgeId)
-    return (edgeId: any) => routeInfo[edgeId][1]
-  }
+    if (_.isEmpty(routeInfo)) return (edgeId: number | string) => String(edgeId)
+    return (edgeId: number | string) => routeInfo[edgeId][1]
+  },
 )

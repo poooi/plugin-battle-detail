@@ -1,8 +1,8 @@
 import _ from 'lodash'
 
-export const prepareNextEdges = (mapInfo: any): Record<number, number[]> => {
+export const prepareNextEdges = (mapInfo: { route: Record<string, [number, number]> }): Record<number, number[]> => {
   const nextEdges: Record<number, number[]> = {}
-  Object.entries(mapInfo.route).forEach(([edgeIdStr, route]: [string, any]) => {
+  Object.entries(mapInfo.route).forEach(([edgeIdStr, route]) => {
     const [nFrom] = route
     const edgeArr = nextEdges[nFrom] || []
     if (!nFrom) return
@@ -20,7 +20,9 @@ export const mapStrToMapId = _.memoize((mapStr: string): number | 'pvp' | null =
   return Number(areaStr) * 10 + Number(numStr)
 })
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const checkSortieIndexes = (sortieIndexes: any[], mapCanGoFromToFunc: any) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const checkSortieIndex = (sortieIndex: any): boolean => {
     const { mapId, indexes } = sortieIndex
     const reportProblem = (msg: string) => {
@@ -36,6 +38,7 @@ export const checkSortieIndexes = (sortieIndexes: any[], mapCanGoFromToFunc: any
         if (indexes.length !== 1) return reportProblem('expected pvp data to have exactly one record')
         return true
       } else {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         if (!indexes.every((index: any) => mapStrToMapId(index.map) === mapId))
           return reportProblem('inconsistent map str encountered')
         const canGoFromTo = mapCanGoFromToFunc(mapId)

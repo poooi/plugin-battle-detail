@@ -40,8 +40,8 @@ interface HPBarProps {
 }
 
 export const HPBar: React.FC<HPBarProps> = ({ max, from, to, damage, item }) => {
-  let safeFrom = from < 0 ? 0 : from > max ? max : from
-  let safeTo = to < 0 ? 0 : to > max ? max : to
+  const safeFrom = from < 0 ? 0 : from > max ? max : from
+  const safeTo = to < 0 ? 0 : to > max ? max : to
 
   const now = 100 * safeTo / max
   const lost = 100 * (safeFrom - safeTo) / max

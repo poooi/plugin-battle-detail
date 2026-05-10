@@ -4,6 +4,7 @@
     "module": "commonjs",
     "jsx": "react",
     "strict": false,
+    "strictNullChecks": true,
     "moduleResolution": "node",
     "baseUrl": "./",
     "esModuleInterop": true,

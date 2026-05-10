@@ -6,7 +6,7 @@ import { splitMapId } from 'subtender/kc'
 import { fcdSelector } from 'views/utils/selectors'
 
 const fcdMapP1Raw = readJsonSync(
-  path.join(__dirname, 'assets', 'data', 'fcd-map-p1.json')
+  path.join(__dirname, 'assets', 'data', 'fcd-map-p1.json'),
 )
 
 const p1Cutoff = Number(new Date('2018-08-17T00:00:00+09:00'))
@@ -27,7 +27,7 @@ const BATTLE_MAP_PATTERN = /^(\d+)-(\d+)$/
 
 export const parseBattleMapAndTime = (
   battleMapStr: string,
-  timestamp: number
+  timestamp: number,
 ): ParsedEffMapId | null => {
   if (typeof battleMapStr !== 'string') {
     console.warn(`battle.map is expected to be a string, but got ${typeof battleMapStr}`)
@@ -61,22 +61,25 @@ export const parseEffMapId = _.memoize((eMapId: string): ParsedMapId | 'pvp' | n
   return { mapId, phase, mapArea, mapNo }
 })
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type EffMapIdFn = (f: (...args: any[]) => any) => any
 
 export const withEffMapId = (eMapId: string): EffMapIdFn => {
   const result = parseEffMapId(eMapId)
-  if (result !== null && typeof result === 'object') {
+  if (result !== null && result !== 'pvp') {
     const { mapId, phase } = result
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (f: (mapId: number, phase: number) => any) => f(mapId, phase)
-  } else {
-    return (f: (result: string | null) => any) => f(result as any)
   }
+  const pvpOrNull = result
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (f: (result: 'pvp' | null) => any) => f(pvpOrNull)
 }
 
 export const getFcdMapInfoFuncSelector = createSelector(
   fcdSelector,
-  (fcd: any) => (effMapId: string) =>
-    withEffMapId(effMapId)((mapId: any, phase: any) => {
+  (fcd: FcdState) => (effMapId: string) =>
+    withEffMapId(effMapId)((mapId: number | 'pvp', phase: number) => {
       if (mapId === null || mapId === 'pvp') return null
       const num = mapId % 10
       const world = Math.round((mapId - num) / 10)
@@ -87,5 +90,5 @@ export const getFcdMapInfoFuncSelector = createSelector(
 
       console.warn(`fcd lookup failed, unexpected phase: ${phase}`)
       return null
-    })
+    }),
 )

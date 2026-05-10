@@ -1,30 +1,75 @@
+// Types extracted from D:\repos\poi (used for window globals and module declarations)
+
+/** FCD map data – route maps edge ID to [fromNode | null, toNode], spots maps node ID to [x, y, type] */
+interface FcdMapData {
+  route: Record<string, [string | null, string]>
+  spots: Record<string, [number, number, string]>
+}
+type FcdMapState = Record<string, FcdMapData>
+interface FcdState {
+  version: Record<string, string>
+  map?: FcdMapState
+  shipavatar?: unknown
+  shiptag?: unknown
+}
+
+/** Minimal subset of poi's RootState used by this plugin */
+interface RootState {
+  const: Record<string, unknown>
+  info: Record<string, unknown>
+  config: Record<string, unknown>
+  fcd: FcdState
+  ext: Record<string, unknown>
+  sortie: Record<string, unknown>
+  timers: Record<string, unknown>
+  battle: Record<string, unknown>
+  misc: Record<string, unknown>
+  plugins: Record<string, unknown>
+  layout: Record<string, unknown>
+  ui: Record<string, unknown>
+  wctf: Record<string, unknown>
+}
+
+/** Subset of poi's IPC class interface */
+interface IPC {
+  access<T = any>(scope: string): T
+  register(scope: string, obj: Record<string, unknown>): void
+  unregister(scope: string, keys: string | string[]): void
+  unregisterAll(scope: string): void
+}
+
 interface Window {
   ROOT: string
   APPDATA_PATH: string
-  ipc: {
-    access: (key: string) => any
-    register: (key: string, obj: any) => void
-    unregister: (key: string, prop: string) => void
-    unregisterAll: (key: string) => void
-  }
+  ipc: IPC
   i18n: Record<string, { __: (key: string, ...args: any[]) => string }>
-  getStore: (path?: string | string[]) => any
+  getStore(): RootState
+  getStore(path: string | string[]): any
   _slotitems: Record<number, any>
   showBattleWithTimestamp?: ((timestamp: number, callback?: (msg: string | null) => void) => void) | null
   isVibrant?: boolean
   POI_VERSION: string
-  AppData?: any
+  AppData?: unknown
+  getExt?: () => import('./views/store/ext-root').ExtState
 }
 
 declare module 'views/create-store' {
-  export const store: any
+  // store.dispatch accepts thunks via redux-thunk middleware at runtime
+  export const store: {
+    dispatch: (...args: any[]) => any
+    getState: () => RootState
+    subscribe: import('redux').Store<RootState>['subscribe']
+  }
+  export function getStore(): RootState
+  export function getStore(path: string | string[]): any
+  export const dispatch: (...args: any[]) => any
 }
 
 declare module 'views/utils/selectors' {
   import { Selector } from 'reselect'
-  export const configSelector: Selector<any, any>
-  export const extensionSelectorFactory: (id: string) => Selector<any, any>
-  export const fcdSelector: Selector<any, any>
+  export const configSelector: Selector<RootState, Record<string, unknown>>
+  export const extensionSelectorFactory: (id: string) => Selector<RootState, Record<string, unknown>>
+  export const fcdSelector: Selector<RootState, FcdState>
 }
 
 declare module 'views/utils/game-utils' {

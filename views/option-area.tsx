@@ -1,6 +1,7 @@
 import React, { memo } from 'react'
 import * as remote from '@electron/remote'
 import { Button, ButtonGroup, InputGroup } from '@blueprintjs/core'
+import type { Battle } from 'poi-lib-battle'
 
 import { showModal } from './modal-area'
 import { PacketCompat } from '../lib/compat'
@@ -9,8 +10,8 @@ const { clipboard } = remote
 const { __ } = window.i18n['poi-plugin-battle-detail']
 
 interface OptionAreaProps {
-  battle: any
-  updateBattle: (battle: any) => void
+  battle: Battle | null
+  updateBattle: (id: number | Battle | null) => void
   battleArea: React.RefObject<HTMLDivElement>
 }
 
@@ -60,6 +61,7 @@ const OptionArea: React.FC<OptionAreaProps> = memo(({ battle, updateBattle, batt
   const onClickSave = () => {
     const ref = battleArea.current
     if (!ref) return
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const domToImage = (ref.ownerDocument.defaultView as any).domtoimage
     const computed = getComputedStyle(ref)
     const width = parseInt(computed.width, 10)

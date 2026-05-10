@@ -10,10 +10,11 @@ const { __ } = window.i18n['poi-plugin-battle-detail']
 import { HPBar } from './bar'
 import { getShipName, getItemName } from './utils'
 
+import type {
+  Stage, Attack, AerialInfo, EngagementInfo, Ship, Simulator} from 'poi-lib-battle'
 import {
   StageType, AttackType, HitType, ShipOwner,
   AirControl, Engagement, Formation, Detection,
-  Stage, Attack, AerialInfo, EngagementInfo, Ship, Simulator,
 } from 'poi-lib-battle'
 
 const AirControlName: Record<string, string> = {
@@ -86,33 +87,33 @@ const EngagementTable: React.FC<{ engagement: EngagementInfo }> = ({ engagement:
   if (e.engagement || e.fFormation || e.eFormation)
     rows.push(
       <div className="engagement-row" key={1}>
-        <span>{FormationName[e.fFormation!]}</span>
-        <span>{EngagementName[e.engagement!]}</span>
-        <span>{FormationName[e.eFormation!]}</span>
-      </div>
+        <span>{FormationName[e.fFormation ?? '']}</span>
+        <span>{EngagementName[e.engagement ?? '']}</span>
+        <span>{FormationName[e.eFormation ?? '']}</span>
+      </div>,
     )
 
   if (e.fDetection || e.eDetection)
     rows.push(
       <div className="engagement-row" key={2}>
-        <span>{DetectionName[e.fDetection!]}</span>
+        <span>{DetectionName[e.fDetection ?? '']}</span>
         <span />
-        <span>{DetectionName[e.eDetection!]}</span>
-      </div>
+        <span>{DetectionName[e.eDetection ?? '']}</span>
+      </div>,
     )
 
   if (e.smokeType)
     rows.push(
       <div className="engagement-row" key={3}>
         <span /><span>{`${__('Smoke')}: ${e.smokeType}`}</span><span />
-      </div>
+      </div>,
     )
 
   if (e.weakened)
     rows.push(
       <div className="engagement-row" key={4}>
         <span /><span>{`${__('Gimmick')}: ${e.weakened}`}</span><span />
-      </div>
+      </div>,
     )
 
   if (e.fContact || e.eContact)
@@ -121,7 +122,7 @@ const EngagementTable: React.FC<{ engagement: EngagementInfo }> = ({ engagement:
         <span>{e.fContact ? `${__('Contact')}: ${getItemName(e.fContact)}` : ''}</span>
         <span />
         <span>{e.eContact ? `${__('Contact')}: ${getItemName(e.eContact)}` : ''}</span>
-      </div>
+      </div>,
     )
 
   if (e.fFlare || e.eFlare)
@@ -130,7 +131,7 @@ const EngagementTable: React.FC<{ engagement: EngagementInfo }> = ({ engagement:
         <span>{e.fFlare ? `${__('Star Shell')}: ${getShipName(get(e, 'fFlare.id'))}` : ''}</span>
         <span />
         <span>{e.eFlare ? `${__('Star Shell')}: ${getShipName(get(e, 'eFlare.id'))}` : ''}</span>
-      </div>
+      </div>,
     )
 
   return <div className="engagement-table">{rows}</div>
@@ -169,7 +170,7 @@ const AerialTable: React.FC<{ aerial: AerialInfo | null }> = ({ aerial: a }) => 
       <div className="aerial-row">
         <span><PlaneCount init={a.fPlaneInit1} now={a.fPlaneNow1} /></span>
         <span>{a.fContact ? `${__('Contact')}: ${getItemName(a.fContact)}` : ''}</span>
-        <span>{AirControlName[a.control!]}</span>
+        <span>{AirControlName[a.control ?? '']}</span>
         <span>{a.eContact ? `${__('Contact')}: ${getItemName(a.eContact)}` : ''}</span>
         <span><PlaneCount init={a.ePlaneInit1} now={a.ePlaneNow1} /></span>
       </div>
@@ -211,14 +212,19 @@ const DamageInfo: React.FC<{ type: AttackType; damage: number[]; hit: HitType[] 
 
 const AttackRow: React.FC<{ attack: Attack }> = ({ attack }) => {
   const { type, fromShip, toShip, fromHP, toHP, damage, hit, useItem } = attack
-  const { maxHP } = toShip!
-  const totalDamage = (damage ?? []).reduce((p: number, x: number) => p + x, 0)
-  return toShip!.owner !== ShipOwner.Enemy ? (
+  if (toShip == null) return null
+  const { maxHP } = toShip
+  const dmg = damage ?? []
+  const hts = hit ?? []
+  const hp0 = fromHP ?? 0
+  const hp1 = toHP ?? 0
+  const totalDamage = dmg.reduce((p: number, x: number) => p + x, 0)
+  return toShip.owner !== ShipOwner.Enemy ? (
     <div className="attack-row">
-      <span><HPBar max={maxHP} from={fromHP!} to={toHP!} damage={totalDamage} item={useItem ?? undefined} /></span>
+      <span><HPBar max={maxHP} from={hp0} to={hp1} damage={totalDamage} item={useItem ?? undefined} /></span>
       <span><ShipInfo ship={toShip} /></span>
       <span><FontAwesome name="long-arrow-left" /></span>
-      <span><DamageInfo type={type} damage={damage!} hit={hit!} /></span>
+      <span><DamageInfo type={type} damage={dmg} hit={hts} /></span>
       <span />
       <span><ShipInfo ship={fromShip} /></span>
       <span />
@@ -228,10 +234,10 @@ const AttackRow: React.FC<{ attack: Attack }> = ({ attack }) => {
       <span />
       <span><ShipInfo ship={fromShip} /></span>
       <span />
-      <span><DamageInfo type={type} damage={damage!} hit={hit!} /></span>
+      <span><DamageInfo type={type} damage={dmg} hit={hts} /></span>
       <span><FontAwesome name="long-arrow-right" /></span>
       <span><ShipInfo ship={toShip} /></span>
-      <span><HPBar max={maxHP} from={fromHP!} to={toHP!} damage={totalDamage} item={useItem ?? undefined} /></span>
+      <span><HPBar max={maxHP} from={hp0} to={hp1} damage={totalDamage} item={useItem ?? undefined} /></span>
     </div>
   )
 }
@@ -251,39 +257,39 @@ const StageTable: React.FC<{ stage: Stage | null }> = ({ stage }) => {
   let title: string | null = null
 
   switch (stage.type) {
-    case StageType.Engagement:
-      break
-    case StageType.Aerial:
-      title = stage.subtype === StageType.Assault
-        ? `${__('Aerial Combat')} - ${__('Jet Air Assault')}`
-        : __('Aerial Combat')
-      break
-    case StageType.Torpedo:
-      title = stage.subtype === StageType.Opening
-        ? __('Opening Torpedo Salvo')
-        : __('Torpedo Salvo')
-      break
-    case StageType.Shelling:
-      switch (stage.subtype) {
-        case StageType.Main: title = `${__('Shelling')} - ${__('Main Fleet')}`; break
-        case StageType.Escort: title = `${__('Shelling')} - ${__('Escort Fleet')}`; break
-        case StageType.Night: title = __('Night Combat'); break
-        case StageType.Opening: title = __('Opening Anti-Sub'); break
-        default: title = __('Shelling')
-      }
-      break
-    case StageType.Support:
-      switch (stage.subtype) {
-        case StageType.Aerial: title = `${__('Expedition Supporting Fire')} - ${__('Aerial Support')}`; break
-        case StageType.Shelling: title = `${__('Expedition Supporting Fire')} - ${__('Shelling Support')}`; break
-        case StageType.Torpedo: title = `${__('Expedition Supporting Fire')} - ${__('Torpedo Support')}`; break
-      }
-      break
-    case StageType.LandBase:
-      title = stage.subtype === StageType.Assault
-        ? `${__('Land Base Air Corps')} - ${__('Jet Air Assault')}`
-        : `${__('Land Base Air Corps')} - No.${(stage.kouku as any)?.api_base_id}`
-      break
+  case StageType.Engagement:
+    break
+  case StageType.Aerial:
+    title = stage.subtype === StageType.Assault
+      ? `${__('Aerial Combat')} - ${__('Jet Air Assault')}`
+      : __('Aerial Combat')
+    break
+  case StageType.Torpedo:
+    title = stage.subtype === StageType.Opening
+      ? __('Opening Torpedo Salvo')
+      : __('Torpedo Salvo')
+    break
+  case StageType.Shelling:
+    switch (stage.subtype) {
+    case StageType.Main: title = `${__('Shelling')} - ${__('Main Fleet')}`; break
+    case StageType.Escort: title = `${__('Shelling')} - ${__('Escort Fleet')}`; break
+    case StageType.Night: title = __('Night Combat'); break
+    case StageType.Opening: title = __('Opening Anti-Sub'); break
+    default: title = __('Shelling')
+    }
+    break
+  case StageType.Support:
+    switch (stage.subtype) {
+    case StageType.Aerial: title = `${__('Expedition Supporting Fire')} - ${__('Aerial Support')}`; break
+    case StageType.Shelling: title = `${__('Expedition Supporting Fire')} - ${__('Shelling Support')}`; break
+    case StageType.Torpedo: title = `${__('Expedition Supporting Fire')} - ${__('Torpedo Support')}`; break
+    }
+    break
+  case StageType.LandBase:
+    title = stage.subtype === StageType.Assault
+      ? `${__('Land Base Air Corps')} - ${__('Jet Air Assault')}`
+      : `${__('Land Base Air Corps')} - No.${(stage.kouku as { api_base_id?: number } | null | undefined)?.api_base_id}`
+    break
   }
 
   return (

@@ -8,9 +8,9 @@ import { equipIsAircraft } from 'views/utils/game-utils'
 import { SlotitemIcon } from 'views/components/etc/icon'
 
 import { FABar, HPBar } from './bar'
-import { Simulator, Ship, RawFleetShip, RawLBAC, RawSlotItem } from 'poi-lib-battle'
+import type { Simulator, Ship, RawFleetShip, RawLBAC, RawSlotItem } from 'poi-lib-battle'
 
-const { ROOT, getStore } = window as any
+const { ROOT, getStore } = window
 const { __ } = window.i18n['poi-plugin-battle-detail']
 
 type PoiAirBasePlane = RawLBAC['api_plane_info'][number] & { poi_slot?: RawSlotItem | null }
@@ -85,7 +85,7 @@ const getCondClass = (cond: number | null | undefined): string => {
 const ShipView: React.FC<{ child: Ship | null }> = ({ child: ship }) => {
   if (!(ship && ship.id > 0)) return <div />
   const raw = ship.raw as RawFleetShip | null
-  const mst = getStore(['const', '$ships', ship.id]) || {}
+  const mst = getStore(['const', '$ships', String(ship.id)]) || {}
   const data = {
     ...mst,
     ...(raw ?? {}),
@@ -118,14 +118,14 @@ const ShipView: React.FC<{ child: Ship | null }> = ({ child: ship }) => {
           <div style={{ flex: 1 }}><FABar icon={2} max={data.api_bull_max} now={data.api_bull} /></div>
         </div>
         <div className="ship-hp">
-          <HPBar max={ship.maxHP} from={ship.initHP} to={ship.nowHP} damage={ship.lostHP} item={ship.useItem} />
+          <HPBar max={ship.maxHP} from={ship.initHP} to={ship.nowHP} damage={ship.lostHP} item={ship.useItem ?? undefined} />
         </div>
       </div>
       <div style={{ flex: '0 0 60%' }}>
         {((data.poi_slot || []) as Array<RawSlotItem | null>).map((item, i: number) => (
           <ItemView
             key={i} item={item} extra={false}
-            label={data.api_onslot[i]}
+            label={data.api_onslot[i] ?? undefined}
             warn={data.api_onslot[i] !== data.api_maxeq[i]}
           />
         ))}
@@ -136,7 +136,7 @@ const ShipView: React.FC<{ child: Ship | null }> = ({ child: ship }) => {
 }
 
 const LBACView: React.FC<{ child: RawLBAC }> = ({ child: corps }) => {
-  if (!(corps && corps.api_plane_info)) return <div />
+  if (!corps?.api_plane_info) return <div />
   return (
     <div className="lbac-view" style={{ display: 'flex' }}>
       <div style={{ flex: '0 0 40%' }}>
@@ -168,18 +168,19 @@ interface ItemViewProps {
 const ItemView: React.FC<ItemViewProps> = ({ item, extra, label, warn }) => {
   if (!item) return <div />
   const raw = item
-  const mst = getStore(['const', '$equips', item.api_slotitem_id]) || {}
+  const mst = getStore(['const', '$equips', String(item.api_slotitem_id)]) || {}
   const data = {
     ...mst,
     ...raw,
   }
 
+  const apiType3: number | undefined = data.api_type?.[3]
   return (
     <div className="item-view">
       <div className="item-info">
         <span className="item-icon">
-          <SlotitemIcon slotitemId={data.api_type[3]} />
-          {(label != null && (extra || equipIsAircraft(data.api_type[3]))) ? (
+          <SlotitemIcon slotitemId={apiType3 ?? 0} />
+          {(label != null && (extra || (apiType3 != null && equipIsAircraft(apiType3)))) ? (
             <span className={`number ${warn ? 'text-warning' : ''}`}>{label}</span>
           ) : null}
         </span>
