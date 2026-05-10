@@ -1,4 +1,5 @@
 // Types extracted from D:\repos\poi (used for window globals and module declarations)
+// Note: no top-level import/export so this file stays a "script" and all declarations are global.
 
 /** FCD map data – route maps edge ID to [fromNode | null, toNode], spots maps node ID to [x, y, type] */
 interface FcdMapData {
@@ -50,7 +51,25 @@ interface Window {
   isVibrant?: boolean
   POI_VERSION: string
   AppData?: unknown
-  getExt?: () => import('./views/store/ext-root').ExtState
+  getExt?: () => import('../views/store/ext-root').ExtState
+}
+
+declare module 'path-extra' {
+  const pathExtra: {
+    join(...paths: string[]): string
+    resolve(...paths: string[]): string
+    dirname(p: string): string
+    basename(p: string, ext?: string): string
+    extname(p: string): string
+    isAbsolute(p: string): boolean
+    normalize(p: string): string
+    relative(from: string, to: string): string
+    sep: string
+    delimiter: string
+    homedir(): string
+    [key: string]: any
+  }
+  export = pathExtra
 }
 
 declare module 'views/create-store' {
@@ -73,7 +92,7 @@ declare module 'views/utils/selectors' {
 }
 
 declare module 'views/utils/game-utils' {
-  export const equipIsAircraft: (type: number) => boolean
+  export const equipIsAircraft: (type: import('kcsapi/api_start2/getData/response').APIMstSlotitem) => boolean
 }
 
 declare module 'views/components/etc/icon' {
@@ -108,8 +127,3 @@ declare module 'subtender/kc' {
   export const mapIdToStr: (mapId: number) => string
 }
 
-declare module 'path-extra' {
-  import _path from 'path'
-  const path: typeof _path
-  export = path
-}

@@ -180,7 +180,7 @@ const ItemView: React.FC<ItemViewProps> = ({ item, extra, label, warn }) => {
       <div className="item-info">
         <span className="item-icon">
           <SlotitemIcon slotitemId={apiType3 ?? 0} />
-          {(label != null && (extra || (apiType3 != null && equipIsAircraft(apiType3)))) ? (
+          {(label != null && (extra || (apiType3 != null && equipIsAircraft(data)))) ? (
             <span className={`number ${warn ? 'text-warning' : ''}`}>{label}</span>
           ) : null}
         </span>
