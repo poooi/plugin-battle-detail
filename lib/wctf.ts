@@ -80,10 +80,11 @@ export const convertToWctf = async (sortieIndexes: SortieIndex) => {
     const squadron = poiLbas[sqId - 1]
     if (!squadron || !Array.isArray(squadron.api_plane_info)) return []
     const convertEquip = (rawEquip: RawPlane | null) => {
-      if (!rawEquip?.poi_slot) return []
-      const mstId = rawEquip.poi_slot.api_slotitem_id
-      const ace = rawEquip.poi_slot.api_alv
-      const imp = rawEquip.poi_slot.api_level
+      const poiSlot = rawEquip?.poi_slot?.[0]
+      if (!poiSlot) return []
+      const mstId = poiSlot.api_slotitem_id
+      const ace = poiSlot.api_alv
+      const imp = poiSlot.api_level
       return [mstId, _.isInteger(ace) ? ace : 0, _.isInteger(imp) ? imp : 0]
     }
     return squadron.api_plane_info.map(convertEquip)

@@ -34,7 +34,7 @@
     "immutable": "^4.3.0",
     "kcsapi": "^1.260508.0",
     "lodash": "^4.17.21",
-    "poi-lib-battle": "^3.0.3",
+    "poi-lib-battle": "^3.0.5",
     "react-redux": "^9.2.0",
     "redux": "^5.0.1",
     "redux-observers": "^3.0.0",

@@ -222,7 +222,7 @@ class PacketManager extends EventEmitter {
       corps = { ...corps }
       for (const plane of corps.api_plane_info) {
         if (!plane) continue
-        plane.poi_slot = this.getItem(plane.api_slotid)
+        plane.poi_slot = this.getItem(plane.api_slotid) ?? null
         delete (plane as unknown as Record<string, unknown>).api_slotid
       }
       landBaseAirCorps.push(corps)

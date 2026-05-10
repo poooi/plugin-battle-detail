@@ -88,7 +88,7 @@ export const convertReplay = async (sortieIndexes: SortieIndex) => {
     if (!lbasPoi) return {}
     const transformSquadron = (sq: RawLBAC) => {
       const planes = sq.api_plane_info.map((p) => {
-        const slot = p?.poi_slot
+        const slot = p?.poi_slot?.[0]
         if (!slot) return null
         return {
           mst_id: slot.api_slotitem_id,
