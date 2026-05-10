@@ -1,12 +1,13 @@
 {
   "name": "poi-plugin-battle-detail",
-  "version": "5.18.0",
+  "version": "6.0.0-beta.5",
   "description": "A plugin which shows battle detail for poi.",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint \"views/**/*.{ts,tsx}\" \"lib/**/*.ts\" \"index-src.ts\"",
+    "lint:fix": "eslint \"views/**/*.{ts,tsx}\" \"lib/**/*.ts\" \"index-src.ts\" --fix",
     "reset": "git clean -f && git checkout . && git submodule foreach git checkout . && git submodule foreach git clean -f",
-    "prepack": "poi-util-transpile --sm --replace",
-    "lint": "eslint 'views/*.es' || true",
+    "prepack": "tsdown",
     "postpublish": "npm run reset"
   },
   "dependencies": {
@@ -15,14 +16,32 @@
     "subtender": "^0.12.4"
   },
   "devDependencies": {
-    "babel-eslint": "^8.0.1",
-    "babel-preset-es2017-node7": "^0.5.2",
-    "babel-preset-react": "^6.5.0",
-    "babel-preset-stage-0": "^6.5.0",
-    "eslint": "^4.10.0",
-    "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-react": "^7.4.0",
-    "poi-util-transpile": "^8.2.2"
+    "@blueprintjs/core": "^6.0.0",
+    "@electron/remote": "^2.1.3",
+    "@eslint/js": "^9.39.4",
+    "@types/fs-extra": "^11.0.4",
+    "@types/lodash": "^4.14.200",
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "@types/react-fontawesome": "^1.6.8",
+    "@typescript-eslint/eslint-plugin": "^8.59.2",
+    "@typescript-eslint/parser": "^8.59.2",
+    "classnames": "^2.3.0",
+    "eslint": "^9.39.4",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-react": "^7.37.5",
+    "immutable": "^4.3.0",
+    "kcsapi": "^1.260508.0",
+    "lodash": "^4.17.21",
+    "poi-lib-battle": "^3.0.5",
+    "react-redux": "^9.2.0",
+    "redux": "^5.0.1",
+    "redux-observers": "^3.0.0",
+    "reselect": "^4.1.8",
+    "tsdown": "^0.17.0",
+    "typescript": "^5.0.0",
+    "typescript-eslint": "^8.59.2"
   },
   "repository": {
     "type": "git",

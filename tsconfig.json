@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "commonjs",
+    "jsx": "react",
+    "strict": false,
+    "strictNullChecks": true,
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true
+  },
+  "include": [
+    "index-src.ts",
+    "views/**/*",
+    "lib/**/*",
+    "shims/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
