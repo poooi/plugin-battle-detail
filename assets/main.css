@@ -47,7 +47,7 @@
 #battle-detail-main .bp5-tab-list .bp5-tab,
 #battle-detail-main .bp6-tab-list .bp6-tab {
   flex: 1;
-  text-align: center;
+  justify-content: center;
 }
 
 /* Detail area rows */

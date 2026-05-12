@@ -16,7 +16,7 @@ const { __ } = window.i18n['poi-plugin-battle-detail']
 type PoiAirBasePlane = RawLBAC['api_plane_info'][number] & { poi_slot?: RawSlotItem | null }
 
 const OverviewArea: React.FC<{ simulator: Simulator }> = ({ simulator }) => {
-  const [expanded, setExpanded] = useState(true)
+  const [expanded, setExpanded] = useState(false)
 
   return (
     <div id="overview-area">
@@ -166,7 +166,7 @@ interface ItemViewProps {
 }
 
 const ItemView: React.FC<ItemViewProps> = ({ item, extra, label, warn }) => {
-  if (!item) return <div />
+  if (!item || Object.keys(item).length === 0) return <div />
   const raw = item
   const mst = getStore(['const', '$equips', String(item.api_slotitem_id)]) || {}
   const data = {
@@ -175,16 +175,17 @@ const ItemView: React.FC<ItemViewProps> = ({ item, extra, label, warn }) => {
   }
 
   const apiType3: number | undefined = data.api_type?.[3]
+  const itemName: string = `${getShipName(data)}`
   return (
     <div className="item-view">
-      <div className="item-info">
+      <div className="item-info" title={itemName}>
         <span className="item-icon">
           <SlotitemIcon slotitemId={apiType3 ?? 0} />
           {(label != null && (extra || (apiType3 != null && equipIsAircraft(data)))) ? (
             <span className={`number ${warn ? 'text-warning' : ''}`}>{label}</span>
           ) : null}
         </span>
-        <span className="item-name">{`${getShipName(data)}`}</span>
+        <span className="item-name">{itemName}</span>
       </div>
       <div className="item-attr">
         <span className="alv">

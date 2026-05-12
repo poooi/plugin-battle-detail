@@ -118,7 +118,7 @@ const BrowseAreaImpl: React.FC<BrowseAreaProps> = ({
             <span>{__('Tip_Akashic1_Part2')}</span>
           </div>
           <form onSubmit={onClickFilter}>
-            <HTMLTable striped interactive className="browse-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <HTMLTable striped interactive bordered className="browse-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr>
                   <th>#</th>

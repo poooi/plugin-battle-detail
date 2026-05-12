@@ -41,7 +41,7 @@ export const UPagination: React.FC<UPaginationProps> = ({ currentPage, totalPage
   if (totalPages > 1) addPage(totalPages)
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 4, ...style }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'center', marginTop: 16, ...style }}>
       <Button
         disabled={currentPage <= 1}
         onClick={() => onChange(currentPage - 1)}
