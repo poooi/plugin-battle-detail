@@ -47,11 +47,11 @@ const BrowseAreaImpl: React.FC<BrowseAreaProps> = ({
 
   const applyFilters = useCallback((idxs: BattleIndex[], flt: typeof filters) => {
     return idxs.filter(index =>
-      flt.time.findIndex(k => index.time.includes(k)) > -1 &&
-      flt.desc.findIndex(k => index.desc.includes(k)) > -1 &&
-      flt.map.findIndex(k => index.map.includes(k)) > -1 &&
-      flt.route.findIndex(k => index.route.includes(k)) > -1 &&
-      flt.rank.findIndex(k => index.rank.includes(k)) > -1,
+      flt.time.findIndex(k => index?.time?.includes(k)) > -1 &&
+      flt.desc.findIndex(k => index?.desc?.includes(k)) > -1 &&
+      flt.map.findIndex(k => index?.map?.includes(k)) > -1 &&
+      flt.route.findIndex(k => index?.route?.includes(k)) > -1 &&
+      flt.rank.findIndex(k => index?.rank?.includes(k)) > -1,
     )
   }, [])
 
@@ -59,11 +59,11 @@ const BrowseAreaImpl: React.FC<BrowseAreaProps> = ({
     if (e) e.preventDefault()
     const SEPARATOR = ','
     const newFilters = {
-      time: (iTime.current?.value ?? '').split(SEPARATOR),
-      desc: (iDesc.current?.value ?? '').split(SEPARATOR),
-      map: (iMap.current?.value ?? '').split(SEPARATOR),
-      route: (iRoute.current?.value ?? '').split(SEPARATOR),
-      rank: (iRank.current?.value ?? '').split(SEPARATOR),
+      time: (iTime?.current?.value ?? '').split(SEPARATOR),
+      desc: (iDesc?.current?.value ?? '').split(SEPARATOR),
+      map: (iMap?.current?.value ?? '').split(SEPARATOR),
+      route: (iRoute?.current?.value ?? '').split(SEPARATOR),
+      rank: (iRank?.current?.value ?? '').split(SEPARATOR),
     }
     if (_.isEqual(filters, newFilters)) return
     setPageNo(1)
@@ -72,11 +72,11 @@ const BrowseAreaImpl: React.FC<BrowseAreaProps> = ({
   }, [filters, propIndexes, applyFilters])
 
   const onRightClickFilter = useCallback(() => {
-    if (iTime.current) iTime.current.value = ''
-    if (iDesc.current) iDesc.current.value = ''
-    if (iMap.current) iMap.current.value = ''
-    if (iRoute.current) iRoute.current.value = ''
-    if (iRank.current) iRank.current.value = ''
+    if (iTime?.current) iTime.current.value = ''
+    if (iDesc?.current) iDesc.current.value = ''
+    if (iMap?.current) iMap.current.value = ''
+    if (iRoute?.current) iRoute.current.value = ''
+    if (iRank?.current) iRank.current.value = ''
     onClickFilter()
   }, [onClickFilter])
 
