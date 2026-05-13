@@ -13,6 +13,7 @@ import type { APIReqMemberGetPracticeEnemyinfoResponse } from 'kcsapi/api_req_me
 import type { APIReqMapStartRequest } from 'kcsapi/api_req_map/start/request'
 import type { APIReqMapStartResponse } from 'kcsapi/api_req_map/start/response'
 import type { APIReqMapNextResponse } from 'kcsapi/api_req_map/next/response'
+import { APISlotItem } from 'kcsapi/api_get_member/require_info/response'
 
 const { getStore } = window
 
@@ -187,30 +188,43 @@ class PacketManager extends EventEmitter {
     const deck = getStore(['info', 'fleets', `${deckId - 1}`]) || {}
     const ships = deck.api_ship
     if (ships) {
-      return ships.map((id: number) => this.getShip(id))
+      return ships
+        .map((id: number) => this.getShip(id))
+        .filter((s: RawFleetShip | null): s is RawFleetShip => s !== null)
     }
     return null
   }
 
-  getShip(shipId: number): RawFleetShip {
+  getShip(shipId: number): RawFleetShip | null {
     const ship = { ...getStore(['info', 'ships', `${shipId}`]) }
-    if (ship) {
-      ship.poi_slot = ship.api_slot.map((id: number) => this.getItem(id))
+    if (ship?.api_id) {
+      ship.poi_slot = ship.api_slot
+        .map((id: number) => this.getItem(id))
+        .filter((s: APISlotItem | null): s is APISlotItem => s !== null)
       ship.poi_slot_ex = this.getItem(ship.api_slot_ex)
       delete ship.api_getmes
       delete ship.api_slot
       delete ship.api_slot_ex
       delete ship.api_yomi
+      return ship
+    } else {
+      return null
     }
-    return ship
   }
 
-  getItem(itemId: number): RawSlotItem | undefined {
-    const item = { ...window._slotitems[itemId] }
-    if (item) {
-      delete item.api_info
+  getItem(itemId: number): RawSlotItem | null {
+    const infoItem = getStore(['info', 'equips', `${itemId}`])
+    if (!infoItem) return null
+    const item = {
+      ...getStore(['const', '$equips', `${infoItem.api_slotitem_id}`]),
+      ...infoItem,
     }
-    return item
+    if (item?.api_id) {
+      delete item.api_info
+      return item
+    } else {
+      return null
+    }
   }
 
   getLandBaseAirCorps(areaId: number): RawLBAC[] {
