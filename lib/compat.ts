@@ -247,7 +247,7 @@ export class IndexCompat {
     const map = battle.map.slice(0, 2).join('-')
     const route_ = battle.map[2]
     const route = IndexCompat.getRoute(map, route_)
-    const desc = PacketCompat.getDesc(battle)
+    const desc = PacketCompat.getDesc(battle) ?? ''
     const rank = IndexCompat.RankMap[simulator.result.rank]
     return { id, time_, time, map, route_, route, desc, rank }
   }
@@ -257,6 +257,8 @@ export class IndexCompat {
     const { map, route_ } = index
     index.time = PacketCompat.fmtTime(index.time_)
     index.route = IndexCompat.getRoute(map, route_)
+    if (typeof index.desc !== 'string') index.desc = ''
+    if (typeof index.rank !== 'string') index.rank = ''
     return index
   }
 }
