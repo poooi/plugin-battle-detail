@@ -233,11 +233,14 @@ class PacketManager extends EventEmitter {
       if (!(corps.api_area_id == areaId && corps.api_action_kind === 1)) {
         continue
       }
-      corps = { ...corps }
-      for (const plane of corps.api_plane_info) {
-        if (!plane) continue
-        plane.poi_slot = this.getItem(plane.api_slotid) ?? null
-        delete (plane as unknown as Record<string, unknown>).api_slotid
+      corps = {
+        ...corps,
+        api_plane_info: corps.api_plane_info.map((plane) => {
+          if (!plane) return plane
+          const newPlane = { ...plane, poi_slot: this.getItem(plane.api_slotid) ?? null }
+          delete (newPlane as unknown as Record<string, unknown>).api_slotid
+          return newPlane
+        }),
       }
       landBaseAirCorps.push(corps)
     }
