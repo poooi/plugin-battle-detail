@@ -1,5 +1,6 @@
 import _ from 'lodash'
-import { shell, clipboard } from 'electron'
+import { shell } from 'electron'
+import { writeClipboardText } from 'views/services/clipboard'
 import { compressToEncodedURIComponent } from 'lz-string'
 import React, { useCallback } from 'react'
 import { connect } from 'react-redux'
@@ -96,7 +97,7 @@ const SortieViewerImpl: React.FC<SortieViewerProps> = ({
 
   const handleCopyReplayToClipboard = (si: SortieIndex) => async () => {
     const { replayData: kc3ReplayData } = await convertReplay(si)
-    clipboard.writeText(JSON.stringify(kc3ReplayData))
+    await writeClipboardText(JSON.stringify(kc3ReplayData))
   }
 
   const handleViewInDeckBuilder = (si: SortieIndex) => async () => {
@@ -105,7 +106,7 @@ const SortieViewerImpl: React.FC<SortieViewerProps> = ({
   }
 
   const handleCopyDeckBuilderToClipboard = (si: SortieIndex) => async () =>
-    clipboard.writeText(JSON.stringify(await convertToDeckBuilder(si)))
+    await writeClipboardText(JSON.stringify(await convertToDeckBuilder(si)))
 
   const handleViewInWctf = (si: SortieIndex) => async () => {
     const wData = await convertToWctf(si)

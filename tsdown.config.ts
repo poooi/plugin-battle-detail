@@ -23,6 +23,7 @@ export default defineConfig({
     'classnames',
     'kcsapi',
     'views/create-store',
+    'views/services/clipboard',
     'views/utils/selectors',
     'views/utils/game-utils',
     'views/components/etc/icon',
