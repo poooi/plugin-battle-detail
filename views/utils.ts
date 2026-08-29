@@ -40,15 +40,19 @@ export function loadScript(src: string, targetDocument: Document = document): vo
 
 // clipboard
 type ClipboardService = typeof import('views/services/clipboard')
-const clipboardFlag = Number.parseInt(window.POI_VERSION, 10) >= 12
 
-const getClipboardService = (): ClipboardService => {
-  return require('views/services/clipboard') as ClipboardService
+const getClipboardService = (): ClipboardService | null => {
+  try {
+    return require('views/services/clipboard') as ClipboardService
+  } catch {
+    return null
+  }
 }
 
 export const writeClipboardText = async (v: string): Promise<void> => {
-  if (clipboardFlag) {
-    if (!(await getClipboardService().writeClipboardText(v)))
+  const clipboardService = getClipboardService()
+  if (clipboardService) {
+    if (!(await clipboardService.writeClipboardText(v)))
       throw new Error('Failed to write text to clipboard.')
   } else {
     remote.clipboard.writeText(v)
@@ -56,7 +60,7 @@ export const writeClipboardText = async (v: string): Promise<void> => {
 }
 
 export const readClipboardText = async (): Promise<string> => {
-  if (clipboardFlag) {
+  if (Number.parseInt(process.versions.electron, 10) >= 44) {
     return navigator.clipboard.readText()
   } else {
     return remote.clipboard.readText()
