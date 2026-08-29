@@ -1,3 +1,5 @@
+import * as remote from '@electron/remote'
+
 const { getStore } = window
 const { __: __r } = window.i18n.resources
 
@@ -34,4 +36,33 @@ export function loadScript(src: string, targetDocument: Document = document): vo
   const script = targetDocument.createElement('script')
   script.setAttribute('src', src)
   targetDocument.head.appendChild(script)
+}
+
+// clipboard
+type ClipboardService = typeof import('views/services/clipboard')
+
+const getClipboardService = (): ClipboardService | null => {
+  try {
+    return require('views/services/clipboard') as ClipboardService
+  } catch {
+    return null
+  }
+}
+
+export const writeClipboardText = async (v: string): Promise<void> => {
+  const clipboardService = getClipboardService()
+  if (clipboardService) {
+    if (!(await clipboardService.writeClipboardText(v)))
+      throw new Error('Failed to write text to clipboard.')
+  } else {
+    remote.clipboard.writeText(v)
+  }
+}
+
+export const readClipboardText = async (): Promise<string> => {
+  if (Number.parseInt(process.versions.electron, 10) >= 44) {
+    return navigator.clipboard.readText()
+  } else {
+    return remote.clipboard.readText()
+  }
 }

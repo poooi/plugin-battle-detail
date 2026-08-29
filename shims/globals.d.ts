@@ -110,6 +110,10 @@ declare module 'views/components/etc/overlay' {
   export { Tooltip, Popover, Dialog, DialogBody, DialogFooter } from '@blueprintjs/core'
 }
 
+declare module 'views/services/clipboard' {
+  export function writeClipboardText(text: string): Promise<boolean>
+}
+
 declare module 'react-fontawesome' {
   import { ComponentType } from 'react'
   const FontAwesome: ComponentType<{ name: string; style?: React.CSSProperties; [key: string]: any }>

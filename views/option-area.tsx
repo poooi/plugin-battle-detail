@@ -5,8 +5,8 @@ import type { Battle } from 'poi-lib-battle'
 
 import { showModal } from './modal-area'
 import { PacketCompat } from '../lib/compat'
+import { readClipboardText, writeClipboardText } from './utils'
 
-const { clipboard } = remote
 const { __ } = window.i18n['poi-plugin-battle-detail']
 
 interface OptionAreaProps {
@@ -16,17 +16,12 @@ interface OptionAreaProps {
 }
 
 const OptionArea: React.FC<OptionAreaProps> = memo(({ battle, updateBattle, battleArea }) => {
-  const onClickExport = () => {
-    let isSuccessful = false
+  const onClickExport = async () => {
     try {
-      if (battle != null) {
-        clipboard.writeText(JSON.stringify(battle))
-        isSuccessful = true
+      if (battle == null) {
+        throw new Error('Battle data not exists.')
       }
-    } catch (_err) {
-      // Do nothing
-    }
-    if (isSuccessful) {
+      await writeClipboardText(JSON.stringify(battle))
       showModal({
         title: __('Copy Data'),
         body: [
@@ -34,7 +29,7 @@ const OptionArea: React.FC<OptionAreaProps> = memo(({ battle, updateBattle, batt
           __('You can send your friends the packet to share the battle.'),
         ],
       })
-    } else {
+    } catch (_err) {
       showModal({
         title: __('Copy Data'),
         body: __('Failed to copy battle packet to clipboard!'),
@@ -42,18 +37,22 @@ const OptionArea: React.FC<OptionAreaProps> = memo(({ battle, updateBattle, batt
     }
   }
 
-  const onClickImport = () => {
+  const onClickImport = async () => {
     try {
-      const data = clipboard.readText()
+      const data = await readClipboardText()
       const parsed = JSON.parse(data)
       updateBattle(parsed)
-    } finally {
       showModal({
         title: __('Paste Data'),
         body: [
           __('A battle packet was pasted from clipboard.'),
           __('If you see no battle detail, you may have a broken packet.'),
         ],
+      })
+    } catch (_err) {
+      showModal({
+        title: __('Paste Data'),
+        body: __('Failed to paste battle packet from clipboard!'),
       })
     }
   }
