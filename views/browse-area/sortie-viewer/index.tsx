@@ -1,6 +1,5 @@
 import _ from 'lodash'
 import { shell } from 'electron'
-import { writeClipboardText } from 'views/services/clipboard'
 import { compressToEncodedURIComponent } from 'lz-string'
 import React, { useCallback } from 'react'
 import { connect } from 'react-redux'
@@ -18,6 +17,7 @@ import {
   currentFocusingSortieIndexesSelector,
 } from './selectors'
 
+import { writeClipboardText } from '../../utils'
 import { sortieViewerSelector } from '../../selectors'
 import { actionCreators } from '../../store'
 import { convertReplay } from '../../../lib/convert-replay'
@@ -96,8 +96,12 @@ const SortieViewerImpl: React.FC<SortieViewerProps> = ({
   }
 
   const handleCopyReplayToClipboard = (si: SortieIndex) => async () => {
-    const { replayData: kc3ReplayData } = await convertReplay(si)
-    await writeClipboardText(JSON.stringify(kc3ReplayData))
+    try {
+      const { replayData: kc3ReplayData } = await convertReplay(si)
+      await writeClipboardText(JSON.stringify(kc3ReplayData))
+    } catch (err: unknown) {
+      console.error('Failed to copy replay data to clipboard.', err)
+    }
   }
 
   const handleViewInDeckBuilder = (si: SortieIndex) => async () => {
@@ -105,8 +109,13 @@ const SortieViewerImpl: React.FC<SortieViewerProps> = ({
     shell.openExternal(`http://kancolle-calc.net/deckbuilder.html?predeck=${encoded}`)
   }
 
-  const handleCopyDeckBuilderToClipboard = (si: SortieIndex) => async () =>
-    await writeClipboardText(JSON.stringify(await convertToDeckBuilder(si)))
+  const handleCopyDeckBuilderToClipboard = (si: SortieIndex) => async () => {
+    try {
+      await writeClipboardText(JSON.stringify(await convertToDeckBuilder(si)))
+    } catch (err: unknown) {
+      console.error('Failed to copy DeckBuilder data to clipboard.', err)
+    }
+  }
 
   const handleViewInWctf = (si: SortieIndex) => async () => {
     const wData = await convertToWctf(si)

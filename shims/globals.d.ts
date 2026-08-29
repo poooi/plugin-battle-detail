@@ -111,7 +111,7 @@ declare module 'views/components/etc/overlay' {
 }
 
 declare module 'views/services/clipboard' {
-  export function writeClipboardText(text: string): Promise<void>
+  export function writeClipboardText(text: string): Promise<boolean>
 }
 
 declare module 'react-fontawesome' {

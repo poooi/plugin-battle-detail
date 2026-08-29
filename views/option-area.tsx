@@ -5,7 +5,7 @@ import type { Battle } from 'poi-lib-battle'
 
 import { showModal } from './modal-area'
 import { PacketCompat } from '../lib/compat'
-import { writeClipboardText } from 'views/services/clipboard'
+import { readClipboardText, writeClipboardText } from './utils'
 
 const { __ } = window.i18n['poi-plugin-battle-detail']
 
@@ -39,7 +39,7 @@ const OptionArea: React.FC<OptionAreaProps> = memo(({ battle, updateBattle, batt
 
   const onClickImport = async () => {
     try {
-      const data = await navigator.clipboard.readText()
+      const data = await readClipboardText()
       const parsed = JSON.parse(data)
       updateBattle(parsed)
       showModal({
